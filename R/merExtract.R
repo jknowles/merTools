@@ -1,5 +1,5 @@
-#' @title REextract
-#' @name Extracts random effects
+#' @title Extracts random effects
+#' @name REextract
 #' @description Extracts random effect terms from an lme4 model
 #' @param mod a merMod object from the lme4 package
 #' @importFrom plyr adply
@@ -14,10 +14,19 @@ REextract <- function(mod){
   newout <- cbind(out.pt, out.se[, -1])
   return(newout)
 }
-#
-#
-# Use the Gelman sim technique to build empirical Bayes estimates
-# Uses the sim function in the arm package
+
+#' @title Simulate random effects from merMod
+#' @name REsim
+#' @description Simulate random effects from merMod object posterior distributions
+#' @param x a merMod object from the lme4 package
+#' @param nsims number of simulations to use
+#' @param OR logical, should parameters be converted to odds ratios?
+#' @importFrom arm sim
+#' @import lme4
+#' @return a data frame with distribution of random effect parameters
+#' @details Use the Gelman sim technique to build empirical Bayes estimates.
+#'  Uses the sim function in the arm package
+#' @export
 REsim <- function(x, nsims, OR = FALSE){
   mysim <- sim(x, n.sims = nsims)
   reDims <- length(mysim@ranef)
