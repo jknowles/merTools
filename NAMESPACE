@@ -3,6 +3,7 @@
 export(FEsim)
 export(REextract)
 export(REsim)
+export(RMSE.merMod)
 import(lme4)
 importFrom(arm,sim)
 importFrom(plyr,adply)
