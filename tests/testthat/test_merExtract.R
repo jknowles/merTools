@@ -38,7 +38,7 @@ Orthodont$nsexage <- with(Orthodont, nsex*age)
 lmerSlope2 <- lmer(distance ~ age + (0 + age + nsex|Subject), data=Orthodont)
 
 ###############################################
-context("Extract Random Effects")
+context("Extract Random Effects from merMod")
 ################################################
 
 test_that("REextract pulls out a data frame", {
@@ -48,12 +48,32 @@ test_that("REextract pulls out a data frame", {
   expect_is(REextract(lmerSlope1), "data.frame")
 })
 
+test_that("REextract issues error with non merMod objects", {
+  expect_error(REextract(lm(Reaction ~ Days, sleepstudy)))
+  expect_error(REextract(glm(TICKS ~ YEAR + HEIGHT,
+                             family="poisson", data=grouseticks)))
+})
 
-# GLMER 3 level
+test_that("REextract gets correct dimensions", {
+  expect_equal(ncol(REextract(glmer3Lev)), 3)
+  expect_equal(ncol(REextract(lmerSlope1)), 5)
+  expect_equal(ncol(REextract(lmerSlope2)), 5)
+  expect_equal(ncol(REextract(glmer3LevSlope)), 5)
+  expect_equal(nrow(REextract(glmer3Lev)), 584)
+  expect_equal(nrow(REextract(lmerSlope1)), 18)
+  expect_equal(nrow(REextract(lmerSlope2)), 27)
+  expect_equal(nrow(REextract(glmer3LevSlope)), 584)
+})
 
-# From grouseticks help entry
+###############################################
+context("Fixed effect estimates from posterior")
+################################################
 
-
-
+test_that("FEsim produces data.frames", {
+  expect_is(FEsim(lmerSlope1, nsims=100), "data.frame")
+  expect_is(FEsim(lmerSlope2, nsims=100), "data.frame")
+  expect_is(FEsim(glmer3Lev, nsims=100), "data.frame")
+  expect_is(FEsim(glmer3LevSlope, nsims=100), "data.frame")
+})
 
 
