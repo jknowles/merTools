@@ -10,5 +10,7 @@ Depends:
     arm,
     lme4,
     plyr
+Suggests:
+    testthat
 License: MIT
 LazyData: true
