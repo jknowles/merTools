@@ -1,8 +1,14 @@
 Package: merTools
 Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
-Authors@R: person("Jared", "Knowles", , "jknowles@gmail.com", role = c("aut", "cre"))
+Authors@R: c(person(c("Jared", "E."), "Knowles", email = "jknowles@gmail.com",
+    role = c("aut", "cre")), person("Carl", "Frederick", email="something@something.com",
+    role = c("aut", "cre")))
 Description: Provides methods for extracting results from merMod objects in the lme4 package.
-Depends: R (>= 3.1.2)
+Depends:
+    R (>= 3.1.2),
+    arm,
+    lme4,
+    plyr
 License: MIT
 LazyData: true
