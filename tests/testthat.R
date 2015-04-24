@@ -1,4 +1,4 @@
 library(testthat)
-library(caretEnsemble)
+library(merTools)
 
 test_check("merTools")
