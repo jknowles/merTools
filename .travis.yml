@@ -5,6 +5,12 @@ sudo: required
 env:
   - WARNINGS_ARE_ERRORS=1
 
+r_github_packages:
+  - jimhester/covr
+
+after_success:
+  - Rscript -e 'library(covr);coveralls()'
+
 notifications:
   email:
     on_success: change
