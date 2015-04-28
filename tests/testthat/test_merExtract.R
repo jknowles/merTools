@@ -55,15 +55,18 @@ test_that("REextract issues error with non merMod objects", {
 })
 
 test_that("REextract gets correct dimensions", {
-  expect_equal(ncol(REextract(glmer3Lev)), 3)
-  expect_equal(ncol(REextract(lmerSlope1)), 5)
-  expect_equal(ncol(REextract(lmerSlope2)), 5)
-  expect_equal(ncol(REextract(glmer3LevSlope)), 5)
+  expect_equal(ncol(REextract(glmer3Lev)), 4)
+  expect_equal(ncol(REextract(lmerSlope1)), 6)
+  expect_equal(ncol(REextract(lmerSlope2)), 6)
+  expect_equal(ncol(REextract(glmer3LevSlope)), 6)
   expect_equal(nrow(REextract(glmer3Lev)), 584)
   expect_equal(nrow(REextract(lmerSlope1)), 18)
   expect_equal(nrow(REextract(lmerSlope2)), 27)
   expect_equal(nrow(REextract(glmer3LevSlope)), 584)
 })
+
+# Check names
+# Check numerics
 
 ###############################################
 context("Fixed effect estimates from posterior")
@@ -76,4 +79,44 @@ test_that("FEsim produces data.frames", {
   expect_is(FEsim(glmer3LevSlope, nsims=100), "data.frame")
 })
 
+test_that("nsims changes simulation results", {
+  expect_false(identical(FEsim(lmerSlope1, nsims = 1000),
+                         FEsim(lmerSlope1, nsims = 10)))
+})
 
+# numeric checks
+
+###############################################
+context("Random effect estimates from posterior")
+################################################
+
+test_that("REsim produces data.frames", {
+  expect_is(REsim(lmerSlope1, nsims=100), "data.frame")
+  expect_is(REsim(lmerSlope2, nsims=100), "data.frame")
+  expect_is(REsim(glmer3Lev, nsims=100), "data.frame")
+  expect_is(REsim(glmer3LevSlope, nsims=100), "data.frame")
+})
+
+
+###############################################
+context("RMSE estimates")
+################################################
+
+test_that("RMSE produces correct variable types", {
+  expect_is(RMSE.merMod(lmerSlope1), "numeric")
+  expect_is(RMSE.merMod(lmerSlope2), "numeric")
+  expect_is(RMSE.merMod(lmerSlope1, scale = TRUE), "numeric")
+  expect_is(RMSE.merMod(lmerSlope2, scale = TRUE), "numeric")
+})
+
+
+test_that("RMSE respects scale parameter", {
+  expect_false(identical(RMSE.merMod(lmerSlope1),
+                         RMSE.merMod(lmerSlope1, scale = TRUE)))
+  expect_false(identical(RMSE.merMod(lmerSlope2),
+                         RMSE.merMod(lmerSlope2, scale = TRUE)))
+  expect_less_than(RMSE.merMod(lmerSlope2, scale = TRUE),
+                   RMSE.merMod(lmerSlope2))
+  expect_less_than(RMSE.merMod(lmerSlope1, scale = TRUE),
+                   RMSE.merMod(lmerSlope1))
+})

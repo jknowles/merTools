@@ -3,7 +3,7 @@
 #' @description Extracts random effect terms from an lme4 model
 #' @param mod a merMod object from the lme4 package
 #' @importFrom plyr adply rbind.fill
-#' @return a data frame with random effects from lme4
+#' @return a data frame with random effects from lme4 by group id
 #' @export
 REextract <- function(mod){
   stopifnot(class(mod) == "lmerMod" | class(mod) == "glmerMod")
@@ -14,6 +14,7 @@ REextract <- function(mod){
     tmp.out[[i]] <- out[[i]]
     tmp.out[[i]]$level <- paste0("Level ", i)
     tmp.out[[i]]$level <- as.character(tmp.out[[i]]$level)
+    tmp.out[[i]]$groupID <- row.names(out[[i]])
     if(ncol(out[[i]]) > 1){
       tmp.out.se <- plyr::adply(attr(out[[i]], which = "postVar"), c(3),
                               function(x) sqrt(diag(x)))
@@ -24,7 +25,7 @@ REextract <- function(mod){
       tmp.out.se <- sapply(attr(out[[i]], which = "postVar"), sqrt)
       names(tmp.out.se) <- paste0(names(out[[i]]), "_se")
       tmp.out[[i]] <- cbind(tmp.out[[i]], tmp.out.se)
-      names(tmp.out[[i]])[3] <-  paste0(names(out[[i]]), "_se")
+      names(tmp.out[[i]])[4] <-  paste0(names(out[[i]]), "_se")
     }
   }
   dat <- do.call(plyr::rbind.fill, tmp.out)

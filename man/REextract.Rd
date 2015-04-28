@@ -10,7 +10,7 @@ REextract(mod)
 \item{mod}{a merMod object from the lme4 package}
 }
 \value{
-a data frame with random effects from lme4
+a data frame with random effects from lme4 by group id
 }
 \description{
 Extracts random effect terms from an lme4 model
