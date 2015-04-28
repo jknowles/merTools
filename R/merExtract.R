@@ -29,6 +29,9 @@ REextract <- function(mod){
     }
   }
   dat <- do.call(plyr::rbind.fill, tmp.out)
+  # reorg output
+  dat[, c("level", "groupID",
+          names(dat)[!names(dat) %in% c("level", "groupID")])]
   return(dat)
 }
 
