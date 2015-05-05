@@ -8,7 +8,6 @@ set.seed(51315)
 library(lme4)
 data(grouseticks)
 grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
-data(grouseticks_agg)
 grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
 
 # Build out models
