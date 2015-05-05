@@ -144,7 +144,7 @@ averageObs <- function(merMod, varList = NULL){
 #' @export
 superFactor <- function(x, fullLev){
   x <- as.character(x)
-  if(class(fullLev) == "factor"){
+  if("factor" %in% class(fullLev)){
     fullLev <- unique(levels(fullLev))
   }
   x <- factor(x, levels = c(fullLev),
