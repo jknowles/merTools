@@ -147,8 +147,9 @@ superFactor <- function(x, fullLev){
   if("factor" %in% class(fullLev)){
     fullLev <- unique(levels(fullLev))
   }
-  x <- factor(x, levels = c(fullLev),
-              labels = c(fullLev))
+  unobsLev <- unique(x)[!unique(x) %in% fullLev]
+  x <- factor(x, levels = c(fullLev, unobsLev),
+              labels = c(fullLev, unobsLev))
   return(x)
 }
 
@@ -172,6 +173,8 @@ shuffle <- function(data){
 #' @param values a vector with the variables to assign to var
 #' @return a data frame with each row in data assigned to all values for
 #' the variable chosen
+#' @details If the variable specified is a factor, then wiggleObs will return it
+#' as a character.
 #' @export
 wiggleObs <- function(data, var, values){
   tmp.data <- data
@@ -179,17 +182,21 @@ wiggleObs <- function(data, var, values){
     data <- rbind(data, shuffle(tmp.data))
   }
   data[, var] <- values
-  #   data[, var] <- factor(data[, var])
-  return(sanitizeNames(data))
+  if(any(class(tmp.data[, var]) %in% c("factor", "ordered"))){
+    data[, var] <- superFactor(data[, var],
+                               fullLev = levels(tmp.data[, var]))
+
+  }
+  return(data)
 }
 
 #' @title Identify group level associated with RE quantile
-#' @name findREquantile
+#' @name REquantile
 #' @description For a user specified quantile (or quantiles) of the random effect
 #' terms in a merMod object. This allows the user to easily identify the obsevation
 #' associated with the nth percentile effect.
 #' @param merMod a merMod object with one or more random effect levels
-#' @param quantile a numeric vector with values between 0 and 1 for quantiles
+#' @param quantile a numeric vector with values between 0 and 100 for quantiles
 #' @param group a character of the name of the random effect group to extract
 #' quantiles from
 #' @param eff a character of the random effect to extract for the grouping term
@@ -197,10 +204,22 @@ wiggleObs <- function(data, var, values){
 #' @return a vector of the level of the random effect grouping term that corresponds
 #' to each quantile
 #' @export
-findREquantile <- function(merMod, quantile, group, eff = "(Intercept)"){
+REquantile <- function(merMod, quantile, group, eff = "(Intercept)"){
+  if(any(quantile < 1 & quantile > 0)){
+    stop("Quantiles must be specified on the range 1-99")
+  }
+  if(any(quantile < 0 | quantile > 100)){
+    stop("Quantiles must be specified on the range 1-99")
+  }
   myRE <- ranef(merMod)[[group]]
-  myRE <- myRE[order(-myRE[, eff]), ,drop = FALSE]
+  if(is.null(myRE)){
+    stop("Random effect group name not found. Please respecify group.")
+  }
+  myRE <- myRE[order(myRE[, eff]), ,drop = FALSE]
   nobs <- nrow(myRE)
+  if(nobs < 20){
+    message("Number of observations < 20, quantiles may not be well-defined.")
+  }
   obsnum <- floor(quantile * nobs/100)
   return(rownames(myRE)[obsnum])
 }

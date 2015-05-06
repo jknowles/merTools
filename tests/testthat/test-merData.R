@@ -1,7 +1,4 @@
 # -----------------------------------------------------
-# Test framework includes tests for multiple intercepts and
-# multiple slopes to ensure extraction of random effects
-# works in these scenarios
 #-------------------------------------------------------
 
 set.seed(51315)
@@ -172,6 +169,22 @@ test_that("Unobserved factor levels can be respected", {
   expect_equal(length(levels(fac2a)), 27)
 })
 
+test_that("SuperFactor handles new factor levels correctly", {
+  fac1 <- factor(c("999", "888"))
+  fac1a <- superFactor(fac1, fullLev = unique(grouseticks$BROOD))
+  fac2 <- factor(c("Z16", "Z02", "Z05"))
+  fac2a <- superFactor(fac2, fullLev = unique(Orthodont$Subject))
+  expect_false(identical(levels(fac1), levels(fac1a)))
+  expect_false(identical(levels(fac2), levels(fac2a)))
+  expect_false(identical(levels(grouseticks$BROOD), levels(fac1a)))
+  expect_false(identical(levels(Orthodont$Subject), levels(fac2a)))
+  expect_equal(length(levels(fac1a)), length(levels(grouseticks$BROOD)) + 2)
+  expect_equal(length(levels(fac2a)), length(levels(Orthodont$Subject)) + 3)
+  expect_true(identical(levels(fac1a)[1:118], levels(grouseticks$BROOD)))
+  expect_true(identical(levels(fac2a)[1:27], levels(Orthodont$Subject)))
+})
+
+
 ###############################################
 context("Shuffle")
 ################################################
@@ -183,3 +196,92 @@ test_that("Data can be shuffled", {
   expect_equal(ncol(grouseticks), ncol(merTools:::shuffle(grouseticks)))
 })
 
+###############################################
+context("Find RE Quantiles")
+################################################
+
+test_that("Errors and messages are issued", {
+  expect_error(REquantile(glmer3Lev, .23, group = "BROOD"))
+  expect_error(REquantile(glmer3Lev, 23, group = "BROOD", eff = "Cat"))
+  expect_error(REquantile(glmer3Lev, 23, group = "Cat"))
+  expect_error(REquantile(glmer3Lev, c(.23, 56, 75), "BROOD"))
+  expect_error(REquantile(glmer3Lev, c(23, .56, 75), "BROOD"))
+  expect_error(REquantile(glmer3Lev, c(23, 56, .75), "BROOD"))
+  expect_error(REquantile(glmer3Lev, c(23, 56, 107), "BROOD"))
+  expect_error(REquantile(glmer3Lev, c(-2, 56, 7), "BROOD"))
+  expect_message(REquantile(lmerSlope1, 25, group = "Subject"))
+})
+
+# test_that("Quantiles are returned correctly", {
+#   myRE <- ranef(glmer3Lev)[["BROOD"]]
+#   myRE <- myRE[order(myRE[, "(Intercept)"]), ,drop = FALSE]
+#   rownames(myRE)[floor(23 / nrow(myRE)*100)]
+#
+#
+# })
+
+###############################################
+context("Test observation wiggle")
+################################################
+
+test_that("Row and column lengths are correct", {
+  data1 <- grouseticks[5:9, ]
+  data1a <- wiggleObs(data1, var = "BROOD", values = c("606", "602", "537"))
+  data1b <- wiggleObs(data1a, var = "YEAR", values = c("96", "97"))
+  data2 <- grouseticks[3, ]
+  data2a <- wiggleObs(data2, var = "BROOD", values = c("606", "602", "537"))
+  data2b <- wiggleObs(data2a, var = "YEAR", values = c("96", "97"))
+  data3 <- grouseticks[12:14, ]
+  data3a <- wiggleObs(data3, var = "BROOD", values = c("606"))
+  data3b <- wiggleObs(data3a, var = "YEAR", values = c("96", "97"))
+  expect_equal(nrow(data1), 5)
+  expect_equal(nrow(data1a), 15)
+  expect_equal(nrow(data1b), 30)
+  expect_equal(nrow(data2), 1)
+  expect_equal(nrow(data2a), 3)
+  expect_equal(nrow(data2b), 6)
+  expect_equal(nrow(data3), 3)
+  expect_equal(nrow(data3a), 3)
+  expect_equal(nrow(data3b), 6)
+  expect_equal(length(data1), length(data1a))
+  expect_equal(length(data1a), length(data1b))
+  expect_equal(length(data2), length(data2a))
+  expect_equal(length(data2a), length(data2b))
+  expect_equal(length(data3), length(data3a))
+  expect_equal(length(data3a), length(data3b))
+})
+
+
+# wiggleObs <- function(data, var, values){
+#   tmp.data <- data
+#   while(nrow(data) < length(values) * nrow(tmp.data)){
+#     data <- rbind(data, shuffle(tmp.data))
+#   }
+#   data[, var] <- values
+#   return(sanitizeNames(data))
+# }
+
+
+test_that("Values are placed correctly", {
+  data1 <- grouseticks[5:9, ]
+  data1a <- wiggleObs(data1, var = "BROOD", values = c("606", "602", "537"))
+  data1b <- wiggleObs(data1a, var = "YEAR", values = c("96", "97"))
+  data2 <- grouseticks[3, ]
+  data2a <- wiggleObs(data2, var = "BROOD", values = c("606", "602", "537"))
+  data2b <- wiggleObs(data2a, var = "YEAR", values = c("96", "97"))
+  data3 <- grouseticks[12:14, ]
+  data3a <- wiggleObs(data3, var = "BROOD", values = c("606"))
+  data3b <- wiggleObs(data3a, var = "YEAR", values = c("96", "97"))
+  data4 <- Orthodont[15, ]
+  data4a <- wiggleObs(data4, var = "age", values = c(10, 11, 12))
+  data4b <- wiggleObs(data4a, var = "Sex", values = c("Male", "Female"))
+  expect_false(any(unique(data1$BROOD) %in% unique(data1a$BROOD)))
+  expect_false(any(unique(data1$BROOD) %in% unique(data1b$BROOD)))
+  expect_false(any(unique(data1a$YEAR) %in% unique(data1b$YEAR)))
+  expect_false(any(unique(data2$BROOD) %in% unique(data2a$BROOD)))
+  expect_false(any(unique(data2$BROOD) %in% unique(data2b$BROOD)))
+  expect_false(any(unique(data2a$YEAR) %in% unique(data2b$YEAR)))
+  expect_false(any(unique(data3$BROOD) %in% unique(data3a$BROOD)))
+  expect_false(any(unique(data3$BROOD) %in% unique(data3b$BROOD)))
+  expect_false(any(unique(data3a$YEAR) %in% unique(data3b$YEAR)))
+})

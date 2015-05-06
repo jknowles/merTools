@@ -2,10 +2,10 @@
 
 export(FEsim)
 export(REextract)
+export(REquantile)
 export(REsim)
 export(RMSE.merMod)
 export(fastdisp)
-export(findREquantile)
 export(randomObs)
 export(superFactor)
 export(wiggleObs)
