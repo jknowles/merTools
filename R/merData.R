@@ -215,7 +215,14 @@ REquantile <- function(merMod, quantile, group, eff = "(Intercept)"){
   if(is.null(myRE)){
     stop("Random effect group name not found. Please respecify group.")
   }
-  myRE <- myRE[order(myRE[, eff]), ,drop = FALSE]
+  myRE.tmp <- try(myRE[order(myRE[, eff]), ,drop = FALSE], silent = TRUE)
+  if(class(myRE.tmp) != "data.frame"){
+    eff1 <- names(myRE)[1]
+    myRE.tmp <- try(myRE[order(myRE[, eff1]), ,drop = FALSE], silent = TRUE)
+    warning(paste0(eff, " not found in random effect terms. Returning first term, ",
+          eff1,", for group, ", group, ", instead."))
+  }
+  myRE <- myRE.tmp; myRE.tmp <- NULL
   nobs <- nrow(myRE)
   if(nobs < 20){
     message("Number of observations < 20, random effect quantiles may not be well-defined.")

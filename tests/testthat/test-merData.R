@@ -216,7 +216,7 @@ context("Find RE Quantiles")
 
 test_that("Errors and messages are issued", {
   expect_error(REquantile(glmer3Lev, 23, group = "BROOD"))
-  expect_error(REquantile(glmer3Lev, .23, group = "BROOD", eff = "Cat"))
+  expect_warning(REquantile(glmer3Lev, .23, group = "BROOD", eff = "Cat"))
   expect_error(REquantile(glmer3Lev, .23, group = "Cat"))
   expect_error(REquantile(glmer3Lev, c(23, .56, .75), "BROOD"))
   expect_error(REquantile(glmer3Lev, c(.23, 56, .75), "BROOD"))
@@ -224,6 +224,8 @@ test_that("Errors and messages are issued", {
   expect_error(REquantile(glmer3Lev, c(.23, .56, 107), "BROOD"))
   expect_error(REquantile(glmer3Lev, c(-2, .56, .7), "BROOD"))
   expect_message(REquantile(lmerSlope1, .25, group = "Subject"))
+  expect_warning(REquantile(lmerSlope2, c(.24), "Subject"))
+  expect_warning(REquantile(lmerSlope2, c(.24), "Subject", eff = "Cat"))
 })
 
 # what to do without intercepts (REquantile(lmerSlope2), c(.24), "Subject")
@@ -318,33 +320,26 @@ test_that("Returns a single row", {
   expect_equal(nrow(data1), 1)
   expect_equal(nrow(data1a), 1)
   expect_equal(nrow(data2), 1)
-  expect_message(averageObs(lmerSlope1))
 })
 
-# what to do without intercepts (averageObs(lmerSlope2))
-#
-# averageObs <- function(merMod, varList = NULL){
-#   if(!missing(varList)){
-#     data <- subsetList(merMod@frame, varList)
-#     if(nrow(data) < 20 & nrow(data) > 2){
-#       warning("Subset has less than 20 rows, averages may be problematic.")
-#     }
-#   }
-#   if(nrow(data) <3 & !missing(varList)){
-#     warning("Subset has fewer than 3 rows, computing global average instead.")
-#     data <- merMod@frame
-#   }
-#   out <- collapseFrame(data)
-#   reTerms <- names(ngrps(merMod))
-#   for(i in 1:length(reTerms)){
-#     out[, reTerms[i]] <- findREquantile(model = merMod,
-#                                         quantile = 0.5, group = reTerms[[i]])
-#     out[, reTerms[i]] <- as.character(out[, reTerms[i]])
-#   }
-#   chars <- !sapply(out, is.numeric)
-#   for(i in names(out[, chars])){
-#     out[, i] <- superFactor(out[, i], fullLev = unique(merMod@frame[, i]))
-#   }
-#   out <- stripAttributes(out)
-#   return(out)
-# }
+test_that("Warnings and errors are correct", {
+  expect_message(averageObs(lmerSlope1))
+  expect_warning(averageObs(lmerSlope2))
+  mylist2 <- list("YEAR" = "97", "LOCATION" = "16")
+  expect_warning(averageObs(glmer3LevSlope, varList = mylist2))
+  mylist3 <- list("YEAR" = "97", "LOCATION" = c("16", "56"))
+  expect_warning(averageObs(glmer3LevSlope, varList = mylist3))
+})
+
+test_that("Subsets work", {
+  mylist1 <- list("YEAR" = "97")
+  data1 <- averageObs(glmer3LevSlope, varList = mylist1)
+  data1a <- averageObs(glmer3LevSlope)
+  expect_false(identical(data1, data1a))
+  expect_equal(data1$TICKS, mean(grouseticks$TICKS[grouseticks$YEAR == "97"]))
+  expect_equal(data1a$TICKS, mean(grouseticks$TICKS))
+  mylist2 <- list("YEAR" = "97", "LOCATION" = "16")
+  data2 <- averageObs(glmer3LevSlope, varList = mylist2)
+  mylist3 <- list("YEAR" = "97", "LOCATION" = c("16", "56"))
+  data3 <- averageObs(glmer3LevSlope, varList = mylist3)
+})
