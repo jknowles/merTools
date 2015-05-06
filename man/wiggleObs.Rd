@@ -22,4 +22,8 @@ Creates a new data.frame with copies of the original observation,
 each assigned to a different user specified value of a variable. Allows the
 user to look at the effect of changing a variable on predicted values.
 }
+\details{
+If the variable specified is a factor, then wiggleObs will return it
+as a character.
+}
 

@@ -58,11 +58,10 @@ randomObs <- function(merMod){
 #' mode is a tie, returns a "."
 collapseFrame <- function(data){
   chars <- !sapply(data, is.numeric)
-  chars <- names(data[, chars])
+  chars <- names(data[, chars, drop = FALSE])
   nums <- sapply(data, is.numeric)
-  nums <- names(data[, nums])
-
-  numDat <- apply(data[, nums], 2, mean)
+  nums <- names(data[, nums, drop = FALSE])
+  numDat <- apply(data[, nums, drop = FALSE], 2, mean)
   statmode <- function(x){
     z <- table(as.vector(x))
     m <- names(z)[z == max(z)]
@@ -71,7 +70,7 @@ collapseFrame <- function(data){
     }
     return(".")
   }
-  charDat <- apply(data[, chars], 2, statmode)
+  charDat <- apply(data[, chars, drop = FALSE], 2, statmode)
   cfdata <- cbind(as.data.frame(t(numDat)), as.data.frame(t(charDat)))
   cfdata <- cfdata[, names(data)]
   return(cfdata)
@@ -106,21 +105,24 @@ subsetList <- function(data, list){
 #' @details Each character and factor variable in the data.frame is assigned to the
 #' modal category and each numeric variable is collapsed to the mean. Currently if
 #' mode is a tie, returns a "." Uses the collapseFrame function.
+#' @export
 averageObs <- function(merMod, varList = NULL){
   if(!missing(varList)){
     data <- subsetList(merMod@frame, varList)
     if(nrow(data) < 20 & nrow(data) > 2){
       warning("Subset has less than 20 rows, averages may be problematic.")
     }
-  }
-  if(nrow(data) <3 & !missing(varList)){
-    warning("Subset has fewer than 3 rows, computing global average instead.")
+    if(nrow(data) <3){
+      warning("Subset has fewer than 3 rows, computing global average instead.")
+      data <- merMod@frame
+    }
+  } else{
     data <- merMod@frame
   }
   out <- collapseFrame(data)
   reTerms <- names(ngrps(merMod))
   for(i in 1:length(reTerms)){
-    out[, reTerms[i]] <- findREquantile(model = merMod,
+    out[, reTerms[i]] <- REquantile(merMod = merMod,
                                         quantile = 0.5, group = reTerms[[i]])
     out[, reTerms[i]] <- as.character(out[, reTerms[i]])
   }
@@ -129,6 +131,7 @@ averageObs <- function(merMod, varList = NULL){
     out[, i] <- superFactor(out[, i], fullLev = unique(merMod@frame[, i]))
   }
   out <- stripAttributes(out)
+  out <- out[, names(merMod@frame)]
   return(out)
 }
 
@@ -205,11 +208,8 @@ wiggleObs <- function(data, var, values){
 #' to each quantile
 #' @export
 REquantile <- function(merMod, quantile, group, eff = "(Intercept)"){
-  if(any(quantile < 1 & quantile > 0)){
-    stop("Quantiles must be specified on the range 1-99")
-  }
-  if(any(quantile < 0 | quantile > 100)){
-    stop("Quantiles must be specified on the range 1-99")
+  if(any(quantile > 1 | quantile < 0)){
+    stop("Quantiles must be specified on the range 0-1")
   }
   myRE <- ranef(merMod)[[group]]
   if(is.null(myRE)){
@@ -218,8 +218,8 @@ REquantile <- function(merMod, quantile, group, eff = "(Intercept)"){
   myRE <- myRE[order(myRE[, eff]), ,drop = FALSE]
   nobs <- nrow(myRE)
   if(nobs < 20){
-    message("Number of observations < 20, quantiles may not be well-defined.")
+    message("Number of observations < 20, random effect quantiles may not be well-defined.")
   }
-  obsnum <- floor(quantile * nobs/100)
+  obsnum <- floor(quantile * nobs)
   return(rownames(myRE)[obsnum])
 }

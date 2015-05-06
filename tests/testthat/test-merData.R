@@ -9,7 +9,7 @@ grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
 
 
 # Build out models
-form <- TICKS ~ YEAR + HEIGHT +(1|BROOD) + (1|INDEX) + (1|LOCATION)
+form <- TICKS ~ YEAR + HEIGHT +(1|BROOD) + (1|LOCATION) + (1|INDEX)
 glmer3Lev  <- glmer(form, family="poisson",data=grouseticks,
                     control = glmerControl(optimizer="Nelder_Mead",
                                            optCtrl=list(maxfun = 1e5)))
@@ -107,6 +107,20 @@ test_that("A random observation can be sampled from a merMod", {
   expect_false("formula" %in% names(attributes(data4)))
 })
 
+test_that("Random observation preserves factor levels", {
+  data1 <- randomObs(glmer3Lev)
+  data2 <- randomObs(lmerSlope2)
+  data3 <- randomObs(lmerSlope1)
+  data4 <- randomObs(glmer3LevSlope)
+  expect_true(length(levels(data1$YEAR)) > length(unique(data1$YEAR)))
+  expect_true(length(levels(data1$BROOD)) > length(unique(data1$BROOD)))
+  expect_true(length(levels(data1$LOCATION)) > length(unique(data1$LOCATION)))
+  expect_true(length(levels(data4$YEAR)) > length(unique(data4$YEAR)))
+  expect_true(length(levels(data4$BROOD)) > length(unique(data4$BROOD)))
+  expect_true(length(levels(data4$LOCATION)) > length(unique(data4$LOCATION)))
+  # test levels are correct levels as well
+})
+
 ###############################################
 context("Collapse frame")
 ################################################
@@ -201,17 +215,18 @@ context("Find RE Quantiles")
 ################################################
 
 test_that("Errors and messages are issued", {
-  expect_error(REquantile(glmer3Lev, .23, group = "BROOD"))
-  expect_error(REquantile(glmer3Lev, 23, group = "BROOD", eff = "Cat"))
-  expect_error(REquantile(glmer3Lev, 23, group = "Cat"))
-  expect_error(REquantile(glmer3Lev, c(.23, 56, 75), "BROOD"))
-  expect_error(REquantile(glmer3Lev, c(23, .56, 75), "BROOD"))
-  expect_error(REquantile(glmer3Lev, c(23, 56, .75), "BROOD"))
-  expect_error(REquantile(glmer3Lev, c(23, 56, 107), "BROOD"))
-  expect_error(REquantile(glmer3Lev, c(-2, 56, 7), "BROOD"))
-  expect_message(REquantile(lmerSlope1, 25, group = "Subject"))
+  expect_error(REquantile(glmer3Lev, 23, group = "BROOD"))
+  expect_error(REquantile(glmer3Lev, .23, group = "BROOD", eff = "Cat"))
+  expect_error(REquantile(glmer3Lev, .23, group = "Cat"))
+  expect_error(REquantile(glmer3Lev, c(23, .56, .75), "BROOD"))
+  expect_error(REquantile(glmer3Lev, c(.23, 56, .75), "BROOD"))
+  expect_error(REquantile(glmer3Lev, c(.23, .56, 75), "BROOD"))
+  expect_error(REquantile(glmer3Lev, c(.23, .56, 107), "BROOD"))
+  expect_error(REquantile(glmer3Lev, c(-2, .56, .7), "BROOD"))
+  expect_message(REquantile(lmerSlope1, .25, group = "Subject"))
 })
 
+# what to do without intercepts (REquantile(lmerSlope2), c(.24), "Subject")
 # test_that("Quantiles are returned correctly", {
 #   myRE <- ranef(glmer3Lev)[["BROOD"]]
 #   myRE <- myRE[order(myRE[, "(Intercept)"]), ,drop = FALSE]
@@ -252,16 +267,6 @@ test_that("Row and column lengths are correct", {
 })
 
 
-# wiggleObs <- function(data, var, values){
-#   tmp.data <- data
-#   while(nrow(data) < length(values) * nrow(tmp.data)){
-#     data <- rbind(data, shuffle(tmp.data))
-#   }
-#   data[, var] <- values
-#   return(sanitizeNames(data))
-# }
-
-
 test_that("Values are placed correctly", {
   data1 <- grouseticks[5:9, ]
   data1a <- wiggleObs(data1, var = "BROOD", values = c("606", "602", "537"))
@@ -284,4 +289,62 @@ test_that("Values are placed correctly", {
   expect_false(any(unique(data3$BROOD) %in% unique(data3a$BROOD)))
   expect_false(any(unique(data3$BROOD) %in% unique(data3b$BROOD)))
   expect_false(any(unique(data3a$YEAR) %in% unique(data3b$YEAR)))
+  expect_true(all(unique(data1a$BROOD) %in% c("606", "602", "537")))
+  expect_true(all(unique(data1b$BROOD) %in% c("606", "602", "537")))
+  expect_true(all(unique(data2a$BROOD) %in% c("606", "602", "537")))
+  expect_true(all(unique(data2b$BROOD) %in% c("606", "602", "537")))
+  expect_true(all(unique(data3a$BROOD) %in% c("606")))
+  expect_true(all(unique(data3b$BROOD) %in% c("606")))
+  expect_true(all(unique(data4a$age) %in% c(10, 11, 12)))
+  expect_true(all(unique(data4b$age) %in% c(10, 11, 12)))
+  expect_true(all(!unique(data1a$YEAR) %in% c("96", "97")))
+  expect_true(all(unique(data1b$YEAR) %in% c("96", "97")))
+  expect_true(all(!unique(data2a$YEAR) %in% c("96", "97")))
+  expect_true(all(unique(data2b$YEAR) %in% c("96", "97")))
+  expect_true(all(!unique(data3a$YEAR) %in% c("96", "97")))
+  expect_true(all(unique(data3b$YEAR) %in% c("96", "97")))
+  expect_true(all(unique(data4a$Sex) %in% c("Male", "Female")))
+  expect_true(all(unique(data4b$Sex) %in% c("Male", "Female")))
 })
+
+###############################################
+context("Test average observation extraction")
+################################################
+
+test_that("Returns a single row", {
+  data1 <- averageObs(glmer3Lev)
+  data1a <- averageObs(glmer3LevSlope)
+  data2 <- averageObs(lmerSlope1)
+  expect_equal(nrow(data1), 1)
+  expect_equal(nrow(data1a), 1)
+  expect_equal(nrow(data2), 1)
+  expect_message(averageObs(lmerSlope1))
+})
+
+# what to do without intercepts (averageObs(lmerSlope2))
+#
+# averageObs <- function(merMod, varList = NULL){
+#   if(!missing(varList)){
+#     data <- subsetList(merMod@frame, varList)
+#     if(nrow(data) < 20 & nrow(data) > 2){
+#       warning("Subset has less than 20 rows, averages may be problematic.")
+#     }
+#   }
+#   if(nrow(data) <3 & !missing(varList)){
+#     warning("Subset has fewer than 3 rows, computing global average instead.")
+#     data <- merMod@frame
+#   }
+#   out <- collapseFrame(data)
+#   reTerms <- names(ngrps(merMod))
+#   for(i in 1:length(reTerms)){
+#     out[, reTerms[i]] <- findREquantile(model = merMod,
+#                                         quantile = 0.5, group = reTerms[[i]])
+#     out[, reTerms[i]] <- as.character(out[, reTerms[i]])
+#   }
+#   chars <- !sapply(out, is.numeric)
+#   for(i in names(out[, chars])){
+#     out[, i] <- superFactor(out[, i], fullLev = unique(merMod@frame[, i]))
+#   }
+#   out <- stripAttributes(out)
+#   return(out)
+# }

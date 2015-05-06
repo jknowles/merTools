@@ -9,7 +9,7 @@ REquantile(merMod, quantile, group, eff = "(Intercept)")
 \arguments{
 \item{merMod}{a merMod object with one or more random effect levels}
 
-\item{quantile}{a numeric vector with values between 0 and 1 for quantiles}
+\item{quantile}{a numeric vector with values between 0 and 100 for quantiles}
 
 \item{group}{a character of the name of the random effect group to extract
 quantiles from}

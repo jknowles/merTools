@@ -1,5 +1,5 @@
 Package: merTools
-Title: What the Package Does (one line, title case)
+Title: Tools for Analyzing Mixed Effect Regression Models
 Version: 0.0.0.9000
 Authors@R: c(person(c("Jared", "E."), "Knowles", email = "jknowles@gmail.com",
     role = c("aut", "cre")), person("Carl", "Frederick", email="something@something.com",
