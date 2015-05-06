@@ -34,8 +34,6 @@ Orthodont$nsex <- as.numeric(Orthodont$Sex=="Male")
 Orthodont$nsexage <- with(Orthodont, nsex*age)
 lmerSlope2 <- lmer(distance ~ age + (0 + age + nsex|Subject), data=Orthodont)
 
-
-
 ###############################################
 context("Santize Names")
 ################################################
@@ -266,6 +264,13 @@ test_that("Row and column lengths are correct", {
   expect_equal(length(data2a), length(data2b))
   expect_equal(length(data3), length(data3a))
   expect_equal(length(data3a), length(data3b))
+  data4 <- wiggleObs(data3, var = "BROOD",
+                     values = REquantile(glmer3Lev,
+                                         quantile = c(0.25, 0.5, 0.75),
+                                         group = "BROOD"))
+  expect_true(all(table(as.character(data4$BROOD),
+                        as.character(data4$INDEX)) ==1))
+
 })
 
 

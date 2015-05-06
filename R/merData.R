@@ -182,9 +182,9 @@ shuffle <- function(data){
 wiggleObs <- function(data, var, values){
   tmp.data <- data
   while(nrow(data) < length(values) * nrow(tmp.data)){
-    data <- rbind(data, shuffle(tmp.data))
+    data <- rbind(data, tmp.data)
   }
-  data[, var] <- values
+  data[, var] <- rep(values, each = nrow(tmp.data))
   if(any(class(tmp.data[, var]) %in% c("factor", "ordered"))){
     data[, var] <- superFactor(data[, var],
                                fullLev = levels(tmp.data[, var]))
