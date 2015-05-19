@@ -7,7 +7,8 @@
 #' @param stat take the median or mean of simulated intervals
 #' @param predict.type type of prediction to develop
 #'
-#' @return The original data with three columns of predictors appended
+#' @return 'newdata' with three columns appended, stat and the lower
+#'         and upper prediction interval boundaries
 #' @export
 #' @details Sampling strategy description.
 #' @importFrom mvtnorm rmvnorm
@@ -16,9 +17,9 @@ predictInterval <- function(model, newdata, level = 0.95,
                             nsim=1000, stat="median",
                             predict.type=c("link", "response")){
   outs <- newdata
-  predict.type <- match.arg("predict.type",
-                            c("link", "response"),
-                            several.ok = FALSE)
+#  predict.type <- match.arg("predict.type",
+#                            c("link", "response"),
+#                            several.ok = FALSE)
   #Sort out all the levels
   reTerms <- names(ngrps(model))
   n.reTerms = length(reTerms)
@@ -43,22 +44,29 @@ predictInterval <- function(model, newdata, level = 0.95,
                                                           sigma=as.matrix(reMatrix[,,k]))
     }
     cnames <- colnames(reSim[[group]])
+    #This is where to check for groups that only exist in newdata
+    new.levels <- setdiff(newdata[,group], reSim[[group]][,1])
+    if (length(new.levels)>0) {
+      msg <- paste("     The following levels of ", group, " from newdata -- ", paste0(new.levels, collapse=", "),
+                   " -- are not in the model data. \n     Currently, predictions for these values are based only on the fixed coefficients \n     and <<<NOT>>> on the observation-level error.", sep="")
+      warning(msg, call.=FALSE)
+    }
     reSim[[group]] <- merge(newdata, reSim[[group]], by=group, all.x=TRUE)
     reSim[[group]] <- as.matrix(reSim[[group]][,setdiff(cnames, group)])
   }
 
   #Calculate yhat as sum of components
-  yhat <- fixed.xb + apply(simplify2array(reSim), c(1,2), sum)
+  yhat <- fixed.xb + apply(simplify2array(reSim), c(1,2), function(x) sum(x, na.rm=TRUE))
 
   #Output prediction intervals
   if (stat == "median") {
-    outs$fit <- apply(yhat,1,function(x) as.numeric(quantile(x, .5)))
+    outs$fit <- apply(yhat,1,function(x) as.numeric(quantile(x, .5, na.rm=TRUE)))
   }
   if (stat == "mean") {
-    outs$fit <- apply(yhat,1,mean)
+    outs$fit <- apply(yhat,1,function(x) mean(x, na.rm=TRUE))
   }
-  outs$upr <- apply(yhat,1,function(x) as.numeric(quantile(x, 1 - ((1-level)/2))))
-  outs$lwr <- apply(yhat,1,function(x) as.numeric(quantile(x, ((1-level)/2))))
+  outs$upr <- apply(yhat,1,function(x) as.numeric(quantile(x, 1 - ((1-level)/2), na.rm=TRUE)))
+  outs$lwr <- apply(yhat,1,function(x) as.numeric(quantile(x, ((1-level)/2), na.rm=TRUE)))
   if (predict.type == "response") {
     outs$fit <- model@resp$family$linkinv(outs$fit)
     outs$upr <- model@resp$family$linkinv(outs$upr)

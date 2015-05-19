@@ -11,6 +11,7 @@
  library(dplyr)
  library(tidyr)
  library(ggplot2)
+ library(knitr)
  library(RPushbullet)
 
  set.seed(51315)
@@ -74,10 +75,10 @@
    yhat <- fixed.xb + apply(simplify2array(reSim), c(1,2), sum)
 
    #Output prediction intervals
-   if (stat="median") {
+   if (stat=="median") {
      outs$fit <- apply(yhat,1,function(x) as.numeric(quantile(x, .5)))
    }
-   if (stat="mean") {
+   if (stat=="mean") {
      outs$fit <- apply(yhat,1,mean)
    }
    outs$upr <- apply(yhat,1,function(x) as.numeric(quantile(x, 1 - ((1-level)/2))))
@@ -390,17 +391,21 @@
 
 #Step 3: Summarize and Compare Results####
  #debug(predictInterval.test)
- cannonical.1 <-  predictInterval.test(model.form = m1.form, model.df = m1.df, predict.df = m1.new.df, nSims=2000)
- pbPost("note", title="Finished Cannonical Model 1", body=cannonical.1$compareTimes)
- cannonical.2 <-  predictInterval.test(model.form = m2.form, model.df = m2.df, predict.df = m2.new.df, nSims=2000)
- pbPost("note", title="Finished Cannonical Model 2", body=cannonical.2$compareTimes)
- cannonical.4 <-  predictInterval.test(model.form = m4.form, model.df = m4.df, predict.df = m4.new.df, nSims=2000)
- pbPost("note", title="Finished Cannonical Model 4", body=cannonical.4$compareTimes)
+ cannonical.1 <-  predictInterval.test(model.form = m1.form, model.df = m1.df, predict.df = m1.new.df, nSims=2500)
+ pbPost("note", title="Finished Cannonical Model 1", body=paste(kable(cannonical.1$compareTimes[,1:3]), collapse ="\n"))
+ cannonical.2 <-  predictInterval.test(model.form = m2.form, model.df = m2.df, predict.df = m2.new.df, nSims=2500)
+ pbPost("note", title="Finished Cannonical Model 2", body=paste(kable(cannonical.2$compareTimes[,1:3]), collapse ="\n"))
+ cannonical.4 <-  predictInterval.test(model.form = m4.form, model.df = m4.df, predict.df = m4.new.df, nSims=2500)
+ pbPost("note", title="Finished Cannonical Model 4", body=paste(kable(cannonical.4$compareTimes[,1:3]), collapse ="\n"))
  cannonical.3 <-  predictInterval.test(model.form = m3.form, model.df = m3.df, model.type="glmer",
-                                       predict.df=m3.new.df, predict.type="response", nSims=2000)
- pbPost("note", title="Finished Cannonical Model 3", body=cannonical.3$compareTimes)
+                                       predict.df=m3.new.df, predict.type="response", nSims=2500)
+ pbPost("note", title="Finished Cannonical Model 3", body=paste(kable(cannonical.3$compareTimes[,1:3]), collapse ="\n"))
 
 
  save.image()
 
-
+#Step 4: checking math with a fine-toothed comb ####
+ ##Pull pieces to create toy example
+ KF <- cannonical.1$kf.method
+ model <- cannonical.1$model
+ nsim=5
