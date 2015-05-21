@@ -1,0 +1,10 @@
+base
+Matrix
+Rcpp
+lme4
+MASS
+arm
+abind
+mvtnorm
+knitr
+ggplot2
