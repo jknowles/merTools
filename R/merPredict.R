@@ -13,7 +13,7 @@
 #' @details Sampling strategy description.
 #' @importFrom mvtnorm rmvnorm
 #' @import lme4
-#' @import abind
+#' @importFrom abind abind
 predictInterval <- function(model, newdata, level = 0.95,
                             nsim=1000, stat=c("median","mean"),
                             predict.type=c("linear.predictor", "probability"),
@@ -90,14 +90,14 @@ predictInterval <- function(model, newdata, level = 0.95,
       warning("    \n  Since new levels were detected resetting include.resid.var to TRUE.")
     }
   }
-  betaSim <- abind(lapply(1:nsim, function(x) rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
+  betaSim <- abind::abind(lapply(1:nsim, function(x) rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
   newdata.modelMatrix <- lFormula(formula = model@call, data=newdata)$X
   fixed.xb <- newdata.modelMatrix %*% t(betaSim)
 
   ##Calculate yhat as sum of the components (fixed plus all groupling factors)
   yhat <- fixed.xb + apply(simplify2array(reSim), c(1,2), function(x) sum(x, na.rm=TRUE))
   if (include.resid.var==TRUE)
-    yhat <- abind(lapply(1:nsim, function(x) rnorm(nrow(newdata), yhat[,x], sigmahat[x])), along = 2)
+    yhat <- abind::abind(lapply(1:nsim, function(x) rnorm(nrow(newdata), yhat[,x], sigmahat[x])), along = 2)
 
   #Output prediction intervals
   if (stat == "median") {

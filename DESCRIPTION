@@ -2,15 +2,18 @@ Package: merTools
 Title: Tools for Analyzing Mixed Effect Regression Models
 Version: 0.0.0.9000
 Authors@R: c(person(c("Jared", "E."), "Knowles", email = "jknowles@gmail.com",
-    role = c("aut", "cre")), person("Carl", "Frederick", email="something@something.com",
+    role = c("aut", "cre")), person("Carl", "Frederick", email="carlbfrederick@gmail.com",
     role = c("aut")))
 Description: Provides methods for extracting results from merMod objects in the lme4 package.
 Depends:
     R (>= 3.1.2),
     arm,
     lme4,
-    plyr
+    plyr,
+    abind
 Suggests:
-    testthat
+    testthat,
+    knitr
 License: MIT
 LazyData: true
+VignetteBuilder: knitr
