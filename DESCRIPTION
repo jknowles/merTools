@@ -12,5 +12,7 @@ Depends:
     plyr
 Suggests:
     testthat
+Imports:
+    mvtnorm
 License: MIT
 LazyData: true
