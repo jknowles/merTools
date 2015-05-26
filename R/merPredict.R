@@ -90,11 +90,8 @@ predictInterval <- function(model, newdata, level = 0.95,
       warning("    \n  Since new levels were detected resetting include.resid.var to TRUE.")
     }
   }
-<<<<<<< HEAD
-  betaSim <- abind::abind(lapply(1:nsim, function(x) rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
-=======
+
   betaSim <- abind(lapply(1:nsim, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
->>>>>>> 42c9da6d273e17bfe739b0edece17571423d6ded
   newdata.modelMatrix <- lFormula(formula = model@call, data=newdata)$X
   fixed.xb <- newdata.modelMatrix %*% t(betaSim)
 
