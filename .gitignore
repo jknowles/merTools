@@ -3,3 +3,4 @@
 .RData
 Thumbs.db
 inst/doc
+vignettes/Using_predictInterval_cache/
