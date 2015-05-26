@@ -12,8 +12,14 @@ Depends:
     plyr,
     abind
 Suggests:
+<<<<<<< HEAD
     testthat,
     knitr
+=======
+    testthat
+Imports:
+    mvtnorm
+>>>>>>> 42c9da6d273e17bfe739b0edece17571423d6ded
 License: MIT
 LazyData: true
 VignetteBuilder: knitr
