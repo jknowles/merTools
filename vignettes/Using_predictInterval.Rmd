@@ -4,8 +4,8 @@ author: "Jared Knowles and Carl Frederick"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Intro}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Prediction Intervals from merMod Objects}
   %\VignetteEncoding{UTF-8}
 ---
 
