@@ -13,9 +13,10 @@ Depends:
     abind
 Suggests:
     testthat,
-    knitr
+    knitr,
+    rmarkdown
 Imports:
     mvtnorm
 License: MIT
 LazyData: true
-VignetteBuilder: knitr
+VignetteBuilder: knitr::rmarkdown
