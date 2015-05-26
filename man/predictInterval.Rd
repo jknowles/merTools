@@ -20,6 +20,9 @@ predictInterval(model, newdata, level = 0.95, nsim = 1000,
 \item{stat}{take the median or mean of simulated intervals}
 
 \item{predict.type}{type of prediction to develop}
+
+\item{include.resid.var}{logical, include or exclude the residual varaince for
+linear models}
 }
 \value{
 'newdata' with three columns appended, stat and the lower

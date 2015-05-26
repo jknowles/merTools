@@ -6,7 +6,8 @@
 #' @param nsim number of simulation samples to construct
 #' @param stat take the median or mean of simulated intervals
 #' @param predict.type type of prediction to develop
-#'
+#' @param include.resid.var logical, include or exclude the residual varaince for
+#' linear models
 #' @return 'newdata' with three columns appended, stat and the lower
 #'         and upper prediction interval boundaries
 #' @export

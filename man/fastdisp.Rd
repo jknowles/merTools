@@ -8,6 +8,9 @@ fastdisp(object, ...)
 }
 \arguments{
 \item{object}{a merMod object from the lme4 package}
+
+\item{...}{additional arguments to pass to display function from arm
+including number of digits}
 }
 \value{
 A printed summary of a merMod object
