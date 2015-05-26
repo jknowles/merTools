@@ -19,4 +19,4 @@ Imports:
     mvtnorm
 License: MIT
 LazyData: true
-VignetteBuilder: knitr::rmarkdown
+VignetteBuilder: knitr
