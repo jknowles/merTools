@@ -1,10 +1,10 @@
 ---
-title: "Using `predictInterval()`"
+title: "Prediction Intervals from merMod Objects"
 author: "Jared Knowles and Carl Frederick"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using_predictInterval}
+  %\VignetteIndexEntry{Intro}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
