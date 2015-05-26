@@ -15,8 +15,7 @@ knitr::opts_chunk$set(
   comment="#>",
   collapse=TRUE
 )
-library(abind); library(mvtnorm); library(knitr);
-source("F:/RSandbox/merTools/R/merPredict.R")
+library(abind); library(mvtnorm); library(knitr); library(merTools)
 ```
 
 Fitting (generalized) linear mixed models, (G)LMM, to very large data sets is becomming increasingly easy, but understanding and

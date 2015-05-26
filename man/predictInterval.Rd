@@ -5,7 +5,8 @@
 \title{Predict from merMod objects with a prediction interval}
 \usage{
 predictInterval(model, newdata, level = 0.95, nsim = 1000,
-  stat = "median", predict.type = c("link", "response"))
+  stat = c("median", "mean"), predict.type = c("linear.predictor",
+  "probability"), include.resid.var = TRUE)
 }
 \arguments{
 \item{model}{a merMod object from lme4}
@@ -21,7 +22,8 @@ predictInterval(model, newdata, level = 0.95, nsim = 1000,
 \item{predict.type}{type of prediction to develop}
 }
 \value{
-The original data with three columns of predictors appended
+'newdata' with three columns appended, stat and the lower
+        and upper prediction interval boundaries
 }
 \description{
 Predict from merMod objects with a prediction interval

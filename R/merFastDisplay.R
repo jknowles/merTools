@@ -3,6 +3,8 @@
 #' @description A faster version of the display function from arm which does
 #' not refit the model to extract the deviance
 #' @param object a merMod object from the lme4 package
+#' @param ... additional arguments to pass to display function from arm
+#' including number of digits
 #' @import arm
 #' @return A printed summary of a merMod object
 #' @export
