@@ -13,9 +13,10 @@ vignette: >
 knitr::opts_chunk$set(
   cache=TRUE,
   comment="#>",
-  collapse=TRUE
+  collapse=TRUE, 
+  echo = TRUE
 )
-library(abind); library(mvtnorm); library(knitr); library(merTools)
+library(knitr); library(merTools)
 ```
 
 ## Introduction
@@ -119,8 +120,6 @@ random slope for the number of days.
 First, we will load the required packages and data and estimate the model:
 
 ```{r Prep, message=FALSE, warning=FALSE}
-library(lme4); library(arm); 
-##library(merTools);
 set.seed(271828)
 data(sleepstudy)
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
@@ -163,10 +162,10 @@ library(ggplot2);
 ggplot(aes(x=1:30, y=fit, ymin=lwr, ymax=upr), data=PI[1:30,]) +
   geom_point() + 
   geom_linerange() +
-  labs(x="Index", y="Prediction w/ 95% PI")
+  labs(x="Index", y="Prediction w/ 95% PI") + theme_bw()
 ```
 
-###Step 2: Comparison with `arm::sim()`
+### Step 2: Comparison with `arm::sim()`
 
 How does the output above compare to what we could get from `arm::sim()`?
 
@@ -188,13 +187,14 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   geom_point() + 
   geom_linerange() +
   labs(x="Index", y="Prediction w/ 95% PI") +
-  theme(legend.position="bottom")
+  theme_bw() +  theme(legend.position="bottom") +
+  scale_color_brewer(type = "qual", palette = 2)
           
               
 ```
 
 The prediction intervals from `arm:sim()` are much smaller and the random slope 
-for days vary more than they do for predictInterval. Both results are as 
+for days vary more than they do for `predictInterval`. Both results are as 
 expected, given the small number of subjects and observations per subject in 
 these data. Because `predictInterval()` is incorporating uncertainty in the CMFEs 
 (but not the variance parameters of the random coefficients themselves), the 
@@ -202,15 +202,20 @@ Days slopes are closer to the overall or pooled regression slope.
 
 ###Step 3: Comparison with `lme4::bootMer()`
 
-As quoted above, the developers of lme4 suggest that users interested in uncertainty estimates around their predictions use `lme4::bootmer()` to calculate them. The documentation for `lme4::bootMer()` goes on to describe three implemented flavors of bootstrapped estimates:
+As quoted above, the developers of lme4 suggest that users interested in 
+uncertainty estimates around their predictions use `lme4::bootmer()` to calculate 
+them. The documentation for `lme4::bootMer()` goes on to describe three 
+implemented flavors of bootstrapped estimates:
 
-  (1) parametrically resampling both the *"spherical"* random effects *u* and the i.i.d. errors $\epsilon$
-  (2) treating the random effects as fixed and parametrically resampling the i.i.d. errors 
-  (3) treating the random effects as fixed and semi-parametrically resampline the i.i.d. errors from the distribution of residuals.
+1. parametrically resampling both the *"spherical"* random effects *u* and the 
+i.i.d. errors $\epsilon$
+2. treating the random effects as fixed and parametrically resampling the i.i.d. errors 
+3. treating the random effects as fixed and semi-parametrically resampling the 
+i.i.d. errors from the distribution of residuals.
   
 We will compare the results from `predictInterval()` with each method, in turn.
 
-####Step 3a: `lme4::bootMer()` method 1
+#### Step 3a: `lme4::bootMer()` method 1
 
 ```{r bootMer.1, fig.width=7, fig.height=4, fig.align="center"}
 ##Functions for bootMer() and objects
@@ -242,11 +247,18 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   geom_point() + 
   geom_linerange() +
   labs(x="Index", y="Prediction w/ 95% PI") +
-  theme(legend.position="bottom")
+  theme_bw() +  theme(legend.position="bottom") +
+  scale_color_brewer(type = "qual", palette = 2)
   
 ```
 
-*some notes re: diffs here*
+The intervals produced by `predictInterval`, represented in green, cover the 
+point estimates produced by `bootMer` in every case for these 30 observations. 
+Additionally, in almost every case, the `predictInterval` encompasses the entire 
+interval presented by `bootMer`. Here, the estimates produced by `bootMer` are 
+re-estimating the group terms, but by refitting the model, they are also taking 
+into account the conditional variance of these terms, or `theta`, and provide 
+tighter prediction intervals than the `predictInterval` method.
 
 ####Step 3b: `lme4::bootMer()` method 2
 
@@ -265,13 +277,18 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   geom_point() + 
   geom_linerange() +
   labs(x="Index", y="Prediction w/ 95% PI") +
-  theme(legend.position="bottom")
+  theme_bw() +  theme(legend.position="bottom") +
+  scale_color_brewer(type = "qual", palette = 2)
+  
   
 ```
 
-*some notes re: diffs here*
+Here, the results for `predictInterval` in green again encompass the results from 
+`bootMer`, but are much wider. The `bootMer` estimates are ignoring the variance 
+in the group effects, and as such, are only incorporating the residual variance 
+and the variance in the fixed effects -- similar to the `arm::sim()` function.
 
-####Step 3c: `lme4::bootMer()` method 3
+#### Step 3c: `lme4::bootMer()` method 3
 
 ```{r bootMer.3, fig.width=7, fig.height=4, fig.align="center"}
 ##lme4::bootMer() method 3
@@ -288,15 +305,24 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   geom_point() + 
   geom_linerange() +
   labs(x="Index", y="Prediction w/ 95% PI") +
-  theme(legend.position="bottom")
+  theme_bw() +  theme(legend.position="bottom") +
+  scale_color_brewer(type = "qual", palette = 2)
+  
   
 ```
 
-*some notes re: diffs here*
+These results are virtually identical to those above. 
 
-###Computation time
+### Computation time
 
-Our initial motivation for writing this function was to develop a method for incorporating uncertainty in the CMFEs  for mixed models estimated on very large samples. Even for models with only modest degrees of complexity, using `lme4::bootMer()` quickly becomes time prohibitive because it involves re-estimating the model for each simulation. We have seen how each alternative compares to `predictInterval()` substantively, but how do they compare in terms of computational time? The table below lists the output of `system.time()` for all five methods for calculating prediction intervals for `merMod` objects.
+Our initial motivation for writing this function was to develop a method for 
+incorporating uncertainty in the CMFEs  for mixed models estimated on very large 
+samples. Even for models with only modest degrees of complexity, using 
+`lme4::bootMer()` quickly becomes time prohibitive because it involves 
+re-estimating the model for each simulation. We have seen how each alternative 
+compares to `predictInterval()` substantively, but how do they compare in terms 
+of computational time? The table below lists the output of `system.time()` for 
+all five methods for calculating prediction intervals for `merMod` objects.
 
 ```{r, echo=FALSE}
 times <- rbind(PI.time, PI.arm.time, PI.boot1.time, PI.boot2.time, PI.boot3.time)[,1:3]
@@ -304,7 +330,15 @@ rownames(times) <- c("predictInterval()", "arm::sim()", "lme4::bootMer()-Method 
 kable(times)
 ```
 
-For this simple example, we see that `arm::sim()` is the fastest--nearly five times faster than `predictInterval()`. However, `predictInterval()` is nearly six times faster than any of the bootstrapping options via `lme4::bootMer`.  This may not seem like a lot, but consider that the computational time for required for bootstrapping is roughly proportional to the number of bootstrapped simulations requested ... `predictInterval()` is not because it is just a series of draws from various multivariate normal distributions, so the time ratios in the table below represents the lowest bound of the computation time ratio of bootstrapping to `predictInterval()`.
+For this simple example, we see that `arm::sim()` is the fastest--nearly five 
+times faster than `predictInterval()`. However, `predictInterval()` is nearly 
+six times faster than any of the bootstrapping options via `lme4::bootMer`.  This 
+may not seem like a lot, but consider that the computational time for required 
+for bootstrapping is roughly proportional to the number of bootstrapped simulations 
+requested ... `predictInterval()` is not because it is just a series of draws from 
+various multivariate normal distributions, so the time ratios in the table below 
+represents the lowest bound of the computation time ratio of bootstrapping 
+to `predictInterval()`.
 
 ## Simulation
 
