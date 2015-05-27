@@ -1,0 +1,28 @@
+---
+title: "An Introduction to merTools"
+author: "Jared Knowles and Carl Frederick"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{An Introduction to merTools}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide'}
+knitr::opts_chunk$set(
+  cache=TRUE,
+  comment="#>",
+  collapse=TRUE
+)
+library(knitr); library(merTools)
+```
+
+## Introduction
+
+Working with generalized linear mixed models (GLMM) and linear mixed models (LMM) 
+has become increasingly easy with the advances in the `lme4` package recently. 
+As we have found ourselves using these models more and more within our work, we, 
+the authors, have developed a set of tools for simplifying and speeding up common 
+tasks for interacting with `merMod` objects from `lme4`. This package provides 
+those tools. 

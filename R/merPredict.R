@@ -17,7 +17,7 @@
 #' @importFrom abind abind
 predictInterval <- function(model, newdata, level = 0.95,
                             nsim=1000, stat=c("median","mean"),
-                            predict.type=c("linear.predictor", "probability"),
+                            predict.type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE){
   outs <- newdata
   predict.type <- match.arg(predict.type,
