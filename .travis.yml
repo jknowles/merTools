@@ -3,7 +3,11 @@ language: r
 sudo: required
 
 env:
-  - WARNINGS_ARE_ERRORS=1
+  global:
+    - WARNINGS_ARE_ERRORS=1
+  matrix:
+    - NOT_CRAN="true"
+    - NOT_CRAN="false"
 
 r_github_packages:
   - jimhester/covr

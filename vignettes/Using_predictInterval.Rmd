@@ -207,11 +207,12 @@ uncertainty estimates around their predictions use `lme4::bootmer()` to calculat
 them. The documentation for `lme4::bootMer()` goes on to describe three 
 implemented flavors of bootstrapped estimates:
 
-1. parametrically resampling both the *"spherical"* random effects *u* and the 
-i.i.d. errors $\epsilon$
-2. treating the random effects as fixed and parametrically resampling the i.i.d. errors 
-3. treating the random effects as fixed and semi-parametrically resampling the 
-i.i.d. errors from the distribution of residuals.
+1. parametrically resampling both the *"spherical"* random effects 
+*u* and the i.i.d. errors $\epsilon$
+2. treating the random effects as fixed and parametrically resampling the
+i.i.d. errors 
+3. treating the random effects as fixed and semi-parametrically resampling
+the i.i.d. errors from the distribution of residuals.
   
 We will compare the results from `predictInterval()` with each method, in turn.
 

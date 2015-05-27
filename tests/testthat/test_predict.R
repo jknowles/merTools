@@ -1,94 +1,87 @@
 # # -----------------------------------------------------
 # #-------------------------------------------------------
-# set.seed(51315)
-# library(lme4)
-# data(grouseticks)
-# grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
-# grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
-#
-#
-# # Build out models
-# form <- TICKS ~ YEAR + HEIGHT +(1|BROOD) + (1|LOCATION) + (1|INDEX)
-# glmer3Lev  <- glmer(form, family="poisson",data=grouseticks,
-#                     control = glmerControl(optimizer="Nelder_Mead",
-#                                            optCtrl=list(maxfun = 1e5)))
-#
-# # Sleepstudy
-# lmerSlope1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-#
-# # Wackier example
-# data(Orthodont,package="nlme")
-# Orthodont$nsex <- as.numeric(Orthodont$Sex=="Male")
-# Orthodont$nsexage <- with(Orthodont, nsex*age)
-# lmerSlope2 <- lmer(distance ~ age + (0 + age + nsex|Subject), data=Orthodont)
-#
-# uj <- REsim(lmerSlope1, nsims = 1000)
-# betas <- FEsim(lmerSlope1, nsims = 1000)
-# newdata <- sleepstudy[1:100,]
-#
-# library(mvtnorm)
+set.seed(101)
+library(merTools)
 
-#
-# predictInterval <- function(model, newdata, level = 0.95){
-#   require(mvtnorm)
-#   reTerms <- names(ngrps(model))
-#   if(length(reTerms) > 1){
-#     stop("Multiple grouping terms not yet implemented.")
-#   }
-#   group <- reTerms[1]
-#   outs <- data.frame(fit = rep(NA, nrow(newdata)),
-#                      lwr = rep(NA, nrow(newdata)),
-#                      upr = rep(NA, nrow(newdata)))
-#
-#   reMatrixExtract <- function(model, group, case){
-#     slotNum <- ranef(model)[[group]]
-#     slotNum$seq <- 1:nrow(slotNum)
-#     slotNum <- slotNum[case, ]$seq
-#     mat <- as.matrix(attr(ranef(model, condVar=TRUE)[[group]],
-#                           which = "postVar")[, , slotNum])
-#     row.names(mat) <- names(ranef(model)[[group]])
-#     colnames(mat) <- row.names(mat)
-#     return(mat)
-#   }
-#
-#   reMeansExtract <- function(model, group, case){
-#     rerow <- ranef(model)[[group]][case, ]
-#     out <- as.numeric(rerow)
-#     names(out) <- names(rerow)
-#     return(out)
-#   }
-#   combineREFE <- function(reSim, betaSim){
-#     comboCols <- union(colnames(reSim), colnames(betaSim))
-#     REonly <- setdiff(colnames(reSim), colnames(betaSim))
-#     FEonly <- setdiff(colnames(betaSim), colnames(reSim))
-#     totCoef <- reSim[, comboCols] + betaSim[, comboCols]
-#     totCoef <- cbind(totCoef, reSim[, REonly])
-#     totCoef <- cbind(totCoef, betaSim[, FEonly])
-#     return(totCoef)
-#   }
-#
-#   for(i in 1:nrow(newdata)){
-#     caseID <- newdata[i, group]
-#     betaSim <- rmvnorm(1000, mean = fixef(model),
-#                        sigma = as.matrix(vcov(model)))
-#     reSim <- rmvnorm(1000, mean = reMeansExtract(model, group = group, case=caseID),
-#                      sigma = reMatrixExtract(model, group = group, case = caseID))
-#     totCoef <- combineREFE(reSim, betaSim)
-#     yhat <- newdata[i, "Days"] * totCoef[, "Days"] + totCoef[, "(Intercept)"]
-#     outs[i, "fit"] <- mean(yhat)
-#     outs[i, "upr"] <- as.numeric(quantile(yhat, level))
-#     outs[i, "lwr"] <- as.numeric(quantile(yhat, 1 - level))
-#   }
-#   return(outs)
-# }
-#
-# predExamp <- cbind(predictInterval(lmerSlope1, sleepstudy[1:10, ], level = 0.95),
-#                    predict(lmerSlope1, sleepstudy[1:10,]),
-#                    predict(lmerSlope1, sleepstudy[1:10,], re.form = NA))
+context("Prediction intervals cover for simulated problems")
+
+test_that("Prediction intervals work for simple linear example", {
+  skip_on_cran()
+  d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
+                   obs=1:100)
+  d$y <- simulate(~fac1+(1|grp),family = gaussian,
+                  newdata=d,
+                  newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
+                                 sigma = c(.23)))[[1]]
+  subD <- d[sample(row.names(d), 1000),]
+
+  g1 <- lmer(y~fac1+(1|grp), data=subD)
+  d$fitted <- predict(g1, d)
+  outs <- predictInterval(g1, newdata = d, level = 0.9, nsim = 500,
+                          stat = 'mean', include.resid.var = TRUE)
+  outs <- cbind(d, outs); outs$coverage <- FALSE
+  outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
+  expect_true(all(outs$coverage))
+  expect_less_than(abs(mean(outs$fit - outs$fitted)), .0001)
+  expect_less_than(abs(mean(outs$fit - outs$y)), .01)
+  rm(outs)
+})
 
 
+test_that("Prediction intervals work for simple GLM example", {
+  skip_on_cran()
+  d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
+                   obs=1:50)
+  d$y <- simulate(~fac1+(1|grp),family = binomial,
+                  newdata=d,
+                  newparams=list(beta=c(2,-1,3,-2,1.2), theta=c(.33)))[[1]]
+  subD <- d[sample(row.names(d), 1200),]
 
+  g1 <- glmer(y~fac1+(1|grp), data=subD, family = 'binomial')
+  d$fitted <- predict(g1, d)
+  outs <- predictInterval(g1, newdata = d, level = 0.95, nsim = 500,
+                          stat = 'mean', include.resid.var = FALSE,
+                          predict.type = 'linear.prediction')
+  outs <- cbind(d, outs); outs$coverage <- FALSE
+  outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
+  expect_true(all(outs$coverage))
+  expect_less_than(abs(mean(outs$fit - outs$fitted)), .1)
+  expect_less_than(abs(mean(outs$fit - outs$y)), 2)
+  rm(outs)
+})
 
+test_that("Prediction interval respects user input", {
+  skip_on_cran()
+  d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
+                   obs=1:25)
+  d$y <- simulate(~fac1+(1|grp),family = gaussian,
+                  newdata=d,
+                  newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
+                                 sigma = c(.23)))[[1]]
+  subD <- d[sample(row.names(d), 1000),]
 
+  g1 <- lmer(y~fac1+(1|grp), data=subD)
+  d$fitted <- predict(g1, d)
+  outs1 <- predictInterval(g1, newdata = d, level = 0.8, nsim = 500,
+                          stat = 'mean', include.resid.var = TRUE)
+  outs2 <- predictInterval(g1, newdata = d, level = 0.95, nsim = 500,
+                           stat = 'mean', include.resid.var = TRUE)
+  outs1a <- predictInterval(g1, newdata = d, level = 0.8, nsim = 1500,
+                           stat = 'mean', include.resid.var = TRUE)
+  outs2a <- predictInterval(g1, newdata = d, level = 0.95, nsim = 1500,
+                            stat = 'mean', include.resid.var = TRUE)
+  outs3 <- predictInterval(g1, newdata = d, level = 0.8, nsim = 500,
+                           stat = 'mean', include.resid.var = FALSE)
+  outs3b <- predictInterval(g1, newdata = d, level = 0.8, nsim = 500,
+                           stat = 'median', include.resid.var = FALSE)
+  expect_more_than(median(outs2$upr - outs1$upr), 0.1)
+  expect_more_than(median(outs2a$upr - outs1a$upr), 0.1)
+  expect_less_than(median(outs3$upr - outs1$upr), -.2)
+  expect_less_than(median(outs3b$upr - outs1a$upr), -.2)
+  expect_less_than(mean(outs1$upr - outs1$lwr), mean(outs2$upr - outs2$lwr))
+  expect_less_than(mean(outs1$upr - outs1$lwr), mean(outs1a$upr - outs1a$lwr))
+  expect_less_than(mean(outs2$upr - outs2$lwr), mean(outs2a$upr - outs2a$lwr))
+  expect_false(median(outs3$fit) == median(outs3b$fit))
+})
 
 

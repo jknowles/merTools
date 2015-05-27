@@ -116,5 +116,5 @@ predictInterval <- function(model, newdata, level = 0.95,
     outs$lwr <- model@resp$family$linkinv(outs$lwr)
   }
   #Close it out
-  return(outs)
+  return(outs[, c("fit", "lwr", "upr")])
 }
