@@ -30,6 +30,7 @@ test_that("Prediction intervals work for simple linear example", {
 
 test_that("Prediction intervals work for simple GLM example", {
   skip_on_cran()
+  set.seed(101)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:50)
   d$y <- simulate(~fac1+(1|grp),family = binomial,
@@ -52,6 +53,7 @@ test_that("Prediction intervals work for simple GLM example", {
 
 test_that("Prediction interval respects user input", {
   skip_on_cran()
+  set.seed(101)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:25)
   d$y <- simulate(~fac1+(1|grp),family = gaussian,
