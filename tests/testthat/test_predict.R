@@ -87,3 +87,20 @@ test_that("Prediction interval respects user input", {
 })
 
 
+test_that("Predict handles unused and subset of factor levels", {
+  skip_on_cran()
+  set.seed(101)
+
+  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
+  d1 <- InstEval[1:100, ]
+  outs1 <- predictInterval(g1, newdata = d1, level = 0.8, nsim = 500,
+                           stat = 'mean', include.resid.var = TRUE)
+  d2 <- rbind(d1, InstEval[670:900,])
+  outs1a <- predictInterval(g1, newdata = d2, level = 0.8, nsim = 500,
+                            stat = 'mean', include.resid.var=TRUE)[1:100,]
+  expect_equal(outs1, outs1a, tolerance = 0.01)
+  expect_equal(nrow(outs1), nrow(outs1a))
+})
+
+
+

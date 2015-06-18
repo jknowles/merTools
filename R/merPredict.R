@@ -47,7 +47,7 @@ predictInterval <- function(model, newdata, level = 0.95,
     stop("    Prediction for this NLMMs or GLMMs that are not mixed logistic regressions is not yet implemented.")
   }
 
-  ##This chunk of code draws from empirical bays distributions for each level of the random effects
+  ##This chunk of code draws from empirical bayes distributions for each level of the random effects
   ##and merges it back onto newdata.
   ##
   ##Right now I am not multiplying the BLUP variance covariance matrices by our
@@ -55,30 +55,32 @@ predictInterval <- function(model, newdata, level = 0.95,
   ##this is where one would multiply them by draws of theta from the model.
   reTerms <- names(ngrps(model))
   n.reTerms = length(reTerms)
-  reSim <- NULL
+  reSimA <- array(data = NA, dim = c(nrow(newdata), nsim, n.reTerms))
   for (j in seq_along(reTerms)) {
     group=reTerms[j]
     reMeans <- array(ranef(model)[[group]])
     reMatrix <- attr(ranef(model, condVar=TRUE)[[group]], which = "postVar")
-    reSim[[group]] <- data.frame(rownames(reMeans), matrix(NA, nrow=nrow(reMeans),
-                                                           ncol=nsim))
-    colnames(reSim[[group]]) <- c(group, paste("sim", 1:nsim, sep=""))
+    tmp <- data.frame(rownames(reMeans), matrix(NA, nrow=nrow(reMeans),
+                                                ncol=nsim))
+    colnames(tmp) <- c(group, paste("sim", 1:nsim, sep=""))
     for (k in 1:nrow(reMeans)) {
-      lvl = rownames(reMeans)[k]
-      reSim[[group]][k,2:ncol(reSim[[group]])] <- mvtnorm::rmvnorm(nsim,
-                                                          mean=as.matrix(reMeans[k,]),
-                                                          sigma=as.matrix(reMatrix[,,k]))
+        meanTmp <- as.matrix(reMeans[k, ])
+        matrixTmp <- as.matrix(reMatrix[,,k])
+        tmp[k, 2:ncol(tmp)] <- mvtnorm::rmvnorm(nsim,
+                                             mean=meanTmp,
+                                             sigma=matrixTmp)
     }
-    cnames <- colnames(reSim[[group]])
+    cnames <- colnames(tmp)
     #This is where to check for groups that only exist in newdata
-    new.levels <- setdiff(newdata[,group], reSim[[group]][,1])
+    new.levels <- setdiff(newdata[,group], tmp[,1])
     if (length(new.levels)>0) {
       msg <- paste("     The following levels of ", group, " from newdata -- ", paste0(new.levels, collapse=", "),
                    " -- are not in the model data. \n     Currently, predictions for these values are based only on the fixed coefficients \n     and the observation-level error.", sep="")
       warning(msg, call.=FALSE)
     }
-    reSim[[group]] <- merge(newdata, reSim[[group]], by=group, all.x=TRUE)
-    reSim[[group]] <- as.matrix(reSim[[group]][,setdiff(cnames, group)])
+    tmp <- merge(newdata, tmp, by=group, all.x=TRUE)
+    tmp <- as.matrix(tmp[,setdiff(cnames, group)])
+    reSimA[, , j] <- tmp
   }
 
   ##This chunk of code produces matrix of linear predictors created from the fixed coefs
@@ -93,11 +95,22 @@ predictInterval <- function(model, newdata, level = 0.95,
   }
 
   betaSim <- abind(lapply(1:nsim, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
-  newdata.modelMatrix <- lFormula(formula = model@call, data=newdata)$X
+  # If we do it this way, the function will fail on new data without all levels
+  # of X
+  # newdata.modelMatrix <- lFormula(formula = model@call, data=newdata)$X
+  # To be sensitive to this, we can take a performance hit and do:
+  if(identical(newdata, model@frame)){
+    newdata.modelMatrix <- lFormula(formula = model@call, data = model@frame)$X
+  } else{
+    tmp <- plyr::rbind.fill(newdata, trimModelFrame(model@frame))
+    newdata.modelMatrix <- lFormula(formula = model@call, data = tmp)$X[1:nrow(newdata), ]
+    rm(tmp)
+  }
   fixed.xb <- newdata.modelMatrix %*% t(betaSim)
 
   ##Calculate yhat as sum of the components (fixed plus all groupling factors)
-  yhat <- fixed.xb + apply(simplify2array(reSim), c(1,2), function(x) sum(x, na.rm=TRUE))
+  # apply(reSim, c(1,2), function(x), sum(x,na.rm=TRUE))
+  yhat <- fixed.xb + apply(reSimA, c(1,2), function(x) sum(x, na.rm=TRUE))
   if (include.resid.var==TRUE)
     yhat <- abind::abind(lapply(1:nsim, function(x) rnorm(nrow(newdata), yhat[,x], sigmahat[x])), along = 2)
 

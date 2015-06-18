@@ -26,3 +26,8 @@ As we have found ourselves using these models more and more within our work, we,
 the authors, have developed a set of tools for simplifying and speeding up common 
 tasks for interacting with `merMod` objects from `lme4`. This package provides 
 those tools. 
+
+## Illustrating Model Effects
+
+As the complexity of the model fit grows, it becomes harder and harder to 
+interpret the substantive effect of parameters in the model. 
