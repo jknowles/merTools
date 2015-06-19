@@ -10,12 +10,12 @@ Depends:
     arm,
     lme4,
     plyr,
-    abind
+    abind,
+    ggplot2
 Suggests:
     testthat,
     knitr,
-    rmarkdown,
-    ggplot2
+    rmarkdown
 Imports:
     mvtnorm
 License: MIT + file LICENSE

@@ -89,6 +89,7 @@ test_that("Prediction interval respects user input", {
 
 test_that("Predict handles unused and subset of factor levels", {
   skip_on_cran()
+  skip_on_travis()
   set.seed(101)
   g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
   d1 <- InstEval[1:100, ]

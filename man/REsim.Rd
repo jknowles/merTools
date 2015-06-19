@@ -4,7 +4,7 @@
 \alias{REsim}
 \title{Simulate random effects from merMod}
 \usage{
-REsim(mod, nsims, OR = FALSE)
+REsim(mod, nsims = 100, OR = FALSE)
 }
 \arguments{
 \item{mod}{a merMod object from the lme4 package}

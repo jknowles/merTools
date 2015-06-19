@@ -4,7 +4,7 @@
 \alias{FEsim}
 \title{Simulate fixed effects from merMod}
 \usage{
-FEsim(mod, nsims)
+FEsim(mod, nsims = 100)
 }
 \arguments{
 \item{mod}{a merMod object from the lme4 package}

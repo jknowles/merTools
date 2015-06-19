@@ -47,7 +47,7 @@ REextract <- function(mod){
 #' @details Use the Gelman sim technique to build empirical Bayes estimates.
 #'  Uses the sim function in the arm package
 #' @export
-REsim <- function(mod, nsims, OR = FALSE){
+REsim <- function(mod, nsims = 100, OR = FALSE){
   stopifnot(class(mod) == "lmerMod" | class(mod) == "glmerMod")
   mysim <- arm::sim(mod, n.sims = nsims)
   reDims <- length(mysim@ranef)
@@ -81,7 +81,7 @@ REsim <- function(mod, nsims, OR = FALSE){
 #' @details Use the Gelman sim technique to build fixed effect estimates and
 #' confidence intervals. Uses the sim function in the arm package
 #' @export
-FEsim <- function(mod, nsims){
+FEsim <- function(mod, nsims = 100){
   stopifnot(class(mod) == "lmerMod" | class(mod) == "glmerMod")
   mysim <- arm::sim(mod, n.sims = nsims)
   means <- apply(mysim@fixef, MARGIN = 2, mean)

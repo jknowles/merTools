@@ -31,3 +31,66 @@ those tools.
 
 As the complexity of the model fit grows, it becomes harder and harder to 
 interpret the substantive effect of parameters in the model. 
+
+Let's start with a medium-sized example model using the `InstEval` data provided 
+by the `lme4` package. These data represent university lecture evaluations at 
+ETH Zurich made by students. In this data, `s` is an individual student, 
+`d` is an individual lecturer, `studage` is the semester the student 
+is enrolled, `lectage` is how many semesters back the lecture with the 
+rating took place, `dept` is the department of the lecture, and `y` is an integer 
+1:5 representing the ratings of the lcture from "poor" to "very good":
+
+```{r}
+library(lme4)
+head(InstEval)
+str(InstEval)
+```
+
+Starting with a simple model: 
+
+```{r}
+m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
+```
+
+After fitting the model we can make use of the first function provided by
+`merTools`, `fastdisp` which modifies the function `arm:::display` to more 
+quickly display a summary of the model without calculating the model sigma:
+
+```{r}
+library(merTools)
+fastdisp(m1)
+```
+
+We see some interesting effects. First, our decision to include student and 
+lecturer effects seems justified as there is substantial variance within these 
+groups. Second, there do appear to be some effects by age and for lectures 
+given as a service by an outside lecturer. Let's look at these in more detail. 
+One way to do this would be to plot the coefficients together in a line to 
+see which deviate from 0 and in what direction. To get a confidence interval 
+for our fixed effect coefficients we have a number of options that represent a 
+tradeoff between coverage and computation time -- see `confint.merMod` for 
+details. 
+
+An alternative is to simulate values of the fixed effects from the posterior 
+using the function `arm::sim`. Our next tool, `FEsim`, is a convenience wrapper 
+to do this and provide an informative data frame of the results. 
+
+```{r}
+feEx <- FEsim(m1, 1000)
+cbind(feEx[,1] , round(feEx[, 2:4], 3))
+```
+
+We can present these results graphically, using `ggplot2`: 
+
+```{r}
+library(ggplot2)
+ggplot(feEx[feEx$var!= "(Intercept)", ]) + 
+  aes(x = var, ymin = medEff - 1.96 * sdEff, ymax = medEff + 1.96 * sdEff, 
+                   y = medEff) + geom_pointrange() + 
+  geom_hline(yintercept = 0, size = I(1.1), color = I("red")) + 
+  coord_flip() + 
+  theme_bw() + labs(title = "Coefficient Plot of InstEval Model", 
+                    x = "Median Effect Estimate", y = "Evaluation Rating")
+```
+
+
