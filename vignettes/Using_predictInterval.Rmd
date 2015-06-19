@@ -11,7 +11,7 @@ vignette: >
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide'}
 knitr::opts_chunk$set(
-  cache=TRUE,
+  cache=FALSE,
   comment="#>",
   collapse=TRUE, 
   echo = TRUE

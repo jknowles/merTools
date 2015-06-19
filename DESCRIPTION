@@ -18,6 +18,6 @@ Suggests:
     ggplot2
 Imports:
     mvtnorm
-License: MIT + LICENSE
+License: MIT + file LICENSE
 LazyData: true
 VignetteBuilder: knitr

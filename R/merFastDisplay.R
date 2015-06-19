@@ -23,7 +23,7 @@ fastdisp <- function (object, ...)
       if (!useScale) {
         coefs <- coefs[, 1:2, drop = FALSE]
         out$z.value <- coefs[, 1]/coefs[, 2]
-        out$p.value <- 2 * pnorm(abs(out$z.value), lower = FALSE)
+        out$p.value <- 2 * pnorm(abs(out$z.value), lower.tail = FALSE)
         coefs <- cbind(coefs, `z value` = out$z.value,
                        `Pr(>|z|)` = out$p.value)
       }
@@ -62,8 +62,7 @@ fastdisp <- function (object, ...)
     # cat(round(out$DIC, 1))
     # cat("\ndeviance =", fround(out$deviance, 1), "\n")
     if (useScale < 0) {
-      out$sigma.hat <- .Call("mer_sigma", object, FALSE,
-                             PACKAGE = "lme4")
+      out$sigma.hat <- sigma(object)
       cat("overdispersion parameter =", fround(out$sigma.hat,
                                                1), "\n")
     }
