@@ -100,10 +100,12 @@ predictInterval <- function(model, newdata, level = 0.95,
   # newdata.modelMatrix <- lFormula(formula = model@call, data=newdata)$X
   # To be sensitive to this, we can take a performance hit and do:
   if(identical(newdata, model@frame)){
-    newdata.modelMatrix <- lFormula(formula = model@call, data = model@frame)$X
+    newdata.modelMatrix <- model.matrix(nobars(model@call$formula),
+                                        data = model@frame)
   } else{
     tmp <- plyr::rbind.fill(newdata, trimModelFrame(model@frame))
-    newdata.modelMatrix <- lFormula(formula = model@call, data = tmp)$X[1:nrow(newdata), ]
+    newdata.modelMatrix <- model.matrix(nobars(model@call$formula),
+                                        data = tmp)[1:nrow(newdata), ]
     rm(tmp)
   }
   fixed.xb <- newdata.modelMatrix %*% t(betaSim)

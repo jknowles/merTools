@@ -1,6 +1,7 @@
 #Helpers
 
 # Function to take only rows that form distinct levels of factors
+# Need to figure out how to build a model matrix better.
 trimModelFrame <- function(data){
   # Identify numerics
   nums <- sapply(data, is.numeric)
