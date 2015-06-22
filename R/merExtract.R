@@ -87,8 +87,8 @@ FEsim <- function(mod, nsims = 100){
   means <- apply(mysim@fixef, MARGIN = 2, mean)
   medians <- apply(mysim@fixef, MARGIN = 2, median)
   sds <- apply(mysim@fixef, MARGIN =2, sd)
-  dat <- data.frame(var = names(means), meanEff = means, medEff = medians,
-                    sdEff = sds, row.names=NULL)
+  dat <- data.frame(variable = names(means), mean = means, median = medians,
+                    sd = sds, row.names=NULL)
   return(dat)
 }
 
