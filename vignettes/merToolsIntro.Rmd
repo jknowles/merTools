@@ -85,8 +85,8 @@ We can present these results graphically, using `ggplot2`:
 ```{r}
 library(ggplot2)
 ggplot(feEx[feEx$var!= "(Intercept)", ]) + 
-  aes(x = var, ymin = medEff - 1.96 * sdEff, ymax = medEff + 1.96 * sdEff, 
-                   y = medEff) + geom_pointrange() + 
+  aes(x = var, ymin = median - 1.96 * sd, ymax = median + 1.96 * sd, 
+                   y = median) + geom_pointrange() + 
   geom_hline(yintercept = 0, size = I(1.1), color = I("red")) + 
   coord_flip() + 
   theme_bw() + labs(title = "Coefficient Plot of InstEval Model", 
