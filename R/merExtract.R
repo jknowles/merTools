@@ -52,17 +52,23 @@ REsim <- function(mod, nsims = 100, OR = FALSE){
   mysim <- arm::sim(mod, n.sims = nsims)
   reDims <- length(mysim@ranef)
   tmp.out <- vector("list", reDims)
+  names(tmp.out) <- names(mysim@ranef)
   for(i in c(1:reDims)){
     tmp.out[[i]] <- plyr::adply(mysim@ranef[[i]], c(2, 3), plyr::each(c(mean, median, sd)))
-    tmp.out[[i]]$level <- paste0("Level ", i)
+    tmp.out[[i]]$level <- names(tmp.out)[i]
     tmp.out[[i]]$level <- as.character(tmp.out[[i]]$level)
     tmp.out[[i]]$X1 <- as.character(tmp.out[[i]]$X1)
     tmp.out[[i]]$X2 <- as.character(tmp.out[[i]]$X2)
   }
   dat <- do.call(rbind, tmp.out)
-  if(OR == TRUE){
-    dat$median <- exp(dat$median)
-    dat$mean <- exp(dat$mean)
+  dat$group <- dat$X1; dat$X1 <- NULL
+  dat$effect <- dat$X2; dat$X2 <- NULL
+  names(dat)[1:3] <- c("mean_eff", "median_eff", "sd_eff")
+  dat <- dat[, c("group", "effect", "level", "mean_eff", "median_eff",
+                 "sd_eff")]
+    if(OR == TRUE){
+    dat$median_eff <- exp(dat$median_eff)
+    dat$mean_eff <- exp(dat$mean_eff)
     dat$sd <- NA # don't know how to do SE of odds ratios currently
     return(dat)
   } else{
@@ -87,8 +93,9 @@ FEsim <- function(mod, nsims = 100){
   means <- apply(mysim@fixef, MARGIN = 2, mean)
   medians <- apply(mysim@fixef, MARGIN = 2, median)
   sds <- apply(mysim@fixef, MARGIN =2, sd)
-  dat <- data.frame(variable = names(means), mean = means, median = medians,
-                    sd = sds, row.names=NULL)
+  dat <- data.frame(variable = names(means), mean_eff = means,
+                    median_eff = medians,
+                    sd_eff = sds, row.names=NULL)
   return(dat)
 }
 

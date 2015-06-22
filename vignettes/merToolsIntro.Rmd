@@ -84,13 +84,96 @@ We can present these results graphically, using `ggplot2`:
 
 ```{r}
 library(ggplot2)
-ggplot(feEx[feEx$var!= "(Intercept)", ]) + 
-  aes(x = var, ymin = median - 1.96 * sd, ymax = median + 1.96 * sd, 
-                   y = median) + geom_pointrange() + 
+ggplot(feEx[feEx$variable!= "(Intercept)", ]) + 
+  aes(x = variable, ymin = median_eff - 1.96 * sd_eff, 
+      ymax = median_eff + 1.96 * sd_eff, 
+                   y = median_eff) + geom_pointrange() + 
   geom_hline(yintercept = 0, size = I(1.1), color = I("red")) + 
   coord_flip() + 
   theme_bw() + labs(title = "Coefficient Plot of InstEval Model", 
                     x = "Median Effect Estimate", y = "Evaluation Rating")
 ```
+
+However, an easier option is:
+
+```{r}
+plotFEsim(feEx) + 
+  theme_bw() + labs(title = "Coefficient Plot of InstEval Model", 
+                    x = "Median Effect Estimate", y = "Evaluation Rating")
+
+```
+
+
+Next, we might be interested in exploring the random effects. Again, we create a 
+dataframe of the values of the simulation of these effects for the individual 
+levels. 
+
+```{r}
+reEx <- REsim(m1)
+head(reEx)
+```
+
+The result is a dataframe with estimates of the values of each of the random 
+effects provided by the `arm::sim()` function. Group represents the identfiable 
+level for the variable for one random effect, effect represents whether the 
+simulated values are for an intercept or which slope, and level identifies 
+which of the `(1|x)` terms the values represent. To make unique identifiers 
+for each effect, we need to use both the `group` and the `level` term in case 
+these two variables use overlapping label names for their groups. In this case:
+
+```{r}
+table(reEx$effect)
+table(reEx$level)
+```
+
+Most important is producing caterpillar or dotplots of these terms to explore 
+their variation. This is easily accomplished:
+
+```{r}
+lattice::dotplot(ranef(m1, condVar=TRUE))
+```
+
+However, these graphics do not provide much control over the results. Instead, 
+we can use the `plotREsim` function in `merTools` to gain more control over 
+plotting of the random effect simulations. 
+
+```{r}
+p1 <- plotREsim(reEx)
+p1
+```
+
+The result is a ggplot2 object which can be modified however the user sees 
+fit. Here, we've established that most student and professor effects are 
+indistinguishable from zero, but there do exist extreme outliers with both 
+high and low averages that need to be accounted for. 
+
+A logical next line of questioning is to see how much of the variation in a 
+rating can be caused by changing the student rater and how much is due to the 
+fixed effects we identified above. This is a very difficult problem to solve, 
+but using simulation we can examine the model behavior under a range of scenarios 
+to understand how the model is reflecting changes in the data. To do this, 
+we use another set of functions available in `merTools`. 
+
+The simplest option is to pick an observation at random and then modify its 
+values deliberately to see how the prediction changes in response. `merTools` 
+makes this task very simple:
+
+```{r}
+example1 <- randomObs(m1)
+head(example1)
+```
+
+The `randomObs` function takes a random observation from the data in the model 
+and extracts it as a dataframe. We can now do a number of operations to this 
+observation:
+
+```{r}
+# predict it
+predict(m1, newdata = example1)
+# change values
+example1$service <- "1"
+predict(m1, newdata = example1)
+```
+
 
 

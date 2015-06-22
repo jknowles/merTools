@@ -12,5 +12,8 @@ test_that("Prediction intervals work for simple linear example", {
   g1 <- lmer(y~fac1+(1|grp), data=subD)
   FE1 <- FEsim(g1)
   p1 <- plotFEsim(FE1)
-  expect_is(FE1, "gg")
+  expect_is(p1, "gg")
+  p1 <- plotREsim(REsim(g1))
+  expect_is(p1, "gg")
+
 })
