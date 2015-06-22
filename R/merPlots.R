@@ -13,28 +13,29 @@
 #' deviation by in the case of doing an effect size calculation
 #' @param oddsRatio logical, should the parameters be converted to odds ratios
 #' before plotting
+#' @param labs logical, include the labels of the groups on the x-axis
 #' @return a ggplot2 plot of the coefficient effects
 #' @export
 #' @import ggplot2
-plotREsim <- function(dat, scale = 1.96, var = "median_eff",
+plotREsim <- function(data, scale = 1.96, var = "median_eff",
                       sd = "sd_eff",
                       sigmaScale = NULL,
-                      oddsRatio = FALSE, labs = NULL){
+                      oddsRatio = FALSE, labs = FALSE){
   if(!missing(sigmaScale)){
-    dat[, sd] <- dat[, sd] / sigmaScale
-    dat[, var] <- dat[, var] / sigmaScale
+    data[, sd] <- data[, sd] / sigmaScale
+    data[, var] <- data[, var] / sigmaScale
   }
-  dat[, sd] <- dat[, sd] * scale
-  dat[, "ymax"] <- dat[, var] + dat[, sd]
-  dat[, "ymin"] <- dat[, var] - dat[, sd]
+  data[, sd] <- data[, sd] * scale
+  data[, "ymax"] <- data[, var] + data[, sd]
+  data[, "ymin"] <- data[, var] - data[, sd]
   hlineInt <- 0
   if(oddsRatio == TRUE){
-    dat[, "ymax"] <- exp(dat[, "ymax"])
-    dat[, var] <- exp(dat[, var])
-    dat[, "ymin"] <- exp(dat[, "ymin"])
+    data[, "ymax"] <- exp(data[, "ymax"])
+    data[, var] <- exp(data[, var])
+    data[, "ymin"] <- exp(data[, "ymin"])
     hlineInt <- 1
   }
-  if(!missing(labs)){
+  if(labs == TRUE){
     xlabs.tmp <- element_text(face = "bold")
     xvar <- labs
   } else {
@@ -42,8 +43,8 @@ plotREsim <- function(dat, scale = 1.96, var = "median_eff",
     xvar <- "id"
   }
 
-  dat[order(dat[, var]), "id"] <- c(1:nrow(dat))
-  ggplot(dat, aes_string(x = xvar, y = var, ymax = "ymax",
+  data[order(data[, var]), "id"] <- c(1:nrow(data))
+  ggplot(data, aes_string(x = xvar, y = var, ymax = "ymax",
                          ymin = "ymin")) +
     geom_pointrange(alpha = I(0.25)) + theme_bw() + geom_point() +
     labs(x = "Group", y = "Effect Range", title = "Effect Ranges") +

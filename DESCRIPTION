@@ -17,7 +17,7 @@ Suggests:
     knitr,
     rmarkdown
 Imports:
-    mvtnorm
+    mvtnorm, lattice
 License: MIT + file LICENSE
 LazyData: true
 VignetteBuilder: knitr

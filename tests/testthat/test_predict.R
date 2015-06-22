@@ -42,12 +42,28 @@ test_that("Prediction intervals work for simple GLM example", {
   d$fitted <- predict(g1, d)
   outs <- predictInterval(g1, newdata = d, level = 0.95, nsim = 500,
                           stat = 'mean', include.resid.var = FALSE,
-                          predict.type = 'linear.prediction')
+                          type = 'linear.prediction')
   outs <- cbind(d, outs); outs$coverage <- FALSE
   outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
   expect_true(all(outs$coverage))
   expect_less_than(abs(mean(outs$fit - outs$fitted)), .1)
   expect_less_than(abs(mean(outs$fit - outs$y)), 2)
+
+  outs2 <- predictInterval(g1, newdata = d, level = 0.95, nsim = 500,
+                          stat = 'mean', include.resid.var = FALSE,
+                          type = 'probability')
+  expect_false(identical(outs, outs2))
+  expect_true(max(outs2$fit) <= 1)
+  expect_true(min(outs2$fit) >= 0)
+  expect_true(max(outs2$lwr) <= 1)
+  expect_true(min(outs2$lwr) >= 0)
+  expect_true(max(outs2$upr) <= 1)
+  expect_true(min(outs2$upr) >= 0)
+  expect_false(max(outs$fit) <= 1)
+  # expect_true(min(outs$fit) < 0)
+  expect_false(max(outs$lwr) <= 1)
+  expect_false(min(outs$lwr) >= 0)
+  expect_false(max(outs$upr) <= 1)
   rm(outs)
 })
 

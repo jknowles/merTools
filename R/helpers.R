@@ -2,6 +2,7 @@
 
 # Function to take only rows that form distinct levels of factors
 # Need to figure out how to build a model matrix better.
+#' @importFrom lattice dotplot
 trimModelFrame <- function(data){
   # Identify numerics
   nums <- sapply(data, is.numeric)

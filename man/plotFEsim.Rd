@@ -4,7 +4,7 @@
 \alias{plotFEsim}
 \title{Plot the results of a simulation of the fixed effects}
 \usage{
-plotFEsim(data, scale = 1.96, var = "median", sd = "sd",
+plotFEsim(data, scale = 1.96, var = "median_eff", sd = "sd_eff",
   intercept = FALSE, sigmaScale = NULL, oddsRatio = FALSE)
 }
 \arguments{

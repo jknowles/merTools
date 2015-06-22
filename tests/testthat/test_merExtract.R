@@ -21,12 +21,6 @@ glmer3LevSlope  <- glmer(form, family="poisson",data=grouseticks,
                      control = glmerControl(optimizer="bobyqa",
                                             optCtrl=list(maxfun = 1e5)))
 
-# GLMER 2 level
-# data(VerbAgg)
-# fmVA <- glmer(r2 ~ Anger + Gender + btype + situ +
-#                 (1|id) + (1|item), family = binomial, data =
-#                 VerbAgg)
-
 # Sleepstudy
 lmerSlope1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 

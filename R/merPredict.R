@@ -5,7 +5,7 @@
 #' @param level the width of the prediction interval
 #' @param nsim number of simulation samples to construct
 #' @param stat take the median or mean of simulated intervals
-#' @param predict.type type of prediction to develop
+#' @param type type of prediction to develop
 #' @param include.resid.var logical, include or exclude the residual varaince for
 #' linear models
 #' @return 'newdata' with three columns appended, stat and the lower
@@ -17,10 +17,10 @@
 #' @importFrom abind abind
 predictInterval <- function(model, newdata, level = 0.95,
                             nsim=1000, stat=c("median","mean"),
-                            predict.type=c("linear.prediction", "probability"),
+                            type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE){
   outs <- newdata
-  predict.type <- match.arg(predict.type,
+  predict.type <- match.arg(type,
                             c("linear.prediction", "probability"),
                             several.ok = FALSE)
   stat.type <- match.arg(stat,
@@ -104,6 +104,9 @@ predictInterval <- function(model, newdata, level = 0.95,
                                         data = model@frame)
   } else{
     tmp <- plyr::rbind.fill(newdata, trimModelFrame(model@frame))
+    # attempt to make insensitive to spurious factor levels in betas
+#     nums <- sapply(data, is.numeric); vars <- names(nums[!nums == TRUE])
+#     tmp[, vars] <- apply(tmp[, vars], 2, as.character)
     newdata.modelMatrix <- model.matrix(nobars(model@call$formula),
                                         data = tmp)[1:nrow(newdata), ]
     rm(tmp)
@@ -117,10 +120,10 @@ predictInterval <- function(model, newdata, level = 0.95,
     yhat <- abind::abind(lapply(1:nsim, function(x) rnorm(nrow(newdata), yhat[,x], sigmahat[x])), along = 2)
 
   #Output prediction intervals
-  if (stat == "median") {
+  if (stat.type == "median") {
     outs$fit <- apply(yhat,1,function(x) as.numeric(quantile(x, .5, na.rm=TRUE)))
   }
-  if (stat == "mean") {
+  if (stat.type == "mean") {
     outs$fit <- apply(yhat,1,function(x) mean(x, na.rm=TRUE))
   }
   outs$upr <- apply(yhat,1,function(x) as.numeric(quantile(x, 1 - ((1-level)/2), na.rm=TRUE)))
