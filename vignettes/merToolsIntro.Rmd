@@ -39,7 +39,7 @@ ETH Zurich made by students. In this data, `s` is an individual student,
 `d` is an individual lecturer, `studage` is the semester the student 
 is enrolled, `lectage` is how many semesters back the lecture with the 
 rating took place, `dept` is the department of the lecture, and `y` is an integer 
-1:5 representing the ratings of the lcture from "poor" to "very good":
+1:5 representing the ratings of the lecture from "poor" to "very good":
 
 ```{r}
 library(lme4)
