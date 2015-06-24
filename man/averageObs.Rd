@@ -4,7 +4,7 @@
 \alias{averageObs}
 \title{Find the average observation for a merMod object}
 \usage{
-averageObs(merMod, varList = NULL)
+averageObs(merMod, varList)
 }
 \arguments{
 \item{merMod}{a merMod object}
