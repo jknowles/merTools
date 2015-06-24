@@ -28,17 +28,59 @@ stripAttributes <- function(data){
   return(data)
 }
 
+
+#' @title Draw a single observation out of an object matching some criteria
+#' @name draw
+#' @description Draw is used to select a single observation out of an R object.
+#' Additional parameters allow the user to control how that observation is
+#' chosen in order to manipulate that observation later. This is a generic
+#' function with methods for a number of objects.
+#' @param object the object to draw from
+#' @param type what kind of draw to make. Options include random or average
+#' @param varList a list specifying filters to subset the data by when making the
+#' draw
+#' @return a data.frame with a single row representing the desired observation
+#' @details In cases of tie, ".", may be substituted for factors.
+#' @export draw
+#' @rdname draw
+draw <- function(object, type = c("random", "average"),
+                 varList = NULL){
+  UseMethod("draw")
+}
+
+#' @title Draw an observation from a merMod object
+#' @rdname draw
+#' @method draw merMod
+#' @export
+#' @import lme4
+draw.merMod <- function(object, type = c("random", "average"),
+                        varList = NULL){
+  type <- match.arg(type, c("random", "average"), several.ok = FALSE)
+  if(type == 'random'){
+    out <- randomObs(object, varList)
+    return(out)
+  } else if(type == 'average'){
+    out <- averageObs(object, varList)
+    return(out)
+  }
+}
+
+
+
 #' @title Select a random observation from model data
 #' @name randomObs
 #' @description Select a random observation from the model frame of a merMod
 #' @param merMod an object of class merMod
+#' @param varList optional, a named list of conditions to subset the data on
 #' @return a data frame with a single row for a random observation, but with full
 #' factor levels. See details for more.
 #' @details Each factor variable in the data frame has all factor levels from the
 #' full model.frame stored so that the new data is compatible with predict.merMod
-#' @export
-randomObs <- function(merMod){
-  out <- merMod@frame[sample(1:nrow(merMod@frame), 1),]
+randomObs <- function(merMod, varList){
+  if(!missing(varList)){
+    data <- subsetList(merMod@frame, varList)
+  }
+  out <- data[sample(1:nrow(data), 1),]
   chars <- !sapply(out, is.numeric)
   for(i in names(out[, chars])){
     out[, i] <- superFactor(out[, i], fullLev = unique(merMod@frame[, i]))
@@ -105,8 +147,7 @@ subsetList <- function(data, list){
 #' @details Each character and factor variable in the data.frame is assigned to the
 #' modal category and each numeric variable is collapsed to the mean. Currently if
 #' mode is a tie, returns a "." Uses the collapseFrame function.
-#' @export
-averageObs <- function(merMod, varList = NULL){
+averageObs <- function(merMod, varList){
   if(!missing(varList)){
     data <- subsetList(merMod@frame, varList)
     if(nrow(data) < 20 & nrow(data) > 2){
@@ -167,7 +208,7 @@ shuffle <- function(data){
 }
 
 #' @title Assign an observation to different values
-#' @name wiggleObs
+#' @name wiggle
 #' @description Creates a new data.frame with copies of the original observation,
 #' each assigned to a different user specified value of a variable. Allows the
 #' user to look at the effect of changing a variable on predicted values.
@@ -176,10 +217,10 @@ shuffle <- function(data){
 #' @param values a vector with the variables to assign to var
 #' @return a data frame with each row in data assigned to all values for
 #' the variable chosen
-#' @details If the variable specified is a factor, then wiggleObs will return it
+#' @details If the variable specified is a factor, then wiggle will return it
 #' as a character.
 #' @export
-wiggleObs <- function(data, var, values){
+wiggle <- function(data, var, values){
   tmp.data <- data
   while(nrow(data) < length(values) * nrow(tmp.data)){
     data <- rbind(data, tmp.data)

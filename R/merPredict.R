@@ -31,7 +31,7 @@ predictInterval <- function(model, newdata, level = 0.95,
   model.devcomp <- getME(model, "devcomp")
   if (model.devcomp$dims[["GLMM"]] == 0 &
       model.devcomp$dims[["NLMM"]] == 0) {
-    sigmahat <-  sqrt(1/rgamma(n.sims, 0.5*lme4:::df.residual.merMod(model), 0.5*model.devcomp$cmp[["pwrss"]]))
+    sigmahat <-  sqrt(1/rgamma(n.sims, 0.5*residDF.merMod(model), 0.5*model.devcomp$cmp[["pwrss"]]))
     if (predict.type=="probability") {
       predict.type="linear.prediction"
       warning("    Asking for predictions on the probability scale makes no sense, resetting predict.type to linear.prediction",

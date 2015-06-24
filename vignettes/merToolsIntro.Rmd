@@ -163,11 +163,11 @@ values deliberately to see how the prediction changes in response. `merTools`
 makes this task very simple:
 
 ```{r}
-example1 <- randomObs(m1)
+example1 <- draw(m1, type = 'random')
 head(example1)
 ```
 
-The `randomObs` function takes a random observation from the data in the model 
+The `draw` function takes a random observation from the data in the model 
 and extracts it as a dataframe. We can now do a number of operations to this 
 observation:
 
@@ -183,14 +183,14 @@ More interesting, let's programatically modify this observation to see how the
 predicted value changes if we hold everything but one variable constant. 
 
 ```{r}
-example2 <- wiggleObs(example1, var = "lectage", 
+example2 <- wiggle(example1, var = "lectage", 
           values = c("1", "2", "3", "4", "5", "6"))
 
 example2
 ```
 
-The function `wiggleObs` allows us to create a new dataframe with copies of the 
-variable that modify just one value. Chaining together `wiggleObs` calls, we 
+The function `wiggle` allows us to create a new dataframe with copies of the 
+variable that modify just one value. Chaining together `wiggle` calls, we 
 can see how the variable behaves under a number of different scenarios 
 simultaneously. 
 
@@ -215,7 +215,7 @@ may not be very meaningful. To address this, we can instead take the average
 observation: 
 
 ```{r}
-example3 <- averageObs(m1)
+example3 <- draw(m1, type = 'average')
 example3
 ```
 
@@ -225,7 +225,7 @@ terms are set to the level equivalent to the median effect -- very close
 to 0. 
 
 ```{r}
-example3 <- wiggleObs(example1, var = "service", 
+example3 <- wiggle(example1, var = "service", 
           values = c("0", "1"))
 example3$yhat <- predict(m1, newdata = example3)
 
@@ -259,8 +259,8 @@ a specific observation to varying magnitudes of grouping term effects to see
 how much they might influence our final prediction. 
 
 ```{r}
-example4 <- averageObs(m1)
-example4 <- wiggleObs(example4, var = "s", 
+example4 <- draw(m1, type = 'average')
+example4 <- wiggle(example4, var = "s", 
                       REquantile(m1, quantile = seq(0.1, 0.9, .1), 
                                  group = "s"))
 
@@ -285,7 +285,7 @@ specify a subset of the data to compute an average for.
 
 ```{r}
 subExample <- list(studage = "2", lectage = "4")
-example5 <- averageObs(m1, varList = subExample)
+example5 <- draw(m1, type = 'average', varList = subExample)
 example5
 ```
 
@@ -300,13 +300,13 @@ m2 <- glmer(r2 ~ Anger + Gender + btype + situ +
                 (1|id) + (1 + Gender|item), family = binomial, 
               data = VerbAgg)
 
-example6 <- averageObs(m2, varList = list("id" = "149"))
+example6 <- draw(m2, type = 'average', varList = list("id" = "149"))
 example6$btype <- "scold"
 example6$situ <- "self"
 
 
-tempdf <- wiggleObs(example6, var = "Gender", c("M", "F"))
-tempdf <- wiggleObs(tempdf, var = "item", 
+tempdf <- wiggle(example6, var = "Gender", c("M", "F"))
+tempdf <- wiggle(tempdf, var = "item", 
                     unique(VerbAgg$item))
 tempdf$yhat <- predict(m2, newdata = tempdf, type = "response")
 

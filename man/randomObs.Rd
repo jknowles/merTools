@@ -4,10 +4,12 @@
 \alias{randomObs}
 \title{Select a random observation from model data}
 \usage{
-randomObs(merMod)
+randomObs(merMod, varList)
 }
 \arguments{
 \item{merMod}{an object of class merMod}
+
+\item{varList}{optional, a named list of conditions to subset the data on}
 }
 \value{
 a data frame with a single row for a random observation, but with full

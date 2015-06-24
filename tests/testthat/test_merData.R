@@ -68,21 +68,12 @@ test_that("Attributes can be stripped from data.frame", {
 context("Random observation")
 ################################################
 
-randomObs <- function(merMod){
-  out <- merMod@frame[sample(1:nrow(merMod@frame), 1),]
-  chars <- !sapply(out, is.numeric)
-  for(i in names(out[, chars])){
-    out[, i] <- superFactor(out[, i], fullLev = unique(merMod@frame[, i]))
-  }
-  out <- stripAttributes(out)
-  return(out)
-}
 
 test_that("A random observation can be sampled from a merMod", {
-  data1 <- randomObs(glmer3Lev)
-  data2 <- randomObs(lmerSlope2)
-  data3 <- randomObs(lmerSlope1)
-  data4 <- randomObs(glmer3LevSlope)
+  data1 <- draw(glmer3Lev, type = 'random')
+  data2 <- draw(lmerSlope2, type = 'random')
+  data3 <- draw(lmerSlope1, type = 'random')
+  data4 <- draw(glmer3LevSlope, type = 'random')
   expect_equal(nrow(data1), 1)
   expect_equal(nrow(data2), 1)
   expect_equal(nrow(data3), 1)
@@ -106,10 +97,10 @@ test_that("A random observation can be sampled from a merMod", {
 })
 
 test_that("Random observation preserves factor levels", {
-  data1 <- randomObs(glmer3Lev)
-  data2 <- randomObs(lmerSlope2)
-  data3 <- randomObs(lmerSlope1)
-  data4 <- randomObs(glmer3LevSlope)
+  data1 <- draw(glmer3Lev, type = 'random')
+  data2 <- draw(lmerSlope2, type = 'random')
+  data3 <- draw(lmerSlope1, type = 'random')
+  data4 <- draw(glmer3LevSlope, type = 'random')
   expect_true(length(levels(data1$YEAR)) > length(unique(data1$YEAR)))
   expect_true(length(levels(data1$BROOD)) > length(unique(data1$BROOD)))
   expect_true(length(levels(data1$LOCATION)) > length(unique(data1$LOCATION)))
@@ -241,14 +232,14 @@ context("Test observation wiggle")
 
 test_that("Row and column lengths are correct", {
   data1 <- grouseticks[5:9, ]
-  data1a <- wiggleObs(data1, var = "BROOD", values = c("606", "602", "537"))
-  data1b <- wiggleObs(data1a, var = "YEAR", values = c("96", "97"))
+data1a <- wiggle(data1, var = "BROOD", values = c("606", "602", "537"))
+  data1b <- wiggle(data1a, var = "YEAR", values = c("96", "97"))
   data2 <- grouseticks[3, ]
-  data2a <- wiggleObs(data2, var = "BROOD", values = c("606", "602", "537"))
-  data2b <- wiggleObs(data2a, var = "YEAR", values = c("96", "97"))
+  data2a <- wiggle(data2, var = "BROOD", values = c("606", "602", "537"))
+  data2b <- wiggle(data2a, var = "YEAR", values = c("96", "97"))
   data3 <- grouseticks[12:14, ]
-  data3a <- wiggleObs(data3, var = "BROOD", values = c("606"))
-  data3b <- wiggleObs(data3a, var = "YEAR", values = c("96", "97"))
+  data3a <- wiggle(data3, var = "BROOD", values = c("606"))
+  data3b <- wiggle(data3a, var = "YEAR", values = c("96", "97"))
   expect_equal(nrow(data1), 5)
   expect_equal(nrow(data1a), 15)
   expect_equal(nrow(data1b), 30)
@@ -264,7 +255,7 @@ test_that("Row and column lengths are correct", {
   expect_equal(length(data2a), length(data2b))
   expect_equal(length(data3), length(data3a))
   expect_equal(length(data3a), length(data3b))
-  data4 <- wiggleObs(data3, var = "BROOD",
+  data4 <- wiggle(data3, var = "BROOD",
                      values = REquantile(glmer3Lev,
                                          quantile = c(0.25, 0.5, 0.75),
                                          group = "BROOD"))
@@ -276,17 +267,17 @@ test_that("Row and column lengths are correct", {
 
 test_that("Values are placed correctly", {
   data1 <- grouseticks[5:9, ]
-  data1a <- wiggleObs(data1, var = "BROOD", values = c("606", "602", "537"))
-  data1b <- wiggleObs(data1a, var = "YEAR", values = c("96", "97"))
+  data1a <- wiggle(data1, var = "BROOD", values = c("606", "602", "537"))
+  data1b <- wiggle(data1a, var = "YEAR", values = c("96", "97"))
   data2 <- grouseticks[3, ]
-  data2a <- wiggleObs(data2, var = "BROOD", values = c("606", "602", "537"))
-  data2b <- wiggleObs(data2a, var = "YEAR", values = c("96", "97"))
+  data2a <- wiggle(data2, var = "BROOD", values = c("606", "602", "537"))
+  data2b <- wiggle(data2a, var = "YEAR", values = c("96", "97"))
   data3 <- grouseticks[12:14, ]
-  data3a <- wiggleObs(data3, var = "BROOD", values = c("606"))
-  data3b <- wiggleObs(data3a, var = "YEAR", values = c("96", "97"))
+  data3a <- wiggle(data3, var = "BROOD", values = c("606"))
+  data3b <- wiggle(data3a, var = "YEAR", values = c("96", "97"))
   data4 <- Orthodont[15, ]
-  data4a <- wiggleObs(data4, var = "age", values = c(10, 11, 12))
-  data4b <- wiggleObs(data4a, var = "Sex", values = c("Male", "Female"))
+  data4a <- wiggle(data4, var = "age", values = c(10, 11, 12))
+  data4b <- wiggle(data4a, var = "Sex", values = c("Male", "Female"))
   expect_false(any(unique(data1$BROOD) %in% unique(data1a$BROOD)))
   expect_false(any(unique(data1$BROOD) %in% unique(data1b$BROOD)))
   expect_false(any(unique(data1a$YEAR) %in% unique(data1b$YEAR)))
@@ -319,32 +310,32 @@ context("Test average observation extraction")
 ################################################
 
 test_that("Returns a single row", {
-  data1 <- averageObs(glmer3Lev)
-  data1a <- averageObs(glmer3LevSlope)
-  data2 <- averageObs(lmerSlope1)
+  data1 <- draw(glmer3Lev, type = 'average')
+  data1a <- draw(glmer3LevSlope, type = 'average')
+  data2 <- draw(lmerSlope1, type = 'average')
   expect_equal(nrow(data1), 1)
   expect_equal(nrow(data1a), 1)
   expect_equal(nrow(data2), 1)
 })
 
 test_that("Warnings and errors are correct", {
-  expect_message(averageObs(lmerSlope1))
-  expect_warning(averageObs(lmerSlope2))
+  expect_message(draw(lmerSlope1, type = 'average'))
+  expect_warning(draw(lmerSlope2, type = 'average'))
   mylist2 <- list("YEAR" = "97", "LOCATION" = "16")
-  expect_warning(averageObs(glmer3LevSlope, varList = mylist2))
+  expect_warning(draw(glmer3LevSlope, type = 'average', varList = mylist2))
   mylist3 <- list("YEAR" = "97", "LOCATION" = c("16", "56"))
-  expect_warning(averageObs(glmer3LevSlope, varList = mylist3))
+  expect_warning(draw(glmer3LevSlope, type = 'average', varList = mylist3))
 })
 
 test_that("Subsets work", {
   mylist1 <- list("YEAR" = "97")
-  data1 <- averageObs(glmer3LevSlope, varList = mylist1)
-  data1a <- averageObs(glmer3LevSlope)
+  data1 <- draw(glmer3LevSlope, type = 'average', varList = mylist1)
+  data1a <- draw(glmer3LevSlope, type = 'average')
   expect_false(identical(data1, data1a))
   expect_equal(data1$TICKS, mean(grouseticks$TICKS[grouseticks$YEAR == "97"]))
   expect_equal(data1a$TICKS, mean(grouseticks$TICKS))
   mylist2 <- list("YEAR" = "97", "LOCATION" = "16")
-  data2 <- averageObs(glmer3LevSlope, varList = mylist2)
+  data2 <- draw(glmer3LevSlope, type = 'average', varList = mylist2)
   mylist3 <- list("YEAR" = "97", "LOCATION" = c("16", "56"))
-  data3 <- averageObs(glmer3LevSlope, varList = mylist3)
+  data3 <- draw(glmer3LevSlope, type = 'average', varList = mylist3)
 })
