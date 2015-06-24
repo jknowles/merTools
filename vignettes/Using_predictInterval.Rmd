@@ -131,7 +131,7 @@ function has a number of user configurable options. In this example, we use the
 original data `sleepstudy` as the newdata. We pass the function the `fm1` model 
 we fit above. We also choose a 95% interval with `level = 0.95`, though 
 we could choose a less conservative prediction interval. We make 1,000 simulations 
-for each observation `nsim = 1000`. We set the point estimate to be the median 
+for each observation `n.sims = 1000`. We set the point estimate to be the median 
 of the simulated values, instead of the mean. We ask for the linear predictor back, 
 if we fit a logistic regression, we could have asked instead for our predictions 
 on the probability scale instead. Finally, we indicate that we want the predictions 
@@ -141,7 +141,7 @@ for `lmerMod` objects.
 ```{r predInt}
 PI.time <- system.time(
   PI <- predictInterval(model = fm1, newdata = sleepstudy, 
-                        level = 0.95, nsim = 1000,
+                        level = 0.95, n.sims = 1000,
                         stat = "median", type="linear.prediction",
                         include.resid.var = TRUE)
 )

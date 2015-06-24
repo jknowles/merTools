@@ -17,7 +17,7 @@ test_that("Prediction intervals work for simple linear example", {
 
   g1 <- lmer(y~fac1+(1|grp), data=subD)
   d$fitted <- predict(g1, d)
-  outs <- predictInterval(g1, newdata = d, level = 0.9, nsim = 500,
+  outs <- predictInterval(g1, newdata = d, level = 0.9, n.sims = 500,
                           stat = 'mean', include.resid.var = TRUE)
   outs <- cbind(d, outs); outs$coverage <- FALSE
   outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
@@ -40,7 +40,7 @@ test_that("Prediction intervals work for simple GLM example", {
 
   g1 <- glmer(y~fac1+(1|grp), data=subD, family = 'binomial')
   d$fitted <- predict(g1, d)
-  outs <- predictInterval(g1, newdata = d, level = 0.95, nsim = 500,
+  outs <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 500,
                           stat = 'mean', include.resid.var = FALSE,
                           type = 'linear.prediction')
   outs <- cbind(d, outs); outs$coverage <- FALSE
@@ -49,7 +49,7 @@ test_that("Prediction intervals work for simple GLM example", {
   expect_less_than(abs(mean(outs$fit - outs$fitted)), .1)
   expect_less_than(abs(mean(outs$fit - outs$y)), 2)
 
-  outs2 <- predictInterval(g1, newdata = d, level = 0.95, nsim = 500,
+  outs2 <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 500,
                           stat = 'mean', include.resid.var = FALSE,
                           type = 'probability')
   expect_false(identical(outs, outs2))
@@ -80,17 +80,17 @@ test_that("Prediction interval respects user input", {
 
   g1 <- lmer(y~fac1+(1|grp), data=subD)
   d$fitted <- predict(g1, d)
-  outs1 <- predictInterval(g1, newdata = d, level = 0.8, nsim = 500,
+  outs1 <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
                           stat = 'mean', include.resid.var = TRUE)
-  outs2 <- predictInterval(g1, newdata = d, level = 0.95, nsim = 500,
+  outs2 <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 500,
                            stat = 'mean', include.resid.var = TRUE)
-  outs1a <- predictInterval(g1, newdata = d, level = 0.8, nsim = 1500,
+  outs1a <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 1500,
                            stat = 'mean', include.resid.var = TRUE)
-  outs2a <- predictInterval(g1, newdata = d, level = 0.95, nsim = 1500,
+  outs2a <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 1500,
                             stat = 'mean', include.resid.var = TRUE)
-  outs3 <- predictInterval(g1, newdata = d, level = 0.8, nsim = 500,
+  outs3 <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
                            stat = 'mean', include.resid.var = FALSE)
-  outs3b <- predictInterval(g1, newdata = d, level = 0.8, nsim = 500,
+  outs3b <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
                            stat = 'median', include.resid.var = FALSE)
   expect_more_than(median(outs2$upr - outs1$upr), 0.1)
   expect_more_than(median(outs2a$upr - outs1a$upr), 0.1)
@@ -109,10 +109,10 @@ test_that("Predict handles unused and subset of factor levels", {
   set.seed(101)
   g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
   d1 <- InstEval[1:100, ]
-  outs1 <- predictInterval(g1, newdata = d1, level = 0.8, nsim = 500,
+  outs1 <- predictInterval(g1, newdata = d1, level = 0.8, n.sims = 500,
                            stat = 'mean', include.resid.var = TRUE)
   d2 <- rbind(d1, InstEval[670:900,])
-  outs1a <- predictInterval(g1, newdata = d2, level = 0.8, nsim = 500,
+  outs1a <- predictInterval(g1, newdata = d2, level = 0.8, n.sims = 500,
                             stat = 'mean', include.resid.var=TRUE)[1:100,]
   expect_is(outs1, "data.frame")
   expect_is(outs1a, "data.frame")
@@ -120,7 +120,7 @@ test_that("Predict handles unused and subset of factor levels", {
   expect_equal(nrow(outs1a), 100)
   g2 <- lmer(y ~ lectage + studage + (1+lectage|d) + (1|dept), data=InstEval)
   d2 <- InstEval[670:900,]
-  outs1a <- predictInterval(g2, newdata = d2, level = 0.8, nsim = 500,
+  outs1a <- predictInterval(g2, newdata = d2, level = 0.8, n.sims = 500,
                             stat = 'mean', include.resid.var=TRUE)
   expect_is(outs1a, "data.frame")
   expect_equal(nrow(outs1a), 231)

@@ -66,15 +66,15 @@ context("Fixed effect estimates from posterior")
 ################################################
 
 test_that("FEsim produces data.frames", {
-  expect_is(FEsim(lmerSlope1, nsims=100), "data.frame")
-  expect_is(FEsim(lmerSlope2, nsims=100), "data.frame")
-  expect_is(FEsim(glmer3Lev, nsims=100), "data.frame")
-  expect_is(FEsim(glmer3LevSlope, nsims=100), "data.frame")
+  expect_is(FEsim(lmerSlope1, n.sims=100), "data.frame")
+  expect_is(FEsim(lmerSlope2, n.sims=100), "data.frame")
+  expect_is(FEsim(glmer3Lev, n.sims=100), "data.frame")
+  expect_is(FEsim(glmer3LevSlope, n.sims=100), "data.frame")
 })
 
-test_that("nsims changes simulation results", {
-  expect_false(identical(FEsim(lmerSlope1, nsims = 1000),
-                         FEsim(lmerSlope1, nsims = 10)))
+test_that("n.sims changes simulation results", {
+  expect_false(identical(FEsim(lmerSlope1, n.sims = 1000),
+                         FEsim(lmerSlope1, n.sims = 10)))
 })
 
 # numeric checks
@@ -84,10 +84,10 @@ context("Random effect estimates from posterior")
 ################################################
 
 test_that("REsim produces data.frames", {
-  expect_is(REsim(lmerSlope1, nsims=100), "data.frame")
-  expect_is(REsim(lmerSlope2, nsims=100), "data.frame")
-  expect_is(REsim(glmer3Lev, nsims=100), "data.frame")
-  expect_is(REsim(glmer3LevSlope, nsims=100), "data.frame")
+  expect_is(REsim(lmerSlope1, n.sims=100), "data.frame")
+  expect_is(REsim(lmerSlope2, n.sims=100), "data.frame")
+  expect_is(REsim(glmer3Lev, n.sims=100), "data.frame")
+  expect_is(REsim(glmer3LevSlope, n.sims=100), "data.frame")
 })
 
 

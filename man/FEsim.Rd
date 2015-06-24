@@ -4,12 +4,12 @@
 \alias{FEsim}
 \title{Simulate fixed effects from merMod}
 \usage{
-FEsim(mod, nsims = 100)
+FEsim(mod, n.sims = 200)
 }
 \arguments{
 \item{mod}{a merMod object from the lme4 package}
 
-\item{nsims}{number of simulations to use}
+\item{n.sims}{number of simulations to use}
 }
 \value{
 a data frame with distribution of fixed effect parameters

@@ -4,7 +4,7 @@
 \alias{predictInterval}
 \title{Predict from merMod objects with a prediction interval}
 \usage{
-predictInterval(model, newdata, level = 0.95, nsim = 1000,
+predictInterval(model, newdata, level = 0.95, n.sims = 100,
   stat = c("median", "mean"), type = c("linear.prediction", "probability"),
   include.resid.var = TRUE)
 }
@@ -15,7 +15,7 @@ predictInterval(model, newdata, level = 0.95, nsim = 1000,
 
 \item{level}{the width of the prediction interval}
 
-\item{nsim}{number of simulation samples to construct}
+\item{n.sims}{number of simulation samples to construct}
 
 \item{stat}{take the median or mean of simulated intervals}
 

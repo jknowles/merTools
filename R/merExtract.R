@@ -39,7 +39,7 @@ REextract <- function(mod){
 #' @name REsim
 #' @description Simulate random effects from merMod object posterior distributions
 #' @param mod a merMod object from the lme4 package
-#' @param nsims number of simulations to use
+#' @param n.sims number of simulations to use
 #' @param OR logical, should parameters be converted to odds ratios?
 #' @importFrom arm sim
 #' @import lme4
@@ -47,9 +47,9 @@ REextract <- function(mod){
 #' @details Use the Gelman sim technique to build empirical Bayes estimates.
 #'  Uses the sim function in the arm package
 #' @export
-REsim <- function(mod, nsims = 100, OR = FALSE){
+REsim <- function(mod, n.sims = 200, OR = FALSE){
   stopifnot(class(mod) == "lmerMod" | class(mod) == "glmerMod")
-  mysim <- arm::sim(mod, n.sims = nsims)
+  mysim <- arm::sim(mod, n.sims = n.sims)
   reDims <- length(mysim@ranef)
   tmp.out <- vector("list", reDims)
   names(tmp.out) <- names(mysim@ranef)
@@ -80,16 +80,16 @@ REsim <- function(mod, nsims = 100, OR = FALSE){
 #' @name FEsim
 #' @description Simulate fixed effects from merMod object posterior distributions
 #' @param mod a merMod object from the lme4 package
-#' @param nsims number of simulations to use
+#' @param n.sims number of simulations to use
 #' @importFrom arm sim
 #' @import lme4
 #' @return a data frame with distribution of fixed effect parameters
 #' @details Use the Gelman sim technique to build fixed effect estimates and
 #' confidence intervals. Uses the sim function in the arm package
 #' @export
-FEsim <- function(mod, nsims = 100){
+FEsim <- function(mod, n.sims = 200){
   stopifnot(class(mod) == "lmerMod" | class(mod) == "glmerMod")
-  mysim <- arm::sim(mod, n.sims = nsims)
+  mysim <- arm::sim(mod, n.sims = n.sims)
   means <- apply(mysim@fixef, MARGIN = 2, mean)
   medians <- apply(mysim@fixef, MARGIN = 2, median)
   sds <- apply(mysim@fixef, MARGIN =2, sd)
@@ -119,9 +119,3 @@ RMSE.merMod <- function(mod, scale = FALSE){
     return(RMSE)
   }
 }
-
-# bootRMSE <- function(data, indx, model){
-#   moddat <- data[indx, ]
-#   modb <- eval(model@call)
-#   RMSE.merMod(modb)
-# }

@@ -4,12 +4,12 @@
 \alias{REsim}
 \title{Simulate random effects from merMod}
 \usage{
-REsim(mod, nsims = 100, OR = FALSE)
+REsim(mod, n.sims = 200, OR = FALSE)
 }
 \arguments{
 \item{mod}{a merMod object from the lme4 package}
 
-\item{nsims}{number of simulations to use}
+\item{n.sims}{number of simulations to use}
 
 \item{OR}{logical, should parameters be converted to odds ratios?}
 }

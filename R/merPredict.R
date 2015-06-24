@@ -3,7 +3,7 @@
 #' @param model a merMod object from lme4
 #' @param newdata a data.frame of new data to predict
 #' @param level the width of the prediction interval
-#' @param nsim number of simulation samples to construct
+#' @param n.sims number of simulation samples to construct
 #' @param stat take the median or mean of simulated intervals
 #' @param type type of prediction to develop
 #' @param include.resid.var logical, include or exclude the residual varaince for
@@ -16,7 +16,7 @@
 #' @import lme4
 #' @importFrom abind abind
 predictInterval <- function(model, newdata, level = 0.95,
-                            nsim=1000, stat=c("median","mean"),
+                            n.sims=100, stat=c("median","mean"),
                             type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE){
   outs <- newdata
@@ -31,7 +31,7 @@ predictInterval <- function(model, newdata, level = 0.95,
   model.devcomp <- getME(model, "devcomp")
   if (model.devcomp$dims[["GLMM"]] == 0 &
       model.devcomp$dims[["NLMM"]] == 0) {
-    sigmahat <-  sqrt(1/rgamma(nsim, 0.5*lme4:::df.residual.merMod(model), 0.5*model.devcomp$cmp[["pwrss"]]))
+    sigmahat <-  sqrt(1/rgamma(n.sims, 0.5*lme4:::df.residual.merMod(model), 0.5*model.devcomp$cmp[["pwrss"]]))
     if (predict.type=="probability") {
       predict.type="linear.prediction"
       warning("    Asking for predictions on the probability scale makes no sense, resetting predict.type to linear.prediction",
@@ -41,7 +41,7 @@ predictInterval <- function(model, newdata, level = 0.95,
   else if (model.devcomp$dims[["GLMM"]] == TRUE &
            model@resp$family$family == "binomial" &
            model@resp$family$link == "logit") {
-    sigmahat <- rep(1,nsim)
+    sigmahat <- rep(1,n.sims)
   }
   else {
     stop("    Prediction for this NLMMs or GLMMs that are not mixed logistic regressions is not yet implemented.")
@@ -55,18 +55,18 @@ predictInterval <- function(model, newdata, level = 0.95,
   ##this is where one would multiply them by draws of theta from the model.
   reTerms <- names(ngrps(model))
   n.reTerms = length(reTerms)
-  reSimA <- array(data = NA, dim = c(nrow(newdata), nsim, n.reTerms))
+  reSimA <- array(data = NA, dim = c(nrow(newdata), n.sims, n.reTerms))
   for (j in seq_along(reTerms)) {
     group=reTerms[j]
     reMeans <- array(ranef(model)[[group]])
     reMatrix <- attr(ranef(model, condVar=TRUE)[[group]], which = "postVar")
     tmp <- data.frame(rownames(reMeans), matrix(NA, nrow=nrow(reMeans),
-                                                ncol=nsim))
-    colnames(tmp) <- c(group, paste("sim", 1:nsim, sep=""))
+                                                ncol=n.sims))
+    colnames(tmp) <- c(group, paste("sim", 1:n.sims, sep=""))
     for (k in 1:nrow(reMeans)) {
         meanTmp <- as.matrix(reMeans[k, ])
         matrixTmp <- as.matrix(reMatrix[,,k])
-        tmp[k, 2:ncol(tmp)] <- mvtnorm::rmvnorm(nsim,
+        tmp[k, 2:ncol(tmp)] <- mvtnorm::rmvnorm(n.sims,
                                              mean=meanTmp,
                                              sigma=matrixTmp)
     }
@@ -87,14 +87,14 @@ predictInterval <- function(model, newdata, level = 0.95,
   ##and incorporate the model's residual variation if requested
   if (include.resid.var==FALSE) {
     if (length(new.levels)==0)
-      sigmahat <- rep(1,nsim)
+      sigmahat <- rep(1,n.sims)
     else {
       include.resid.var=TRUE
       warning("    \n  Since new levels were detected resetting include.resid.var to TRUE.")
     }
   }
 
-  betaSim <- abind(lapply(1:nsim, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
+  betaSim <- abind(lapply(1:n.sims, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
   # If we do it this way, the function will fail on new data without all levels
   # of X
   # newdata.modelMatrix <- lFormula(formula = model@call, data=newdata)$X
@@ -117,7 +117,7 @@ predictInterval <- function(model, newdata, level = 0.95,
   # apply(reSim, c(1,2), function(x), sum(x,na.rm=TRUE))
   yhat <- fixed.xb + apply(reSimA, c(1,2), function(x) sum(x, na.rm=TRUE))
   if (include.resid.var==TRUE)
-    yhat <- abind::abind(lapply(1:nsim, function(x) rnorm(nrow(newdata), yhat[,x], sigmahat[x])), along = 2)
+    yhat <- abind::abind(lapply(1:n.sims, function(x) rnorm(nrow(newdata), yhat[,x], sigmahat[x])), along = 2)
 
   #Output prediction intervals
   if (stat.type == "median") {
