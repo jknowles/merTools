@@ -26,4 +26,9 @@ For a user specified quantile (or quantiles) of the random effect
 terms in a merMod object. This allows the user to easily identify the obsevation
 associated with the nth percentile effect.
 }
+\examples{
+fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+REquantile(fm1, quantile = 0.25, group = "Subject")
+REquantile(fm1, quantile = 0.25, group = "Subject", eff = "Days")
+}
 

@@ -19,4 +19,13 @@ of x in fullLev
 Create a factor variable and include unobserved levels
 for compatibility with model prediction functions
 }
+\examples{
+regularFactor <- c("A", "B", "C")
+regularFactor <- factor(regularFactor)
+levels(regularFactor)
+# Now make it super
+newLevs <- c("D", "E", "F")
+regularFactor <- superFactor(regularFactor, fulllev = newLevs)
+levels(regularFactor) # now super
+}
 

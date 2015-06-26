@@ -28,6 +28,53 @@ stripAttributes <- function(data){
   return(data)
 }
 
+
+#' @title Draw a single observation out of an object matching some criteria
+#' @name draw
+#' @description Draw is used to select a single observation out of an R object.
+#' Additional parameters allow the user to control how that observation is
+#' chosen in order to manipulate that observation later. This is a generic
+#' function with methods for a number of objects.
+#' @param object the object to draw from
+#' @param type what kind of draw to make. Options include random or average
+#' @param varList a list specifying filters to subset the data by when making the
+#' draw
+#' @return a data.frame with a single row representing the desired observation
+#' @details In cases of tie, ".", may be substituted for factors.
+#' @export draw
+#' @rdname draw
+draw <- function(object, type = c("random", "average"),
+                 varList = NULL){
+  UseMethod("draw")
+}
+
+#' @title Draw an observation from a merMod object
+#' @rdname draw
+#' @method draw merMod
+#' @export
+#' @import lme4
+#' @examples
+#' fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#' # Random case
+#' draw(fm1, type = "random")
+#' # Average
+#' draw(fm1, type = "average")
+#' # Subset
+#' draw(fm1, type = "average", varList = list("Subject" = "308"))
+#'
+draw.merMod <- function(object, type = c("random", "average"),
+                        varList = NULL){
+  type <- match.arg(type, c("random", "average"), several.ok = FALSE)
+  if(type == 'random'){
+    out <- randomObs(object, varList)
+    return(out)
+  } else if(type == 'average'){
+    out <- averageObs(object, varList)
+    return(out)
+  }
+}
+
+
 #' @title Select a random observation from model data
 #' @name randomObs
 #' @description Select a random observation from the model frame of a merMod
@@ -36,7 +83,6 @@ stripAttributes <- function(data){
 #' factor levels. See details for more.
 #' @details Each factor variable in the data frame has all factor levels from the
 #' full model.frame stored so that the new data is compatible with predict.merMod
-#' @export
 randomObs <- function(merMod){
   out <- merMod@frame[sample(1:nrow(merMod@frame), 1),]
   chars <- !sapply(out, is.numeric)
@@ -105,7 +151,6 @@ subsetList <- function(data, list){
 #' @details Each character and factor variable in the data.frame is assigned to the
 #' modal category and each numeric variable is collapsed to the mean. Currently if
 #' mode is a tie, returns a "." Uses the collapseFrame function.
-#' @export
 averageObs <- function(merMod, varList = NULL){
   if(!missing(varList)){
     data <- subsetList(merMod@frame, varList)
@@ -145,6 +190,14 @@ averageObs <- function(merMod, varList = NULL){
 #' @return a factor variable with all observed levels of x and all levels
 #' of x in fullLev
 #' @export
+#' @examples
+#' regularFactor <- c("A", "B", "C")
+#' regularFactor <- factor(regularFactor)
+#' levels(regularFactor)
+#' # Now make it super
+#' newLevs <- c("D", "E", "F")
+#' regularFactor <- superFactor(regularFactor, fulllev = newLevs)
+#' levels(regularFactor) # now super
 superFactor <- function(x, fullLev){
   x <- as.character(x)
   if("factor" %in% class(fullLev)){
@@ -179,7 +232,11 @@ shuffle <- function(data){
 #' @details If the variable specified is a factor, then wiggleObs will return it
 #' as a character.
 #' @export
-wiggleObs <- function(data, var, values){
+#' @examples
+#' data(iris)
+#' wiggle(iris[3,], "Sepal.Width", values = c(1, 2, 3, 5))
+#' wiggle(iris[3:5,], "Sepal.Width", values = c(1, 2, 3, 5))
+wiggle <- function(data, var, values){
   tmp.data <- data
   while(nrow(data) < length(values) * nrow(tmp.data)){
     data <- rbind(data, tmp.data)
@@ -207,6 +264,10 @@ wiggleObs <- function(data, var, values){
 #' @return a vector of the level of the random effect grouping term that corresponds
 #' to each quantile
 #' @export
+#' @examples
+#' fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#' REquantile(fm1, quantile = 0.25, group = "Subject")
+#' REquantile(fm1, quantile = 0.25, group = "Subject", eff = "Days")
 REquantile <- function(merMod, quantile, group, eff = "(Intercept)"){
   if(any(quantile > 1 | quantile < 0)){
     stop("Quantiles must be specified on the range 0-1")
