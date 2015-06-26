@@ -42,7 +42,7 @@ fastdisp <- function (object, ...)
     out$coef <- coefs[, "coef.est"]
     out$se <- coefs[, "coef.se"]
     cat("\nError terms:\n")
-    vc <- arm:::as.matrix.VarCorr(VarCorr(object), useScale = useScale,
+    vc <- easyVarCorr(VarCorr(object), useScale = useScale,
                             digits)
     print(vc[, c(1:2, 4:ncol(vc))], quote = FALSE)
     out$ngrps <- lapply(object@flist, function(x) length(levels(x)))

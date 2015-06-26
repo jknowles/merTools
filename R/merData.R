@@ -74,17 +74,20 @@ draw.merMod <- function(object, type = c("random", "average"),
   }
 }
 
-
 #' @title Select a random observation from model data
 #' @name randomObs
 #' @description Select a random observation from the model frame of a merMod
 #' @param merMod an object of class merMod
+#' @param varList optional, a named list of conditions to subset the data on
 #' @return a data frame with a single row for a random observation, but with full
 #' factor levels. See details for more.
 #' @details Each factor variable in the data frame has all factor levels from the
 #' full model.frame stored so that the new data is compatible with predict.merMod
-randomObs <- function(merMod){
-  out <- merMod@frame[sample(1:nrow(merMod@frame), 1),]
+randomObs <- function(merMod, varList){
+  if(!missing(varList)){
+    data <- subsetList(merMod@frame, varList)
+  }
+  out <- data[sample(1:nrow(data), 1),]
   chars <- !sapply(out, is.numeric)
   for(i in names(out[, chars])){
     out[, i] <- superFactor(out[, i], fullLev = unique(merMod@frame[, i]))
@@ -220,7 +223,7 @@ shuffle <- function(data){
 }
 
 #' @title Assign an observation to different values
-#' @name wiggleObs
+#' @name wiggle
 #' @description Creates a new data.frame with copies of the original observation,
 #' each assigned to a different user specified value of a variable. Allows the
 #' user to look at the effect of changing a variable on predicted values.
@@ -229,7 +232,7 @@ shuffle <- function(data){
 #' @param values a vector with the variables to assign to var
 #' @return a data frame with each row in data assigned to all values for
 #' the variable chosen
-#' @details If the variable specified is a factor, then wiggleObs will return it
+#' @details If the variable specified is a factor, then wiggle will return it
 #' as a character.
 #' @export
 #' @examples

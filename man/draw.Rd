@@ -31,6 +31,7 @@ Draw an observation from a merMod object
 \details{
 In cases of tie, ".", may be substituted for factors.
 }
+<<<<<<< HEAD
 \examples{
 fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 # Random case
@@ -40,4 +41,6 @@ draw(fm1, type = "average")
 # Subset
 draw(fm1, type = "average", varList = list("Subject" = "308"))
 }
+=======
+>>>>>>> 2aa4fb77c657d31d9b1e16e16159264428bafb4d
 
