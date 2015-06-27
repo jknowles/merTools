@@ -199,7 +199,7 @@ averageObs <- function(merMod, varList = NULL){
 #' levels(regularFactor)
 #' # Now make it super
 #' newLevs <- c("D", "E", "F")
-#' regularFactor <- superFactor(regularFactor, fulllev = newLevs)
+#' regularFactor <- superFactor(regularFactor, fullLev = newLevs)
 #' levels(regularFactor) # now super
 superFactor <- function(x, fullLev){
   x <- as.character(x)
