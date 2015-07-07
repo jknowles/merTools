@@ -126,5 +126,18 @@ test_that("Predict handles unused and subset of factor levels", {
   expect_equal(nrow(outs1a), 231)
 })
 
+test_that("Prediction intervals work for multiple parameters per level", {
+  skip_on_cran()
+  data(grouseticks)
+  grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
+  grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
+  grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
+  # GLMER 3 level + slope
+  form <- TICKS_BIN ~ YEAR + HEIGHT +(1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)
+  glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks,
+                           control = glmerControl(optimizer="bobyqa",
+                                                  optCtrl=list(maxfun = 1e5)))
 
-
+  outs1 <- predictInterval(glmer3LevSlope, newdata = grouseticks[1:10,])
+  expect_is(outs1, "data.frame")
+})
