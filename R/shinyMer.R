@@ -34,10 +34,10 @@ shinyMer <- function(merMod, simData=NULL) {
                        selected=NULL),
           radioButtons("simDataType",
                        "Simulated data scenario",
-                       choices=c("Model Frame"   = "orig",
-                                 "User Supplied" = "user",
-                                 "Random Obs"    = "rand",
-                                 "Average Obs"   = "mean"),
+                       choices=c("User Supplied" = "user",
+                                 "Model Frame"   = "orig",
+                                 "Random Obs (NOT IMPLEMENTED YET)"    = "rand",
+                                 "Average Obs (NOT IMPLEMENTED YET)"   = "mean"),
                        selected=NULL),
           numericInput("n.sims",
                        label="Simulations (Max=10,000)",
@@ -57,10 +57,13 @@ shinyMer <- function(merMod, simData=NULL) {
 
         mainPanel(
           tabsetPanel(type="tabs",
-            tabPanel("Random Effects Uncertainty",
-                     em("Original function call:"),
+            tabPanel("Prediction uncertainty",
+                     h3("Original function call:"),
                      textOutput("predInt.call"),
-                     plotOutput("predInt")
+                     h3("Plot"),
+                     plotOutput("predInt.plot"),
+                     h3("PredInt data.frame"),
+                     dataTableOutput("predint.tab")
                      )
           )
         )
@@ -68,37 +71,71 @@ shinyMer <- function(merMod, simData=NULL) {
     ),
     #SERVER----
     server = function(input, output, session) {
+      rv <- reactiveValues(
+          level = NULL,
+          n.sims = NULL,
+          stat = NULL,
+          type = NULL
+      )
+
+      observeEvent(input$goButton,
+                    {
+                      rv$level  = input$alpha/100
+                      rv$n.sims = input$n.sims
+                      rv$stat   = input$stat
+                      rv$type   = input$predMetric
+                      rv$include.resid.var = input$resid.var
+                      if (input$simDataType=="orig") {
+                        simData <- merMod@frame
+                      }
+                      else if (input$simDataType=="user") {
+                        simData <- simData
+                      }
+                      else if (input$simDataType=="rand") {
+                        simData <- "Random Observation is NOT IMPLEMENTED YET"
+                      }
+                      else if (input$simDataType=="rand") {
+                        simData <- "Average Observation is NOT IMPLEMENTED YET"
+                      }
+                    }
+                  )
+
+      predInt <- reactive({
+        predictInterval(merMod,
+                        newdata           = simData,
+                        level             = rv$level,
+                        n.sims            = rv$n.sims,
+                        stat              = rv$stat,
+                        type              = rv$type,
+                        include.resid.var = rv$include.resid.var)
+      })
+
       output$predInt.call <- renderPrint(
         getCall(merMod)
       )
-      output$predInt <- renderPlot({
-        input$goButton
-        #check simData type
-        if (input$simDataType=="orig") {
-          simData=merMod@frame
-        } else if (input$simDataType=="user") {
-          if (is.null(simData)) {
-            error("You failed to supply simData")
-          }
-          simData=simData
-        } else if (input$simDataType=="rand") {
-          error("Not Yet Implemented")
-        } else if (input$simDataType=="mean") {
-          error("Not Yet Implemented")
-        }
-        isolate({
-          predInt <- predictInterval(merMod,
-                                     newdata=simData,
-                                     level=input$alpha/100,
-                                     n.sims=input$n.sims,
-                                     stat=input$stat,
-                                     type=input$predMetric,
-                                     include.resid.var=input$resid.var)
 
-          ggplot(x=1:nrow(predInt), y=fit, ymin=lci, ymax=uci, data=predInt) +
-            geom_errorbar(color="grey50") + geom_point()
-        })
-      })
+      output$predInt.plot <- renderPlot({
+        if (input$goButton) {
+          predInt <- predInt()
+
+          predInt$x <- 1:nrow(predInt)
+
+          ytitle <- isolate(ifelse(input$predMetric=="linear.prediction", "Linear Prediction", "Probability"))
+
+          ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr), data=predInt) +
+            geom_errorbar(color="gray50") +
+            geom_point() +
+            theme_bw() +
+            theme(axis.title.x=element_blank(), axis.text.x=element_blank(),
+                  axis.ticks.x=element_blank(), axis.line.x=element_blank()) +
+            labs(y=ytitle)
+        }
+     })
+
+     output$predInt.tab <- renderDataTable(
+       as.data.frame(cbind(simData, predInt()))
+     )
+
     }
   )
 }
