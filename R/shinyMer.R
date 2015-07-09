@@ -5,17 +5,33 @@
 #'
 #' @param merMod An object of class "merMod".
 #'
+#' @param simData A data.frame to make predictions from (optional). If
+#'   NULL, then the user can only make predictions using the data in
+#'   the frame slot of the merMod object.
+#'
 #' @return A shiny app
 #'
 #' @import shiny
 #' @import ggplot2
+#' @importFrom DT dataTableOutput
 #'
 #' @export
 
 shinyMer <- function(merMod, simData=NULL) {
   require(shiny)
   require(ggplot2)
-  require(DT)
+
+  if (is.null(simData)) {
+    df.choices <- c("Model Frame"   = "orig",
+                    "Random Obs (NOT IMPLEMENTED YET)"    = "rand",
+                    "Average Obs (NOT IMPLEMENTED YET)"   = "mean")
+  } else {
+    df.choices <- c("User Supplied" = "user",
+                    "Model Frame"   = "orig",
+                    "Random Obs (NOT IMPLEMENTED YET)"    = "rand",
+                    "Average Obs (NOT IMPLEMENTED YET)"   = "mean")
+
+  }
 
   shinyApp(
     #UI----
@@ -35,10 +51,7 @@ shinyMer <- function(merMod, simData=NULL) {
                        selected=NULL),
           radioButtons("simDataType",
                        "Simulated data scenario",
-                       choices=c("User Supplied" = "user",
-                                 "Model Frame"   = "orig",
-                                 "Random Obs (NOT IMPLEMENTED YET)"    = "rand",
-                                 "Average Obs (NOT IMPLEMENTED YET)"   = "mean"),
+                       choices=df.choices,
                        selected=NULL),
           numericInput("n.sims",
                        label="Simulations (Max=10,000)",
