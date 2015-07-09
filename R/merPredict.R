@@ -68,7 +68,8 @@ predictInterval <- function(model, newdata, level = 0.95,
         matrixTmp <- as.matrix(reMatrix[,,k])
         tmp[k, 2:ncol(tmp)] <- mvtnorm::rmvnorm(n.sims,
                                              mean=meanTmp,
-                                             sigma=matrixTmp)
+                                             sigma=matrixTmp,
+                                             method="svd")
     }
     cnames <- colnames(tmp)
     #This is where to check for groups that only exist in newdata
