@@ -72,3 +72,23 @@ easyVarCorr <- function (varc, useScale, digits){
   return (reMat)
 }
 
+reTermCount <- function(model){
+  sum(unlist(lapply(as.list(VarCorr(model)), function(x) sqrt(length(x)))))
+}
+
+reTermNames <- function(model){
+  tmp <- NA
+  for(i in 1:length(names(ngrps(model)))){
+    cons <- names(ngrps(model))[i]
+    vars <- paste(cons, unlist(dimnames(VarCorr(model)[[i]])[1]), sep = "-")
+    tmp <- c(tmp, vars)
+  }
+  tmp <- na.omit(tmp)
+  tmp <- t(as.data.frame(strsplit(tmp, "-")))
+  row.names(tmp) <- NULL
+  colnames(tmp) <- c("group", "effect")
+  tmp <- as.data.frame(tmp)
+  tmp$group <- as.character(tmp$group)
+  tmp$effect <- as.character(tmp$effect)
+  return(tmp)
+}

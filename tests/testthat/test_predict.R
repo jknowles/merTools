@@ -141,3 +141,5 @@ test_that("Prediction intervals work for multiple parameters per level", {
   outs1 <- predictInterval(glmer3LevSlope, newdata = grouseticks[1:10,])
   expect_is(outs1, "data.frame")
 })
+
+context("Numerical accuracy")
