@@ -72,11 +72,9 @@ predictInterval <- function(model, newdata, level = 0.95,
   ##this is where one would multiply them by draws of theta from the model.
   reTerms <- reTermNames(model)
   n.reTerms = reTermCount(model)
-  reSimA <- array(data = NA, dim = c(nrow(newdata), n.sims, n.reTerms))
-  reCoef <- vector(getME(model, "n_rfacs"), mode = "list")
-  names(reCoef) <- names(ngrps(model))
-
-  for(j in names(reCoef)){
+  re.xb <- vector(getME(model, "n_rfacs"), mode = "list")
+  names(re.xb) <- names(ngrps(model))
+    for(j in names(re.xb)){
     reMeans <- as.matrix(ranef(model)[[j]])
     reMatrix <- attr(ranef(model, condVar=TRUE)[[j]], which = "postVar")
     reSimA <- array(data = NA, dim = c(nrow(reMeans), ncol(reMeans), n.sims))
@@ -90,36 +88,27 @@ predictInterval <- function(model, newdata, level = 0.95,
       dimnames(reSimA)[[1]] <- rownames(ranef(model)[[j]])
       dimnames(reSimA)[[2]] <- colnames(ranef(model)[[j]])
     }
-#     reCoef[[j]] <- apply(reSimA, 3,
-#                          function(x) merge(newdata, as.data.frame(x),
-#                                            by.x = j, by.y = "row.names"))
-     reCoef[[j]] <- reSimA
+     tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
+     keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
+     tmp <- tmp[, c(keep, "var")]
+     tmp$var <- as.character(tmp$var)
+     tmpCoef <- reSimA[, keep, , drop = FALSE]
+     tmp.pred <- function(data, coefs){
+       yhatTmp <- array(data = NA, dim = c(nrow(data), ncol(data)-1, dim(coefs)[3]))
+       for(k in 1:ncol(data)-1){
+         for(i in 1:nrow(data)){
+           lvl <- as.character(data[, "var"][i])
+           yhatTmp[i, k,] <- as.numeric(data[i, k]) * as.numeric(coefs[lvl, k, ])
+         }
+       }
+       return(yhatTmp)
+     }
+     re.xb[[j]] <- apply(tmp.pred(data = tmp, coefs = tmpCoef), c(1,3), sum)
   }
 
 # multiple each simulation of the array by the newdata.ModelMatrix using rbind
   # for missing columns
   # reCoef is now a list that contains all the necessary simulations
-  re.xb <- vector(length = length(names(reCoef)), mode = "list")
-  names(re.xb) <- names(reCoef)
-  for(j in names(reCoef)){
-    tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
-    keep <- names(tmp)[names(tmp) %in% dimnames(reCoef[[j]])[[2]]]
-    tmp <- tmp[, c(keep, "var")]
-    tmp$var <- as.character(tmp$var)
-    tmpCoef <- reCoef[[j]][, keep, , drop = FALSE]
-
-    tmp.pred <- function(data, coefs){
-      yhatTmp <- array(data = NA, dim = c(nrow(data), ncol(data)-1, dim(coefs)[3]))
-      for(k in 1:ncol(data)-1){
-        for(i in 1:nrow(data)){
-          lvl <- as.character(data[, "var"][i])
-          yhatTmp[i, k,] <- as.numeric(data[i, k]) * as.numeric(coefs[lvl, k, ])
-        }
-      }
-      return(yhatTmp)
-    }
-    re.xb[[j]] <- apply(tmp.pred(data = tmp, coefs = tmpCoef), c(1,3), sum)
-  }
 
   ##This chunk of code produces matrix of linear predictors created from the fixed coefs
   ##and incorporate the model's residual variation if requested
@@ -138,6 +127,8 @@ predictInterval <- function(model, newdata, level = 0.95,
   betaSim <- abind(lapply(1:n.sims, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
   re.xb$fixed <- newdata.modelMatrix %*% t(betaSim)
   yhat <- Reduce('+', re.xb)
+  # alternative if missing data present:
+  # yhat <- apply(simplify2array(re.xb), c(1,2), sum)
 
   if (include.resid.var==TRUE)
     yhat <- abind::abind(lapply(1:n.sims, function(x) rnorm(nrow(newdata), yhat[,x], sigmahat[x])), along = 2)
