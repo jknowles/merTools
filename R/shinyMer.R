@@ -1,7 +1,7 @@
 #' Launch a shiny app to explore your merMod interactively
 #'
 #' \code{shinyMer} launches a shiny app that allows you to interactively
-#' explore an estimated merMod using functions from \code{\link{merTools}}.
+#' explore an estimated merMod using functions from \code{merTools}.
 #'
 #' @param merMod An object of class "merMod".
 #'
@@ -11,16 +11,39 @@
 #'
 #' @return A shiny app
 #'
-#' @import shiny
 #' @import ggplot2
+#' @importFrom shiny shinyApp
+#' @importFrom shiny fluidPage
+#' @importFrom shiny titlePanel
+#' @importFrom shiny sidebarLayout
+#' @importFrom shiny sidebarPanel
+#' @importFrom shiny radioButtons
+#' @importFrom shiny numericInput
+#' @importFrom shiny checkboxInput
+#' @importFrom shiny actionButton
+#' @importFrom shiny mainPanel
+#' @importFrom shiny tabsetPanel
+#' @importFrom shiny tabPanel
+#' @importFrom shiny h3
+#' @importFrom shiny textOutput
+#' @importFrom shiny plotOutput
+#' @importFrom shiny downloadButton
+#' @importFrom shiny em
+#' @importFrom shiny reactiveValues
+#' @importFrom shiny eventReactive
+#' @importFrom shiny observeEvent
+#' @importFrom shiny reactive
+#' @importFrom shiny renderPrint
+#' @importFrom shiny renderPlot
+#' @importFrom shiny isolate
+#' @importFrom shiny renderPrint
+#' @importFrom shiny downloadHandler
+#' @importFrom shiny strong
 #' @importFrom DT dataTableOutput
 #'
 #' @export
 
 shinyMer <- function(merMod, simData=NULL) {
-  require(shiny)
-  require(ggplot2)
-
   if (is.null(simData)) {
     df.choices <- c("Model Frame"   = "orig",
                     "Random Obs (NOT IMPLEMENTED YET)"    = "rand",
@@ -33,62 +56,62 @@ shinyMer <- function(merMod, simData=NULL) {
 
   }
 
-  shinyApp(
+  shiny::shinyApp(
     #UI----
-    ui = fluidPage(
-      titlePanel("Explore your merMod interactively"),
+    ui = shiny::fluidPage(
+      shiny::titlePanel("Explore your merMod interactively"),
 
-      sidebarLayout(
-        sidebarPanel(
-          radioButtons("stat",
+      shiny::sidebarLayout(
+        shiny::sidebarPanel(
+          shiny::radioButtons("stat",
                        "Measure of central tendency",
                        choices=c("Median"="median", "Mean"="mean"),
                        selected=NULL),
-          radioButtons("predMetric",
+          shiny::radioButtons("predMetric",
                        "Prediction metric",
                        choices=c("Linear Predictor"="linear.prediction",
                                  "Probability"="probability"),
                        selected=NULL),
-          radioButtons("simDataType",
+          shiny::radioButtons("simDataType",
                        "Simulated data scenario",
                        choices=df.choices,
                        selected=NULL),
-          numericInput("n.sims",
+          shiny::numericInput("n.sims",
                        label="Simulations (Max=10,000)",
                        value=20,
                        min=1,
                        max=10000),
-          numericInput("alpha",
+          shiny::numericInput("alpha",
                        label="Credible Interval (%)",
                        value=95,
                        min=0,
                        max=100),
-          checkboxInput("resid.var",
+          shiny::checkboxInput("resid.var",
                         label="Include Residual Variation",
                         value=TRUE),
-          actionButton("goButton", strong("Run"))
+          shiny::actionButton("goButton", shiny::strong("Run"))
         ),
 
-        mainPanel(
-          tabsetPanel(type="tabs",
-            tabPanel("Prediction uncertainty",
-                     h3("Original function call:"),
-                     textOutput("predInt.call"),
-                     h3("Plot"),
-                     plotOutput("predInt.plot"),
-                     h3("PredInt data.frame"),
-                     downloadButton("downloadData", "Download predict interval data"),
+        shiny::mainPanel(
+          shiny::tabsetPanel(type="tabs",
+            shiny::tabPanel("Prediction uncertainty",
+                     shiny::h3("Original function call:"),
+                     shiny::textOutput("predInt.call"),
+                     shiny::h3("Plot"),
+                     shiny::plotOutput("predInt.plot"),
+                     shiny::h3("PredInt data.frame"),
+                     shiny::downloadButton("downloadData", "Download predict interval data"),
                      DT::dataTableOutput("predInt.tab")
                      ),
-            tabPanel("Parameter Plot",
-                     h3("Fixed parameter estimates"),
-                     em("Double click on a point to view the estimated values [CI]:"),
-                     plotOutput("FEplot", dblclick="FEclick"),
-                     h3("Random Parameter estimate"),
-                     plotOutput("REplot", click="REclick", width="70%")
+            shiny::tabPanel("Parameter Plot",
+                     shiny::h3("Fixed parameter estimates"),
+                     shiny::em("Double click on a point to view the estimated values [CI]:"),
+                     shiny::plotOutput("FEplot", dblclick="FEclick"),
+                     shiny::h3("Random Parameter estimate"),
+                     shiny::plotOutput("REplot", click="REclick", width="70%")
                      ),
-            tabPanel("Substantive Effects",
-                     h3(em("Under construction..."))
+            shiny::tabPanel("Substantive Effects",
+                     shiny::h3(shiny::em("Under construction..."))
                      )
           )
         )
@@ -96,7 +119,7 @@ shinyMer <- function(merMod, simData=NULL) {
     ),
     #SERVER----
     server = function(input, output, session) {
-      rv <- reactiveValues(
+      rv <- shiny::reactiveValues(
           level = NULL,
           scale = NULL,
           n.sims = NULL,
@@ -104,7 +127,7 @@ shinyMer <- function(merMod, simData=NULL) {
           type = NULL
       )
 
-      sim.df <- eventReactive(input$goButton, {
+      sim.df <- shiny::eventReactive(input$goButton, {
         if (input$simDataType=="orig") {
           return(data.frame(cbind(merMod@frame, X=1:nrow(merMod@frame))))
         }
@@ -119,7 +142,7 @@ shinyMer <- function(merMod, simData=NULL) {
         }
       })
 
-      observeEvent(input$goButton,
+      shiny::observeEvent(input$goButton,
                     {
                       rv$level  = input$alpha/100
                       rv$scale  = qnorm(1-(1-(input$alpha/100))/2)
@@ -132,7 +155,7 @@ shinyMer <- function(merMod, simData=NULL) {
 
       ##Output for Uncertainty tab ----
 
-      predInt <- reactive({
+      predInt <- shiny::reactive({
         predictInterval(merMod,
                         newdata           = sim.df(),
                         level             = rv$level,
@@ -142,17 +165,17 @@ shinyMer <- function(merMod, simData=NULL) {
                         include.resid.var = rv$include.resid.var)
       })
 
-      output$predInt.call <- renderPrint(
+      output$predInt.call <- shiny::renderPrint(
         getCall(merMod)
       )
 
-      output$predInt.plot <- renderPlot({
+      output$predInt.plot <- shiny::renderPlot({
         if (input$goButton) {
           plot.df <- cbind(predInt(), sim.df())
 
-          ytitle <- isolate(ifelse(input$predMetric=="linear.prediction", "Linear Prediction", "Probability"))
+          ytitle <- shiny::isolate(ifelse(input$predMetric=="linear.prediction", "Linear Prediction", "Probability"))
 
-          title <- isolate(ifelse(input$simDataType=="user", "User Supplied Data",
+          title <- shiny::isolate(ifelse(input$simDataType=="user", "User Supplied Data",
                            ifelse(input$simDataType=="orig", "Model Frame Data",
                            ifelse(input$simDataType=="rand", "Random Observation(s)",
                            ifelse(input$simDataType=="mean", "Averge Observation(s)")))))
@@ -177,21 +200,21 @@ shinyMer <- function(merMod, simData=NULL) {
         }
      })
 
-     output$predInt.tab <- renderDataTable(
+     output$predInt.tab <- shiny::renderDataTable(
        if (input$goButton) {
          data.frame(cbind(sim.df(), predInt()))
        }
      )
 
-     output$downloadData <- downloadHandler(
+     output$downloadData <- shiny::downloadHandler(
        filename = "predictIntervalResults.csv",
        content = function(file) {
-         write.csv(isolate(cbind(sim.df(), predInt())), file)
+         write.csv(shiny::isolate(cbind(sim.df(), predInt())), file)
        }
      )
 
      ##Output for Parameter Plot Tab ----
-     FEplot.df <- eventReactive(input$goButton, {
+     FEplot.df <- shiny::eventReactive(input$goButton, {
        FEplot.df <- FEsim(merMod, rv$n.sims)
        FEplot.df$fit <- FEplot.df[,paste(rv$stat, "_eff", sep="")]
        FEplot.df$uci <- FEplot.df$fit + rv$scale*FEplot.df$sd_eff
@@ -207,11 +230,11 @@ shinyMer <- function(merMod, simData=NULL) {
      }
      )
 
-     clickrows <- reactiveValues(
+     clickrows <- shiny::reactiveValues(
        clicked = rep(FALSE, length(fixef(merMod)[!grepl("(Intercept)", names(fixef(merMod)), fixed=TRUE)]))
      )
 
-     output$FEplot <- renderPlot(
+     output$FEplot <- shiny::renderPlot(
        if (input$goButton) {
          FEplot <- ggplot(aes(x=variable, y=fit, ymin=lci, ymax=uci, label=label), data=FEplot.df()) +
                      geom_errorbar(width=0.2) +
@@ -226,11 +249,11 @@ shinyMer <- function(merMod, simData=NULL) {
        }
      )
 
-     observeEvent(input$FEclick, {
+     shiny::observeEvent(input$FEclick, {
        clickrows$clicked <- xor(clickrows$clicked, round(input$FEclick$y,1) == as.numeric(FEplot.df()$variable))
      })
 
-     output$REplot <- renderPlot(
+     output$REplot <- shiny::renderPlot(
        if (input$goButton) {
          scale = qnorm(1-(1-rv$level)/2)
          plotREsim(data=REsim(merMod, rv$n.sims), scale = rv$scale, var=paste(rv$stat, "_eff", sep=""))
@@ -239,17 +262,4 @@ shinyMer <- function(merMod, simData=NULL) {
    }
   )
 }
-
-
-#scraps
-##Extract levels from model for input buttons
-#lvls <- NULL
-#for (i in 1:getME(merMod, "n_rfacs")) {
-#  lvl.name <- names(ranef(merMod))[i]
-#  lvls <- c(lvls, paste(lvl.name, ": ", ifelse(names(ranef(merMod)[[i]])=="(Intercept)", "Intercept", names(ranef(merMod)[[i]])), sep=""))
-#}
-#radioButtons("level",
-#             "Choose random term to display",
-#             choices=lvls,
-#             selected=NULL),
 
