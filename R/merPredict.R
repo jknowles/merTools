@@ -95,18 +95,19 @@ predictInterval <- function(model, newdata, level = 0.95,
      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
      tmp <- tmp[, c(keep, "var")]
      tmp$var <- as.character(tmp$var)
+     colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
      tmpCoef <- reSimA[, keep, , drop = FALSE]
-     tmp.pred <- function(data, coefs){
+     tmp.pred <- function(data, coefs, group){
        yhatTmp <- array(data = NA, dim = c(nrow(data), ncol(data)-1, dim(coefs)[3]))
-       new.levels <- unique(as.character(data[, "var"])[!as.character(data[, "var"]) %in% dimnames(coefs)[[1]]])
-       msg <- paste("     The following levels of ", names(data), " from newdata -- ", paste0(new.levels, collapse=", "),
-                    " -- are not in the model data. \n     Currently, predictions for these values are based only on the fixed coefficients \n     and the observation-level error.", sep="")
+   new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[1]]])
+       msg <- paste("     The following levels of ", group, " from newdata \n -- ", paste0(new.levels, collapse=", "),
+                    " -- are not in the model data. \n     Currently, predictions for these values are based only on the \n fixed coefficients and the observation-level error.", sep="")
        if(length(new.levels > 0)){
          warning(msg, call.=FALSE)
        }
        for(k in 1:ncol(data)-1){
          for(i in 1:nrow(data)){
-           lvl <- as.character(data[, "var"][i])
+           lvl <- as.character(data[, group][i])
            if(lvl %in% dimnames(coefs)[[1]]){
              yhatTmp[i, k,] <- as.numeric(data[i, k]) * as.numeric(coefs[lvl, k, ])
            } else{
@@ -117,22 +118,19 @@ predictInterval <- function(model, newdata, level = 0.95,
        }
        return(yhatTmp)
      }
-     re.xb[[j]] <- apply(tmp.pred(data = tmp, coefs = tmpCoef), c(1,3), sum)
+     re.xb[[j]] <- apply(tmp.pred(data = tmp, coefs = tmpCoef,
+                                  group = names(newdata[, j, drop=FALSE])), c(1,3), sum)
   }
 
-# multiple each simulation of the array by the newdata.ModelMatrix using rbind
-  # for missing columns
-  # reCoef is now a list that contains all the necessary simulations
-
-  ##This chunk of code produces matrix of linear predictors created from the fixed coefs
-  ##and incorporate the model's residual variation if requested
+  # TODO: Add a check for new.levels that is outside of the above loop
+  # for now, ignore this check
   if (include.resid.var==FALSE) {
-    if (length(new.levels)==0)
+#     if (length(new.levels)==0)
       sigmahat <- rep(1,n.sims)
-    else {
-      include.resid.var=TRUE
-      warning("    \n  Since new levels were detected resetting include.resid.var to TRUE.")
-    }
+#     else {
+#       include.resid.var=TRUE
+#       warning("    \n  Since new levels were detected resetting include.resid.var to TRUE.")
+#     }
   }
 
   # fixed.xb is nrow(newdata) x n.sims

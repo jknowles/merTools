@@ -94,8 +94,11 @@ reTermNames <- function(model){
 }
 
 #' Clean formula
-#'
-
+#' @description a function to modify the formula for a merMod object to create
+#' a model matrix with all predictor terms in both the group level and fixed
+#' effect level
+#' @param model a merMod object from lme4
+#' @keywords internal
 formulaBuild <- function(model){
   slopeFX <- setdiff(all.vars(model@call$formula), names(ngrps(model)))
   missVar <- setdiff(slopeFX, all.vars(nobars(model@call$formula)))
