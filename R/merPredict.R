@@ -47,19 +47,22 @@ predictInterval <- function(model, newdata, level = 0.95,
     stop("    Prediction for this NLMMs or GLMMs that are not mixed logistic regressions is not yet implemented.")
   }
 
+  # Fix formula to allow for random slopes not in the fixed slopes
+  matrixForm <- formulaBuild(model)
+
   # If we do it this way, the function will fail on new data without all levels
   # of X
   # newdata.modelMatrix <- lFormula(formula = model@call, data=newdata)$X
   # To be sensitive to this, we can take a performance hit and do:
   if(identical(newdata, model@frame)){
-    newdata.modelMatrix <- model.matrix(nobars(model@call$formula),
+    newdata.modelMatrix <- model.matrix(matrixForm,
                                         data = model@frame)
   } else{
     tmp <- plyr::rbind.fill(newdata, trimModelFrame(model@frame))
     # attempt to make insensitive to spurious factor levels in betas
     #     nums <- sapply(data, is.numeric); vars <- names(nums[!nums == TRUE])
     #     tmp[, vars] <- apply(tmp[, vars], 2, as.character)
-    newdata.modelMatrix <- model.matrix(nobars(model@call$formula),
+    newdata.modelMatrix <- model.matrix(matrixForm,
                                         data = tmp)[1:nrow(newdata), ]
     rm(tmp)
   }
@@ -95,10 +98,21 @@ predictInterval <- function(model, newdata, level = 0.95,
      tmpCoef <- reSimA[, keep, , drop = FALSE]
      tmp.pred <- function(data, coefs){
        yhatTmp <- array(data = NA, dim = c(nrow(data), ncol(data)-1, dim(coefs)[3]))
+       new.levels <- unique(as.character(data[, "var"])[!as.character(data[, "var"]) %in% dimnames(coefs)[[1]]])
+       msg <- paste("     The following levels of ", names(data), " from newdata -- ", paste0(new.levels, collapse=", "),
+                    " -- are not in the model data. \n     Currently, predictions for these values are based only on the fixed coefficients \n     and the observation-level error.", sep="")
+       if(length(new.levels > 0)){
+         warning(msg, call.=FALSE)
+       }
        for(k in 1:ncol(data)-1){
          for(i in 1:nrow(data)){
            lvl <- as.character(data[, "var"][i])
-           yhatTmp[i, k,] <- as.numeric(data[i, k]) * as.numeric(coefs[lvl, k, ])
+           if(lvl %in% dimnames(coefs)[[1]]){
+             yhatTmp[i, k,] <- as.numeric(data[i, k]) * as.numeric(coefs[lvl, k, ])
+           } else{
+             yhatTmp[i, k,] <- as.numeric(data[i, k]) * 0
+           }
+
          }
        }
        return(yhatTmp)
@@ -125,6 +139,15 @@ predictInterval <- function(model, newdata, level = 0.95,
   ##Calculate yhat as sum of the components (fixed plus all groupling factors)
   # apply(reSim, c(1,2), function(x), sum(x,na.rm=TRUE))
   betaSim <- abind(lapply(1:n.sims, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
+  # Pad betaSim
+  if(ncol(newdata.modelMatrix) > ncol(betaSim)){
+    pad <- matrix(rep(0), nrow = nrow(betaSim),
+                  ncol = ncol(newdata.modelMatrix) - ncol(betaSim))
+    betaSim <- cbind(betaSim, pad)
+    message("Fixed effect matrix has been padded with 0 coefficients
+for random slopes not included in the fixed effects.")
+  }
+
   re.xb$fixed <- newdata.modelMatrix %*% t(betaSim)
   yhat <- Reduce('+', re.xb)
   # alternative if missing data present:

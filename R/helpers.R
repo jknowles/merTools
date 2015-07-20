@@ -92,3 +92,22 @@ reTermNames <- function(model){
   tmp$effect <- as.character(tmp$effect)
   return(tmp)
 }
+
+#' Clean formula
+#'
+
+formulaBuild <- function(model){
+  slopeFX <- setdiff(all.vars(model@call$formula), names(ngrps(model)))
+  missVar <- setdiff(slopeFX, all.vars(nobars(model@call$formula)))
+  newForm <- nobars(model@call$formula)
+  #' # These are the variable names:
+  measurevar <- as.character(newForm[[2]])
+  groupvars  <- c(setdiff(all.vars(newForm), measurevar), missVar)
+  # This returns the formula:
+  newForm <- as.formula(paste(measurevar, paste(groupvars, collapse=" + "), sep=" ~ "))
+  return(newForm)
+}
+
+
+
+

@@ -142,4 +142,45 @@ test_that("Prediction intervals work for multiple parameters per level", {
   expect_is(outs1, "data.frame")
 })
 
+context("Test for new factor levels")
+
+test_that("Prediction intervals work with new factor levels added", {
+  skip_on_cran()
+  data(grouseticks)
+  grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
+  grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
+  grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
+  # GLMER 3 level + slope
+  form <- TICKS_BIN ~ YEAR + HEIGHT +(1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)
+  glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks,
+                           control = glmerControl(optimizer="bobyqa",
+                                                  optCtrl=list(maxfun = 1e5)))
+
+  zNew <- grouseticks[1:10,]
+  zNew$BROOD <- "100"
+
+  outs1 <- predictInterval(glmer3LevSlope, newdata = zNew)
+  expect_is(outs1, "data.frame")
+  expect_warning(predictInterval(glmer3LevSlope, newdata = zNew))
+})
+
+test_that("Prediction works for random slopes not in fixed", {
+  skip_on_cran()
+  data(grouseticks)
+  grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
+  grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
+  grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
+  # GLMER 3 level + slope
+  form <- TICKS_BIN ~ YEAR + (1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)
+  glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks,
+                           control = glmerControl(optimizer="bobyqa",
+                                                  optCtrl=list(maxfun = 1e5)))
+
+  zNew <- grouseticks[1:10,]
+  outs1 <- predictInterval(glmer3LevSlope, newdata = zNew)
+  expect_is(outs1, "data.frame")
+  expect_message(predictInterval(glmer3LevSlope, newdata = zNew))
+})
+
+
 context("Numerical accuracy")
