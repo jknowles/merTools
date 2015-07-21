@@ -73,8 +73,8 @@ predictInterval <- function(model, newdata, level = 0.95,
   ##Right now I am not multiplying the BLUP variance covariance matrices by our
   ##draw of sigma (for linear models) because their variation is unique.  If anything,
   ##this is where one would multiply them by draws of theta from the model.
-  reTerms <- reTermNames(model)
-  n.reTerms = reTermCount(model)
+  # reTerms <- reTermNames(model)
+  # n.reTerms = reTermCount(model)
   re.xb <- vector(getME(model, "n_rfacs"), mode = "list")
   names(re.xb) <- names(ngrps(model))
     for(j in names(re.xb)){
