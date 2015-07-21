@@ -47,76 +47,110 @@ predictInterval <- function(model, newdata, level = 0.95,
     stop("    Prediction for this NLMMs or GLMMs that are not mixed logistic regressions is not yet implemented.")
   }
 
+  # Fix formula to allow for random slopes not in the fixed slopes
+  matrixForm <- formulaBuild(model)
+
+  # If we do it this way, the function will fail on new data without all levels
+  # of X
+  # newdata.modelMatrix <- lFormula(formula = model@call, data=newdata)$X
+  # To be sensitive to this, we can take a performance hit and do:
+  if(identical(newdata, model@frame)){
+    newdata.modelMatrix <- model.matrix(matrixForm,
+                                        data = model@frame)
+  } else{
+    tmp <- plyr::rbind.fill(newdata, trimModelFrame(model@frame))
+    # attempt to make insensitive to spurious factor levels in betas
+    #     nums <- sapply(data, is.numeric); vars <- names(nums[!nums == TRUE])
+    #     tmp[, vars] <- apply(tmp[, vars], 2, as.character)
+    newdata.modelMatrix <- model.matrix(matrixForm,
+                                        data = tmp)[1:nrow(newdata), ]
+    rm(tmp)
+  }
+
   ##This chunk of code draws from empirical bayes distributions for each level of the random effects
   ##and merges it back onto newdata.
   ##
   ##Right now I am not multiplying the BLUP variance covariance matrices by our
   ##draw of sigma (for linear models) because their variation is unique.  If anything,
   ##this is where one would multiply them by draws of theta from the model.
-  reTerms <- names(ngrps(model))
-  n.reTerms = length(reTerms)
-  reSimA <- array(data = NA, dim = c(nrow(newdata), n.sims, n.reTerms))
-  for (j in seq_along(reTerms)) {
-    group=reTerms[j]
-    reMeans <- array(ranef(model)[[group]])
-    reMatrix <- attr(ranef(model, condVar=TRUE)[[group]], which = "postVar")
-    tmp <- data.frame(rownames(reMeans), matrix(NA, nrow=nrow(reMeans),
-                                                ncol=n.sims))
-    colnames(tmp) <- c(group, paste("sim", 1:n.sims, sep=""))
-    for (k in 1:nrow(reMeans)) {
-        meanTmp <- as.matrix(reMeans[k, ])
-        matrixTmp <- as.matrix(reMatrix[,,k])
-        tmp[k, 2:ncol(tmp)] <- mvtnorm::rmvnorm(n.sims,
-                                             mean=meanTmp,
-                                             sigma=matrixTmp,
-                                             method="svd")
+  reTerms <- reTermNames(model)
+  n.reTerms = reTermCount(model)
+  re.xb <- vector(getME(model, "n_rfacs"), mode = "list")
+  names(re.xb) <- names(ngrps(model))
+    for(j in names(re.xb)){
+    reMeans <- as.matrix(ranef(model)[[j]])
+    reMatrix <- attr(ranef(model, condVar=TRUE)[[j]], which = "postVar")
+    reSimA <- array(data = NA, dim = c(nrow(reMeans), ncol(reMeans), n.sims))
+    for(k in 1:nrow(reMeans)){
+      meanTmp <- as.matrix(reMeans[k, ])
+      matrixTmp <- as.matrix(reMatrix[,,k])
+      reSimA[k, ,] <- mvtnorm::rmvnorm(n.sims,
+                                       mean=meanTmp,
+                                       sigma=matrixTmp,
+                                       method="svd")
+      dimnames(reSimA)[[1]] <- rownames(ranef(model)[[j]])
+      dimnames(reSimA)[[2]] <- colnames(ranef(model)[[j]])
     }
-    cnames <- colnames(tmp)
-    #This is where to check for groups that only exist in newdata
-    new.levels <- setdiff(newdata[,group], tmp[,1])
-    if (length(new.levels)>0) {
-      msg <- paste("     The following levels of ", group, " from newdata -- ", paste0(new.levels, collapse=", "),
-                   " -- are not in the model data. \n     Currently, predictions for these values are based only on the fixed coefficients \n     and the observation-level error.", sep="")
-      warning(msg, call.=FALSE)
-    }
-    tmp <- merge(newdata, tmp, by=group, all.x=TRUE)
-    tmp <- as.matrix(tmp[,setdiff(cnames, group)])
-    reSimA[, , j] <- tmp
+     tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
+     keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
+     tmp <- tmp[, c(keep, "var")]
+     tmp$var <- as.character(tmp$var)
+     colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
+     tmpCoef <- reSimA[, keep, , drop = FALSE]
+     tmp.pred <- function(data, coefs, group){
+       yhatTmp <- array(data = NA, dim = c(nrow(data), ncol(data)-1, dim(coefs)[3]))
+   new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[1]]])
+       msg <- paste("     The following levels of ", group, " from newdata \n -- ", paste0(new.levels, collapse=", "),
+                    " -- are not in the model data. \n     Currently, predictions for these values are based only on the \n fixed coefficients and the observation-level error.", sep="")
+       if(length(new.levels > 0)){
+         warning(msg, call.=FALSE)
+       }
+       for(k in 1:ncol(data)-1){
+         for(i in 1:nrow(data)){
+           lvl <- as.character(data[, group][i])
+           if(lvl %in% dimnames(coefs)[[1]]){
+             yhatTmp[i, k,] <- as.numeric(data[i, k]) * as.numeric(coefs[lvl, k, ])
+           } else{
+             yhatTmp[i, k,] <- as.numeric(data[i, k]) * 0
+           }
+
+         }
+       }
+       return(yhatTmp)
+     }
+     re.xb[[j]] <- apply(tmp.pred(data = tmp, coefs = tmpCoef,
+                                  group = names(newdata[, j, drop=FALSE])), c(1,3), sum)
   }
 
-  ##This chunk of code produces matrix of linear predictors created from the fixed coefs
-  ##and incorporate the model's residual variation if requested
+  # TODO: Add a check for new.levels that is outside of the above loop
+  # for now, ignore this check
   if (include.resid.var==FALSE) {
-    if (length(new.levels)==0)
+#     if (length(new.levels)==0)
       sigmahat <- rep(1,n.sims)
-    else {
-      include.resid.var=TRUE
-      warning("    \n  Since new levels were detected resetting include.resid.var to TRUE.")
-    }
+#     else {
+#       include.resid.var=TRUE
+#       warning("    \n  Since new levels were detected resetting include.resid.var to TRUE.")
+#     }
   }
 
-  betaSim <- abind(lapply(1:n.sims, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
-  # If we do it this way, the function will fail on new data without all levels
-  # of X
-  # newdata.modelMatrix <- lFormula(formula = model@call, data=newdata)$X
-  # To be sensitive to this, we can take a performance hit and do:
-  if(identical(newdata, model@frame)){
-    newdata.modelMatrix <- model.matrix(nobars(model@call$formula),
-                                        data = model@frame)
-  } else{
-    tmp <- plyr::rbind.fill(newdata, trimModelFrame(model@frame))
-    # attempt to make insensitive to spurious factor levels in betas
-#     nums <- sapply(data, is.numeric); vars <- names(nums[!nums == TRUE])
-#     tmp[, vars] <- apply(tmp[, vars], 2, as.character)
-    newdata.modelMatrix <- model.matrix(nobars(model@call$formula),
-                                        data = tmp)[1:nrow(newdata), ]
-    rm(tmp)
-  }
-  fixed.xb <- newdata.modelMatrix %*% t(betaSim)
-
+  # fixed.xb is nrow(newdata) x n.sims
   ##Calculate yhat as sum of the components (fixed plus all groupling factors)
   # apply(reSim, c(1,2), function(x), sum(x,na.rm=TRUE))
-  yhat <- fixed.xb + apply(reSimA, c(1,2), function(x) sum(x, na.rm=TRUE))
+  betaSim <- abind(lapply(1:n.sims, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
+  # Pad betaSim
+  if(ncol(newdata.modelMatrix) > ncol(betaSim)){
+    pad <- matrix(rep(0), nrow = nrow(betaSim),
+                  ncol = ncol(newdata.modelMatrix) - ncol(betaSim))
+    betaSim <- cbind(betaSim, pad)
+    message("Fixed effect matrix has been padded with 0 coefficients
+for random slopes not included in the fixed effects.")
+  }
+
+  re.xb$fixed <- newdata.modelMatrix %*% t(betaSim)
+  yhat <- Reduce('+', re.xb)
+  # alternative if missing data present:
+  # yhat <- apply(simplify2array(re.xb), c(1,2), sum)
+
   if (include.resid.var==TRUE)
     yhat <- abind::abind(lapply(1:n.sims, function(x) rnorm(nrow(newdata), yhat[,x], sigmahat[x])), along = 2)
 
