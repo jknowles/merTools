@@ -73,13 +73,27 @@ predictInterval <- function(model, newdata, level = 0.95,
   ##Right now I am not multiplying the BLUP variance covariance matrices by our
   ##draw of sigma (for linear models) because their variation is unique.  If anything,
   ##this is where one would multiply them by draws of theta from the model.
-  # reTerms <- reTermNames(model)
-  # n.reTerms = reTermCount(model)
   re.xb <- vector(getME(model, "n_rfacs"), mode = "list")
   names(re.xb) <- names(ngrps(model))
     for(j in names(re.xb)){
     reMeans <- as.matrix(ranef(model)[[j]])
     reMatrix <- attr(ranef(model, condVar=TRUE)[[j]], which = "postVar")
+    # OK, let's knock out all the random effects we don't need
+    obslvl <- unique(as.character(newdata[, j]))
+    alllvl <- rownames(reMeans)
+    keep <- intersect(obslvl, alllvl)
+    # Add switch if no random groups are observed to avoid indexing errors,
+    # we burn 1 sample of 1 group of all coefficients that will eventually
+    # be multiplied by zero later on
+    if(length(keep) > 0){
+      reMeans <- reMeans[keep, , drop=FALSE]
+      dimnames(reMatrix)[[3]] <- alllvl
+      reMatrix <- reMatrix[, , keep, drop = FALSE]
+    } else{
+      reMeans <- reMeans[1, , drop=FALSE]
+      reMatrix <- reMatrix[, , 1, drop = FALSE]
+    }
+    #
     reSimA <- array(data = NA, dim = c(nrow(reMeans), ncol(reMeans), n.sims))
     for(k in 1:nrow(reMeans)){
       meanTmp <- as.matrix(reMeans[k, ])
@@ -88,8 +102,8 @@ predictInterval <- function(model, newdata, level = 0.95,
                                        mean=meanTmp,
                                        sigma=matrixTmp,
                                        method="svd")
-      dimnames(reSimA)[[1]] <- rownames(ranef(model)[[j]])
-      dimnames(reSimA)[[2]] <- colnames(ranef(model)[[j]])
+      rownames(reSimA) <- rownames(reMeans)
+      colnames(reSimA) <- colnames(reMeans)
     }
      tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]

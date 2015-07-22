@@ -73,6 +73,28 @@ bench3 <- microbenchmark(predictInterval(g1, newdata = d[1:100, ], level = 0.9,
                times = 10)
 
 
+# Large
+
+g2 <- lmer(y ~ lectage + studage + (1+lectage|d) + (1|dept), data=InstEval)
+d2 <- InstEval[1:1000, ]
+outs1a <- predictInterval(g2, newdata = d2, level = 0.8, n.sims = 500,
+                          stat = 'mean', include.resid.var=TRUE)
+
+
+bench4 <- microbenchmark(predictInterval(g2, newdata = d2[1:100, ], level = 0.9,
+                                         nsim = 500,
+                                         stat = 'mean', include.resid.var = TRUE),
+                         predictInterval(g2, newdata = d2[1:200, ], level = 0.9,
+                                         nsim = 500,
+                                         stat = 'mean', include.resid.var = TRUE),
+                         predictInterval(g2, newdata = d2[1:400, ], level = 0.9,
+                                         nsim = 500,
+                                         stat = 'mean', include.resid.var = TRUE),
+                         predictInterval(g2, newdata = d2[1:800, ], level = 0.9,
+                                         nsim = 500,
+                                         stat = 'mean', include.resid.var = TRUE),
+                         times = 10)
+
 # set.seed(101)
 # d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
 #                  obs=1:50)
