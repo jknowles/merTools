@@ -15,9 +15,12 @@ Depends:
 Suggests:
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
 Imports:
-    mvtnorm, lattice
+    mvtnorm,
+    lattice,
+    DT,
+    shiny
 License: MIT + file LICENSE
 LazyData: true
 VignetteBuilder: knitr
