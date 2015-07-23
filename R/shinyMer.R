@@ -13,11 +13,35 @@
 #' @return A shiny app
 #'
 #' @import ggplot2
-#' @import shiny
+#' @importFrom shiny shinyApp
+#' @importFrom shiny fluidPage
+#' @importFrom shiny titlePanel
+#' @importFrom shiny sidebarLayout
+#' @importFrom shiny sidebarPanel
+#' @importFrom shiny radioButtons
+#' @importFrom shiny numericInput
+#' @importFrom shiny checkboxInput
+#' @importFrom shiny actionButton
+#' @importFrom shiny mainPanel
+#' @importFrom shiny tabsetPanel
+#' @importFrom shiny tabPanel
+#' @importFrom shiny h3
+#' @importFrom shiny textOutput
+#' @importFrom shiny plotOutput
+#' @importFrom shiny downloadButton
+#' @importFrom shiny em
+#' @importFrom shiny reactiveValues
+#' @importFrom shiny eventReactive
+#' @importFrom shiny observeEvent
+#' @importFrom shiny reactive
+#' @importFrom shiny renderPrint
+#' @importFrom shiny renderPlot
+#' @importFrom shiny isolate
+#' @importFrom shiny renderPrint
+#' @importFrom shiny downloadHandler
+#' @importFrom shiny strong
 #' @importFrom DT dataTableOutput
-#'
 #' @export
-
 shinyMer <- function(merMod, simData=NULL) {
   if (is.null(simData)) {
     df.choices <- c("Model Frame"   = "orig",
