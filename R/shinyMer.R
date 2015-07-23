@@ -1,3 +1,4 @@
+# utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "label"))
 #' Launch a shiny app to explore your merMod interactively
 #'
 #' \code{shinyMer} launches a shiny app that allows you to interactively
@@ -12,33 +13,7 @@
 #' @return A shiny app
 #'
 #' @import ggplot2
-#' @importFrom shiny shinyApp
-#' @importFrom shiny fluidPage
-#' @importFrom shiny titlePanel
-#' @importFrom shiny sidebarLayout
-#' @importFrom shiny sidebarPanel
-#' @importFrom shiny radioButtons
-#' @importFrom shiny numericInput
-#' @importFrom shiny checkboxInput
-#' @importFrom shiny actionButton
-#' @importFrom shiny mainPanel
-#' @importFrom shiny tabsetPanel
-#' @importFrom shiny tabPanel
-#' @importFrom shiny h3
-#' @importFrom shiny textOutput
-#' @importFrom shiny plotOutput
-#' @importFrom shiny downloadButton
-#' @importFrom shiny em
-#' @importFrom shiny reactiveValues
-#' @importFrom shiny eventReactive
-#' @importFrom shiny observeEvent
-#' @importFrom shiny reactive
-#' @importFrom shiny renderPrint
-#' @importFrom shiny renderPlot
-#' @importFrom shiny isolate
-#' @importFrom shiny renderPrint
-#' @importFrom shiny downloadHandler
-#' @importFrom shiny strong
+#' @import shiny
 #' @importFrom DT dataTableOutput
 #'
 #' @export
@@ -135,10 +110,10 @@ shinyMer <- function(merMod, simData=NULL) {
           return(data.frame(cbind(simData, X=1:nrow(simData))))
         }
         else if (input$simDataType=="rand") {
-          return("Random Observation is NOT IMPLEMENTED YET")
+          return(draw(merMod, type = "random"))
         }
         else if (input$simDataType=="mean") {
-          return("Average Observation is NOT IMPLEMENTED YET")
+          return(draw(merMod, type = "average"))
         }
       })
 
