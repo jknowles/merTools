@@ -1,3 +1,4 @@
+# utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "label"))
 #' Launch a shiny app to explore your merMod interactively
 #'
 #' \code{shinyMer} launches a shiny app that allows you to interactively
@@ -40,9 +41,7 @@
 #' @importFrom shiny downloadHandler
 #' @importFrom shiny strong
 #' @importFrom DT dataTableOutput
-#'
 #' @export
-
 shinyMer <- function(merMod, simData=NULL) {
   if (is.null(simData)) {
     df.choices <- c("Model Frame"   = "orig",
@@ -135,10 +134,10 @@ shinyMer <- function(merMod, simData=NULL) {
           return(data.frame(cbind(simData, X=1:nrow(simData))))
         }
         else if (input$simDataType=="rand") {
-          return("Random Observation is NOT IMPLEMENTED YET")
+          return(draw(merMod, type = "random"))
         }
         else if (input$simDataType=="mean") {
-          return("Average Observation is NOT IMPLEMENTED YET")
+          return(draw(merMod, type = "average"))
         }
       })
 
