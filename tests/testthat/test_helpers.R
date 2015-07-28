@@ -6,6 +6,15 @@ test_that("Trimming results in correct size", {
   trimDat <- trimModelFrame(InstEval)
   expect_more_than(nrow(InstEval), nrow(trimModelFrame(InstEval)))
   expect_equal(nrow(trimDat), 4065)
+  cbpp$obs <- 1:nrow(cbpp)
+  d1 <- cbpp
+  d1$y <- d1$incidence / d1$size
+  gm2 <- glmer(y ~ period +
+                  (1 | herd),
+                family = binomial, data = d1, nAGQ = 9, weights = d1$size)
+  trimDat <- merTools:::trimModelFrame(gm2@frame)
+  expect_is(trimDat, "data.frame")
+  expect_equal(nrow(trimDat), 18)
 })
 
 test_that("Trimming does not corrupt order", {

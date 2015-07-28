@@ -9,7 +9,7 @@ trimModelFrame <- function(data){
   dataList <- vector(mode = "list", length = length(vars))
   names(dataList) <- vars
     for(i in vars){
-      dataList[[i]] <- data[!duplicated(data[, i]),]
+      dataList[[i]] <- data[!duplicated(data[, i]), ,drop=FALSE]
     }
     newdat <- do.call(rbind, dataList)
     newdat <- newdat[!duplicated(newdat),]

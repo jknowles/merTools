@@ -95,6 +95,9 @@ test_that("Prediction interval respects user input", {
                            stat = 'mean', include.resid.var = FALSE)
   outs3b <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
                            stat = 'median', include.resid.var = FALSE)
+  outs3c <- predictInterval(g1, newdata = d[1, ], level = 0.8, n.sims = 500,
+                            stat = 'median', include.resid.var = FALSE)
+
   expect_more_than(median(outs2$upr - outs1$upr), 0.1)
   expect_more_than(median(outs2a$upr - outs1a$upr), 0.1)
   expect_less_than(median(outs3$upr - outs1$upr), -.2)
@@ -103,6 +106,7 @@ test_that("Prediction interval respects user input", {
   expect_less_than(mean(outs1$upr - outs1$lwr), mean(outs1a$upr - outs1a$lwr))
   expect_less_than(mean(outs2$upr - outs2$lwr), mean(outs2a$upr - outs2a$lwr))
   expect_false(median(outs3$fit) == median(outs3b$fit))
+  expect_equal(nrow(outs3c), 1)
 })
 
 context("Prediction works for all combinations of slopes and intercepts")
@@ -337,11 +341,12 @@ test_that("Prediction intervals are accurate with interaction terms and rank def
   newPred <- predictInterval(fm, newdata = d2, level = 0.8, n.sims = 500,
                              stat = 'median', include.resid.var = FALSE)
   truPred <- predict(fm, newdata = d2)
-  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/100)
+  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/50)
   fm2 <- lmer( z ~ a*b + (1+b|r), data=d2)
   newPred <- predictInterval(fm2, newdata = d2, level = 0.8, n.sims = 1000,
                              stat = 'median', include.resid.var = FALSE)
   truPred <- predict(fm2, newdata = d2)
+  expect_is(newPred, "data.frame")
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/10)
 })
 

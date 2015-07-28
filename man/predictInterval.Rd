@@ -54,11 +54,34 @@ each grouping term, an array is build that has as many rows as there are levels
 of the grouping factor, as many columns as there are predictors at that level
 (e.g. an intercept and slope), and is stacked as high as there are number of
 simulations. These arrays are then multiplied by the new data provided to the
-function to produce a matrix of yhat values.
+function to produce a matrix of yhat values. The result is a matrix of the simulated
+values of the linear predictor for each observation for each simulation. Each
+grouping term has such a matrix for each observation. These values can be added
+to get the estimate of the fitted value for the random effect terms, and this
+can then be added to a matrix of simulated values for the fixed effect level to
+come up with \code{n.sims} number of possible yhat values for each observation.
+
+The distribution of simulated values is cut according to the interval requested
+by the function. The median or mean value as well as the upper and lower bounds
+are then returned. These can be presented either on the linear predictor scale
+or on the response scale using the link function in the \code{merMod}.
 }
 \note{
 \code{merTools} includes the functions \code{subBoot} and \code{thetaExtract}
 to allow the user to estimate the variability in \code{theta} from a larger
 model by bootstrapping the model fit on a subset, to allow faster estimation.
+}
+\examples{
+m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+regFit <- predict(m1, newdata = sleepstudy[11, ]) # a single value is returned
+intFit <- predictInterval(m1, newdata = sleepstudy[11, ]) # bounded values
+# Can do glmer
+(gm1 <- glmer(cbind(incidence, size - incidence) ~ period + (1 | herd),
+ data = cbpp, family = binomial))
+ regFit <- predict(gm1, newdata = cbpp[1:10, ])
+ # get probabilities
+ regFit <- predict(gm1, newdata = cbpp[1:10, ], type = "response")
+ intFit <- predictInterval(gm1, newdata = cbpp[1:10, ], type = "probability")
+ intFit <- predictInterval(gm1, newdata = cbpp[1:10, ], type = "linear.prediction")
 }
 

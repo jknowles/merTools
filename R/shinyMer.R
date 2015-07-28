@@ -45,13 +45,13 @@ utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "la
 shinyMer <- function(merMod, simData=NULL) {
   if (is.null(simData)) {
     df.choices <- c("Model Frame"   = "orig",
-                    "Random Obs (NOT IMPLEMENTED YET)"    = "rand",
-                    "Average Obs (NOT IMPLEMENTED YET)"   = "mean")
+                    "Random Obs"    = "rand",
+                    "Average Obs"   = "mean")
   } else {
     df.choices <- c("User Supplied" = "user",
                     "Model Frame"   = "orig",
-                    "Random Obs (NOT IMPLEMENTED YET)"    = "rand",
-                    "Average Obs (NOT IMPLEMENTED YET)"   = "mean")
+                    "Random Obs"    = "rand",
+                    "Average Obs"   = "mean")
 
   }
 
@@ -77,7 +77,7 @@ shinyMer <- function(merMod, simData=NULL) {
                        selected=NULL),
           shiny::numericInput("n.sims",
                        label="Simulations (Max=10,000)",
-                       value=20,
+                       value=100,
                        min=1,
                        max=10000),
           shiny::numericInput("alpha",
@@ -134,10 +134,10 @@ shinyMer <- function(merMod, simData=NULL) {
           return(data.frame(cbind(simData, X=1:nrow(simData))))
         }
         else if (input$simDataType=="rand") {
-          return(draw(merMod, type = "random"))
+          return(data.frame(cbind(draw(merMod, type = "random"), X = 1)))
         }
         else if (input$simDataType=="mean") {
-          return(draw(merMod, type = "average"))
+          return(data.frame(cbind(draw(merMod, type = "average"), X =1 )))
         }
       })
 

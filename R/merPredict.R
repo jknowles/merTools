@@ -32,7 +32,17 @@
 #' of the grouping factor, as many columns as there are predictors at that level
 #' (e.g. an intercept and slope), and is stacked as high as there are number of
 #' simulations. These arrays are then multiplied by the new data provided to the
-#' function to produce a matrix of yhat values.
+#' function to produce a matrix of yhat values. The result is a matrix of the simulated
+#' values of the linear predictor for each observation for each simulation. Each
+#' grouping term has such a matrix for each observation. These values can be added
+#' to get the estimate of the fitted value for the random effect terms, and this
+#' can then be added to a matrix of simulated values for the fixed effect level to
+#' come up with \code{n.sims} number of possible yhat values for each observation.
+#'
+#' The distribution of simulated values is cut according to the interval requested
+#' by the function. The median or mean value as well as the upper and lower bounds
+#' are then returned. These can be presented either on the linear predictor scale
+#' or on the response scale using the link function in the \code{merMod}.
 #' @note \code{merTools} includes the functions \code{subBoot} and \code{thetaExtract}
 #' to allow the user to estimate the variability in \code{theta} from a larger
 #' model by bootstrapping the model fit on a subset, to allow faster estimation.
@@ -41,6 +51,18 @@
 #' @import lme4
 #' @importFrom abind abind
 #' @importFrom plyr rbind.fill
+#' @examples
+#' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+#' regFit <- predict(m1, newdata = sleepstudy[11, ]) # a single value is returned
+#' intFit <- predictInterval(m1, newdata = sleepstudy[11, ]) # bounded values
+#' # Can do glmer
+#'  gm2 <- glmer(y ~ period + (1 | herd), family = binomial, data = d1,
+#'                nAGQ = 9, weights = d1$size)
+#'  regFit <- predict(gm2, newdata = cbpp[1:10, ])
+#'  # get probabilities
+#'  regFit <- predict(gm2, newdata = cbpp[1:10, ], type = "response")
+#'  intFit <- predictInterval(gm2, newdata = cbpp[1:10, ], type = "probability")
+#'  intFit <- predictInterval(gm2, newdata = cbpp[1:10, ], type = "linear.prediction")
 predictInterval <- function(model, newdata, level = 0.95,
                             n.sims=100, stat=c("median","mean"),
                             type=c("linear.prediction", "probability"),
@@ -57,7 +79,8 @@ predictInterval <- function(model, newdata, level = 0.95,
   model.devcomp <- getME(model, "devcomp")
   if (model.devcomp$dims[["GLMM"]] == 0 &
       model.devcomp$dims[["NLMM"]] == 0) {
-    sigmahat <-  sqrt(1/rgamma(n.sims, 0.5*residDF.merMod(model), 0.5*model.devcomp$cmp[["pwrss"]]))
+    sigmahat <-  sqrt(1/rgamma(n.sims, 0.5 * residDF.merMod(model),
+                               0.5 * model.devcomp$cmp[["pwrss"]]))
     if (predict.type=="probability") {
       predict.type="linear.prediction"
       warning("    Asking for predictions on the probability scale makes no sense, resetting predict.type to linear.prediction",
@@ -89,7 +112,7 @@ predictInterval <- function(model, newdata, level = 0.95,
     #     nums <- sapply(data, is.numeric); vars <- names(nums[!nums == TRUE])
     #     tmp[, vars] <- apply(tmp[, vars], 2, as.character)
     newdata.modelMatrix <- model.matrix(matrixForm,
-                                        data = tmp)[1:nrow(newdata), ]
+                                        data = tmp)[1:nrow(newdata), , drop=FALSE]
     rm(tmp)
   }
   ##Right now I am not multiplying the BLUP variance covariance matrices by our
@@ -129,8 +152,8 @@ predictInterval <- function(model, newdata, level = 0.95,
     }
      tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
-     tmp <- tmp[, c(keep, "var")]
-     tmp$var <- as.character(tmp$var)
+     tmp <- tmp[, c(keep, "var"), drop = FALSE]
+     tmp[, "var"] <- as.character(tmp[, "var"])
      colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
      tmpCoef <- reSimA[, keep, , drop = FALSE]
      tmp.pred <- function(data, coefs, group){
