@@ -35,3 +35,8 @@ test_that("Can extract theta from a fit model", {
   expect_equal(nrow(z1), 11)
   expect_equal(ncol(z1), 2)
 })
+
+context("Test formula build")
+
+
+context("Test trimModelFrame")

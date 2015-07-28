@@ -15,6 +15,12 @@ test_that("extract theta produces a vector", {
   expect_equal(length(thetaExtract(lmerSlope1)), 3)
 })
 
+test_that("thetaExtract throws errors for non-merMod objects", {
+  expect_error(thetaExtract(lmerSlope1@frame))
+  m1 <- lm(mpg ~ disp + hp, data = mtcars)
+  expect_error(thetaExtract(m1))
+})
+
 ###############################################
 context("subBoot")
 ################################################

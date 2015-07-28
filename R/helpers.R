@@ -2,7 +2,6 @@
 
 # Function to take only rows that form distinct levels of factors
 # Need to figure out how to build a model matrix better.
-#' @importFrom lattice dotplot
 trimModelFrame <- function(data){
   # Identify numerics
   nums <- sapply(data, is.numeric)
@@ -103,11 +102,10 @@ formulaBuild <- function(model){
   slopeFX <- setdiff(all.vars(model@call$formula), names(ngrps(model)))
   missVar <- setdiff(slopeFX, all.vars(nobars(model@call$formula)))
   newForm <- nobars(model@call$formula)
-  #' # These are the variable names:
-  measurevar <- as.character(newForm[[2]])
-  groupvars  <- c(setdiff(all.vars(newForm), measurevar), missVar)
-  # This returns the formula:
-  newForm <- as.formula(paste(measurevar, paste(groupvars, collapse=" + "), sep=" ~ "))
+  if(length(missVar > 0)){
+    newForm <- paste(Reduce(paste, deparse(newForm)), paste(missVar, collapse = " +"), sep = " + ")
+  }
+  newForm <- as.formula(newForm)
   return(newForm)
 }
 

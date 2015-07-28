@@ -1,11 +1,14 @@
 #' Extract theta parameters from a merMod model
-#'
+#' @description A convenience function that returns the theta parameters for a
+#' \code{\link{merMod}} obejct.
 #' @param model a valide merMod object
 #'
-#' @return a vector of the theta parameters from a merMod
+#' @return a vector of the covrariance, theta, parameters from a \code{\link{merMod}}
+#' @seealso merMod
 #' @export
 #'
 thetaExtract <- function(model){
+  stopifnot(class(model) %in% c("lmerMod", "glmerMod"))
   return(model@theta)
 }
 

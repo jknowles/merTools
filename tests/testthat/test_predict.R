@@ -317,3 +317,22 @@ test_that("Prediction intervals work with slope not in fixed effects and data re
   truPred <- predict(glmer3LevSlope, newdata = zNew, allow.new.levels = TRUE)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/40)
 })
+
+context("Special cases - rank deficiency")
+
+test_that("Prediction intervals work with slope not in fixed effects and data reordered", {
+  n <- 20
+  x <- y <- rnorm(n)
+  z <- rnorm(n)
+  r <- sample(1:5, size=n, replace=TRUE)
+  d <- data.frame(x,y,z,r)
+  d2 <- expand.grid(a=factor(1:4),b=factor(1:4),rep=1:10)
+  n <- nrow(d2)
+  d2 <- transform(d2,r=sample(1:5, size=n, replace=TRUE),
+                  z=rnorm(n))
+  d2 <- subset(d2,!(a=="4" & b=="4"))
+  fm <- lmer( z ~ a*b + (1|r), data=d2)
+  expect_is(predictInterval(fm, newdata = d2[1:10, ]), "data.frame")
+})
+
+

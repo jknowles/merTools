@@ -10,9 +10,13 @@ thetaExtract(model)
 \item{model}{a valide merMod object}
 }
 \value{
-a vector of the theta parameters from a merMod
+a vector of the covrariance, theta, parameters from a \code{\link{merMod}}
 }
 \description{
-Extract theta parameters from a merMod model
+A convenience function that returns the theta parameters for a
+\code{\link{merMod}} obejct.
+}
+\seealso{
+merMod
 }
 

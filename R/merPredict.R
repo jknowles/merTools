@@ -151,14 +151,20 @@ predictInterval <- function(model, newdata, level = 0.95,
   # fixed.xb is nrow(newdata) x n.sims
   ##Calculate yhat as sum of the components (fixed plus all groupling factors)
   # apply(reSim, c(1,2), function(x), sum(x,na.rm=TRUE))
-  betaSim <- abind(lapply(1:n.sims, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
+  betaSim <- abind::abind(lapply(1:n.sims, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
   # Pad betaSim
   if(ncol(newdata.modelMatrix) > ncol(betaSim)){
     pad <- matrix(rep(0), nrow = nrow(betaSim),
                   ncol = ncol(newdata.modelMatrix) - ncol(betaSim))
+    if(ncol(pad) > 0){
+      message("Fixed effect matrix has been padded with 0 coefficients
+            for random slopes not included in the fixed effects and interaction terms.")
+    }
+    colnames(pad) <- setdiff(colnames(newdata.modelMatrix), colnames(betaSim))
     betaSim <- cbind(betaSim, pad)
-    message("Fixed effect matrix has been padded with 0 coefficients
-for random slopes not included in the fixed effects.")
+    keep <- intersect(colnames(newdata.modelMatrix), colnames(betaSim))
+    newdata.modelMatrix <- newdata.modelMatrix[, keep]
+    betaSim <- betaSim[, keep]
   }
 
   re.xb$fixed <- newdata.modelMatrix %*% t(betaSim)
