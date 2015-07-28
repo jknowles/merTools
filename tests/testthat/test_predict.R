@@ -320,7 +320,7 @@ test_that("Prediction intervals work with slope not in fixed effects and data re
 
 context("Special cases - rank deficiency")
 
-test_that("Prediction intervals work with slope not in fixed effects and data reordered", {
+test_that("Prediction intervals are accurate with interaction terms and rank deficiency", {
   n <- 20
   x <- y <- rnorm(n)
   z <- rnorm(n)
@@ -333,6 +333,16 @@ test_that("Prediction intervals work with slope not in fixed effects and data re
   d2 <- subset(d2,!(a=="4" & b=="4"))
   fm <- lmer( z ~ a*b + (1|r), data=d2)
   expect_is(predictInterval(fm, newdata = d2[1:10, ]), "data.frame")
+
+  newPred <- predictInterval(fm, newdata = d2, level = 0.8, n.sims = 500,
+                             stat = 'median', include.resid.var = FALSE)
+  truPred <- predict(fm, newdata = d2)
+  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/100)
+  fm2 <- lmer( z ~ a*b + (1+b|r), data=d2)
+  newPred <- predictInterval(fm2, newdata = d2, level = 0.8, n.sims = 1000,
+                             stat = 'median', include.resid.var = FALSE)
+  truPred <- predict(fm2, newdata = d2)
+  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/50)
 })
 
 
