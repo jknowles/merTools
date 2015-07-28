@@ -25,7 +25,11 @@ regularFactor <- factor(regularFactor)
 levels(regularFactor)
 # Now make it super
 newLevs <- c("D", "E", "F")
+<<<<<<< Updated upstream
 regularFactor <- superFactor(regularFactor, fullLev = newLevs)
+=======
+regularFactor <- superFactor(regularFactor, fulllev = newLevs)
+>>>>>>> Stashed changes
 levels(regularFactor) # now super
 }
 
