@@ -1,4 +1,4 @@
-# utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "label"))
+utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "label"))
 #' Launch a shiny app to explore your merMod interactively
 #'
 #' \code{shinyMer} launches a shiny app that allows you to interactively

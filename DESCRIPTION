@@ -15,7 +15,6 @@ Suggests:
     rmarkdown,
 Imports:
     mvtnorm,
-    lattice,
     DT,
     shiny,
     plyr,

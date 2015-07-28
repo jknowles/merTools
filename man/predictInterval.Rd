@@ -25,13 +25,40 @@ predictInterval(model, newdata, level = 0.95, n.sims = 100,
 linear models}
 }
 \value{
-'newdata' with three columns appended, stat and the lower
-        and upper prediction interval boundaries
+a data.frame iwth three columns:
+\describe{
+    \item{fit}{The center of the distribution of predicted values as defined by
+    the \code{stat} parameter.}
+    \item{lwr}{The lower confidence interval bound corresponding to the quantile cut
+    defined in \code{level}.}
+    \item{upr}{The upper confidence interval bound corresponding to the quantile cut
+    defined in \code{level}.}
+  }
 }
 \description{
-Predict from merMod objects with a prediction interval
+This function provides a way to capture model uncertainty in
+predictions from multi-level models fit with \code{lme4}. By drawing a sampling
+distribution for the random and the fixed effects and then estimating the fitted
+value across that distribution, it is possible to generate a prediction interval
+for fitted values that includes all variation in the model except for variation
+in the covariance paramters, theta. This is a much faster alternative than
+bootstrapping for models fit to medium to large datasets.
 }
 \details{
-Sampling strategy description.
+To generate a prediction inteval, the function first computes a simulated
+distribution of all of the parameters in the model. For the random, or grouping,
+effects, this is done by sampling from a multivariate normal distribution which
+is defined by the BLUP estimate provided by \code{ranef} and the associated
+variance-covariance matrix for each observed level of each grouping terms. For
+each grouping term, an array is build that has as many rows as there are levels
+of the grouping factor, as many columns as there are predictors at that level
+(e.g. an intercept and slope), and is stacked as high as there are number of
+simulations. These arrays are then multiplied by the new data provided to the
+function to produce a matrix of yhat values.
+}
+\note{
+\code{merTools} includes the functions \code{subBoot} and \code{thetaExtract}
+to allow the user to estimate the variability in \code{theta} from a larger
+model by bootstrapping the model fit on a subset, to allow faster estimation.
 }
 
