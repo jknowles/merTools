@@ -4,20 +4,21 @@
 \alias{subBoot}
 \title{Bootstrap a subset of an lme4 model}
 \usage{
-subBoot(model, n, FUN, B)
+subBoot(model, n = NULL, FUN, B = 100)
 }
 \arguments{
 \item{model}{a valid merMod object}
 
 \item{n}{the number of rows to sample from the original data
-in the merMod object}
+in the merMod object, by default will resample the entire model frame}
 
 \item{FUN}{the function to apply to each bootstrapped model}
 
-\item{B}{the number of bootstrap replicates}
+\item{B}{the number of bootstrap replicates, default is 100}
 }
 \value{
-a matrix of parameters extracted from each of the B replications
+a matrix of parameters extracted from each of the B replications.
+The original values are appended to the top of the matrix.
 }
 \description{
 Bootstrap a subset of an lme4 model
@@ -25,5 +26,11 @@ Bootstrap a subset of an lme4 model
 \details{
 This function allows users to estimate parameters of a
 large merMod object using bootstraps on a subset of the data.
+}
+\examples{
+\dontrun{
+(fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))
+resultMatrix <- subBoot(fm1, n = 160, FUN = thetaExtract, B = 20)
+}
 }
 

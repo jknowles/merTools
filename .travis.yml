@@ -17,7 +17,6 @@ r_binary_packages:
   - rmarkdown
   - mvtnorm
   - lattice
-  - DT
   - shiny
   - plyr
   - abind

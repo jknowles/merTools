@@ -56,7 +56,7 @@ easyVarCorr <- function (varc, useScale, digits){
               lapply(recorr,
                      function(x, maxlen) {
                        x <- as(x, "matrix")
-                       #                                             cc <- format(round(x, 3), nsmall = 3)
+                       #   cc <- format(round(x, 3), nsmall = 3)
                        cc <- fround (x, digits)
                        cc[!lower.tri(cc)] <- ""
                        nr <- dim(cc)[1]
@@ -66,7 +66,7 @@ easyVarCorr <- function (varc, useScale, digits){
     colnames(corr) <- c("Corr", rep("", maxlen - 1))
     reMat <- cbind(reMat, rbind(corr, rep("", ncol(corr))))
   }
-  #                  if (!useScale) reMat <- reMat[-nrow(reMat),]
+  #    if (!useScale) reMat <- reMat[-nrow(reMat),]
   if (useScale<0) reMat[nrow(reMat),] <- c ("No residual sd", rep("",ncol(reMat)-1))
   return (reMat)
 }

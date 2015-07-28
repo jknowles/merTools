@@ -16,6 +16,10 @@ a vector of the covrariance, theta, parameters from a \code{\link{merMod}}
 A convenience function that returns the theta parameters for a
 \code{\link{merMod}} obejct.
 }
+\examples{
+(fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))
+thetaExtract(fm1) #(a numeric vector of the covariance parameters)
+}
 \seealso{
 merMod
 }
