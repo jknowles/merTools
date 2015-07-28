@@ -15,6 +15,7 @@
 #' @importFrom mvtnorm rmvnorm
 #' @import lme4
 #' @importFrom abind abind
+#' @importFrom plyr rbind.fill
 predictInterval <- function(model, newdata, level = 0.95,
                             n.sims=100, stat=c("median","mean"),
                             type=c("linear.prediction", "probability"),

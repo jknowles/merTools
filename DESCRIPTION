@@ -9,9 +9,6 @@ Depends:
     R (>= 3.0.2),
     arm,
     lme4,
-    plyr,
-    abind,
-    ggplot2
 Suggests:
     testthat,
     knitr,
@@ -20,7 +17,10 @@ Imports:
     mvtnorm,
     lattice,
     DT,
-    shiny
+    shiny,
+    plyr,
+    abind,
+    ggplot2
 License: MIT + file LICENSE
 LazyData: true
 VignetteBuilder: knitr
