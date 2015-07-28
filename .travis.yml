@@ -9,6 +9,19 @@ env:
     - NOT_CRAN="true"
     - NOT_CRAN="false"
 
+r_binary_packages:
+  - Rcpp
+  - lme4
+  - testthat
+  - knitr
+  - rmarkdown
+  - mvtnorm
+  - lattice
+  - DT
+  - shiny
+  - plyr
+  - abind
+  - ggplot2
 r_github_packages:
   - jimhester/covr
 
