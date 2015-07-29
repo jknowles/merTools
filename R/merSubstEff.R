@@ -33,8 +33,9 @@
 #'   they do not match the name of another random coefficient for that factor}):
 #'   \code{c("(Intercept)", "Int", "intercep", ...)}.
 #'
-#' @param nbins an integer representing the number of bins to divide the group
-#' effects into, the default is 3
+#' @param breaks an integer representing the number of bins to divide the group
+#' effects into, the default is 3; alternatively it can specify breaks from 0-100
+#' for how to cut the expected rank distribution
 #'
 #' @param ... additional arguments to pass to \code{\link{predictInterval}}
 #'
@@ -47,6 +48,7 @@
 #'     \item{AvgFitWght}{The weighted mean of the fitted values for case i in bin k}
 #'     \item{AvgFitWghtSE}{The standard deviation of the mean of the fitted values
 #'     for case i in bin k.}
+#'     \item{nobs}{The number of group effects contained in that bin.}
 #'   }
 #'
 #' @details #' This function uses the formula for variance of a weighted mean
@@ -66,7 +68,7 @@
 #' #For a one-level random intercept model
 #' require(lme4)
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-#' (m1.er <- groupSim(m1, newdata = sleepstudy[1, ], nbins = 2))
+#' (m1.er <- groupSim(m1, newdata = sleepstudy[1, ], breaks = 2))
 #'
 #' #For a one-level random intercept model with multiple random terms
 #' m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
@@ -83,12 +85,12 @@
 #'                 include.resid.var = TRUE)
 #' zed2 <- groupSim(g1, newdata = InstEval[9:12, ], factor = "s", n.sims = 50,
 #'                  include.resid.var = TRUE)
-#' zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", nbins = 5,
+#' zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", breaks = 5,
 #                 n.sims = 50, include.resid.var = TRUE)
 #' }
 #'
 #' @export
-groupSim <- function(merMod, newdata, factor=NULL, term = NULL, nbins = 3, ...){
+groupSim <- function(merMod, newdata, factor=NULL, term = NULL, breaks = 3, ...){
   if(missing(factor)){
     factor <- names(ranef(merMod))[1]
   }
@@ -114,17 +116,19 @@ groupSim <- function(merMod, newdata, factor=NULL, term = NULL, nbins = 3, ...){
     return(out)
   }
   # bin pctER somehow
-  outs1$bin <- cut(outs1$pctER, breaks = nbins, labels = FALSE)
+  outs1$bin <- cut(outs1$pctER, breaks = breaks, labels = FALSE,
+                   include.lowest = TRUE)
   bySum <- function(x){
     AvgFit <- weighted.mean(x$fit, 1/x$var)
     AvgFitSE <- weighted.var.se(x$fit, 1/x$var)
-    return(c(AvgFit, AvgFitSE))
+    nobs <- length(x$fit)
+    return(c(AvgFit, AvgFitSE, nobs))
   }
   outs1 <- outs1[order(outs1$case, outs1$bin),]
 
   wMeans <- by(outs1, INDICES = list(outs1$case, outs1$bin), bySum)
   ids <- expand.grid(unique(outs1$case), unique(outs1$bin))
   wMeans <- cbind(ids, do.call(rbind, wMeans))
-  names(wMeans) <- c("case", "bin", "AvgFit", "AvgFitSE")
+  names(wMeans) <- c("case", "bin", "AvgFit", "AvgFitSE", "nobs")
   return(wMeans)
 }

@@ -5,7 +5,7 @@
 \title{Calculate the weighted mean of fitted values for various levels of
 random effect terms.}
 \usage{
-groupSim(merMod, newdata, factor = NULL, term = NULL, nbins = 3, ...)
+groupSim(merMod, newdata, factor = NULL, term = NULL, breaks = 3, ...)
 }
 \arguments{
 \item{merMod}{An object of class merMod}
@@ -26,8 +26,9 @@ for}
   they do not match the name of another random coefficient for that factor}):
   \code{c("(Intercept)", "Int", "intercep", ...)}.}
 
-\item{nbins}{an integer representing the number of bins to divide the group
-effects into, the default is 3}
+\item{breaks}{an integer representing the number of bins to divide the group
+effects into, the default is 3; alternatively it can specify breaks from 0-100
+for how to cut the expected rank distribution}
 
 \item{...}{additional arguments to pass to \code{\link{predictInterval}}}
 }
@@ -41,6 +42,7 @@ in the newdata element, and number of bins:
     \item{AvgFitWght}{The weighted mean of the fitted values for case i in bin k}
     \item{AvgFitWghtSE}{The standard deviation of the mean of the fitted values
     for case i in bin k.}
+    \item{nobs}{The number of group effects contained in that bin.}
   }
 }
 \description{
@@ -83,7 +85,7 @@ zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", n.sims = 50,
                 include.resid.var = TRUE)
 zed2 <- groupSim(g1, newdata = InstEval[9:12, ], factor = "s", n.sims = 50,
                  include.resid.var = TRUE)
-zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", nbins = 5,
+zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", breaks = 5,
 }
 }
 \references{
