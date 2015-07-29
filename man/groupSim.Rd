@@ -68,7 +68,7 @@ recommended by Cochran (1977).
 #For a one-level random intercept model
 require(lme4)
 m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-(m1.er <- groupSim(m1, newdata = sleepstudy[1, ], nbins = 2))
+(m1.er <- groupSim(m1, newdata = sleepstudy[1, ], breaks = 2))
 
 #For a one-level random intercept model with multiple random terms
 m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
