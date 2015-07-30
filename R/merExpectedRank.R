@@ -92,8 +92,6 @@
 #' (m3.er1 <- expectedRank(m3, factor="s", term="Intercept"))
 #' }
 #' @export
-
-
 expectedRank <- function(merMod, factor=NULL, term=NULL) {
   #Count random terms in merMod
   n.rfx <- lme4::getME(merMod, "k")

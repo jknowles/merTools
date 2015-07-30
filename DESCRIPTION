@@ -15,12 +15,11 @@ Suggests:
     rmarkdown,
 Imports:
     mvtnorm,
-    lattice,
     DT,
     shiny,
     plyr,
     abind,
     ggplot2
-License: MIT + file LICENSE
+License: GPL (>=2)
 LazyData: true
 VignetteBuilder: knitr

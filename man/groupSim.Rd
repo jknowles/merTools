@@ -5,7 +5,7 @@
 \title{Calculate the weighted mean of fitted values for various levels of
 random effect terms.}
 \usage{
-groupSim(merMod, newdata, factor = NULL, term = NULL, nbins = 3, ...)
+groupSim(merMod, newdata, factor = NULL, term = NULL, breaks = 3, ...)
 }
 \arguments{
 \item{merMod}{An object of class merMod}
@@ -15,9 +15,9 @@ for}
 
 \item{factor}{The name of the grouping factor over which the random
   coefficient of interest varies.  This is the variable to the right of the
-  pipe, \code{|}, in the [g]lmer formula. This parameter is optional if only
-  a single grouping factor is included in the model, but required if there
-  are two or more.}
+  pipe, \code{|}, in the [g]lmer formula. This parameter is optional, if not
+  specified, it will perform the calculation for the first effect listed
+  by \code{ranef}.}
 
 \item{term}{The name of the random coefficient of interest. This is the
   variable to the left of the pipe, \code{|}, in the [g]lmer formula. Partial
@@ -26,8 +26,9 @@ for}
   they do not match the name of another random coefficient for that factor}):
   \code{c("(Intercept)", "Int", "intercep", ...)}.}
 
-\item{nbins}{an integer representing the number of bins to divide the group
-effects into, the default is 3}
+\item{breaks}{an integer representing the number of bins to divide the group
+effects into, the default is 3; alternatively it can specify breaks from 0-100
+for how to cut the expected rank distribution}
 
 \item{...}{additional arguments to pass to \code{\link{predictInterval}}}
 }
@@ -36,11 +37,12 @@ A data.frame with all unique combinations of the number of cases, rows
 in the newdata element, and number of bins:
   \describe{
     \item{case}{The row number of the observation from newdata.}
-    \item{bin}{The ranking bin for the expected rank, highest ranks are in
-    the highest bin.}
+    \item{bin}{The ranking bin for the expected rank, the higher the bin number,
+    the greater the expected rank of the groups in that bin.}
     \item{AvgFitWght}{The weighted mean of the fitted values for case i in bin k}
     \item{AvgFitWghtSE}{The standard deviation of the mean of the fitted values
     for case i in bin k.}
+    \item{nobs}{The number of group effects contained in that bin.}
   }
 }
 \description{
@@ -66,22 +68,24 @@ recommended by Cochran (1977).
 #For a one-level random intercept model
 require(lme4)
 m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-(m1.er <- expectedRank(m1))
+(m1.er <- groupSim(m1, newdata = sleepstudy[1, ], breaks = 2))
 
 #For a one-level random intercept model with multiple random terms
-require(lme4)
 m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #ranked by the random slope on Days
-(m2.er1 <- expectedRank(m2, term="Days"))
+(m2.er1 <- groupSim(m2,  newdata = sleepstudy[1, ],
+           factor = "Subject", term="Days"))
 #ranked by the random intercept
-(m2.er2 <- expectedRank(m2, term="int"))
-
+(m2.er2 <- groupSim(m2, newdata = sleepstudy[1, ],
+             factor = "Subject", term="int"))
 \dontrun{
-#For a two-level model with random intercepts
-require(lme4)
-m3 <- lmer(y ~ service * dept + (1|s) + (1|d), InstEval)
-#Ranked by the random intercept on 's'
-(m3.er1 <- expectedRank(m3, factor="s", term="Intercept"))
+# You can also pass additional arguments to predictInterval through groupSim
+g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
+zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", n.sims = 50,
+                include.resid.var = TRUE)
+zed2 <- groupSim(g1, newdata = InstEval[9:12, ], factor = "s", n.sims = 50,
+                 include.resid.var = TRUE)
+zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", breaks = 5,
 }
 }
 \references{

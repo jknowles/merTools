@@ -129,9 +129,9 @@ table(reEx$level)
 ```
 
 Most important is producing caterpillar or dotplots of these terms to explore 
-their variation. This is easily accomplished:
+their variation. This is easily accomplished with the `dotplot` function:
 
-```{r}
+```{r, eval=FALSE, echo = TRUE}
 lattice::dotplot(ranef(m1, condVar=TRUE))
 ```
 

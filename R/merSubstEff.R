@@ -22,9 +22,9 @@
 #'
 #' @param factor The name of the grouping factor over which the random
 #'   coefficient of interest varies.  This is the variable to the right of the
-#'   pipe, \code{|}, in the [g]lmer formula. This parameter is optional if only
-#'   a single grouping factor is included in the model, but required if there
-#'   are two or more.
+#'   pipe, \code{|}, in the [g]lmer formula. This parameter is optional, if not
+#'   specified, it will perform the calculation for the first effect listed
+#'   by \code{ranef}.
 #'
 #' @param term The name of the random coefficient of interest. This is the
 #'   variable to the left of the pipe, \code{|}, in the [g]lmer formula. Partial
@@ -33,8 +33,9 @@
 #'   they do not match the name of another random coefficient for that factor}):
 #'   \code{c("(Intercept)", "Int", "intercep", ...)}.
 #'
-#' @param nbins an integer representing the number of bins to divide the group
-#' effects into, the default is 3
+#' @param breaks an integer representing the number of bins to divide the group
+#' effects into, the default is 3; alternatively it can specify breaks from 0-100
+#' for how to cut the expected rank distribution
 #'
 #' @param ... additional arguments to pass to \code{\link{predictInterval}}
 #'
@@ -42,11 +43,12 @@
 #' in the newdata element, and number of bins:
 #'   \describe{
 #'     \item{case}{The row number of the observation from newdata.}
-#'     \item{bin}{The ranking bin for the expected rank, highest ranks are in
-#'     the highest bin.}
+#'     \item{bin}{The ranking bin for the expected rank, the higher the bin number,
+#'     the greater the expected rank of the groups in that bin.}
 #'     \item{AvgFitWght}{The weighted mean of the fitted values for case i in bin k}
 #'     \item{AvgFitWghtSE}{The standard deviation of the mean of the fitted values
 #'     for case i in bin k.}
+#'     \item{nobs}{The number of group effects contained in that bin.}
 #'   }
 #'
 #' @details #' This function uses the formula for variance of a weighted mean
@@ -66,25 +68,32 @@
 #' #For a one-level random intercept model
 #' require(lme4)
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-#' (m1.er <- expectedRank(m1))
+#' (m1.er <- groupSim(m1, newdata = sleepstudy[1, ], breaks = 2))
 #'
 #' #For a one-level random intercept model with multiple random terms
-#' require(lme4)
 #' m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #' #ranked by the random slope on Days
-#' (m2.er1 <- expectedRank(m2, term="Days"))
+#' (m2.er1 <- groupSim(m2,  newdata = sleepstudy[1, ],
+#'            factor = "Subject", term="Days"))
 #' #ranked by the random intercept
-#' (m2.er2 <- expectedRank(m2, term="int"))
-#'
+#' (m2.er2 <- groupSim(m2, newdata = sleepstudy[1, ],
+#'              factor = "Subject", term="int"))
 #' \dontrun{
-#' #For a two-level model with random intercepts
-#' require(lme4)
-#' m3 <- lmer(y ~ service * dept + (1|s) + (1|d), InstEval)
-#' #Ranked by the random intercept on 's'
-#' (m3.er1 <- expectedRank(m3, factor="s", term="Intercept"))
+#' # You can also pass additional arguments to predictInterval through groupSim
+#' g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
+#' zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", n.sims = 50,
+#'                 include.resid.var = TRUE)
+#' zed2 <- groupSim(g1, newdata = InstEval[9:12, ], factor = "s", n.sims = 50,
+#'                  include.resid.var = TRUE)
+#' zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", breaks = 5,
+#                 n.sims = 50, include.resid.var = TRUE)
 #' }
+#'
 #' @export
-groupSim <- function(merMod, newdata, factor=NULL, term = NULL, nbins = 3, ...){
+groupSim <- function(merMod, newdata, factor=NULL, term = NULL, breaks = 3, ...){
+  if(missing(factor)){
+    factor <- names(ranef(merMod))[1]
+  }
   lvls <- unique(merMod@frame[, factor])
   zed <- as.data.frame(lapply(newdata, rep, length(lvls)))
   zed[, factor] <- rep(lvls, each = nrow(newdata))
@@ -107,113 +116,19 @@ groupSim <- function(merMod, newdata, factor=NULL, term = NULL, nbins = 3, ...){
     return(out)
   }
   # bin pctER somehow
-  outs1$bin <- cut(outs1$pctER, breaks = nbins, labels = FALSE)
+  outs1$bin <- cut(outs1$pctER, breaks = breaks, labels = FALSE,
+                   include.lowest = TRUE)
   bySum <- function(x){
     AvgFit <- weighted.mean(x$fit, 1/x$var)
     AvgFitSE <- weighted.var.se(x$fit, 1/x$var)
-    return(c(AvgFit, AvgFitSE))
+    nobs <- length(x$fit)
+    return(c(AvgFit, AvgFitSE, nobs))
   }
   outs1 <- outs1[order(outs1$case, outs1$bin),]
 
   wMeans <- by(outs1, INDICES = list(outs1$case, outs1$bin), bySum)
   ids <- expand.grid(unique(outs1$case), unique(outs1$bin))
   wMeans <- cbind(ids, do.call(rbind, wMeans))
-  names(wMeans) <- c("case", "bin", "AvgFit", "AvgFitSE")
+  names(wMeans) <- c("case", "bin", "AvgFit", "AvgFitSE", "nobs")
   return(wMeans)
 }
-
-
-
-
-
-
-
-
-# substEffSimFE <- function(mod, var, ncases, unscale = NULL, unscaleDV = NULL, ...){
-#   if(missing(unscaleDV)){
-#     if(class(mod) == "lmerMod"){
-#       unscaleDV <- TRUE
-#     } else {
-#       unscaleDV <- FALSE
-#     }
-#   }
-#   dvName <- names(mod@frame)[1]
-#   # var should be a character, name of variable in model
-#   # ncases is integer
-#   # unscale is a logical indicating if the independent variable should be unscaled
-#   # mod is a merMod
-#   cases <- mod@frame[sample(1:nrow(mod@frame), ncases),]
-#   cases$caseID <- 1:nrow(cases)
-#   varLength <- length(unique(mod@frame[, var]))
-#   if(varLength < 30){
-#     jitters <- unique(mod@frame[, var])
-#   } else {
-#     jitters <- quantile(mod@frame[, var], probs=seq(0,1, by =0.05))
-#   }
-#   simvals <- expand.grid(caseID = unique(cases$caseID), newvar = jitters)
-#   plotdf <- merge(cases, simvals)
-#   plotdf$oldvar <- plotdf[, var]
-#   plotdf[, var] <- plotdf$newvar
-#   plotdf$newvar <- NULL
-#   plotdf <- cbind(plotdf, easyPredCI(mod, newdata=plotdf, ...))
-#   if(missing(unscale)){
-#     return(plotdf)
-#   } else {
-#     stopifnot(class(unscale) == "matrix")
-#     plotdf$newvarUnscale <- (plotdf[, var] * 2 * unscale[var, 2]) + unscale[var, 1]
-#     if(unscaleDV == TRUE){
-#       plotdf$yhatUnscale <- (plotdf[, "yhat"] * 2 * unscale[dvName, 2]) + unscale[dvName, 1]
-#       plotdf$lwrUnscale <- (plotdf[, "lwr"] * 2 * unscale[dvName, 2]) + unscale[dvName, 1]
-#       plotdf$uprUnscale <- (plotdf[, "upr"] * 2 * unscale[dvName, 2]) + unscale[dvName, 1]
-#     }
-#     return(plotdf)
-#   }
-# }
-#
-#
-# substEffSimRE <- function(mod, var, ncases, ...){
-#   # var should be a character, name of variable in model
-#   # ncases is integer
-#   # mod is a merMod
-#   cases <- mod@frame[sample(1:nrow(mod@frame), ncases),]
-#   cases$caseID <- 1:nrow(cases)
-#   varLength <- length(unique(mod@frame[, var]))
-#   jitters <- unique(mod@frame[, var])
-#   simvals <- expand.grid(caseID = unique(cases$caseID), newvar = jitters)
-#   plotdf <- merge(cases, simvals)
-#   plotdf$oldvar <- plotdf[, var]
-#   plotdf[, var] <- plotdf$newvar
-#   plotdf <- cbind(plotdf, easyPredCI(mod, newdata=plotdf, re = TRUE, ...))
-#   return(plotdf)
-# }
-#
-#
-# easyPredCI <- function(model, newdata, alpha=0.05, re = NULL) {
-#   # From https://rpubs.com/bbolker/glmmchapter
-#   ## baseline prediction, on the linear predictor (logit) scale:
-#   if(missing(re)){
-#     pred0 <- predict(model, re.form = NA, newdata=newdata)
-#   } else{
-#     pred0 <- predict(model, newdata=newdata)
-#   }
-#   ## fixed-effects model matrix for new data
-#   X <- model.matrix(formula(model,fixed.only=TRUE)[-2],
-#                     newdata)
-#   beta <- fixef(model) ## fixed-effects coefficients
-#   V <- vcov(model)     ## variance-covariance matrix of beta
-#   pred.se <- sqrt(diag(X %*% V %*% t(X))) ## std errors of predictions
-#
-#   if(class(model) == "lmerMod"){
-#     linkinv <- identity
-#   } else if(class(model) == "glmerMod"){
-#     ## inverse-link (logistic) function: could also use plogis()
-#     linkinv <- model@resp$family$linkinv
-#   }
-#   ## construct 95% Normal CIs on the link scale and
-#   ##  transform back to the response (probability) scale:
-#   crit <- -qnorm(alpha/2)
-#   linkinv(cbind(lwr = pred0 - crit * pred.se,
-#                 upr = pred0 + crit * pred.se,
-#                 yhat = pred0))
-# }
-#
