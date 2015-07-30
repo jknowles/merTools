@@ -42,9 +42,9 @@ test_that("Sanitize names renames variables in data.frame", {
   badMod <- lmer(distance ~ factor(Sex) + (0 + age + nsex|Subject),
                  data=Orthodont)
   expect_false(identical(names(badMod@frame),
-                         names(merTools:::sanitizeNames(badMod@frame))))
-  expect_is(merTools:::sanitizeNames(badMod@frame), "data.frame")
-  expect_identical(names(merTools:::sanitizeNames(badMod@frame))[2], "Sex")
+                         names(sanitizeNames(badMod@frame))))
+  expect_is(sanitizeNames(badMod@frame), "data.frame")
+  expect_identical(names(sanitizeNames(badMod@frame))[2], "Sex")
   expect_identical(names(badMod@frame)[2], "factor(Sex)")
 })
 
@@ -55,8 +55,8 @@ context("Strip attributes")
 
 test_that("Attributes can be stripped from data.frame", {
   full <- names(attributes(lmerSlope1@frame))
-  redu <- names(attributes(merTools:::stripAttributes(lmerSlope1@frame)))
-  redu2 <- names(attributes(merTools:::stripAttributes(glmer3LevSlope@frame)))
+  redu <- names(attributes(stripAttributes(lmerSlope1@frame)))
+  redu2 <- names(attributes(stripAttributes(glmer3LevSlope@frame)))
   expect_true(length(full) > length(redu))
   expect_true(all(redu %in% full))
   expect_true(all(redu %in% c("names", "row.names", "class")))
@@ -115,8 +115,8 @@ context("Collapse frame")
 ################################################
 
 test_that("Collapsing a dataframe results in single row", {
-  data1 <- merTools:::collapseFrame(Orthodont)
-  data2 <- merTools:::collapseFrame(grouseticks)
+  data1 <- collapseFrame(Orthodont)
+  data2 <- collapseFrame(grouseticks)
   expect_equal(length(data1), length(Orthodont))
   expect_equal(length(data2), length(grouseticks))
   expect_equal(nrow(data1), 1)
@@ -139,12 +139,12 @@ context("Subset by a list")
 test_that("Data can be subset by a list", {
   list11 <- list("Sex" = "Male")
   list12 <- list("Sex" = "Male", "Subject" = "M05")
-  data11 <- merTools:::subsetList(Orthodont, list11)
-  data12 <- merTools:::subsetList(Orthodont, list12)
+  data11 <- subsetList(Orthodont, list11)
+  data12 <- subsetList(Orthodont, list12)
   list21 <- list("YEAR" = "95")
   list22 <- list("LOCATION" = "32", "BROOD" = "503")
-  data21 <- merTools:::subsetList(grouseticks, list21)
-  data22 <- merTools:::subsetList(grouseticks, list22)
+  data21 <- subsetList(grouseticks, list21)
+  data22 <- subsetList(grouseticks, list22)
   expect_equal(length(data11), length(Orthodont))
   expect_equal(length(data21), length(grouseticks))
   expect_equal(length(data12), length(Orthodont))
@@ -193,10 +193,10 @@ context("Shuffle")
 ################################################
 
 test_that("Data can be shuffled", {
-  expect_equal(nrow(Orthodont), nrow(merTools:::shuffle(Orthodont)))
-  expect_equal(ncol(Orthodont), ncol(merTools:::shuffle(Orthodont)))
-  expect_equal(nrow(grouseticks), nrow(merTools:::shuffle(grouseticks)))
-  expect_equal(ncol(grouseticks), ncol(merTools:::shuffle(grouseticks)))
+  expect_equal(nrow(Orthodont), nrow(shuffle(Orthodont)))
+  expect_equal(ncol(Orthodont), ncol(shuffle(Orthodont)))
+  expect_equal(nrow(grouseticks), nrow(shuffle(grouseticks)))
+  expect_equal(ncol(grouseticks), ncol(shuffle(grouseticks)))
 })
 
 ###############################################

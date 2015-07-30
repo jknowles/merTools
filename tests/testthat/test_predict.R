@@ -1,7 +1,6 @@
 # # -----------------------------------------------------
 # #-------------------------------------------------------
 set.seed(101)
-library(merTools)
 
 context("Prediction intervals cover for simulated problems")
 
