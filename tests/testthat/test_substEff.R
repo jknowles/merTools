@@ -92,7 +92,7 @@ test_that("Custom breakpoints can be set", {
   zed <- groupSim(g1, newdata = InstEval[9, ], breaks = c(0, 10, 50, 90, 100),
                   factor = "d", n.sims = 50,
                   include.resid.var = TRUE)
-  zed2 <- groupSim(g1, newdata = InstEval[9, ], breaks = c(0, 20, 40, 60, 80, 100),
+  zed2 <- groupSim(g1, newdata = InstEval[9, ], breaks = c(1, 20, 40, 60, 80, 100),
                    factor = "d", n.sims = 50,
                    include.resid.var = TRUE)
   zed3 <- groupSim(g1, newdata = InstEval[9, ], breaks = 5,
@@ -101,5 +101,5 @@ test_that("Custom breakpoints can be set", {
   expect_false(nrow(zed) == nrow(zed2))
   expect_more_than(sd(zed$nobs), sd(zed2$nobs))
   expect_more_than(mean(zed$nobs), mean(zed2$nobs))
-  expect_identical(zed3$nobs, zed2$nobs)
+  expect_equal(zed3$nobs, zed2$nobs, tolerance = .05)
 })
