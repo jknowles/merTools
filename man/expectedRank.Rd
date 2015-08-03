@@ -62,6 +62,12 @@ The formula for the percentile expected rank is:
 where \eqn{N_grps} is the number of grouping factor levels. The percentile
 expected rank can be interpreted as the fraction of levels that score at or
 below the given level.
+
+NOTE: \code{expectedRank} will only work under conditions that \code{lme4::ranef}
+will work. One current example of when this is \emph{not} the case is for
+models when there are multiple terms specified per factor (e.g. uncorrelated random
+coefficients for the same term, e.g.
+\code{lmer(Reaction ~ Days + (1 | Subject) + (0 + Days | Subject), data = sleepstudy)})
 }
 \examples{
 #For a one-level random intercept model

@@ -27,6 +27,12 @@
 #' expected rank can be interpreted as the fraction of levels that score at or
 #' below the given level.
 #'
+#' NOTE: \code{expectedRank} will only work under conditions that \code{lme4::ranef}
+#' will work. One current example of when this is \emph{not} the case is for
+#' models when there are multiple terms specified per factor (e.g. uncorrelated random
+#' coefficients for the same term, e.g.
+#' \code{lmer(Reaction ~ Days + (1 | Subject) + (0 + Days | Subject), data = sleepstudy)})
+#'
 #' @param merMod An object of class merMod
 #'
 #' @param factor The name of the grouping factor over which the random
@@ -136,7 +142,7 @@ expectedRank <- function(merMod, factor=NULL, term=NULL) {
   #Calculated percentile expected rank ... the version of the formula I am using is
   #the percentage of groups that are ranked **equal to or less than** the selected
   #group ... if we just wanted percentage ranked less than then remove the 0.5
-  pctER <- round(100 * (ER + 0.5) / n.grps)
+  pctER <- round(100 * (ER - 0.5) / n.grps)
 
   #Close out and return in order of best to worst
   out <- data.frame(rfx.names, theta, var.theta, ER, pctER, stringsAsFactors=FALSE)

@@ -55,10 +55,12 @@ shinyMer <- function(merMod, simData=NULL) {
 
   }
 
+  pageTitle <- paste("Exploring model: ", deparse(substitute(merMod)), "", sep="")
+
   shiny::shinyApp(
     #UI----
     ui = shiny::fluidPage(
-      shiny::titlePanel("Explore your merMod interactively"),
+      shiny::titlePanel(title=pageTitle),
 
       shiny::sidebarLayout(
         shiny::sidebarPanel(
@@ -153,15 +155,16 @@ shinyMer <- function(merMod, simData=NULL) {
                   )
 
       ##Output for Uncertainty tab ----
-
       predInt <- shiny::reactive({
-        predictInterval(merMod,
-                        newdata           = sim.df(),
-                        level             = rv$level,
-                        n.sims            = rv$n.sims,
-                        stat              = rv$stat,
-                        type              = rv$type,
-                        include.resid.var = rv$include.resid.var)
+        withProgress(message = "Running predictInterval()",
+          predictInterval(merMod,
+                          newdata           = sim.df(),
+                          level             = rv$level,
+                          n.sims            = rv$n.sims,
+                          stat              = rv$stat,
+                          type              = rv$type,
+                          include.resid.var = rv$include.resid.var)
+        )
       })
 
       output$predInt.call <- shiny::renderPrint(
@@ -169,7 +172,7 @@ shinyMer <- function(merMod, simData=NULL) {
       )
 
       output$predInt.plot <- shiny::renderPlot({
-        if (input$goButton) {
+        input$goButton
           plot.df <- cbind(predInt(), sim.df())
 
           ytitle <- shiny::isolate(ifelse(input$predMetric=="linear.prediction", "Linear Prediction", "Probability"))
@@ -179,31 +182,28 @@ shinyMer <- function(merMod, simData=NULL) {
                            ifelse(input$simDataType=="rand", "Random Observation(s)",
                            ifelse(input$simDataType=="mean", "Averge Observation(s)")))))
 
-         plot <-  ggplot(aes(x=X, y=fit, ymin=lwr, ymax=upr), data=plot.df) +
+           ggplot(aes(x=X, y=fit, ymin=lwr, ymax=upr), data=plot.df) +
                     geom_errorbar(color="gray50") +
                     geom_point() +
                     theme_bw() +
                     theme(axis.title.x=element_blank(), axis.text.x=element_blank(),
                           axis.ticks.x=element_blank(), axis.line.x=element_blank()) +
                     labs(y=ytitle, title=paste("Predicted values for", title))
-          #Highlight selected rows in plot
-          s <- input$predInt.tab_rows_selected
-          if (length(s)) {
-            plot +
-              geom_errorbar(data=plot.df[s,], color="red") +
-              geom_point(data=plot.df[s,], color="red")
-          } else {
-            plot
-          }
 
-        }
+
+
+#           #Highlight selected rows in plot
+#           s <- input$predInt.tab_rows_selected
+#           if (length(s)) {
+#             plot +
+#               geom_errorbar(data=plot.df[s,], color="red") +
+#               geom_point(data=plot.df[s,], color="red")
+#           }
      })
 
-     output$predInt.tab <- shiny::renderDataTable(
-       if (input$goButton) {
-         data.frame(cbind(sim.df(), predInt()))
-       }
-     )
+     output$predInt.tab <- shiny::renderDataTable({
+       data.frame(cbind(sim.df(), predInt()))
+     })
 
      output$downloadData <- shiny::downloadHandler(
        filename = "predictIntervalResults.csv",
