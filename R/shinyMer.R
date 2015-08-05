@@ -42,7 +42,7 @@ utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "la
 #' @importFrom shiny strong
 #' @importFrom DT dataTableOutput
 #' @export
-runExample <- function(merMod, simData = NULL) {
+shinyMer <- function(merMod, simData = NULL) {
   if (is.null(simData)) {
     df.choices <- c("Model Frame"   = "orig",
                     "Random Obs"    = "rand",
@@ -54,6 +54,6 @@ runExample <- function(merMod, simData = NULL) {
                     "Average Obs"   = "mean")
 
   }
-  appDir <- system.file("shiny-apps", "shinyMer", package = "mypackage")
+  appDir <- system.file("shiny-apps", "shinyMer", package = "merTools")
   shiny::runApp(appDir, display.mode = "normal")
 }

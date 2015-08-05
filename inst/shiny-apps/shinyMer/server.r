@@ -4,141 +4,140 @@ library(merTools)
 library(lme4)
 library(ggplot2)
 
-server = function(input, output, session) {
-  rv <- shiny::reactiveValues(
-    level = NULL,
-    scale = NULL,
-    n.sims = NULL,
-    stat = NULL,
-    type = NULL
-  )
-
-  sim.df <- shiny::eventReactive(input$goButton, {
-    if (input$simDataType=="orig") {
-      return(data.frame(cbind(merMod@frame, X=1:nrow(merMod@frame))))
-    }
-    else if (input$simDataType=="user") {
-      return(data.frame(cbind(simData, X=1:nrow(simData))))
-    }
-    else if (input$simDataType=="rand") {
-      return(data.frame(cbind(draw(merMod, type = "random"), X = 1)))
-    }
-    else if (input$simDataType=="mean") {
-      return(data.frame(cbind(draw(merMod, type = "average"), X =1 )))
-    }
+server = function(input, output){
+  output$text1 <- renderText({
+    paste("You have selected", input$stat)
   })
 
-  shiny::eventReactive(input$goButton > 0,
-                      {
-                        rv$level  = input$alpha/100
-                        rv$scale  = qnorm(1-(1-(input$alpha/100))/2)
-                        rv$n.sims = input$n.sims
-                        rv$stat   = input$stat
-                        rv$type   = input$predMetric
-                        rv$include.resid.var = input$resid.var
-                      }
-  )
-
-  ##Output for Uncertainty tab ----
-
-
-  subplot.df <- shiny::eventReactive(input$goButton > 0, {
-    tmp <- sim.df()
-    subplot.df <- predictInterval(merMod, newdata = tmp,
-                                 level = rv$level, n.sims = rv$n.sims,
-                                 stat = rv$stat, type = rv$type,
-                                 include.resid.var = rv$include.resid.var)
-    outdata <- cbind(tmp, subplot.df)
-    return(outdata)
-  }
-  )
-
-  output$predInt.call <- shiny::renderPrint(
-    getCall(merMod)
-  )
-
-  output$predIntplot <- shiny::renderPlot({
-#       title <- shiny::isolate(ifelse(input$predMetric=="linear.prediction", "Linear Prediction", "Probability"))
-#
-#       ytitle <- shiny::isolate(ifelse(input$simDataType=="user", "User Supplied Data",
-#                                      ifelse(input$simDataType=="orig", "Model Frame Data",
-#                                             ifelse(input$simDataType=="rand", "Random Observation(s)",
-#                                                    ifelse(input$simDataType=="mean", "Averge Observation(s)")))))
-      plot <-  ggplot(aes(x=X, y=fit, ymin=lwr, ymax=upr), data=   subplot.df()) +
-        geom_errorbar(color="gray50") +
-        geom_point() +
-        theme_bw() +
-        theme(axis.title.x=element_blank(), axis.text.x=element_blank(),
-              axis.ticks.x=element_blank(), axis.line.x=element_blank()) # +
-#         labs(y=ytitle, title=paste("Predicted values for", title))
-      #Highlight selected rows in plot
-#       s <- input$predInt.tab_rows_selected
-#       if (length(s)) {
-#         return(plot +
-#           geom_errorbar(data=plot.df[s,], color="red") +
-#           geom_point(data=plot.df[s,], color="red"))
-#       } else {
-#         return(plot)
-#       }
-      return(plot)
-
+  predInput <- reactive({
+    data <- switch(input$simDataType,
+                   "orig" = merMod@frame,
+                   "mean" = draw(merMod, type = "average"),
+                   "rand" = draw(merMod, type = "random"),
+                   "user" = simData)
+    cbind(predictInterval(merMod, newdata = data, level = input$alpha/100,
+                          type = input$predMetric,
+                          include.resid.var = input$resid.var,
+                          n.sims = input$n.sims, stat = input$stat), data)
   })
 
-  output$predInt.tab <- shiny::renderDataTable({
-    return(subplot.df())
+  output$dt <- renderDataTable({
+    predInput()
   })
 
   output$downloadData <- shiny::downloadHandler(
     filename = "predictIntervalResults.csv",
     content = function(file) {
-      write.csv(shiny::isolate(cbind(sim.df(), predInt())), file)
+      write.csv(shiny::isolate(predInput()), file)
     }
   )
 
-  ##Output for Parameter Plot Tab ----
-  FEplot.df <- shiny::eventReactive(input$goButton > 0, {
-    FEplot.df <- FEsim(merMod, rv$n.sims)
-    FEplot.df$fit <- FEplot.df[,paste(rv$stat, "_eff", sep="")]
-    FEplot.df$uci <- FEplot.df$fit + rv$scale*FEplot.df$sd_eff
-    FEplot.df$lci <- FEplot.df$fit - rv$scale*FEplot.df$sd_eff
-    FEplot.df$label <- paste(
-      formatC(FEplot.df$fit, digits=2), " [",
-      formatC(FEplot.df$lci, digits=2), ", ",
-      formatC(FEplot.df$uci, digits=2), "]", sep=""
-    )
-    FEplot.df <- subset(FEplot.df, variable!="(Intercept)")
-    FEplot.df$variable <- factor(FEplot.df$variable)
-    return(FEplot.df)
-  }
-  )
-
-  clickrows <- shiny::reactiveValues(
-    clicked = rep(FALSE, length(fixef(merMod)[!grepl("(Intercept)", names(fixef(merMod)), fixed=TRUE)]))
-  )
-
-  output$FEplot <- shiny::renderPlot(
-    if (input$goButton > 0) {
-      FEplot <- ggplot(aes(x=variable, y=fit, ymin=lci, ymax=uci, label=label), data=FEplot.df()) +
-        geom_errorbar(width=0.2) +
-        geom_point(size=I(3)) +
-        geom_hline(yintercept = 0, color = "red") +
-        theme_bw() + coord_flip()
-      if (sum(clickrows$clicked)!=0) {
-        return(FEplot + geom_text(data=FEplot.df()[clickrows$clicked,], vjust=1))
-      } else {
-        return(FEplot)
-      }
-    }
-  )
-
-  shiny::observeEvent(input$FEclick, {
-    clickrows$clicked <- xor(clickrows$clicked, round(input$FEclick$y,1) == as.numeric(FEplot.df()$variable))
+  output$predPlot <- renderPlot({
+    data <- predInput()
+    data$x <- factor(seq(1:nrow(data)))
+    ggplot(data, aes(x = x, y = fit, ymin = lwr, ymax = upr)) +
+      geom_pointrange() +
+      theme_bw() + theme(axis.text.x = element_blank(),
+                         panel.grid.major.x = element_blank(),
+                         panel.grid.minor.x = element_blank(),
+                         axis.ticks.x = element_blank())
   })
 
-  output$REplot <- shiny::renderPlot(
-    if (input$goButton > 0) {
-      scale = qnorm(1-(1-rv$level)/2)
-      plotREsim(data=REsim(merMod, rv$n.sims), scale = rv$scale, var=paste(rv$stat, "_eff", sep=""))
+  feData <- reactive({
+    FEsim(merMod, n.sims = input$n.sims)
+  })
+
+  output$feplot <- renderPlot({
+    plotdf <- feData()
+    scale <- qnorm(input$alpha/100)
+    vartmp <- ifelse(input$stat == "mean", "mean_eff", "median_eff")
+    sdtmp <- "sd_eff"
+    plotFEsim(plotdf, scale = scale, var = vartmp, sd = sdtmp,
+              intercept = FALSE)
+  })
+
+  reData <- reactive({
+    REsim(merMod, n.sims = input$n.sims)
+  })
+
+  output$replot <- renderPlot({
+    plotdf <- reData()
+    scale <- qnorm(input$alpha/100)
+    vartmp <- ifelse(input$stat == "mean", "mean_eff", "median_eff")
+    sdtmp <- "sd_eff"
+    plotREsim(plotdf, scale = scale, var = vartmp, sd = sdtmp)
+  })
+
+  output$call <- renderPrint({
+    merMod@call
+  })
+
+  reEffInput <- reactive({
+    data <- switch(input$simDataType,
+                   "orig" = merMod@frame,
+                   "mean" = draw(merMod, type = "average"),
+                   "rand" = draw(merMod, type = "random"),
+                   "user" = simData)
+    if(nrow(data) > 12){
+      warning("Too much data selected, only using top 12 rows.")
+      data <- data[1:12, ]
     }
-  )
-}
+    return(data)
+  })
+
+  groupData <- reactive({
+    plotdf <- groupSim(merMod, newdata = reEffInput(),
+                       factor = input$group,
+                       level = input$alpha/100,
+                       breaks = input$nbin,
+                       type = input$predMetric,
+                       include.resid.var = input$resid.var,
+                       n.sims = input$n.sims, stat = input$stat)
+    plotdf$upr <- qnorm(input$alpha/100) * plotdf$AvgFitSE
+    plotdf$lwr <- qnorm(input$alpha/100) * plotdf$AvgFitSE
+    plotdf$upr <- plotdf$AvgFit + plotdf$upr
+    plotdf$lwr <- plotdf$AvgFit - plotdf$lwr
+    plotdf$bin <- factor(plotdf$bin)
+    return(plotdf)
+  })
+
+  output$gPlot <- renderPlot({
+    ggplot(groupData(), aes(x = bin, y = AvgFit, ymin = lwr, ymax = upr)) +
+      geom_pointrange() + facet_wrap(~case) +
+      theme_bw() + labs(x = "Bin", y = "Value of DV",
+                        title = "Impact of grouping term for selected case")
+  })
+
+  wiggleData <- reactive({
+    valLookup <- unique(merMod@frame[, input$fixef])
+    if(class(valLookup) %in% c("numeric", "integer")){
+      newvals <- seq(min(valLookup), max(valLookup), length.out = 20)
+    } else{
+      if(length(valLookup) < 50){
+        newvals <- valLookup
+      } else{
+        newvals <- sample(valLookup, 50)
+      }
+    }
+    plotdf <- wiggle(reEffInput(), input$fixef, values = newvals)
+    plotdf <- cbind(plotdf, predictInterval(merMod, newdata=plotdf,
+                                            type = input$predMetric,
+                                            level = input$alpha/100,
+                                            include.resid.var = input$resid.var,
+                                            n.sims = input$n.sims, stat = input$stat))
+    plotdf$X <- plotdf[, input$fixef]
+    plotdf$case <- rep(1:length(newvals), length = nrow(reEffInput()))
+    return(plotdf)
+  })
+
+  output$wigglePlot <- renderPlot({
+    ggplot(wiggleData(), aes(x = X, y = fit, ymin = lwr,
+                             ymax = upr)) +
+      geom_pointrange() + facet_wrap(~case) +
+      theme_bw() + labs(y = "Simulated Value of DV",
+                        title = "Impact of selected fixed effect for
+                        selected cases.")
+  })
+
+  }
+
