@@ -21,6 +21,7 @@ r_binary_packages:
   - plyr
   - abind
   - ggplot2
+
 r_github_packages:
   - jimhester/covr
 
