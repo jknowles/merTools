@@ -28,7 +28,7 @@ server = function(input, output, session) {
     }
   })
 
-  shiny::observeEvent(input$goButton > 0,
+  shiny::eventReactive(input$goButton > 0,
                       {
                         rv$level  = input$alpha/100
                         rv$scale  = qnorm(1-(1-(input$alpha/100))/2)

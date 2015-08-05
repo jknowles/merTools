@@ -42,7 +42,7 @@ utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "la
 #' @importFrom shiny strong
 #' @importFrom DT dataTableOutput
 #' @export
-runExample <- function(example, merMod, simData = NULL) {
+runExample <- function(merMod, simData = NULL) {
   if (is.null(simData)) {
     df.choices <- c("Model Frame"   = "orig",
                     "Random Obs"    = "rand",
@@ -54,27 +54,6 @@ runExample <- function(example, merMod, simData = NULL) {
                     "Average Obs"   = "mean")
 
   }
-  merMod <- fm1
-  shiny::runApp("inst/shiny-apps/shinyMer", display.mode = "normal")
-
-  # locate all the shiny app examples that exist
-  validExamples <- list.files(system.file("shiny-examples", package = "mypackage"))
-
-  validExamplesMsg <-
-    paste0(
-      "Valid examples are: '",
-      paste(validExamples, collapse = "', '"),
-      "'")
-
-  # if an invalid example is given, throw an error
-  if (missing(example) || !nzchar(example) ||
-      !example %in% validExamples) {
-    stop(
-      'Please run `runExample()` with a valid example app as an argument.n',
-      validExamplesMsg,
-      call. = FALSE)
-  }
-  # find and launch the app
-  appDir <- system.file("shiny-examples", example, package = "mypackage")
+  appDir <- system.file("shiny-apps", "shinyMer", package = "mypackage")
   shiny::runApp(appDir, display.mode = "normal")
 }

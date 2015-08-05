@@ -2,7 +2,6 @@
 
 shiny::fluidPage(
       shiny::titlePanel("Explore your merMod interactively"),
-
       shiny::sidebarLayout(
         shiny::sidebarPanel(
           shiny::radioButtons("stat",
@@ -18,6 +17,10 @@ shiny::fluidPage(
                               "Simulated data scenario",
                               choices=df.choices,
                               selected=NULL),
+          conditionalPanel(condition = "input.simDataType != orig",
+                           selectInput("smoothMethod", "Method",
+                                       list(names(merMod@frame)))
+                           ),
           shiny::numericInput("n.sims",
                               label="Simulations (Max=10,000)",
                               value=100,
