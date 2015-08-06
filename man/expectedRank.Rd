@@ -5,12 +5,12 @@
 \title{Calculate the expected rank of random coefficients that account for
 uncertainty.}
 \usage{
-expectedRank(merMod, factor = NULL, term = NULL)
+expectedRank(merMod, groupFctr = NULL, term = NULL)
 }
 \arguments{
 \item{merMod}{An object of class merMod}
 
-\item{factor}{The name of the grouping factor over which the random
+\item{groupFctr}{The name of the grouping factor over which the random
   coefficient of interest varies.  This is the variable to the right of the
   pipe, \code{|}, in the [g]lmer formula. This parameter is optional if only
   a single grouping factor is included in the model, but required if there
@@ -24,13 +24,13 @@ expectedRank(merMod, factor = NULL, term = NULL)
   \code{c("(Intercept)", "Int", "intercep", ...)}.}
 }
 \value{
-A data.frame with the original grouping factor (converted to a
-  character) and the following four columns:
+A data.frame with the following five columns:
   \describe{
-    \item{theta}{The estimated random effect (from
-                 \code{lme4::ranef(, condVar=TRUE)}).}
-    \item{varTheta}{The posterior variance of the estimate random effect
-                     (from \code{lme4::ranef(, condVar=TRUE)}).}
+    \item{Column 1}{The original grouping factor}
+    \item{Column 2}{The estimated random effects (from
+                 \code{lme4::ranef(, condVar=TRUE)}); name taken from \code{term}.}
+    \item{Column 3}{The posterior variance of the estimate random effect
+                     (from \code{lme4::ranef(, condVar=TRUE)}); named "\code{term}"_var.}
     \item{ER}{The expected rank.}
     \item{pctER}{The percentile expected rank.}
   }
@@ -88,7 +88,7 @@ m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 require(lme4)
 m3 <- lmer(y ~ service * dept + (1|s) + (1|d), InstEval)
 #Ranked by the random intercept on 's'
-(m3.er1 <- expectedRank(m3, factor="s", term="Intercept"))
+(m3.er1 <- expectedRank(m3, groupFctr="s", term="Intercept"))
 }
 }
 \references{

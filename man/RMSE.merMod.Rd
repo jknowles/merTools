@@ -4,10 +4,10 @@
 \alias{RMSE.merMod}
 \title{Estimate the Root Mean Squared Error (RMSE) for a lmerMod}
 \usage{
-RMSE.merMod(mod, scale = FALSE)
+RMSE.merMod(merMod, scale = FALSE)
 }
 \arguments{
-\item{mod}{a lmerMod object from the lme4 package}
+\item{merMod}{a lmerMod object from the lme4 package}
 
 \item{scale}{logical, should the result be returned on the scale of
 response variable standard deviations?}

@@ -1,19 +1,19 @@
 #' @title Extracts random effects
 #' @name REextract
 #' @description Extracts random effect terms from an lme4 model
-#' @param mod a merMod object from the lme4 package
+#' @param merMod a merMod object from the lme4 package
 #' @importFrom plyr adply rbind.fill
 #' @return a data frame with random effects from lme4 by group id
 #' @export
-REextract <- function(mod){
-  stopifnot(class(mod) == "lmerMod" | class(mod) == "glmerMod")
-  out <- lme4::ranef(mod, condVar = TRUE)
+REextract <- function(merMod){
+  stopifnot(class(merMod) == "lmerMod" | class(merMod) == "glmerMod")
+  out <- lme4::ranef(merMod, condVar = TRUE)
+  lvlNames <- names(out)
   reDims <- length(out)
   tmp.out <- vector("list", reDims)
   for(i in c(1:reDims)){
     tmp.out[[i]] <- out[[i]]
-    tmp.out[[i]]$level <- paste0("Level ", i)
-    tmp.out[[i]]$level <- as.character(tmp.out[[i]]$level)
+    tmp.out[[i]]$groupFctr <- lvlNames[i]
     tmp.out[[i]]$groupID <- row.names(out[[i]])
     if(ncol(out[[i]]) > 1){
       tmp.out.se <- plyr::adply(attr(out[[i]], which = "postVar"), c(3),
@@ -30,45 +30,51 @@ REextract <- function(mod){
   }
   dat <- do.call(plyr::rbind.fill, tmp.out)
   # reorg output
-  dat[, c("level", "groupID",
-          names(dat)[!names(dat) %in% c("level", "groupID")])]
+  dat <- dat[, c("groupFctr", "groupID",
+          names(dat)[!names(dat) %in% c("groupFctr", "groupID")])]
   return(dat)
 }
 
 #' @title Simulate random effects from merMod
 #' @name REsim
 #' @description Simulate random effects from merMod object posterior distributions
-#' @param mod a merMod object from the lme4 package
+#' @param merMod a merMod object from the lme4 package
 #' @param n.sims number of simulations to use
-#' @param OR logical, should parameters be converted to odds ratios?
+#' @param oddsRatio logical, should parameters be converted to odds ratios?
 #' @importFrom arm sim
 #' @import lme4
-#' @return a data frame with distribution of random effect parameters
+#' @return a data frame with the following columns
+#' \description{
+#'   \item{\code{groupFctr}}{Name of the grouping factor}
+#'   \item{\code{groupID}}{Level of the grouping factor}
+#'   \item{\code{term}}{Name of random term (intercept/coefficient)}
+#'   \item{\code{mean}}{Mean of the simulations}
+#'   \item{\code{median}}{Median of the simulations}
+#'   \item{\code{sd}}{Standard deviation of the simulations, \code{NA} if \code{oddsRatio=TRUE}}
+#' }
 #' @details Use the Gelman sim technique to build empirical Bayes estimates.
 #'  Uses the sim function in the arm package
 #' @export
-REsim <- function(mod, n.sims = 200, OR = FALSE){
-  stopifnot(class(mod) == "lmerMod" | class(mod) == "glmerMod")
-  mysim <- arm::sim(mod, n.sims = n.sims)
+REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE){
+  stopifnot(class(merMod) == "lmerMod" | class(merMod) == "glmerMod")
+  mysim <- arm::sim(merMod, n.sims = n.sims)
   reDims <- length(mysim@ranef)
   tmp.out <- vector("list", reDims)
   names(tmp.out) <- names(mysim@ranef)
   for(i in c(1:reDims)){
     tmp.out[[i]] <- plyr::adply(mysim@ranef[[i]], c(2, 3), plyr::each(c(mean, median, sd)))
-    tmp.out[[i]]$level <- names(tmp.out)[i]
-    tmp.out[[i]]$level <- as.character(tmp.out[[i]]$level)
+    tmp.out[[i]]$groupFctr <- names(tmp.out)[i]
     tmp.out[[i]]$X1 <- as.character(tmp.out[[i]]$X1)
     tmp.out[[i]]$X2 <- as.character(tmp.out[[i]]$X2)
   }
   dat <- do.call(rbind, tmp.out)
-  dat$group <- dat$X1; dat$X1 <- NULL
-  dat$effect <- dat$X2; dat$X2 <- NULL
-  names(dat)[1:3] <- c("mean_eff", "median_eff", "sd_eff")
-  dat <- dat[, c("group", "effect", "level", "mean_eff", "median_eff",
-                 "sd_eff")]
-    if(OR == TRUE){
-    dat$median_eff <- exp(dat$median_eff)
-    dat$mean_eff <- exp(dat$mean_eff)
+  dat$groupID <- dat$X1; dat$X1 <- NULL
+  dat$term <- dat$X2; dat$X2 <- NULL
+  dat <- dat[, c("groupFctr", "groupID", "term", "mean", "median", "sd")]
+  rownames(dat) <- NULL
+  if(oddsRatio == TRUE){
+    dat$median <- exp(dat$median)
+    dat$mean <- exp(dat$mean)
     dat$sd <- NA # don't know how to do SE of odds ratios currently
     return(dat)
   } else{
@@ -79,40 +85,54 @@ REsim <- function(mod, n.sims = 200, OR = FALSE){
 #' @title Simulate fixed effects from merMod
 #' @name FEsim
 #' @description Simulate fixed effects from merMod object posterior distributions
-#' @param mod a merMod object from the lme4 package
+#' @param merMod a merMod object from the lme4 package
 #' @param n.sims number of simulations to use
+#' @param oddsRatio logical, should parameters be converted to odds ratios?
 #' @importFrom arm sim
 #' @import lme4
-#' @return a data frame with distribution of fixed effect parameters
+#' @return a data frame with the following columns
+#' \description{
+#'   \item{\code{term}}{Name of fixed term (intercept/coefficient)}
+#'   \item{\code{mean}}{Mean of the simulations}
+#'   \item{\code{median}}{Median of the simulations}
+#'   \item{\code{sd}}{Standard deviation of the simulations, \code{NA} if \code{oddsRatio=TRUE}}
+#' }
 #' @details Use the Gelman sim technique to build fixed effect estimates and
 #' confidence intervals. Uses the sim function in the arm package
 #' @export
-FEsim <- function(mod, n.sims = 200){
-  stopifnot(class(mod) == "lmerMod" | class(mod) == "glmerMod")
-  mysim <- arm::sim(mod, n.sims = n.sims)
+FEsim <- function(merMod, n.sims = 200, oddsRatio=FALSE){
+  stopifnot(class(merMod) == "lmerMod" | class(merMod) == "glmerMod")
+  mysim <- arm::sim(merMod, n.sims = n.sims)
   means <- apply(mysim@fixef, MARGIN = 2, mean)
   medians <- apply(mysim@fixef, MARGIN = 2, median)
   sds <- apply(mysim@fixef, MARGIN =2, sd)
-  dat <- data.frame(variable = names(means), mean_eff = means,
-                    median_eff = medians,
-                    sd_eff = sds, row.names=NULL)
-  return(dat)
+  dat <- data.frame(term = names(means), mean = means,
+                    median = medians,
+                    sd = sds, row.names=NULL)
+  if(oddsRatio == TRUE){
+    dat$median <- exp(dat$median)
+    dat$mean <- exp(dat$mean)
+    dat$sd <- NA # don't know how to do SE of odds ratios currently
+    return(dat)
+  } else{
+    return(dat)
+  }
 }
 
 #' @title Estimate the Root Mean Squared Error (RMSE) for a lmerMod
 #' @name RMSE.merMod
 #' @description Extract the Root Mean Squared Error for a lmerMod object
-#' @param mod a lmerMod object from the lme4 package
+#' @param merMod a lmerMod object from the lme4 package
 #' @param scale logical, should the result be returned on the scale of
 #' response variable standard deviations?
 #' @import lme4
 #' @return a numeric which represents the RMSE
 #' @export
-RMSE.merMod <- function(mod, scale = FALSE){
-  stopifnot(class(mod) == "lmerMod")
+RMSE.merMod <- function(merMod, scale = FALSE){
+  stopifnot(class(merMod) == "lmerMod")
   # Express RMSE as percentage of dependent variable standard deviation
-  dvSD <- sd(mod@frame[, 1])
-  RMSE <- sqrt(mean(residuals(mod)^2))
+  dvSD <- sd(merMod@frame[, 1])
+  RMSE <- sqrt(mean(residuals(merMod)^2))
   if(scale == TRUE){
     return(RMSE/dvSD)
   } else{

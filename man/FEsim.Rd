@@ -4,15 +4,23 @@
 \alias{FEsim}
 \title{Simulate fixed effects from merMod}
 \usage{
-FEsim(mod, n.sims = 200)
+FEsim(merMod, n.sims = 200, oddsRatio = FALSE)
 }
 \arguments{
-\item{mod}{a merMod object from the lme4 package}
+\item{merMod}{a merMod object from the lme4 package}
 
 \item{n.sims}{number of simulations to use}
+
+\item{oddsRatio}{logical, should parameters be converted to odds ratios?}
 }
 \value{
-a data frame with distribution of fixed effect parameters
+a data frame with the following columns
+\description{
+  \item{\code{term}}{Name of fixed term (intercept/coefficient)}
+  \item{\code{mean}}{Mean of the simulations}
+  \item{\code{median}}{Median of the simulations}
+  \item{\code{sd}}{Standard deviation of the simulations, \code{NA} if \code{oddsRatio=TRUE}}
+}
 }
 \description{
 Simulate fixed effects from merMod object posterior distributions

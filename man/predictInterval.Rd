@@ -4,12 +4,12 @@
 \alias{predictInterval}
 \title{Predict from merMod objects with a prediction interval}
 \usage{
-predictInterval(model, newdata, level = 0.95, n.sims = 100,
+predictInterval(merMod, newdata, level = 0.95, n.sims = 100,
   stat = c("median", "mean"), type = c("linear.prediction", "probability"),
   include.resid.var = TRUE)
 }
 \arguments{
-\item{model}{a merMod object from lme4}
+\item{merMod}{a merMod object from lme4}
 
 \item{newdata}{a data.frame of new data to predict}
 
@@ -21,17 +21,17 @@ predictInterval(model, newdata, level = 0.95, n.sims = 100,
 
 \item{type}{type of prediction to develop}
 
-\item{include.resid.var}{logical, include or exclude the residual varaince for
+\item{include.resid.var}{logical, include or exclude the residual variance for
 linear models}
 }
 \value{
 a data.frame iwth three columns:
 \describe{
-    \item{fit}{The center of the distribution of predicted values as defined by
+    \item{\code{fit}}{The center of the distribution of predicted values as defined by
     the \code{stat} parameter.}
-    \item{lwr}{The lower confidence interval bound corresponding to the quantile cut
+    \item{\code{lwr}}{The lower confidence interval bound corresponding to the quantile cut
     defined in \code{level}.}
-    \item{upr}{The upper confidence interval bound corresponding to the quantile cut
+    \item{\code{upr}}{The upper confidence interval bound corresponding to the quantile cut
     defined in \code{level}.}
   }
 }

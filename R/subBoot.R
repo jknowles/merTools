@@ -1,7 +1,7 @@
 #' Extract theta parameters from a merMod model
 #' @description A convenience function that returns the theta parameters for a
 #' \code{\link{merMod}} obejct.
-#' @param model a valide merMod object
+#' @param merMod a valide merMod object
 #'
 #' @return a vector of the covrariance, theta, parameters from a \code{\link{merMod}}
 #' @seealso merMod
@@ -9,46 +9,46 @@
 #' @examples
 #' (fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))
 #' thetaExtract(fm1) #(a numeric vector of the covariance parameters)
-thetaExtract <- function(model){
-  stopifnot(class(model) %in% c("lmerMod", "glmerMod"))
-  return(model@theta)
+thetaExtract <- function(merMod){
+  stopifnot(class(merMod) %in% c("lmerMod", "glmerMod"))
+  return(merMod@theta)
 }
 
 #' Bootstrap a subset of an lme4 model
 #'
-#' @param model a valid merMod object
+#' @param merMod a valid merMod object
 #' @param n the number of rows to sample from the original data
 #' in the merMod object, by default will resample the entire model frame
 #' @param FUN the function to apply to each bootstrapped model
-#' @param B the number of bootstrap replicates, default is 100
+#' @param R the number of bootstrap replicates, default is 100
 #'
-#' @return a matrix of parameters extracted from each of the B replications.
+#' @return a data.frame of parameters extracted from each of the R replications.
 #' The original values are appended to the top of the matrix.
 #' @details This function allows users to estimate parameters of a
 #' large merMod object using bootstraps on a subset of the data.
 #' @examples
 #' \dontrun{
 #' (fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))
-#' resultMatrix <- subBoot(fm1, n = 160, FUN = thetaExtract, B = 20)
+#' resultMatrix <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20)
 #' }
 #' @export
-subBoot <- function(model, n = NULL, FUN, B = 100){
+subBoot <- function(merMod, n = NULL, FUN, R = 100){
   if(missing(n))
-    n <- nrow(model@frame)
-  resultMat <- matrix(FUN(model), nrow = 1)
-  tmp <- matrix(data=NA, nrow=B, ncol=ncol(resultMat))
+    n <- nrow(merMod@frame)
+  resultMat <- matrix(FUN(merMod), nrow = 1)
+  tmp <- matrix(data=NA, nrow=R, ncol=ncol(resultMat))
   resultMat <- rbind(resultMat, tmp); rm(tmp)
-    for(i in 1:B){
-      rows <- as.numeric(row.names(model@frame))
+    for(i in 1:R){
+      rows <- as.numeric(row.names(merMod@frame))
       mysamp <- as.character(sample(rows,  n, replace=TRUE))
       # http://proteo.me.uk/2013/12/fast-subset-selection-by-row-name-in-r/
-      newdata <- model@frame[match(mysamp, rownames(model@frame)),]
+      newdata <- merMod@frame[match(mysamp, rownames(merMod@frame)),]
       # Only for lmerMod
-      tmpMod <- lmer(formula(model), data = newdata)
+      tmpMod <- lmer(formula(merMod), data = newdata)
       resultMat[i + 1, ] <- FUN(tmpMod)
     }
-  resultMat <- as.data.frame(resultMat)
-  resultMat$sample <- c("original", 1:B)
+  resultMat <- data.frame(param=resultMat)
+  resultMat$replicate <- c("original", 1:R)
   return(resultMat)
 }
 

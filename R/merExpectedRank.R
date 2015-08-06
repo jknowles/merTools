@@ -35,7 +35,7 @@
 #'
 #' @param merMod An object of class merMod
 #'
-#' @param factor The name of the grouping factor over which the random
+#' @param groupFctr The name of the grouping factor over which the random
 #'   coefficient of interest varies.  This is the variable to the right of the
 #'   pipe, \code{|}, in the [g]lmer formula. This parameter is optional if only
 #'   a single grouping factor is included in the model, but required if there
@@ -48,13 +48,13 @@
 #'   they do not match the name of another random coefficient for that factor}):
 #'   \code{c("(Intercept)", "Int", "intercep", ...)}.
 #'
-#' @return A data.frame with the original grouping factor (converted to a
-#'   character) and the following four columns:
+#' @return A data.frame with the following five columns:
 #'   \describe{
-#'     \item{theta}{The estimated random effect (from
-#'                  \code{lme4::ranef(, condVar=TRUE)}).}
-#'     \item{varTheta}{The posterior variance of the estimate random effect
-#'                      (from \code{lme4::ranef(, condVar=TRUE)}).}
+#'     \item{Column 1}{The original grouping factor}
+#'     \item{Column 2}{The estimated random effects (from
+#'                  \code{lme4::ranef(, condVar=TRUE)}); name taken from \code{term}.}
+#'     \item{Column 3}{The posterior variance of the estimate random effect
+#'                      (from \code{lme4::ranef(, condVar=TRUE)}); named "\code{term}"_var.}
 #'     \item{ER}{The expected rank.}
 #'     \item{pctER}{The percentile expected rank.}
 #'   }
@@ -89,10 +89,10 @@
 #' require(lme4)
 #' m3 <- lmer(y ~ service * dept + (1|s) + (1|d), InstEval)
 #' #Ranked by the random intercept on 's'
-#' (m3.er1 <- expectedRank(m3, factor="s", term="Intercept"))
+#' (m3.er1 <- expectedRank(m3, groupFctr="s", term="Intercept"))
 #' }
 #' @export
-expectedRank <- function(merMod, factor=NULL, term=NULL) {
+expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
   #Count random terms in merMod
   n.rfx <- lme4::getME(merMod, "k")
   n.rfac <- lme4::getME(merMod, "n_rfac")
@@ -100,37 +100,37 @@ expectedRank <- function(merMod, factor=NULL, term=NULL) {
   rfx <- lme4::ranef(merMod, condVar=TRUE)
 
   #Take care of factors
-  if (n.rfac == 1 & is.null(factor)) {
-    factor <- names(rfx)
+  if (n.rfac == 1 & is.null(groupFctr)) {
+    groupFctr <- names(rfx)
   }
-  else if (n.rfac > 1 & is.null(factor)) {
+  else if (n.rfac > 1 & is.null(groupFctr)) {
     stop("Must specify which grouping factor when there are more than one")
   }
 
-  factor.idx <- grep(factor, names(rfx), fixed=TRUE)
+  groupFctr.idx <- grep(groupFctr, names(rfx), fixed=TRUE)
 
   #Grab row names, number of columns
-  rfx.names <- rownames(rfx[[factor.idx]])
+  rfx.names <- rownames(rfx[[groupFctr.idx]])
   n.grps <- length(rfx.names)
-  n.terms <- length(rfx[[factor.idx]])
+  n.terms <- length(rfx[[groupFctr.idx]])
 
   #Take care of term
   if (n.terms == 1 & is.null(term)) {
-    term <- names(rfx[[factor.idx]])
+    term <- names(rfx[[groupFctr.idx]])
   }
   else if (n.terms > 1 & is.null(term)) {
     stop("Must specify which random coefficient when there are more than one per selected grouping factor")
   }
 
-  if (grepl("[iI]nt[a-z]*", term) && is.na(match(term, names(rfx[[factor.idx]])))) {
+  if (grepl("[iI]nt[a-z]*", term) && is.na(match(term, names(rfx[[groupFctr.idx]])))) {
     term <- "(Intercept)"
   }
 
-  term.idx <- grep(term, names(rfx[[factor.idx]]), fixed=TRUE)
+  term.idx <- grep(term, names(rfx[[groupFctr.idx]]), fixed=TRUE)
 
   #Grab theta and var.theta
-  theta <- rfx[[factor.idx]][,term.idx]
-  var.theta <- attr(rfx[[factor.idx]], which="postVar")[term.idx, term.idx, 1:n.grps]
+  theta <- rfx[[groupFctr.idx]][,term.idx]
+  var.theta <- attr(rfx[[groupFctr.idx]], which="postVar")[term.idx, term.idx, 1:n.grps]
 
   #Calculate Expected Rank which is the sum of the probabilities that group i is greater than all
   #other groups j (assuming normal distribution of random effects)
@@ -146,7 +146,7 @@ expectedRank <- function(merMod, factor=NULL, term=NULL) {
 
   #Close out and return in order of best to worst
   out <- data.frame(rfx.names, theta, var.theta, ER, pctER, stringsAsFactors=FALSE)
-  names(out) <- c(factor, "theta", "varTheta", "ER", "pctER")
+  names(out) <- c(groupFctr, term, paste(term,"_var", sep=""), "ER", "pctER")
   out <- out[order(out$ER, decreasing=TRUE),]
   row.names(out) <- 1:n.grps
   return(out)

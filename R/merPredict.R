@@ -6,21 +6,21 @@
 #' for fitted values that includes all variation in the model except for variation
 #' in the covariance paramters, theta. This is a much faster alternative than
 #' bootstrapping for models fit to medium to large datasets.
-#' @param model a merMod object from lme4
+#' @param merMod a merMod object from lme4
 #' @param newdata a data.frame of new data to predict
 #' @param level the width of the prediction interval
 #' @param n.sims number of simulation samples to construct
 #' @param stat take the median or mean of simulated intervals
 #' @param type type of prediction to develop
-#' @param include.resid.var logical, include or exclude the residual varaince for
+#' @param include.resid.var logical, include or exclude the residual variance for
 #' linear models
 #' @return a data.frame iwth three columns:
 #' \describe{
-#'     \item{fit}{The center of the distribution of predicted values as defined by
+#'     \item{\code{fit}}{The center of the distribution of predicted values as defined by
 #'     the \code{stat} parameter.}
-#'     \item{lwr}{The lower confidence interval bound corresponding to the quantile cut
+#'     \item{\code{lwr}}{The lower confidence interval bound corresponding to the quantile cut
 #'     defined in \code{level}.}
-#'     \item{upr}{The upper confidence interval bound corresponding to the quantile cut
+#'     \item{\code{upr}}{The upper confidence interval bound corresponding to the quantile cut
 #'     defined in \code{level}.}
 #'   }
 #' @details To generate a prediction inteval, the function first computes a simulated
@@ -65,7 +65,7 @@
 #'  regFit <- predict(gm2, newdata = d1[1:10, ], type = "response")
 #'  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "probability")
 #'  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "linear.prediction")
-predictInterval <- function(model, newdata, level = 0.95,
+predictInterval <- function(merMod, newdata, level = 0.95,
                             n.sims=100, stat=c("median","mean"),
                             type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE){
@@ -78,20 +78,20 @@ predictInterval <- function(model, newdata, level = 0.95,
                          several.ok = FALSE)
 
   ##First: check if it is a GLMM or NLMM and draw from sigma distribution or incorporate scale parameter if GLMM
-  model.devcomp <- getME(model, "devcomp")
-  if (model.devcomp$dims[["GLMM"]] == 0 &
-      model.devcomp$dims[["NLMM"]] == 0) {
-    sigmahat <-  sqrt(1/rgamma(n.sims, 0.5 * residDF.merMod(model),
-                               0.5 * model.devcomp$cmp[["pwrss"]]))
+  merMod.devcomp <- getME(merMod, "devcomp")
+  if (merMod.devcomp$dims[["GLMM"]] == 0 &
+      merMod.devcomp$dims[["NLMM"]] == 0) {
+    sigmahat <-  sqrt(1/rgamma(n.sims, 0.5 * residDF.merMod(merMod),
+                               0.5 * merMod.devcomp$cmp[["pwrss"]]))
     if (predict.type=="probability") {
       predict.type="linear.prediction"
       warning("    Asking for predictions on the probability scale makes no sense, resetting predict.type to linear.prediction",
               call.=FALSE)
     }
   }
-  else if (model.devcomp$dims[["GLMM"]] == TRUE &
-           model@resp$family$family == "binomial" &
-           model@resp$family$link == "logit") {
+  else if (merMod.devcomp$dims[["GLMM"]] == TRUE &
+           merMod@resp$family$family == "binomial" &
+           merMod@resp$family$link == "logit") {
     sigmahat <- rep(1,n.sims)
   }
   else {
@@ -99,17 +99,17 @@ predictInterval <- function(model, newdata, level = 0.95,
   }
 
   # Fix formula to allow for random slopes not in the fixed slopes
-  matrixForm <- formulaBuild(model)
+  matrixForm <- formulaBuild(merMod)
 
   # If we do it this way, the function will fail on new data without all levels
   # of X
-  # newdata.modelMatrix <- lFormula(formula = model@call, data=newdata)$X
+  # newdata.modelMatrix <- lFormula(formula = merMod@call, data=newdata)$X
   # To be sensitive to this, we can take a performance hit and do:
-  if(identical(newdata, model@frame)){
+  if(identical(newdata, merMod@frame)){
     newdata.modelMatrix <- model.matrix(matrixForm,
-                                        data = model@frame)
+                                        data = merMod@frame)
   } else{
-    tmp <- plyr::rbind.fill(newdata, trimModelFrame(model@frame))
+    tmp <- plyr::rbind.fill(newdata, trimModelFrame(merMod@frame))
     # attempt to make insensitive to spurious factor levels in betas
     #     nums <- sapply(data, is.numeric); vars <- names(nums[!nums == TRUE])
     #     tmp[, vars] <- apply(tmp[, vars], 2, as.character)
@@ -120,11 +120,11 @@ predictInterval <- function(model, newdata, level = 0.95,
   ##Right now I am not multiplying the BLUP variance covariance matrices by our
   ##draw of sigma (for linear models) because their variation is unique.  If anything,
   ##this is where one would multiply them by draws of theta from the model.
-  re.xb <- vector(getME(model, "n_rfacs"), mode = "list")
-  names(re.xb) <- names(ngrps(model))
+  re.xb <- vector(getME(merMod, "n_rfacs"), mode = "list")
+  names(re.xb) <- names(ngrps(merMod))
     for(j in names(re.xb)){
-    reMeans <- as.matrix(ranef(model)[[j]])
-    reMatrix <- attr(ranef(model, condVar=TRUE)[[j]], which = "postVar")
+    reMeans <- as.matrix(ranef(merMod)[[j]])
+    reMatrix <- attr(ranef(merMod, condVar=TRUE)[[j]], which = "postVar")
     # OK, let's knock out all the random effects we don't need
     obslvl <- unique(as.character(newdata[, j]))
     alllvl <- rownames(reMeans)
@@ -197,7 +197,7 @@ predictInterval <- function(model, newdata, level = 0.95,
   # fixed.xb is nrow(newdata) x n.sims
   ##Calculate yhat as sum of the components (fixed plus all groupling factors)
   # apply(reSim, c(1,2), function(x), sum(x,na.rm=TRUE))
-  betaSim <- abind::abind(lapply(1:n.sims, function(x) mvtnorm::rmvnorm(1, mean = fixef(model), sigma = sigmahat[x]*as.matrix(vcov(model)))), along=1)
+  betaSim <- abind::abind(lapply(1:n.sims, function(x) mvtnorm::rmvnorm(1, mean = fixef(merMod), sigma = sigmahat[x]*as.matrix(vcov(merMod)))), along=1)
   # Pad betaSim
   if(ncol(newdata.modelMatrix) > ncol(betaSim)){
     pad <- matrix(rep(0), nrow = nrow(betaSim),
@@ -231,9 +231,9 @@ predictInterval <- function(model, newdata, level = 0.95,
   outs$upr <- apply(yhat,1,function(x) as.numeric(quantile(x, 1 - ((1-level)/2), na.rm=TRUE)))
   outs$lwr <- apply(yhat,1,function(x) as.numeric(quantile(x, ((1-level)/2), na.rm=TRUE)))
   if (predict.type == "probability") {
-    outs$fit <- model@resp$family$linkinv(outs$fit)
-    outs$upr <- model@resp$family$linkinv(outs$upr)
-    outs$lwr <- model@resp$family$linkinv(outs$lwr)
+    outs$fit <- merMod@resp$family$linkinv(outs$fit)
+    outs$upr <- merMod@resp$family$linkinv(outs$upr)
+    outs$lwr <- merMod@resp$family$linkinv(outs$lwr)
   }
   #Close it out
   return(outs[, c("fit", "lwr", "upr")])
