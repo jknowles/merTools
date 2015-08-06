@@ -18,4 +18,9 @@ a numeric which represents the RMSE
 \description{
 Extract the Root Mean Squared Error for a lmerMod object
 }
+\examples{
+require(lme4)
+m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+RMSE.merMod(m2)
+}
 

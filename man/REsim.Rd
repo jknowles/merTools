@@ -33,4 +33,10 @@ Simulate random effects from merMod
 Use the Gelman sim technique to build empirical Bayes estimates.
  Uses the sim function in the arm package
 }
+\examples{
+require(lme4)
+m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+re2 <- REsim(m2, 25)
+head(re2)
+}
 
