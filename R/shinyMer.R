@@ -40,19 +40,17 @@ utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "la
 #' @importFrom shiny renderPrint
 #' @importFrom shiny downloadHandler
 #' @importFrom shiny strong
+#' @importFrom shiny runApp
 #' @importFrom DT dataTableOutput
 #' @export
-shinyMer <- function(merMod, newdata = NULL) {
-  if (is.null(newdata)) {
-    df.choices <- c("Model Frame"   = "orig",
-                    "Random Obs"    = "rand",
-                    "Average Obs"   = "mean")
-  } else {
-    df.choices <- c("User Supplied" = "user",
-                    "Model Frame"   = "orig",
-                    "Random Obs"    = "rand",
-                    "Average Obs"   = "mean")
 
+shinyMer <- function(merMod, simData = NULL) {
+  if(exists("simData")){
+    expParm <- function(x, y) assign(".shinyMerPar", list("merMod" = x, "simData" = y), envir = .GlobalEnv)
+    expParm(x = merMod, y = simData)
+  } else{
+    expParm <- function(x) assign(".shinyMerPar", list("merMod" = x, "simData" = NULL), envir = .GlobalEnv)
+    expParm(x = merMod)
   }
   appDir <- system.file("shiny-apps", "shinyMer", package = "merTools")
   shiny::runApp(appDir, display.mode = "normal")
