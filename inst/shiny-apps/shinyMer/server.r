@@ -1,7 +1,4 @@
 #SERVER----
-
-library(merTools)
-library(lme4)
 library(ggplot2)
 
 server = function(input, output){
