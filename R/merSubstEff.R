@@ -1,7 +1,7 @@
 #' Calculate the weighted mean of fitted values for various levels of
 #' random effect terms.
 #'
-#' \code{groupSim} calculates the average predicted value for each row of a
+#' \code{REimpact} calculates the average predicted value for each row of a
 #' new data frame across the distribution of \code{\link{expectedRank}} for a
 #' merMod object. This allows the user to make meaningful comparisons about the
 #' influence of random effect terms on the scale of the response variable,
@@ -20,7 +20,7 @@
 #' @param newdata a data frame of observations to calculate group-level differences
 #' for
 #'
-#' @param factor The name of the grouping factor over which the random
+#' @param groupFctr The name of the grouping factor over which the random
 #'   coefficient of interest varies.  This is the variable to the right of the
 #'   pipe, \code{|}, in the [g]lmer formula. This parameter is optional, if not
 #'   specified, it will perform the calculation for the first effect listed
@@ -51,7 +51,7 @@
 #'     \item{nobs}{The number of group effects contained in that bin.}
 #'   }
 #'
-#' @details #' This function uses the formula for variance of a weighted mean
+#' @details This function uses the formula for variance of a weighted mean
 #' recommended by Cochran (1977).
 #'
 #' @references
@@ -62,48 +62,48 @@
 #'
 #' Cochran, WG. 1977. Sampling Techniques (3rd Edition). Wiley, New York.
 #'
-#' @seealso expectedRank
+#' @seealso \code{\link{expectedRank}}, \code{\link{predictInterval}}
 #'
 #' @examples
 #' #For a one-level random intercept model
 #' require(lme4)
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-#' (m1.er <- groupSim(m1, newdata = sleepstudy[1, ], breaks = 2))
+#' (m1.er <- REimpact(m1, newdata = sleepstudy[1, ], breaks = 2))
 #'
 #' #For a one-level random intercept model with multiple random terms
 #' m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #' #ranked by the random slope on Days
-#' (m2.er1 <- groupSim(m2,  newdata = sleepstudy[1, ],
-#'            factor = "Subject", term="Days"))
+#' (m2.er1 <- REimpact(m2,  newdata = sleepstudy[1, ],
+#'            groupFctr = "Subject", term="Days"))
 #' #ranked by the random intercept
-#' (m2.er2 <- groupSim(m2, newdata = sleepstudy[1, ],
-#'              factor = "Subject", term="int"))
+#' (m2.er2 <- REimpact(m2, newdata = sleepstudy[1, ],
+#'              groupFctr = "Subject", term="int"))
 #' \dontrun{
-#' # You can also pass additional arguments to predictInterval through groupSim
+#' # You can also pass additional arguments to predictInterval through REimpact
 #' g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
-#' zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", n.sims = 50,
+#' zed <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", n.sims = 50,
 #'                 include.resid.var = TRUE)
-#' zed2 <- groupSim(g1, newdata = InstEval[9:12, ], factor = "s", n.sims = 50,
+#' zed2 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "s", n.sims = 50,
 #'                  include.resid.var = TRUE)
-#' zed <- groupSim(g1, newdata = InstEval[9:12, ], factor = "d", breaks = 5,
+#' zed3 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", breaks = 5,
 #                 n.sims = 50, include.resid.var = TRUE)
 #' }
 #'
 #' @export
-groupSim <- function(merMod, newdata, factor=NULL, term = NULL, breaks = 3, ...){
-  if(missing(factor)){
-    factor <- names(ranef(merMod))[1]
+REimpact <- function(merMod, newdata, groupFctr=NULL, term = NULL, breaks = 3, ...){
+  if(missing(groupFctr)){
+    groupFctr <- names(ranef(merMod))[1]
   }
-  lvls <- unique(merMod@frame[, factor])
+  lvls <- unique(merMod@frame[, groupFctr])
   zed <- as.data.frame(lapply(newdata, rep, length(lvls)))
-  zed[, factor] <- rep(lvls, each = nrow(newdata))
+  zed[, groupFctr] <- rep(lvls, each = nrow(newdata))
   zed[, "case"] <- rep(seq(1, nrow(newdata)), times = length(lvls))
   outs1 <- cbind(zed, predictInterval(merMod, newdata = zed, ...))
   outs1$var <- outs1$upr - outs1$lwr
   outs1$lwr <- NULL; outs1$upr <- NULL
-  ranks <- expectedRank(merMod, factor = factor, term = term)
+  ranks <- expectedRank(merMod, groupFctr = groupFctr, term = term)
   ranks <- ranks[, c(1, 5)]
-  outs1 <- merge(ranks, outs1, by = factor); rm(ranks)
+  outs1 <- merge(ranks, outs1, by = groupFctr); rm(ranks)
 
   weighted.var.se <- function(x, w, na.rm=FALSE)
     #  Computes the variance of a weighted mean following Cochran 1977 definition

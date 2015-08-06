@@ -4,19 +4,35 @@
 \alias{fastdisp}
 \title{Display model fit summary of merMod objects, fast}
 \usage{
-fastdisp(object, ...)
+fastdisp(merMod, ...)
 }
 \arguments{
-\item{object}{a merMod object from the lme4 package}
+\item{merMod}{a merMod object from the lme4 package}
 
-\item{...}{additional arguments to pass to display function from arm
+\item{...}{additional arguments to pass to \code{arm::\link[arm]{display}}
 including number of digits}
 }
 \value{
 A printed summary of a merMod object
 }
 \description{
-A faster version of the display function from arm which does
-not refit the model to extract the deviance
+A faster version of the \code{arm::\link[arm]{display}} function that
+is quicker because it does not refit the model to extract the deviance
+}
+\details{
+The time saving is only noticeable for large, time-consuming (g)lmer
+fits.
+}
+\examples{
+\dontrun{
+#Compare the time for displaying this modest model
+require(arm)
+m1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
+system.time(display(m1))
+system.time(fastdisp(m1))
+}
+}
+\seealso{
+\code{\link[arm]{display}}
 }
 

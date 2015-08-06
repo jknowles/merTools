@@ -32,15 +32,15 @@ m5  <- glmer(form, family="poisson",data=grouseticks,
                                             optCtrl=list(maxfun = 1e5)))
 
 #Custom Expectation Functions
-  expect_correct_dim <- function(merMod, factor=NULL, term=NULL) {
-    if (is.null(factor))
+  expect_correct_dim <- function(merMod, groupFctr=NULL, term=NULL) {
+    if (is.null(groupFctr))
       n.levels <- nrow(ranef(merMod)[[1]])
     else
-      n.levels <- nrow(ranef(merMod)[[factor]])
-    ER <- expectedRank(merMod, factor, term)
+      n.levels <- nrow(ranef(merMod)[[groupFctr]])
+    ER <- expectedRank(merMod, groupFctr, term)
     expect_true(nrow(ER)==n.levels &&
                 ncol(ER)==5 &&
-                colnames(ER)[2:5]==c("theta", "varTheta", "ER", "pctER") &&
+                colnames(ER)[4:5]==c("ER", "pctER") &&
                 class(ER)=="data.frame")
   }
 
@@ -50,25 +50,25 @@ context("Testing expected rank")
 ###############################################
 test_that("expectedRank parameters work and dont work as intended", {
   expect_correct_dim(m1)
-  expect_correct_dim(m1, factor="Subject")
+  expect_correct_dim(m1, groupFctr="Subject")
   expect_correct_dim(m1, term="(Intercept)")
-  expect_correct_dim(m1, factor="Subject", term="(Intercept)")
+  expect_correct_dim(m1, groupFctr="Subject", term="(Intercept)")
 
   expect_correct_dim(m2, term="(Intercept)")
   expect_correct_dim(m2, term="Days")
 
-  expect_correct_dim(m3, factor="Subject", term="age")
-  expect_correct_dim(m3, factor="Subject", term="nsex")
+  expect_correct_dim(m3, groupFctr="Subject", term="age")
+  expect_correct_dim(m3, groupFctr="Subject", term="nsex")
 
-  expect_correct_dim(m4, factor="BROOD", term="(Intercept)")
-  expect_correct_dim(m4, factor="INDEX", term="(Intercept)")
+  expect_correct_dim(m4, groupFctr="BROOD", term="(Intercept)")
+  expect_correct_dim(m4, groupFctr="INDEX", term="(Intercept)")
 
-  expect_correct_dim(m5, factor="BROOD")
-  expect_correct_dim(m5, factor="INDEX")
+  expect_correct_dim(m5, groupFctr="BROOD")
+  expect_correct_dim(m5, groupFctr="INDEX")
 
   expect_error(expectedRank(m4), "Must specify which grouping factor when there are more than one")
-  expect_error(expectedRank(m4, factor="BROOD"), "Must specify which random coefficient when there are more than one per selected grouping factor")
-  expect_error(expectedRank(m3, factor="Subject"), "Must specify which random coefficient when there are more than one per selected grouping factor")
+  expect_error(expectedRank(m4, groupFctr="BROOD"), "Must specify which random coefficient when there are more than one per selected grouping factor")
+  expect_error(expectedRank(m3, groupFctr="Subject"), "Must specify which random coefficient when there are more than one per selected grouping factor")
   expect_error(expectedRank(m3, term="int"), "undefined columns selected")
 })
 

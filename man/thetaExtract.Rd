@@ -4,10 +4,10 @@
 \alias{thetaExtract}
 \title{Extract theta parameters from a merMod model}
 \usage{
-thetaExtract(model)
+thetaExtract(merMod)
 }
 \arguments{
-\item{model}{a valide merMod object}
+\item{merMod}{a valide merMod object}
 }
 \value{
 a vector of the covrariance, theta, parameters from a \code{\link{merMod}}

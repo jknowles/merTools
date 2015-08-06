@@ -46,7 +46,7 @@ test_that("Can extract theta from a fit model", {
   expect_equal(thetaExtract(g1), 0.2085, tolerance = .05)
   expect_error(thetaExtract(g1b))
 
-  z1 <- subBoot(g1, 500, FUN = thetaExtract, B = 10)
+  z1 <- subBoot(g1, 500, FUN = thetaExtract, R = 10)
   expect_is(z1, "data.frame")
   expect_equal(nrow(z1), 11)
   expect_equal(ncol(z1), 2)

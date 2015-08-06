@@ -4,17 +4,17 @@
 \alias{REquantile}
 \title{Identify group level associated with RE quantile}
 \usage{
-REquantile(merMod, quantile, group, eff = "(Intercept)")
+REquantile(merMod, quantile, groupFctr, term = "(Intercept)")
 }
 \arguments{
 \item{merMod}{a merMod object with one or more random effect levels}
 
 \item{quantile}{a numeric vector with values between 0 and 100 for quantiles}
 
-\item{group}{a character of the name of the random effect group to extract
+\item{groupFctr}{a character of the name of the random effect grouping factor to extract
 quantiles from}
 
-\item{eff}{a character of the random effect to extract for the grouping term
+\item{term}{a character of the random effect to extract for the grouping factor
 specified. Default is the intercept.}
 }
 \value{
@@ -28,7 +28,7 @@ associated with the nth percentile effect.
 }
 \examples{
 fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-REquantile(fm1, quantile = 0.25, group = "Subject")
-REquantile(fm1, quantile = 0.25, group = "Subject", eff = "Days")
+REquantile(fm1, quantile = 0.25, groupFctr = "Subject")
+REquantile(fm1, quantile = 0.25, groupFctr = "Subject", term = "Days")
 }
 

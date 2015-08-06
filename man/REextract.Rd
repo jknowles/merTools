@@ -4,10 +4,10 @@
 \alias{REextract}
 \title{Extracts random effects}
 \usage{
-REextract(mod)
+REextract(merMod)
 }
 \arguments{
-\item{mod}{a merMod object from the lme4 package}
+\item{merMod}{a merMod object from the lme4 package}
 }
 \value{
 a data frame with random effects from lme4 by group id

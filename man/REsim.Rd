@@ -2,22 +2,32 @@
 % Please edit documentation in R/merExtract.R
 \name{REsim}
 \alias{REsim}
-\title{Simulate random effects from merMod}
+\title{Simulate random effects from merMod
+\code{REsim} simulates random effects from merMod object posterior distributions}
 \usage{
-REsim(mod, n.sims = 200, OR = FALSE)
+REsim(merMod, n.sims = 200, oddsRatio = FALSE)
 }
 \arguments{
-\item{mod}{a merMod object from the lme4 package}
+\item{merMod}{a merMod object from the lme4 package}
 
 \item{n.sims}{number of simulations to use}
 
-\item{OR}{logical, should parameters be converted to odds ratios?}
+\item{oddsRatio}{logical, should parameters be converted to odds ratios?}
 }
 \value{
-a data frame with distribution of random effect parameters
+a data frame with the following columns
+\describe{
+  \item{\code{groupFctr}}{Name of the grouping factor}
+  \item{\code{groupID}}{Level of the grouping factor}
+  \item{\code{term}}{Name of random term (intercept/coefficient)}
+  \item{\code{mean}}{Mean of the simulations}
+  \item{\code{median}}{Median of the simulations}
+  \item{\code{sd}}{Standard deviation of the simulations, \code{NA} if \code{oddsRatio=TRUE}}
+}
 }
 \description{
-Simulate random effects from merMod object posterior distributions
+Simulate random effects from merMod
+\code{REsim} simulates random effects from merMod object posterior distributions
 }
 \details{
 Use the Gelman sim technique to build empirical Bayes estimates.

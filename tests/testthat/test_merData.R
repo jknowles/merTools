@@ -204,17 +204,17 @@ context("Find RE Quantiles")
 ################################################
 
 test_that("Errors and messages are issued", {
-  expect_error(REquantile(glmer3Lev, 23, group = "BROOD"))
-  expect_warning(REquantile(glmer3Lev, .23, group = "BROOD", eff = "Cat"))
-  expect_error(REquantile(glmer3Lev, .23, group = "Cat"))
+  expect_error(REquantile(glmer3Lev, 23, groupFctr = "BROOD"))
+  expect_warning(REquantile(glmer3Lev, .23, groupFctr = "BROOD", term = "Cat"))
+  expect_error(REquantile(glmer3Lev, .23, groupFctr = "Cat"))
   expect_error(REquantile(glmer3Lev, c(23, .56, .75), "BROOD"))
   expect_error(REquantile(glmer3Lev, c(.23, 56, .75), "BROOD"))
   expect_error(REquantile(glmer3Lev, c(.23, .56, 75), "BROOD"))
   expect_error(REquantile(glmer3Lev, c(.23, .56, 107), "BROOD"))
   expect_error(REquantile(glmer3Lev, c(-2, .56, .7), "BROOD"))
-  expect_message(REquantile(lmerSlope1, .25, group = "Subject"))
+  expect_message(REquantile(lmerSlope1, .25, groupFctr = "Subject"))
   expect_warning(REquantile(lmerSlope2, c(.24), "Subject"))
-  expect_warning(REquantile(lmerSlope2, c(.24), "Subject", eff = "Cat"))
+  expect_warning(REquantile(lmerSlope2, c(.24), "Subject", term = "Cat"))
 })
 
 # what to do without intercepts (REquantile(lmerSlope2), c(.24), "Subject")

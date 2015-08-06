@@ -7,11 +7,11 @@ server = function(input, output){
   })
 
   predInput <- reactive({
-    data <- switch(input$simDataType,
+    data <- switch(input$newdataType,
                    "orig" = merMod@frame,
                    "mean" = draw(merMod, type = "average"),
                    "rand" = draw(merMod, type = "random"),
-                   "user" = simData)
+                   "user" = newdata)
     cbind(predictInterval(merMod, newdata = data, level = input$alpha/100,
                           type = input$predMetric,
                           include.resid.var = input$resid.var,
@@ -70,11 +70,11 @@ server = function(input, output){
   })
 
   reEffInput <- reactive({
-    data <- switch(input$simDataType,
+    data <- switch(input$newdataType,
                    "orig" = merMod@frame,
                    "mean" = draw(merMod, type = "average"),
                    "rand" = draw(merMod, type = "random"),
-                   "user" = simData)
+                   "user" = newdata)
     if(nrow(data) > 12){
       warning("Too much data selected, only using top 12 rows.")
       data <- data[1:12, ]

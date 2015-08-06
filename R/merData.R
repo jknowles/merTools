@@ -171,7 +171,7 @@ averageObs <- function(merMod, varList = NULL){
   reTerms <- names(ngrps(merMod))
   for(i in 1:length(reTerms)){
     out[, reTerms[i]] <- REquantile(merMod = merMod,
-                                        quantile = 0.5, group = reTerms[[i]])
+                                        quantile = 0.5, groupFctr = reTerms[[i]])
     out[, reTerms[i]] <- as.character(out[, reTerms[i]])
   }
   chars <- !sapply(out, is.numeric)
@@ -260,31 +260,31 @@ wiggle <- function(data, var, values){
 #' associated with the nth percentile effect.
 #' @param merMod a merMod object with one or more random effect levels
 #' @param quantile a numeric vector with values between 0 and 100 for quantiles
-#' @param group a character of the name of the random effect group to extract
+#' @param groupFctr a character of the name of the random effect grouping factor to extract
 #' quantiles from
-#' @param eff a character of the random effect to extract for the grouping term
+#' @param term a character of the random effect to extract for the grouping factor
 #' specified. Default is the intercept.
 #' @return a vector of the level of the random effect grouping term that corresponds
 #' to each quantile
 #' @export
 #' @examples
 #' fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-#' REquantile(fm1, quantile = 0.25, group = "Subject")
-#' REquantile(fm1, quantile = 0.25, group = "Subject", eff = "Days")
-REquantile <- function(merMod, quantile, group, eff = "(Intercept)"){
+#' REquantile(fm1, quantile = 0.25, groupFctr = "Subject")
+#' REquantile(fm1, quantile = 0.25, groupFctr = "Subject", term = "Days")
+REquantile <- function(merMod, quantile, groupFctr, term = "(Intercept)"){
   if(any(quantile > 1 | quantile < 0)){
     stop("Quantiles must be specified on the range 0-1")
   }
-  myRE <- ranef(merMod)[[group]]
+  myRE <- ranef(merMod)[[groupFctr]]
   if(is.null(myRE)){
-    stop("Random effect group name not found. Please respecify group.")
+    stop("Random effect group name not found. Please respecify grouping factor.")
   }
-  myRE.tmp <- try(myRE[order(myRE[, eff]), ,drop = FALSE], silent = TRUE)
+  myRE.tmp <- try(myRE[order(myRE[, term]), ,drop = FALSE], silent = TRUE)
   if(class(myRE.tmp) != "data.frame"){
-    eff1 <- names(myRE)[1]
-    myRE.tmp <- try(myRE[order(myRE[, eff1]), ,drop = FALSE], silent = TRUE)
-    warning(paste0(eff, " not found in random effect terms. Returning first term, ",
-          eff1,", for group, ", group, ", instead."))
+    term1 <- names(myRE)[1]
+    myRE.tmp <- try(myRE[order(myRE[, term1]), ,drop = FALSE], silent = TRUE)
+    warning(paste0(term, " not found in random effect terms. Returning first term, ",
+          term1,", for grouping factor, ", groupFctr, ", instead."))
   }
   myRE <- myRE.tmp; myRE.tmp <- NULL
   nobs <- nrow(myRE)
