@@ -3,7 +3,19 @@
 #' @description Extracts random effect terms from an lme4 model
 #' @param merMod a merMod object from the lme4 package
 #' @importFrom plyr adply rbind.fill
-#' @return a data frame with random effects from lme4 by group id
+#' @return a data frame with the following columns
+#' \describe{
+#'   \item{groupFctr}{The name of the grouping factor associated with the random effects}
+#'   \item{groupID}{The level of the grouping factor associated with the random effects}
+#'   \item{'term'}{One column per random effect, the name is derived from the merMod}
+#'   \item{'term'_se}{One column per random effect, the name is derived from the merMod}
+#' }
+#' @examples
+#' require(lme4)
+#' m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#' rfx <- REextract(m2)
+#' #Note the column names
+#' head(rfx)
 #' @export
 REextract <- function(merMod){
   stopifnot(class(merMod) == "lmerMod" | class(merMod) == "glmerMod")
@@ -53,6 +65,11 @@ REextract <- function(merMod){
 #' }
 #' @details Use the Gelman sim technique to build empirical Bayes estimates.
 #'  Uses the sim function in the arm package
+#' @examples
+#' require(lme4)
+#' m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#' re2 <- REsim(m2, 25)
+#' head(re2)
 #' @export
 REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE){
   stopifnot(class(merMod) == "lmerMod" | class(merMod) == "glmerMod")
@@ -97,6 +114,11 @@ REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE){
 #' }
 #' @details Use the Gelman sim technique to build fixed effect estimates and
 #' confidence intervals. Uses the sim function in the arm package
+#' @examples
+#' require(lme4)
+#' m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#' fe2 <- FEsim(m2, 25)
+#' head(fe2)
 #' @export
 FEsim <- function(merMod, n.sims = 200, oddsRatio=FALSE){
   stopifnot(class(merMod) == "lmerMod" | class(merMod) == "glmerMod")
@@ -125,6 +147,10 @@ FEsim <- function(merMod, n.sims = 200, oddsRatio=FALSE){
 #' response variable standard deviations?
 #' @import lme4
 #' @return a numeric which represents the RMSE
+#' @examples
+#' require(lme4)
+#' m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#' RMSE.merMod(m2)
 #' @export
 RMSE.merMod <- function(merMod, scale = FALSE){
   stopifnot(class(merMod) == "lmerMod")

@@ -31,4 +31,10 @@ Simulate fixed effects from merMod
 Use the Gelman sim technique to build fixed effect estimates and
 confidence intervals. Uses the sim function in the arm package
 }
+\examples{
+require(lme4)
+m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+fe2 <- FEsim(m2, 25)
+head(fe2)
+}
 
