@@ -2,7 +2,8 @@
 % Please edit documentation in R/merExtract.R
 \name{REsim}
 \alias{REsim}
-\title{Simulate random effects from merMod}
+\title{Simulate random effects from merMod
+\code{REsim} simulates random effects from merMod object posterior distributions}
 \usage{
 REsim(merMod, n.sims = 200, oddsRatio = FALSE)
 }
@@ -15,7 +16,7 @@ REsim(merMod, n.sims = 200, oddsRatio = FALSE)
 }
 \value{
 a data frame with the following columns
-\description{
+\describe{
   \item{\code{groupFctr}}{Name of the grouping factor}
   \item{\code{groupID}}{Level of the grouping factor}
   \item{\code{term}}{Name of random term (intercept/coefficient)}
@@ -25,7 +26,8 @@ a data frame with the following columns
 }
 }
 \description{
-Simulate random effects from merMod object posterior distributions
+Simulate random effects from merMod
+\code{REsim} simulates random effects from merMod object posterior distributions
 }
 \details{
 Use the Gelman sim technique to build empirical Bayes estimates.

@@ -171,7 +171,7 @@ averageObs <- function(merMod, varList = NULL){
   reTerms <- names(ngrps(merMod))
   for(i in 1:length(reTerms)){
     out[, reTerms[i]] <- REquantile(merMod = merMod,
-                                        quantile = 0.5, group = reTerms[[i]])
+                                        quantile = 0.5, groupFctr = reTerms[[i]])
     out[, reTerms[i]] <- as.character(out[, reTerms[i]])
   }
   chars <- !sapply(out, is.numeric)
@@ -283,8 +283,8 @@ REquantile <- function(merMod, quantile, groupFctr, term = "(Intercept)"){
   if(class(myRE.tmp) != "data.frame"){
     term1 <- names(myRE)[1]
     myRE.tmp <- try(myRE[order(myRE[, term1]), ,drop = FALSE], silent = TRUE)
-    warning(paste0(eff, " not found in random effect terms. Returning first term, ",
-          eff1,", for grouping factor, ", groupFctr, ", instead."))
+    warning(paste0(term, " not found in random effect terms. Returning first term, ",
+          term1,", for grouping factor, ", groupFctr, ", instead."))
   }
   myRE <- myRE.tmp; myRE.tmp <- NULL
   nobs <- nrow(myRE)

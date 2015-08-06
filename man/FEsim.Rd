@@ -2,7 +2,8 @@
 % Please edit documentation in R/merExtract.R
 \name{FEsim}
 \alias{FEsim}
-\title{Simulate fixed effects from merMod}
+\title{Simulate fixed effects from merMod
+\code{FEsim} simulates fixed effects from merMod object posterior distributions}
 \usage{
 FEsim(merMod, n.sims = 200, oddsRatio = FALSE)
 }
@@ -15,7 +16,7 @@ FEsim(merMod, n.sims = 200, oddsRatio = FALSE)
 }
 \value{
 a data frame with the following columns
-\description{
+\describe{
   \item{\code{term}}{Name of fixed term (intercept/coefficient)}
   \item{\code{mean}}{Mean of the simulations}
   \item{\code{median}}{Median of the simulations}
@@ -23,7 +24,8 @@ a data frame with the following columns
 }
 }
 \description{
-Simulate fixed effects from merMod object posterior distributions
+Simulate fixed effects from merMod
+\code{FEsim} simulates fixed effects from merMod object posterior distributions
 }
 \details{
 Use the Gelman sim technique to build fixed effect estimates and

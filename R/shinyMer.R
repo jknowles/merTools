@@ -6,7 +6,7 @@ utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "la
 #'
 #' @param merMod An object of class "merMod".
 #'
-#' @param simData A data.frame to make predictions from (optional). If
+#' @param newdata A data.frame to make predictions from (optional). If
 #'   NULL, then the user can only make predictions using the data in
 #'   the frame slot of the merMod object.
 #'
@@ -42,8 +42,8 @@ utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "la
 #' @importFrom shiny strong
 #' @importFrom DT dataTableOutput
 #' @export
-shinyMer <- function(merMod, simData = NULL) {
-  if (is.null(simData)) {
+shinyMer <- function(merMod, newdata = NULL) {
+  if (is.null(newdata)) {
     df.choices <- c("Model Frame"   = "orig",
                     "Random Obs"    = "rand",
                     "Average Obs"   = "mean")

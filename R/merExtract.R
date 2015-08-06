@@ -35,16 +35,15 @@ REextract <- function(merMod){
   return(dat)
 }
 
-#' @title Simulate random effects from merMod
-#' @name REsim
-#' @description Simulate random effects from merMod object posterior distributions
+#' Simulate random effects from merMod
+#' \code{REsim} simulates random effects from merMod object posterior distributions
 #' @param merMod a merMod object from the lme4 package
 #' @param n.sims number of simulations to use
 #' @param oddsRatio logical, should parameters be converted to odds ratios?
 #' @importFrom arm sim
 #' @import lme4
 #' @return a data frame with the following columns
-#' \description{
+#' \describe{
 #'   \item{\code{groupFctr}}{Name of the grouping factor}
 #'   \item{\code{groupID}}{Level of the grouping factor}
 #'   \item{\code{term}}{Name of random term (intercept/coefficient)}
@@ -82,16 +81,15 @@ REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE){
   }
 }
 
-#' @title Simulate fixed effects from merMod
-#' @name FEsim
-#' @description Simulate fixed effects from merMod object posterior distributions
+#' Simulate fixed effects from merMod
+#' \code{FEsim} simulates fixed effects from merMod object posterior distributions
 #' @param merMod a merMod object from the lme4 package
 #' @param n.sims number of simulations to use
 #' @param oddsRatio logical, should parameters be converted to odds ratios?
 #' @importFrom arm sim
 #' @import lme4
 #' @return a data frame with the following columns
-#' \description{
+#' \describe{
 #'   \item{\code{term}}{Name of fixed term (intercept/coefficient)}
 #'   \item{\code{mean}}{Mean of the simulations}
 #'   \item{\code{median}}{Median of the simulations}

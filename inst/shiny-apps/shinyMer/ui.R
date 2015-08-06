@@ -3,11 +3,11 @@ shinyUI(fluidPage(
   shiny::titlePanel("Explore your merMod interactively"),
   shiny::sidebarLayout(
     shiny::sidebarPanel(
-      shiny::radioButtons("simDataType",
+      shiny::radioButtons("newdataType",
                           "Simulated data scenario",
                           choices=df.choices,
                           selected=NULL),
-      #                  conditionalPanel(condition = "input.simDataType!='orig'",
+      #                  conditionalPanel(condition = "input.newdataType!='orig'",
       #                                   selectInput("filter", "Filter",
       #                                               choices = names(merMod@frame))
       #                                   ),
