@@ -41,28 +41,28 @@ server = function(input, output){
   })
 
   feData <- reactive({
-    FEsim(merMod, n.sims = input$n.sims)
+    data <- FEsim(merMod, n.sims = input$n.sims)
+    return(data)
   })
 
   output$feplot <- renderPlot({
     plotdf <- feData()
-    scale <- qnorm(input$alpha/100)
-    vartmp <- ifelse(input$stat == "mean", "mean_eff", "median_eff")
-    sdtmp <- "sd_eff"
-    plotFEsim(plotdf, scale = scale, var = vartmp, sd = sdtmp,
+    scale <- input$alpha/100
+    vartmp <- input$stat
+    plotFEsim(plotdf, level = scale, stat = vartmp, sd = TRUE,
               intercept = FALSE)
   })
 
   reData <- reactive({
-    REsim(merMod, n.sims = input$n.sims)
+    data <- REsim(merMod, n.sims = input$n.sims)
+    return(data)
   })
 
   output$replot <- renderPlot({
     plotdf <- reData()
-    scale <- qnorm(input$alpha/100)
-    vartmp <- ifelse(input$stat == "mean", "mean_eff", "median_eff")
-    sdtmp <- "sd_eff"
-    plotREsim(plotdf, scale = scale, var = vartmp, sd = sdtmp)
+    scale <- input$alpha/100
+    vartmp <- input$stat
+    plotREsim(plotdf, level = scale, stat = vartmp, sd = TRUE)
   })
 
   output$call <- renderPrint({
@@ -83,8 +83,8 @@ server = function(input, output){
   })
 
   groupData <- reactive({
-    plotdf <- groupSim(merMod, newdata = reEffInput(),
-                       factor = input$group,
+    plotdf <- REimpact(merMod, newdata = reEffInput(),
+                       groupFctr = input$group,
                        level = input$alpha/100,
                        breaks = input$nbin,
                        type = input$predMetric,
