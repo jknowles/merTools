@@ -140,7 +140,7 @@ for `lmerMod` objects.
 
 ```{r predInt}
 PI.time <- system.time(
-  PI <- predictInterval(model = fm1, newdata = sleepstudy, 
+  PI <- predictInterval(merMod = fm1, newdata = sleepstudy, 
                         level = 0.95, n.sims = 1000,
                         stat = "median", type="linear.prediction",
                         include.resid.var = TRUE)
@@ -153,9 +153,9 @@ Here is the first few rows of the object `PI`:
 kable(head(PI))
 ```
 
-The final three columns are the median (`fit`) and limits of the 95% prediction 
-interval (`upr` and `lwr`). The following figure displays the output graphically 
-for the first 30 observations.
+The three columns are the median (`fit`) and limits of the 95% prediction 
+interval (`upr` and `lwr`) because we set `level=0.95`. The following figure 
+displays the output graphically for the first 30 observations.
 
 ```{r Inspect predInt 2, fig.width=7, fig.align="center"}
 library(ggplot2);
