@@ -15,6 +15,10 @@
 #' before plotting
 #' @param labs logical, include the labels of the groups on the x-axis
 #' @return a ggplot2 plot of the coefficient effects
+#' @examples
+#'  require(ggplot2); require(lme4);
+#'  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#'  (p1 <- plotREsim(REsim(fm1)))
 #' @export
 #' @import ggplot2
 plotREsim <- function(data, scale = 1.96, var = "median_eff",
@@ -36,22 +40,25 @@ plotREsim <- function(data, scale = 1.96, var = "median_eff",
     hlineInt <- 1
   }
   if(labs == TRUE){
-    xlabs.tmp <- element_text(face = "bold")
-    xvar <- labs
+    xlabs.tmp <- element_text(face = "bold", angle=90, vjust=.5)
+    data <- dplyr::ungroup(dplyr::arrange_(dplyr::group_by(data, level, effect), var))
+    data[,"xvar"] <- factor(data$group, levels=unique(data$group))
   } else {
     xlabs.tmp <- element_blank()
-    xvar <- "id"
+    data <- dplyr::ungroup(dplyr::mutate(dplyr::arrange_(dplyr::group_by(data, level, effect), var), xvar=dplyr::row_number(effect)))
   }
 
-  data[order(data[, var]), "id"] <- c(1:nrow(data))
-  ggplot(data, aes_string(x = xvar, y = var, ymax = "ymax",
-                         ymin = "ymin")) +
-    geom_pointrange(alpha = I(0.25)) + theme_bw() + geom_point() +
-    labs(x = "Group", y = "Effect Range", title = "Effect Ranges") +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          axis.text.x = xlabs.tmp, axis.ticks.x = element_blank()) +
+  ggplot(data, aes_string(x = "xvar", y = var, ymax = "ymax", ymin = "ymin")) +
     geom_hline(yintercept = hlineInt, color = I("red"), size = I(1.1)) +
-    facet_grid(effect ~ level)
+    geom_pointrange(alpha = I(0.25)) +
+    geom_point() +
+    labs(x = "Group", y = "Effect Range", title = "Effect Ranges") +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.text.x = xlabs.tmp,
+          axis.ticks.x = element_blank()) +
+    facet_grid(effect ~ level, scales = "free_x")
 }
 
 #' @title Plot the results of a simulation of the fixed effects
@@ -71,6 +78,10 @@ plotREsim <- function(data, scale = 1.96, var = "median_eff",
 #' @param oddsRatio logical, should the parameters be converted to odds ratios
 #' before plotting
 #' @return a ggplot2 plot of the coefficient effects
+#' @examples
+#'  require(ggplot2); require(lme4);
+#'  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#'  (p1 <- plotFEsim(FEsim(fm1)))
 #' @export
 #' @import ggplot2
 plotFEsim <- function(data, scale = 1.96, var = "median_eff", sd = "sd_eff",
