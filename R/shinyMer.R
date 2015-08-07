@@ -1,4 +1,3 @@
-utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "label"))
 #' Launch a shiny app to explore your merMod interactively
 #'
 #' \code{shinyMer} launches a shiny app that allows you to interactively
@@ -6,9 +5,12 @@ utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "la
 #'
 #' @param merMod An object of class "merMod".
 #'
-#' @param newdata A data.frame to make predictions from (optional). If
+#' @param simData A data.frame to make predictions from (optional). If
 #'   NULL, then the user can only make predictions using the data in
 #'   the frame slot of the merMod object.
+#'
+#' @param pos The position of the environment to export function arguments to.
+#' Defaults to 1, the global environment, to allow shiny to run.
 #'
 #' @return A shiny app
 #'
@@ -44,13 +46,14 @@ utils::globalVariables(c("X", "fit", "lwr", "upr", "variable", "lci", "uci", "la
 #' @importFrom DT dataTableOutput
 #' @export
 
-shinyMer <- function(merMod, simData = NULL) {
+shinyMer <- function(merMod, simData = NULL, pos = 1) {
+  envir = as.environment(pos)
   if(exists("simData")){
-    expParm <- function(x, y) assign(".shinyMerPar", list("merMod" = x, "simData" = y), envir = .GlobalEnv)
+    expParm <- function(x, y) assign(".shinyMerPar", list("merMod" = x, "simData" = y), envir = envir)
     expParm(x = merMod, y = simData)
   } else{
-    expParm <- function(x) assign(".shinyMerPar", list("merMod" = x, "simData" = NULL), envir = .GlobalEnv)
-    expParm(x = merMod)
+    expParm2 <- function(x) assign(".shinyMerPar", list("merMod" = x, "simData" = NULL), envir = envir)
+    expParm2(x = merMod)
   }
   appDir <- system.file("shiny-apps", "shinyMer", package = "merTools")
   shiny::runApp(appDir, display.mode = "normal")

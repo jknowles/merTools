@@ -4,14 +4,17 @@
 \alias{shinyMer}
 \title{Launch a shiny app to explore your merMod interactively}
 \usage{
-shinyMer(merMod, newdata = NULL)
+shinyMer(merMod, simData = NULL, pos = 1)
 }
 \arguments{
 \item{merMod}{An object of class "merMod".}
 
-\item{newdata}{A data.frame to make predictions from (optional). If
+\item{simData}{A data.frame to make predictions from (optional). If
   NULL, then the user can only make predictions using the data in
   the frame slot of the merMod object.}
+
+\item{pos}{The position of the environment to export function arguments to.
+Defaults to 1, the global environment, to allow shiny to run.}
 }
 \value{
 A shiny app
