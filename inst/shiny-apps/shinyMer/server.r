@@ -85,6 +85,7 @@ server = function(input, output){
   groupData <- reactive({
     plotdf <- REimpact(merMod, newdata = reEffInput(),
                        groupFctr = input$group,
+                       term = input$term,
                        level = input$alpha/100,
                        breaks = input$nbin,
                        type = input$predMetric,
@@ -125,6 +126,13 @@ server = function(input, output){
     plotdf$X <- plotdf[, input$fixef]
     plotdf$case <- rep(1:length(newvals), length = nrow(reEffInput()))
     return(plotdf)
+  })
+
+  output$re.ui <- renderUI({
+    choices <- names(ranef(merMod)[[input$group]])
+    selectInput("term", "Group Term:",
+                choices = choices,
+                selected = choices[1])
   })
 
   output$wigglePlot <- renderPlot({
