@@ -22,6 +22,8 @@
 #'  require(ggplot2); require(lme4);
 #'  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #'  (p1 <- plotREsim(REsim(fm1)))
+#'  #Plot just the random effects for the Days slope
+#'  (p2 <- plotREsim(REsim(fm1)[REsim(fm1)$term=="Days",]))
 #' @export
 #' @import ggplot2
 
@@ -44,7 +46,9 @@ plotREsim <- function(data, level = 0.95, stat = "median", sd = TRUE,
   }
   data <- data[order(data[,"groupFctr"], data[,"term"], data[,stat]),]
   rownames(data) <- 1:nrow(data)
-  data[,"xvar"] <- factor(data$groupID, levels=data$groupID[data$term==unique(data$term)[1]], ordered=TRUE)
+  data[,"xvar"] <- factor(paste(data$groupFctr, data$groupID, sep=""),
+                          levels=unique(paste(data$groupFctr,data$groupID, sep="")),
+                          ordered=TRUE)
   if(labs == TRUE){
     xlabs.tmp <- element_text(face = "bold", angle=90, vjust=.5)
   } else {
@@ -54,24 +58,20 @@ plotREsim <- function(data, level = 0.95, stat = "median", sd = TRUE,
 
   p <- ggplot(data, aes_string(x = "xvar", y = stat, ymax = "ymax", ymin = "ymin")) +
          geom_hline(yintercept = hlineInt, color = I("red"), size = I(1.1)) +
-         geom_point(data=subset(data, sig==FALSE), color="gray75", alpha=1/(nrow(data)^.33), size=I(0.5)) +
+         geom_point(color="gray75", alpha=1/(nrow(data)^.33), size=I(0.5)) +
          geom_point(data=subset(data, sig==TRUE), size=I(3)) +
          labs(x = "Group", y = "Effect Range", title = "Effect Ranges") +
          theme_bw() +
          theme(panel.grid.major = element_blank(),
                panel.grid.minor = element_blank(),
                axis.text.x = xlabs.tmp,
-               axis.ticks.x = element_blank()) +
-          facet_grid(term ~ groupFctr, scales = "free_x")
-  if (labs) {
-    p <- p + scale_x_discrete(limits=c(levels(data[,"xvar"])))
-  }
+               axis.ticks.x = element_blank())
   if (sd) {
     p <- p +
-      geom_pointrange(data=subset(data, sig==FALSE), alpha = 1/(nrow(data)^.33)) +
+      geom_pointrange(alpha = 1/(nrow(data)^.33)) +
       geom_pointrange(data=subset(data, sig==TRUE), alpha = 0.25)
   }
-  p
+  p + facet_grid(term ~ groupFctr, scales = "free_x")
 }
 
 #' @title Plot the results of a simulation of the fixed effects
