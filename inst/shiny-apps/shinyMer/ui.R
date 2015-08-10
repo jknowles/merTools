@@ -20,14 +20,15 @@ shinyUI(fluidPage(
                        helpText("Here you can compare impact of
                                 changing input variables on the
                                 outcome variable for selected cases."),
-                       selectInput("group", "Group Term:",
+                       selectInput("group", "Group Factor:",
                                    choices = names(ranef(merMod)),
                                    selected = NULL),
+                       uiOutput("re.ui"),
                        sliderInput("nbin", "Effect Bins", min = 3,
                                    max = 10, value = 4, step = 1),
                        helpText("And modify your fixed effects"),
                        selectInput("fixef", "Fixed Effect:",
-                                   choices = names(fixef(merMod))[-1],
+                                   choices = all.vars(nobars(formula(merMod)))[-1],
                                    selected = NULL)
                        ),
       shiny::numericInput("alpha",
