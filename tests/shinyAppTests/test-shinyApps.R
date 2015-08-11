@@ -47,5 +47,5 @@ shinyMer(fm2)
 shinyMer(g1)
 shinyMer(g2)
 shinyMer(glmer3LevSlope)
-
+shinyMer(glmer3LevSlope, simData = glmer3LevSlope@frame[22:25,])
 

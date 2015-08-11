@@ -4,7 +4,7 @@ merMod <<- .shinyMerPar$merMod
 if(is.null(.shinyMerPar$simData)){
 
 } else {
-  simData <<- .shinyMerPar$simData
+  newdata <<- .shinyMerPar$simData
 }
 
 if (!exists("simData")) {
