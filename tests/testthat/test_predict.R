@@ -349,4 +349,16 @@ test_that("Prediction intervals are accurate with interaction terms and rank def
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/10)
 })
 
+context("Test the simResults")
 
+test_that("simResults option behaves", {
+  m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+  preds1 <- predictInterval(m1, newdata = sleepstudy[1:5, ])
+  preds2 <- predictInterval(m1, newdata = sleepstudy[1:5, ],
+                            returnSims = TRUE)
+  expect_null(attr(preds1, "sim.results"))
+  expect_is(attr(preds2, "sim.results"), "matrix")
+  out <- attr(preds2, "sim.results")
+  expect_equal(ncol(out), 100)
+  expect_equal(nrow(out), 5)
+})

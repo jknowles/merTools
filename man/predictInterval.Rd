@@ -6,7 +6,7 @@
 \usage{
 predictInterval(merMod, newdata, level = 0.95, n.sims = 100,
   stat = c("median", "mean"), type = c("linear.prediction", "probability"),
-  include.resid.var = TRUE)
+  include.resid.var = TRUE, returnSims = FALSE)
 }
 \arguments{
 \item{merMod}{a merMod object from lme4}
@@ -23,6 +23,8 @@ predictInterval(merMod, newdata, level = 0.95, n.sims = 100,
 
 \item{include.resid.var}{logical, include or exclude the residual variance for
 linear models}
+
+\item{returnSims}{logical, should all n.sims simulations be returned?}
 }
 \value{
 a data.frame iwth three columns:
@@ -34,6 +36,8 @@ a data.frame iwth three columns:
     \item{\code{upr}}{The upper confidence interval bound corresponding to the quantile cut
     defined in \code{level}.}
   }
+If returnSims = TRUE, then the individual simulations are attached to this
+data.frame as an attribute.
 }
 \description{
 This function provides a way to capture model uncertainty in
