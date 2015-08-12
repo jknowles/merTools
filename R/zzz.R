@@ -5,13 +5,8 @@ utils::globalVariables(c(".shinyMerPar", "sig"))
 
 #' @importFrom methods as
 #' @importFrom stats AIC as.formula formula logLik median model.matrix na.omit
-#' pnorm qnorm quantile residuals rgamma rnorm sd sima vcov weighted.mean
+#' pnorm qnorm quantile residuals rgamma rnorm sd vcov weighted.mean
 zzz <- function(){
   # Nothing
-  importFrom("methods", "as")
-  importFrom("stats", "AIC", "as.formula", "formula", "logLik", "median",
-             "model.matrix", "na.omit", "pnorm", "qnorm", "quantile",
-             "residuals", "rgamma", "rnorm", "sd", "sigma", "vcov",
-             "weighted.mean")
 
 }
