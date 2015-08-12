@@ -129,7 +129,7 @@ head(feSims)
 
 And we can also plot this:
 
-```{r}
+```{r FEsimPlot}
 plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FALSE)
 ```
 
@@ -140,13 +140,25 @@ reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 ```
 
-```{r}
+```{r reSimplot}
 plotREsim(REsim(m1, n.sims = 100), stat = 'median', sd = TRUE)
 ```
 
 Note that `plotREsim` highlights group levels that have a simulated distribution 
 that does not overlap 0 -- these appear darker. The lighter bars represent 
 grouping levels that are not distinguishable from 0 in the data. 
+
+Sometimes the random effects can be hard to interpret and not all of them are 
+meaningfully different from zero. To help with this `merTools` provides the 
+`expectedRank` function, which provides the percentile ranks for the observed 
+groups in the random effect distribution taking into account both the magnitude 
+and uncertainty of the estimated effect for each group. 
+
+```{r}
+ranks <- expectedRank(m1, groupFctr = "d")
+head(ranks)
+```
+
 
 ## Effect Simulation
 
@@ -167,7 +179,7 @@ of the group factor coefficient. We can see here that the individual professor
 effect has a strong impact on the outcome variable. This can be shown graphically 
 as well:
 
-```{r}
+```{r reImpactplot}
 library(ggplot2)
 ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE, 
                    ymax = AvgFit + 1.96*AvgFitSE)) + 

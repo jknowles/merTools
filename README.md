@@ -62,16 +62,16 @@ With `predictInterval` we obtain predictions that are more like the standard obj
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
 #>         fit      lwr      upr
-#> 1  3.078286 1.100499 5.075946
-#> 2  3.281134 1.197379 5.264665
-#> 3  3.384164 1.285076 5.387058
-#> 4  3.118024 1.117647 5.036167
-#> 5  3.377948 1.284856 5.243332
-#> 6  3.107704 1.157633 5.184480
-#> 7  4.130902 2.299942 6.082705
-#> 8  3.813057 1.665037 6.046188
-#> 9  3.714768 1.873445 5.713179
-#> 10 3.257304 1.384473 5.371605
+#> 1  3.237977 1.294031 5.342045
+#> 2  3.229570 1.179354 5.308003
+#> 3  3.466434 1.344079 5.487743
+#> 4  3.068798 1.051528 5.044127
+#> 5  3.331920 1.312175 5.271037
+#> 6  3.247894 1.175794 5.412198
+#> 7  4.178619 2.186576 6.127204
+#> 8  3.771282 1.939095 5.603283
+#> 9  3.706337 1.838322 6.023991
+#> 10 3.305412 1.499348 5.221148
 ```
 
 Note that `predictInterval` is slower because it is computing simulations. It can also return all of the simulated `yhat` values as an attribute to the predict object itself.
@@ -87,12 +87,12 @@ Plotting
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22351474  3.22238125 0.02101745
-#> 2    service1 -0.07104383 -0.07155633 0.01208565
-#> 3   lectage.L -0.18367262 -0.18578667 0.01700876
-#> 4   lectage.Q  0.02251852  0.02184987 0.01194409
-#> 5   lectage.C -0.02479466 -0.02519008 0.01338426
-#> 6   lectage^4 -0.02038715 -0.02044519 0.01357396
+#> 1 (Intercept)  3.22636226  3.22564020 0.01797447
+#> 2    service1 -0.07187748 -0.07312848 0.01132752
+#> 3   lectage.L -0.18714408 -0.18668602 0.01681278
+#> 4   lectage.Q  0.02370899  0.02391810 0.01304056
+#> 5   lectage.C -0.02492972 -0.02639631 0.01259724
+#> 6   lectage^4 -0.02049587 -0.02050698 0.01100702
 ```
 
 And we can also plot this:
@@ -101,7 +101,7 @@ And we can also plot this:
 plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FALSE)
 ```
 
-![](README-unnamed-chunk-8-1.png)
+![](README-FEsimPlot-1.png)
 
 We can also quickly make caterpillar plots for the random-effect terms:
 
@@ -109,21 +109,35 @@ We can also quickly make caterpillar plots for the random-effect terms:
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 #>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.19821016  0.19214152 0.3250163
-#> 2         s       2 (Intercept) -0.06045705 -0.04451279 0.2864522
-#> 3         s       3 (Intercept)  0.32596250  0.30733520 0.3302377
-#> 4         s       4 (Intercept)  0.19792109  0.21013437 0.2659287
-#> 5         s       5 (Intercept)  0.07336024  0.06520529 0.3045121
-#> 6         s       6 (Intercept)  0.11970748  0.10135723 0.2374726
+#> 1         s       1 (Intercept)  0.15590967  0.10577009 0.3480625
+#> 2         s       2 (Intercept) -0.02129192 -0.05268675 0.3234140
+#> 3         s       3 (Intercept)  0.31103428  0.27390580 0.2931286
+#> 4         s       4 (Intercept)  0.22236132  0.18479646 0.2901372
+#> 5         s       5 (Intercept)  0.04148543  0.07005592 0.3099967
+#> 6         s       6 (Intercept)  0.11779610  0.10083835 0.2501325
 ```
 
 ``` r
 plotREsim(REsim(m1, n.sims = 100), stat = 'median', sd = TRUE)
 ```
 
-![](README-unnamed-chunk-10-1.png)
+![](README-reSimplot-1.png)
 
 Note that `plotREsim` highlights group levels that have a simulated distribution that does not overlap 0 -- these appear darker. The lighter bars represent grouping levels that are not distinguishable from 0 in the data.
+
+Sometimes the random effects can be hard to interpret and not all of them are meaningfully different from zero. To help with this `merTools` provides the `expectedRank` function, which provides the percentile ranks for the observed groups in the random effect distribution taking into account both the magnitude and uncertainty of the estimated effect for each group.
+
+``` r
+ranks <- expectedRank(m1, groupFctr = "d")
+head(ranks)
+#>      d (Intercept) (Intercept)_var       ER pctER
+#> 1 1866   1.2553613     0.012755634 1123.806   100
+#> 2 1258   1.1674852     0.034291228 1115.766    99
+#> 3  240   1.0933372     0.008761218 1115.090    99
+#> 4   79   1.0998653     0.023095979 1112.315    99
+#> 5  676   1.0169070     0.026562174 1101.553    98
+#> 6   66   0.9568607     0.008602823 1098.049    97
+```
 
 Effect Simulation
 -----------------
@@ -135,11 +149,11 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
                    n.sims = 300, level = 0.9)
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.801906 2.822563e-04  193
-#> 2    1   2 3.262834 6.160406e-05  240
-#> 3    1   3 3.552282 5.583509e-05  254
-#> 4    1   4 3.846419 6.203321e-05  265
-#> 5    1   5 4.241502 1.982743e-04  176
+#> 1    1   1 2.784609 3.074909e-04  193
+#> 2    1   2 3.249285 6.496716e-05  240
+#> 3    1   3 3.550706 6.181011e-05  254
+#> 4    1   4 3.834340 6.807701e-05  265
+#> 5    1   5 4.212348 1.932573e-04  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we supplied to `newdata` is moved from the first to the fifth quintile in terms of the magnitude of the group factor coefficient. We can see here that the individual professor effect has a strong impact on the outcome variable. This can be shown graphically as well:
@@ -151,6 +165,6 @@ ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE,
   geom_pointrange() + theme_bw() + labs(x = "Bin of `d` term", y = "Predicted Fit")
 ```
 
-![](README-unnamed-chunk-12-1.png)
+![](README-reImpactplot-1.png)
 
 Here the standard error is a bit different -- it is the weighted standard error of the mean effect within the bin. It does not take into account the variability within the effects of each observation in the bin -- accounting for this variation will be a future addition to `merTools`.
