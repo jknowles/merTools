@@ -36,7 +36,7 @@ those tools.
 library(devtools)
 install_github("jknowles/merTools")
 
-# CRAN version -- comin soon
+# CRAN version -- coming soon
 install.packages("merTools")
 ```
 

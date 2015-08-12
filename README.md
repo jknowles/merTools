@@ -14,7 +14,7 @@ Installation
 library(devtools)
 install_github("jknowles/merTools")
 
-# CRAN version -- comin soon
+# CRAN version -- coming soon
 install.packages("merTools")
 ```
 
@@ -61,17 +61,17 @@ With `predictInterval` we obtain predictions that are more like the standard obj
 #predictInterval(m1, newdata = InstEval[1:10, ]) # all other parameters are optional
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
-#>         fit      lwr      upr
-#> 1  3.237977 1.294031 5.342045
-#> 2  3.229570 1.179354 5.308003
-#> 3  3.466434 1.344079 5.487743
-#> 4  3.068798 1.051528 5.044127
-#> 5  3.331920 1.312175 5.271037
-#> 6  3.247894 1.175794 5.412198
-#> 7  4.178619 2.186576 6.127204
-#> 8  3.771282 1.939095 5.603283
-#> 9  3.706337 1.838322 6.023991
-#> 10 3.305412 1.499348 5.221148
+#>         fit       lwr      upr
+#> 1  3.140573 0.9918327 5.186871
+#> 2  3.112596 1.2183348 5.317412
+#> 3  3.336716 1.4546588 5.484452
+#> 4  3.135972 1.1339289 5.117750
+#> 5  3.347354 1.2813249 5.395346
+#> 6  3.275752 1.2210009 5.513092
+#> 7  4.209814 2.1866974 6.105117
+#> 8  3.849785 1.7270231 5.939177
+#> 9  3.819279 1.8174620 5.867147
+#> 10 3.454341 1.2933180 5.213248
 ```
 
 Note that `predictInterval` is slower because it is computing simulations. It can also return all of the simulated `yhat` values as an attribute to the predict object itself.
@@ -87,12 +87,12 @@ Plotting
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22636226  3.22564020 0.01797447
-#> 2    service1 -0.07187748 -0.07312848 0.01132752
-#> 3   lectage.L -0.18714408 -0.18668602 0.01681278
-#> 4   lectage.Q  0.02370899  0.02391810 0.01304056
-#> 5   lectage.C -0.02492972 -0.02639631 0.01259724
-#> 6   lectage^4 -0.02049587 -0.02050698 0.01100702
+#> 1 (Intercept)  3.22452819  3.22245903 0.02144454
+#> 2    service1 -0.06842568 -0.06919183 0.01279673
+#> 3   lectage.L -0.18505949 -0.18348774 0.01555645
+#> 4   lectage.Q  0.02313691  0.02130544 0.01287315
+#> 5   lectage.C -0.02407532 -0.02355068 0.01363072
+#> 6   lectage^4 -0.01840673 -0.01908381 0.01333647
 ```
 
 And we can also plot this:
@@ -109,12 +109,12 @@ We can also quickly make caterpillar plots for the random-effect terms:
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 #>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.15590967  0.10577009 0.3480625
-#> 2         s       2 (Intercept) -0.02129192 -0.05268675 0.3234140
-#> 3         s       3 (Intercept)  0.31103428  0.27390580 0.2931286
-#> 4         s       4 (Intercept)  0.22236132  0.18479646 0.2901372
-#> 5         s       5 (Intercept)  0.04148543  0.07005592 0.3099967
-#> 6         s       6 (Intercept)  0.11779610  0.10083835 0.2501325
+#> 1         s       1 (Intercept)  0.14382444  0.13128715 0.3220633
+#> 2         s       2 (Intercept) -0.04716224 -0.03549224 0.3693620
+#> 3         s       3 (Intercept)  0.35411487  0.40241239 0.3378359
+#> 4         s       4 (Intercept)  0.25657766  0.25995445 0.2558444
+#> 5         s       5 (Intercept)  0.05337110  0.06401574 0.3257278
+#> 6         s       6 (Intercept)  0.12478102  0.11327020 0.2601789
 ```
 
 ``` r
@@ -149,11 +149,11 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
                    n.sims = 300, level = 0.9)
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.784609 3.074909e-04  193
-#> 2    1   2 3.249285 6.496716e-05  240
-#> 3    1   3 3.550706 6.181011e-05  254
-#> 4    1   4 3.834340 6.807701e-05  265
-#> 5    1   5 4.212348 1.932573e-04  176
+#> 1    1   1 2.770727 2.798592e-04  193
+#> 2    1   2 3.245472 6.528161e-05  240
+#> 3    1   3 3.543394 5.886930e-05  254
+#> 4    1   4 3.831935 6.239808e-05  265
+#> 5    1   5 4.210174 2.001462e-04  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we supplied to `newdata` is moved from the first to the fifth quintile in terms of the magnitude of the group factor coefficient. We can see here that the individual professor effect has a strong impact on the outcome variable. This can be shown graphically as well:
