@@ -73,7 +73,7 @@ fastdisp <- function (merMod, ...)
     # cat(round(out$DIC, 1))
     # cat("\ndeviance =", fround(out$deviance, 1), "\n")
     if (useScale < 0) {
-      out$sigma.hat <- lme4::sigma(merMod)
+      out$sigma.hat <- sigma(merMod)
       cat("overdispersion parameter =", fround(out$sigma.hat,
                                                1), "\n")
     }

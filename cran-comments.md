@@ -6,12 +6,10 @@
 ## R CMD check results
 There were no ERRORs or WARNINGs.
 
-There was 1 NOTE:
+There were no NOTES:
 
-* checking dependencies in R code ... NOTE
-  Namespace in Imports field not imported from: 'R6'
-
-  R6 is a build-time dependency.
+* Used utils::globalVariables(c(".shinyMerPar", "sig", "sigma")) to fix notes
+about unexported objects.
 
 ## Downstream dependencies
 This is an initial submission so there are no downstream dependencies currently.
