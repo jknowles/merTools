@@ -362,3 +362,24 @@ test_that("simResults option behaves", {
   expect_equal(ncol(out), 100)
   expect_equal(nrow(out), 5)
 })
+
+context("Test out of sample predictions")
+
+test_that("predictInterval makes predictions without observed outcome", {
+  possNames <- expand.grid(letters,LETTERS)
+  possNames <- paste(possNames[, 1], possNames[, 2])
+  newFac <- sample(possNames, 32)
+  modData <- data.frame(
+    y = rnorm(500),
+    x = rnorm(500),
+    team_name = sample(newFac, 500, replace = TRUE)
+  )
+  modData$y[251:500] <- rep(NA, 250)
+  m0 <- lmer(y ~ x + (1|team_name), data = modData[1:250,])
+  testPreds1 <- predictInterval(m0, newdata = modData[, c(3, 2, 1)])
+  testPreds2 <- predictInterval(m0, newdata = modData[1:250, c(2, 3, 1)])
+  testPreds3 <- predictInterval(m0, newdata = modData[251:500,])
+  expect_is(testPreds1, "data.frame")
+  expect_is(testPreds2, "data.frame")
+  expect_is(testPreds3, "data.frame")
+})

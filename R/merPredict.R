@@ -104,18 +104,14 @@ predictInterval <- function(merMod, newdata, level = 0.95,
   # Fix formula to allow for random slopes not in the fixed slopes
   matrixForm <- formulaBuild(merMod)
 
-  # If we do it this way, the function will fail on new data without all levels
-  # of X
-  # newdata.modelMatrix <- lFormula(formula = merMod@call, data=newdata)$X
-  # To be sensitive to this, we can take a performance hit and do:
   if(identical(newdata, merMod@frame)){
     newdata.modelMatrix <- model.matrix(matrixForm,
                                         data = merMod@frame)
   } else{
+    # combine modelframe trimmed and newdata to ensure proper factor expansion
     tmp <- plyr::rbind.fill(newdata, trimModelFrame(merMod@frame))
-    # attempt to make insensitive to spurious factor levels in betas
-    #     nums <- sapply(data, is.numeric); vars <- names(nums[!nums == TRUE])
-    #     tmp[, vars] <- apply(tmp[, vars], 2, as.character)
+    modDV <- as.character(formula(merMod)[2])
+    tmp[, modDV] <- 1 # avoid dropping cases without a valid value for the DV
     newdata.modelMatrix <- model.matrix(matrixForm,
                                         data = tmp)[1:nrow(newdata), , drop=FALSE]
     rm(tmp)
