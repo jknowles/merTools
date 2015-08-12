@@ -25,7 +25,7 @@
 #'     defined in \code{level}.}
 #'   }
 #' If returnSims = TRUE, then the individual simulations are attached to this
-#' data.frame as an attribute.
+#' data.frame in the attribute \code{sim.results} and are stored as a matrix.
 #' @details To generate a prediction inteval, the function first computes a simulated
 #' distribution of all of the parameters in the model. For the random, or grouping,
 #' effects, this is done by sampling from a multivariate normal distribution which

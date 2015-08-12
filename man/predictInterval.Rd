@@ -37,7 +37,7 @@ a data.frame iwth three columns:
     defined in \code{level}.}
   }
 If returnSims = TRUE, then the individual simulations are attached to this
-data.frame as an attribute.
+data.frame in the attribute \code{sim.results} and are stored as a matrix.
 }
 \description{
 This function provides a way to capture model uncertainty in

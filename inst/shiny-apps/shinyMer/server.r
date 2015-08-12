@@ -1,6 +1,4 @@
 #SERVER----
-library(ggplot2)
-library(shiny)
 server = function(input, output){
   output$text1 <- renderText({
     paste("You have selected", input$stat)

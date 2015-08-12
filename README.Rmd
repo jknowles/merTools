@@ -27,11 +27,28 @@ the authors, have developed a set of tools for simplifying and speeding up commo
 tasks for interacting with `merMod` objects from `lme4`. This package provides 
 those tools. 
 
+## Installation
+
+
+
+```{r, echo = TRUE, eval = FALSE}
+# development version
+library(devtools)
+install_github("jknowles/merTools")
+
+# CRAN version -- comin soon
+install.packages("merTools")
+```
+
+
+## Shiny App and Demo
+
+
 The easiest way to demo the features of this application is to use the bundled 
 Shiny application which launches a number of the metrics here to aide in exploring 
 the model. To do this:
 
-```{r, echo = TRUE, eval=FALSE, include=FALSE}
+```{r, echo = TRUE, eval=FALSE}
 devtools::install_github("jknowles/merTools")
 library(merTools)
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
@@ -43,6 +60,8 @@ library(merTools)
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 ```
 
+![](README-predPanel.png)
+
 On the first tab, the function presents the prediction intervals for the data 
 selected by user which are calculated using the `predictInterval` function 
 within the package. This function calculates prediction intervals quickly by 
@@ -52,11 +71,15 @@ predictions for each observation. This allows prediction intervals to be generat
 from very large models where the use of `bootMer` would not be feasible 
 computationally. 
 
+![](README-effPanel.png)
+
 On the next tab the distribution of the fixed effect and group-level effects 
 is depicted on confidence interval plots. These are useful for diagnostics and 
 provide a way to inspect the relative magnitudes of various parameters. This 
 tab makes use of four related functions in `merTools`: `FEsim`, `plotFEsim`, 
 `REsim` and `plotREsim` which are available to be used on their own as well. 
+
+![](README-substPanel.png)
 
 On the third tab are some convenient ways to show the influence or magnitude of 
 effects by leveraging the power of `predictInterval`. For each case, up to 12, 
@@ -88,6 +111,10 @@ predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9,
 Note that `predictInterval` is slower because it is computing simulations. It 
 can also return all of the simulated `yhat` values as an attribute to the 
 predict object itself. 
+
+`predictInterval` uses the `sim` function from the `arm` package heavily to 
+draw the distributions of the parameters of the model. It then combines these 
+simulated values to create a distribution of the `yhat` for each observation. 
 
 ## Plotting
 

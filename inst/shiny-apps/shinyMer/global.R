@@ -1,4 +1,6 @@
 # Import variables from function
+library(ggplot2)
+library(shiny)
 
 merMod <<- .shinyMerPar$merMod
 if(is.null(.shinyMerPar$simData)){
@@ -7,7 +9,7 @@ if(is.null(.shinyMerPar$simData)){
   newdata <<- .shinyMerPar$simData
 }
 
-if (!exists("simData")) {
+if (!exists("newdata")) {
   df.choices <- c("Model Frame"   = "orig",
                   "Random Obs"    = "rand",
                   "Average Obs"   = "mean")
