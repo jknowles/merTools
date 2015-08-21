@@ -10,7 +10,8 @@
 #' (fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))
 #' thetaExtract(fm1) #(a numeric vector of the covariance parameters)
 thetaExtract <- function(merMod){
-  stopifnot(class(merMod) %in% c("lmerMod", "glmerMod"))
+  stopifnot(class(merMod) %in% c("lmerMod", "glmerMod", "blmerMod",
+                                 "bglmerMod"))
   return(merMod@theta)
 }
 

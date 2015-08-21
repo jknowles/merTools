@@ -18,7 +18,8 @@
 #' head(rfx)
 #' @export
 REextract <- function(merMod){
-  stopifnot(class(merMod) == "lmerMod" | class(merMod) == "glmerMod")
+  stopifnot(class(merMod) %in% c("lmerMod", "glmerMod", "blmerMod",
+                                 "bglmerMod"))
   out <- lme4::ranef(merMod, condVar = TRUE)
   lvlNames <- names(out)
   reDims <- length(out)
@@ -72,7 +73,8 @@ REextract <- function(merMod){
 #' head(re2)
 #' @export
 REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE){
-  stopifnot(class(merMod) == "lmerMod" | class(merMod) == "glmerMod")
+  stopifnot(class(merMod) %in% c("lmerMod", "glmerMod", "blmerMod",
+                                 "bglmerMod"))
   mysim <- arm::sim(merMod, n.sims = n.sims)
   reDims <- length(mysim@ranef)
   tmp.out <- vector("list", reDims)
@@ -121,7 +123,8 @@ REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE){
 #' head(fe2)
 #' @export
 FEsim <- function(merMod, n.sims = 200, oddsRatio=FALSE){
-  stopifnot(class(merMod) == "lmerMod" | class(merMod) == "glmerMod")
+  stopifnot(class(merMod) %in% c("lmerMod", "glmerMod", "blmerMod",
+                                 "bglmerMod"))
   mysim <- arm::sim(merMod, n.sims = n.sims)
   means <- apply(mysim@fixef, MARGIN = 2, mean)
   medians <- apply(mysim@fixef, MARGIN = 2, median)
@@ -153,7 +156,7 @@ FEsim <- function(merMod, n.sims = 200, oddsRatio=FALSE){
 #' RMSE.merMod(m2)
 #' @export
 RMSE.merMod <- function(merMod, scale = FALSE){
-  stopifnot(class(merMod) == "lmerMod")
+  stopifnot(class(merMod) %in% c("lmerMod", "blmerMod"))
   # Express RMSE as percentage of dependent variable standard deviation
   dvSD <- sd(merMod@frame[, 1])
   RMSE <- sqrt(mean(residuals(merMod)^2))

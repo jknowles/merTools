@@ -1,5 +1,9 @@
 # NEWS
 
+## merTools 1.1
+
+- Add support for `blmer` objects from the `blme` package
+
 ## merTools 0.1
 - Initial release
 
