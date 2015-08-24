@@ -94,11 +94,12 @@ predictInterval <- function(merMod, newdata, level = 0.95,
   }
   else if (merMod.devcomp$dims[["GLMM"]] == TRUE &
            merMod@resp$family$family == "binomial" &
-           merMod@resp$family$link == "logit") {
+           merMod@resp$family$link %in% c("logit", "probit")) {
     sigmahat <- rep(1,n.sims)
   }
   else {
-    stop("    Prediction for this NLMMs or GLMMs that are not mixed logistic regressions is not yet implemented.")
+    warning("   Prediction for NLMMs or GLMMs that are not mixed binomial regressions is not tested. Sigma set at 1.")
+    sigmahat <- rep(1,n.sims)
   }
 
   # Fix formula to allow for random slopes not in the fixed slopes
