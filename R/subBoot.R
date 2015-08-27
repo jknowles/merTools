@@ -22,7 +22,7 @@ thetaExtract <- function(merMod){
 #' in the merMod object, by default will resample the entire model frame
 #' @param FUN the function to apply to each bootstrapped model
 #' @param R the number of bootstrap replicates, default is 100
-#'
+#' @param seed numeric, optional argument to set seed for simulations
 #' @return a data.frame of parameters extracted from each of the R replications.
 #' The original values are appended to the top of the matrix.
 #' @details This function allows users to estimate parameters of a
@@ -33,12 +33,18 @@ thetaExtract <- function(merMod){
 #' resultMatrix <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20)
 #' }
 #' @export
-subBoot <- function(merMod, n = NULL, FUN, R = 100){
+subBoot <- function(merMod, n = NULL, FUN, R = 100, seed=NULL){
   if(missing(n))
     n <- nrow(merMod@frame)
   resultMat <- matrix(FUN(merMod), nrow = 1)
   tmp <- matrix(data=NA, nrow=R, ncol=ncol(resultMat))
   resultMat <- rbind(resultMat, tmp); rm(tmp)
+
+  if (!is.null(seed))
+    set.seed(seed)
+  else if (!exists(".Random.seed", envir = .GlobalEnv))
+    runif(1)
+
     for(i in 1:R){
       rows <- as.numeric(row.names(merMod@frame))
       mysamp <- as.character(sample(rows,  n, replace=TRUE))

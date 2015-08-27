@@ -15,6 +15,7 @@
 #' @param include.resid.var logical, include or exclude the residual variance for
 #' linear models
 #' @param returnSims logical, should all n.sims simulations be returned?
+#' @param seed numeric, optional argument to set seed for simulations
 #' @return a data.frame iwth three columns:
 #' \describe{
 #'     \item{\code{fit}}{The center of the distribution of predicted values as defined by
@@ -71,7 +72,8 @@
 predictInterval <- function(merMod, newdata, level = 0.95,
                             n.sims=100, stat=c("median","mean"),
                             type=c("linear.prediction", "probability"),
-                            include.resid.var=TRUE, returnSims = FALSE){
+                            include.resid.var=TRUE, returnSims = FALSE,
+                            seed=NULL){
   outs <- newdata
   predict.type <- match.arg(type,
                             c("linear.prediction", "probability"),
@@ -79,6 +81,11 @@ predictInterval <- function(merMod, newdata, level = 0.95,
   stat.type <- match.arg(stat,
                          c("median","mean"),
                          several.ok = FALSE)
+
+  if (!is.null(seed))
+    set.seed(seed)
+  else if (!exists(".Random.seed", envir = .GlobalEnv))
+    runif(1)
 
   ##First: check if it is a GLMM or NLMM and draw from sigma distribution or incorporate scale parameter if GLMM
   merMod.devcomp <- getME(merMod, "devcomp")
