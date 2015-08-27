@@ -6,7 +6,7 @@
 \usage{
 predictInterval(merMod, newdata, level = 0.95, n.sims = 100,
   stat = c("median", "mean"), type = c("linear.prediction", "probability"),
-  include.resid.var = TRUE, returnSims = FALSE)
+  include.resid.var = TRUE, returnSims = FALSE, seed = NULL)
 }
 \arguments{
 \item{merMod}{a merMod object from lme4}
@@ -25,6 +25,8 @@ predictInterval(merMod, newdata, level = 0.95, n.sims = 100,
 linear models}
 
 \item{returnSims}{logical, should all n.sims simulations be returned?}
+
+\item{seed}{numeric, optional argument to set seed for simulations}
 }
 \value{
 a data.frame iwth three columns:

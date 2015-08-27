@@ -5,7 +5,7 @@
 \title{Simulate random effects from merMod
 \code{REsim} simulates random effects from merMod object posterior distributions}
 \usage{
-REsim(merMod, n.sims = 200, oddsRatio = FALSE)
+REsim(merMod, n.sims = 200, oddsRatio = FALSE, seed = NULL)
 }
 \arguments{
 \item{merMod}{a merMod object from the lme4 package}
@@ -13,6 +13,8 @@ REsim(merMod, n.sims = 200, oddsRatio = FALSE)
 \item{n.sims}{number of simulations to use}
 
 \item{oddsRatio}{logical, should parameters be converted to odds ratios?}
+
+\item{seed}{numeric, optional argument to set seed for simulations}
 }
 \value{
 a data frame with the following columns
