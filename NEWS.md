@@ -2,6 +2,12 @@
 
 ## merTools 1.1
 
+### Bug fixes
+
+### New Functionality
+
+- Add support for `probit` models and limited support for other `glmm` link functions, with warning
+- Add ability for user-specified seed for reproducibility
 - Add support for `blmer` objects from the `blme` package
 
 ## merTools 0.1

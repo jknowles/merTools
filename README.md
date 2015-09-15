@@ -6,7 +6,7 @@ A package for getting the most of our multilevel models in R
 
 by Jared E. Knowles and Carl Frederick
 
-[![Travis-CI Build Status](https://travis-ci.org/jknowles/merTools.png?branch=master)](https://travis-ci.org/jknowles/merTools) [![Coverage Status](https://coveralls.io/repos/jknowles/merTools/badge.svg?branch=master)](https://coveralls.io/r/jknowles/merTools?branch=master) [![Github Issues](http://githubbadges.herokuapp.com/jknowles/merTools/issues.svg)](https://github.com/jknowles/merTools/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?style=flat)](https://github.com/jknowles/merTools/pulls) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/caretEnsemble)](http://cran.r-project.org/web/packages/merTools) [![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](http://cran.rstudio.com/package=merTools)
+[![Travis-CI Build Status](https://travis-ci.org/jknowles/merTools.png?branch=master)](https://travis-ci.org/jknowles/merTools) [![Coverage Status](https://coveralls.io/repos/jknowles/merTools/badge.svg?branch=master)](https://coveralls.io/r/jknowles/merTools?branch=master) [![Github Issues](http://githubbadges.herokuapp.com/jknowles/merTools/issues.svg)](https://github.com/jknowles/merTools/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?style=flat)](https://github.com/jknowles/merTools/pulls) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/merTools)](http://cran.r-project.org/web/packages/merTools) [![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](http://cran.rstudio.com/package=merTools)
 
 Working with generalized linear mixed models (GLMM) and linear mixed models (LMM) has become increasingly easy with advances in the `lme4` package. As we have found ourselves using these models more and more within our work, we, the authors, have developed a set of tools for simplifying and speeding up common tasks for interacting with `merMod` objects from `lme4`. This package provides those tools.
 
@@ -18,7 +18,7 @@ Installation
 library(devtools)
 install_github("jknowles/merTools")
 
-# CRAN version -- coming soon
+# CRAN version
 install.packages("merTools")
 ```
 
@@ -66,16 +66,16 @@ With `predictInterval` we obtain predictions that are more like the standard obj
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
 #>         fit      lwr      upr
-#> 1  3.119054 1.065297 5.269603
-#> 2  3.188968 1.151337 4.996861
-#> 3  3.355738 1.412177 5.477573
-#> 4  3.072446 1.069449 5.204614
-#> 5  3.247946 1.294070 5.280065
-#> 6  3.255983 1.330520 5.095135
-#> 7  4.184949 2.311159 6.095691
-#> 8  3.803738 1.912956 5.720153
-#> 9  3.707334 1.621160 5.816649
-#> 10 3.415814 1.530551 5.388098
+#> 1  3.205852 1.119040 5.073677
+#> 2  3.014957 1.188017 4.894843
+#> 3  3.540154 1.853743 5.582607
+#> 4  3.068565 1.140955 5.257027
+#> 5  3.106084 1.423745 5.191017
+#> 6  3.112947 1.287469 5.414535
+#> 7  4.204398 2.183662 6.274698
+#> 8  3.894898 1.784715 5.885646
+#> 9  3.795654 1.757574 6.010877
+#> 10 3.311081 1.307305 5.291231
 ```
 
 Note that `predictInterval` is slower because it is computing simulations. It can also return all of the simulated `yhat` values as an attribute to the predict object itself.
@@ -91,12 +91,12 @@ Plotting
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22591531  3.22733117 0.02090560
-#> 2    service1 -0.07157777 -0.07205579 0.01359473
-#> 3   lectage.L -0.18571387 -0.18647789 0.01571551
-#> 4   lectage.Q  0.02497581  0.02385362 0.01305723
-#> 5   lectage.C -0.02565649 -0.02649764 0.01459933
-#> 6   lectage^4 -0.02122105 -0.02163194 0.01360913
+#> 1 (Intercept)  3.22487833  3.22311114 0.01712966
+#> 2    service1 -0.06723781 -0.06652520 0.01269254
+#> 3   lectage.L -0.18628490 -0.18722651 0.01534445
+#> 4   lectage.Q  0.02358642  0.02403768 0.01270285
+#> 5   lectage.C -0.02486989 -0.02294295 0.01314396
+#> 6   lectage^4 -0.01734253 -0.01696322 0.01410475
 ```
 
 And we can also plot this:
@@ -113,12 +113,12 @@ We can also quickly make caterpillar plots for the random-effect terms:
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 #>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.11406193  0.15386504 0.3086416
-#> 2         s       2 (Intercept) -0.05194233 -0.07755123 0.3451832
-#> 3         s       3 (Intercept)  0.27888402  0.27812495 0.3214322
-#> 4         s       4 (Intercept)  0.26677288  0.28692168 0.2801052
-#> 5         s       5 (Intercept)  0.04262341  0.04945323 0.3543950
-#> 6         s       6 (Intercept)  0.11616528  0.10719162 0.2488089
+#> 1         s       1 (Intercept)  0.13651949  0.12518917 0.3028107
+#> 2         s       2 (Intercept) -0.06930294 -0.07109045 0.3048142
+#> 3         s       3 (Intercept)  0.30419535  0.29992844 0.2935636
+#> 4         s       4 (Intercept)  0.33169961  0.34054570 0.2880752
+#> 5         s       5 (Intercept)  0.07810358  0.06039528 0.3427175
+#> 6         s       6 (Intercept)  0.12541267  0.12544140 0.2388220
 ```
 
 ``` r
@@ -153,11 +153,11 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
                    n.sims = 300, level = 0.9)
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.799210 2.829958e-04  193
-#> 2    1   2 3.271602 6.527264e-05  240
-#> 3    1   3 3.561880 5.406849e-05  254
-#> 4    1   4 3.864439 5.966251e-05  265
-#> 5    1   5 4.231175 2.176761e-04  176
+#> 1    1   1 2.803774 2.931571e-04  193
+#> 2    1   2 3.262422 6.069156e-05  240
+#> 3    1   3 3.558152 5.751638e-05  254
+#> 4    1   4 3.840147 5.743902e-05  265
+#> 5    1   5 4.239925 1.959778e-04  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we supplied to `newdata` is moved from the first to the fifth quintile in terms of the magnitude of the group factor coefficient. We can see here that the individual professor effect has a strong impact on the outcome variable. This can be shown graphically as well:

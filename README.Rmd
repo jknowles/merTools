@@ -24,7 +24,7 @@ by Jared E. Knowles and Carl Frederick
 [![Coverage Status](https://coveralls.io/repos/jknowles/merTools/badge.svg?branch=master)](https://coveralls.io/r/jknowles/merTools?branch=master)
 [![Github Issues](http://githubbadges.herokuapp.com/jknowles/merTools/issues.svg)](https://github.com/jknowles/merTools/issues)
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?style=flat)](https://github.com/jknowles/merTools/pulls)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/caretEnsemble)](http://cran.r-project.org/web/packages/merTools)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/merTools)](http://cran.r-project.org/web/packages/merTools)
 [![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](http://cran.rstudio.com/package=merTools)
 
 Working with generalized linear mixed models (GLMM) and linear mixed models (LMM) 
@@ -43,7 +43,7 @@ those tools.
 library(devtools)
 install_github("jknowles/merTools")
 
-# CRAN version -- coming soon
+# CRAN version
 install.packages("merTools")
 ```
 
