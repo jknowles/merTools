@@ -10,7 +10,7 @@ output:
 knitr::opts_chunk$set(
   collapse = TRUE, echo = TRUE,
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "readmeplot/README-"
 )
 ```
 
@@ -67,7 +67,7 @@ library(merTools)
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 ```
 
-![](README-predPanel.png)
+![](readmeplot/README-predPanel.png)
 
 On the first tab, the function presents the prediction intervals for the data 
 selected by user which are calculated using the `predictInterval` function 
@@ -78,7 +78,7 @@ predictions for each observation. This allows prediction intervals to be generat
 from very large models where the use of `bootMer` would not be feasible 
 computationally. 
 
-![](README-effPanel.png)
+![](readmeplot/README-effPanel.png)
 
 On the next tab the distribution of the fixed effect and group-level effects 
 is depicted on confidence interval plots. These are useful for diagnostics and 
@@ -86,7 +86,7 @@ provide a way to inspect the relative magnitudes of various parameters. This
 tab makes use of four related functions in `merTools`: `FEsim`, `plotFEsim`, 
 `REsim` and `plotREsim` which are available to be used on their own as well. 
 
-![](README-substPanel.png)
+![](readmeplot/README-substPanel.png)
 
 On the third tab are some convenient ways to show the influence or magnitude of 
 effects by leveraging the power of `predictInterval`. For each case, up to 12, 
@@ -197,3 +197,53 @@ Here the standard error is a bit different -- it is the weighted standard error
 of the mean effect within the bin. It does not take into account the variability 
 within the effects of each observation in the bin -- accounting for this variation 
 will be a future addition to `merTools`. 
+
+## Explore Substantive Impacts
+
+Another feature of `merTools` is the ability to easily generate hypothetical 
+scenarios to explore the predicted outcomes of a `merMod` object and 
+understand what the model is saying in terms of the outcome variable. 
+
+Let's take the case where we want to explore the impact of a model with 
+an interaction term between a category and a continuous predictor. First, 
+we fit a model with interactions:
+
+```{r substImpact}
+data(VerbAgg)
+fmVA <- glmer(r2 ~ (Anger + Gender + btype + situ)^2 +
+ 		   (1|id) + (1|item), family = binomial, 
+ 		   data = VerbAgg)
+```
+
+Now we prep the data using the `draw` function in `merTools`. Here we 
+draw the average observation from the model frame. We then `wiggle` the 
+data by expanding the dataframe to include the same observation repeated 
+but with different values of the variable specified by the `var` 
+parameter. Here, we expand the dataset to all values of `btype`, `situ`, 
+and `Anger` subsequently. 
+
+```{r substImpactPrepData}
+# Select the average case
+newData <- draw(fmVA, type = "average")
+newData <- wiggle(newData, var = "btype", values = unique(VerbAgg$btype))
+newData <- wiggle(newData, var = "situ", values = unique(VerbAgg$situ))
+newData <- wiggle(newData, var = "Anger", values = unique(VerbAgg$Anger))
+head(newData, 10)
+```
+
+The next step is familiar -- we simply pass this new dataset to 
+`predictInterval` in order to generate predictions for these counterfactuals. 
+Then we plot the predicted values against the continuous variable, `Anger`, 
+and facet and group on the two categorical variables `situ` and `btype` 
+respectively.
+
+```{r substImpactPredict}
+plotdf <- predictInterval(fmVA, newdata = newData, type = "probability", 
+            stat = "median", n.sims = 1000)
+plotdf <- cbind(plotdf, newData)
+
+ggplot(plotdf, aes(y = fit, x = Anger, color = btype, group = btype)) + 
+  geom_point() + geom_smooth(aes(color = btype), method = "lm") + 
+  facet_wrap(~situ) + theme_bw() +
+  labs(y = "Predicted Probability")
+```

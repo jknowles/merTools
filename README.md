@@ -34,15 +34,15 @@ m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 shinyMer(m1, simData = InstEval[1:100, ]) # just try the first 100 rows of data
 ```
 
-![](README-predPanel.png)
+![](readmeplot/README-predPanel.png)
 
 On the first tab, the function presents the prediction intervals for the data selected by user which are calculated using the `predictInterval` function within the package. This function calculates prediction intervals quickly by sampling from the simulated distribution of the fixed effect and random effect terms and combining these simulated estimates to produce a distribution of predictions for each observation. This allows prediction intervals to be generated from very large models where the use of `bootMer` would not be feasible computationally.
 
-![](README-effPanel.png)
+![](readmeplot/README-effPanel.png)
 
 On the next tab the distribution of the fixed effect and group-level effects is depicted on confidence interval plots. These are useful for diagnostics and provide a way to inspect the relative magnitudes of various parameters. This tab makes use of four related functions in `merTools`: `FEsim`, `plotFEsim`, `REsim` and `plotREsim` which are available to be used on their own as well.
 
-![](README-substPanel.png)
+![](readmeplot/README-substPanel.png)
 
 On the third tab are some convenient ways to show the influence or magnitude of effects by leveraging the power of `predictInterval`. For each case, up to 12, in the selected data type, the user can view the impact of changing either one of the fixed effect or one of the grouping level terms. Using the `REimpact` function, each case is simulated with the model's prediction if all else was held equal, but the observation was moved through the distribution of the fixed effect or the random effect term. This is plotted on the scale of the dependent variable, which allows the user to compare the magnitude of effects across variables, and also between models on the same data.
 
@@ -66,16 +66,16 @@ With `predictInterval` we obtain predictions that are more like the standard obj
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
 #>         fit      lwr      upr
-#> 1  3.212678 1.063293 5.021020
-#> 2  3.163909 1.438549 5.043916
-#> 3  3.423594 1.450930 5.329387
-#> 4  3.184908 1.082163 4.985627
-#> 5  3.272646 1.538196 5.452890
-#> 6  3.229198 1.295352 5.283061
-#> 7  4.128929 2.228645 6.094850
-#> 8  3.910574 1.648967 5.849607
-#> 9  3.729399 1.889009 5.711374
-#> 10 3.438017 1.418762 5.508910
+#> 1  3.119054 1.065297 5.269603
+#> 2  3.188968 1.151337 4.996861
+#> 3  3.355738 1.412177 5.477573
+#> 4  3.072446 1.069449 5.204614
+#> 5  3.247946 1.294070 5.280065
+#> 6  3.255983 1.330520 5.095135
+#> 7  4.184949 2.311159 6.095691
+#> 8  3.803738 1.912956 5.720153
+#> 9  3.707334 1.621160 5.816649
+#> 10 3.415814 1.530551 5.388098
 ```
 
 Note that `predictInterval` is slower because it is computing simulations. It can also return all of the simulated `yhat` values as an attribute to the predict object itself.
@@ -91,12 +91,12 @@ Plotting
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22102856  3.22094538 0.01857148
-#> 2    service1 -0.06968367 -0.06987645 0.01362059
-#> 3   lectage.L -0.18605240 -0.18445724 0.01570463
-#> 4   lectage.Q  0.02434054  0.02300220 0.01334311
-#> 5   lectage.C -0.02490739 -0.02606262 0.01192429
-#> 6   lectage^4 -0.01891636 -0.01875975 0.01271187
+#> 1 (Intercept)  3.22591531  3.22733117 0.02090560
+#> 2    service1 -0.07157777 -0.07205579 0.01359473
+#> 3   lectage.L -0.18571387 -0.18647789 0.01571551
+#> 4   lectage.Q  0.02497581  0.02385362 0.01305723
+#> 5   lectage.C -0.02565649 -0.02649764 0.01459933
+#> 6   lectage^4 -0.02122105 -0.02163194 0.01360913
 ```
 
 And we can also plot this:
@@ -105,7 +105,7 @@ And we can also plot this:
 plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FALSE)
 ```
 
-![](README-FEsimPlot-1.png)
+![](readmeplot/README-FEsimPlot-1.png)
 
 We can also quickly make caterpillar plots for the random-effect terms:
 
@@ -113,19 +113,19 @@ We can also quickly make caterpillar plots for the random-effect terms:
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 #>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.22058081  0.21648847 0.3233950
-#> 2         s       2 (Intercept) -0.10235168 -0.10254166 0.3149336
-#> 3         s       3 (Intercept)  0.29383942  0.26797892 0.3291858
-#> 4         s       4 (Intercept)  0.23623372  0.25423707 0.3007441
-#> 5         s       5 (Intercept)  0.08476158  0.07277292 0.3131551
-#> 6         s       6 (Intercept)  0.09851428  0.07116080 0.2581527
+#> 1         s       1 (Intercept)  0.11406193  0.15386504 0.3086416
+#> 2         s       2 (Intercept) -0.05194233 -0.07755123 0.3451832
+#> 3         s       3 (Intercept)  0.27888402  0.27812495 0.3214322
+#> 4         s       4 (Intercept)  0.26677288  0.28692168 0.2801052
+#> 5         s       5 (Intercept)  0.04262341  0.04945323 0.3543950
+#> 6         s       6 (Intercept)  0.11616528  0.10719162 0.2488089
 ```
 
 ``` r
 plotREsim(REsim(m1, n.sims = 100), stat = 'median', sd = TRUE)
 ```
 
-![](README-reSimplot-1.png)
+![](readmeplot/README-reSimplot-1.png)
 
 Note that `plotREsim` highlights group levels that have a simulated distribution that does not overlap 0 -- these appear darker. The lighter bars represent grouping levels that are not distinguishable from 0 in the data.
 
@@ -153,11 +153,11 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
                    n.sims = 300, level = 0.9)
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.799281 3.174322e-04  193
-#> 2    1   2 3.278761 6.471135e-05  240
-#> 3    1   3 3.573977 5.674664e-05  254
-#> 4    1   4 3.853878 5.975449e-05  265
-#> 5    1   5 4.244057 1.885801e-04  176
+#> 1    1   1 2.799210 2.829958e-04  193
+#> 2    1   2 3.271602 6.527264e-05  240
+#> 3    1   3 3.561880 5.406849e-05  254
+#> 4    1   4 3.864439 5.966251e-05  265
+#> 5    1   5 4.231175 2.176761e-04  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we supplied to `newdata` is moved from the first to the fifth quintile in terms of the magnitude of the group factor coefficient. We can see here that the individual professor effect has a strong impact on the outcome variable. This can be shown graphically as well:
@@ -169,6 +169,62 @@ ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE,
   geom_pointrange() + theme_bw() + labs(x = "Bin of `d` term", y = "Predicted Fit")
 ```
 
-![](README-reImpactplot-1.png)
+![](readmeplot/README-reImpactplot-1.png)
 
 Here the standard error is a bit different -- it is the weighted standard error of the mean effect within the bin. It does not take into account the variability within the effects of each observation in the bin -- accounting for this variation will be a future addition to `merTools`.
+
+Explore Substantive Impacts
+---------------------------
+
+Another feature of `merTools` is the ability to easily generate hypothetical scenarios to explore the predicted outcomes of a `merMod` object and understand what the model is saying in terms of the outcome variable.
+
+Let's take the case where we want to explore the impact of a model with an interaction term between a category and a continuous predictor. First, we fit a model with interactions:
+
+``` r
+data(VerbAgg)
+fmVA <- glmer(r2 ~ (Anger + Gender + btype + situ)^2 +
+           (1|id) + (1|item), family = binomial, 
+           data = VerbAgg)
+#> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
+#> $checkConv, : Model failed to converge with max|grad| = 0.055153 (tol =
+#> 0.001, component 1)
+```
+
+Now we prep the data using the `draw` function in `merTools`. Here we draw the average observation from the model frame. We then `wiggle` the data by expanding the dataframe to include the same observation repeated but with different values of the variable specified by the `var` parameter. Here, we expand the dataset to all values of `btype`, `situ`, and `Anger` subsequently.
+
+``` r
+# Select the average case
+newData <- draw(fmVA, type = "average")
+newData <- wiggle(newData, var = "btype", values = unique(VerbAgg$btype))
+newData <- wiggle(newData, var = "situ", values = unique(VerbAgg$situ))
+newData <- wiggle(newData, var = "Anger", values = unique(VerbAgg$Anger))
+head(newData, 10)
+#>    r2 Anger Gender btype  situ id        item
+#> 1   N    20      F curse other  5 S3WantCurse
+#> 2   N    20      F scold other  5 S3WantCurse
+#> 3   N    20      F shout other  5 S3WantCurse
+#> 4   N    20      F curse  self  5 S3WantCurse
+#> 5   N    20      F scold  self  5 S3WantCurse
+#> 6   N    20      F shout  self  5 S3WantCurse
+#> 7   N    11      F curse other  5 S3WantCurse
+#> 8   N    11      F scold other  5 S3WantCurse
+#> 9   N    11      F shout other  5 S3WantCurse
+#> 10  N    11      F curse  self  5 S3WantCurse
+```
+
+The next step is familiar -- we simply pass this new dataset to `predictInterval` in order to generate predictions for these counterfactuals. Then we plot the predicted values against the continuous variable, `Anger`, and facet and group on the two categorical variables `situ` and `btype` respectively.
+
+``` r
+plotdf <- predictInterval(fmVA, newdata = newData, type = "probability", 
+            stat = "median", n.sims = 1000)
+#> Fixed effect matrix has been padded with 0 coefficients
+#>             for random slopes not included in the fixed effects and interaction terms.
+plotdf <- cbind(plotdf, newData)
+
+ggplot(plotdf, aes(y = fit, x = Anger, color = btype, group = btype)) + 
+  geom_point() + geom_smooth(aes(color = btype), method = "lm") + 
+  facet_wrap(~situ) + theme_bw() +
+  labs(y = "Predicted Probability")
+```
+
+![](readmeplot/README-substImpactPredict-1.png)
