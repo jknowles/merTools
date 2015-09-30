@@ -4,6 +4,11 @@
 
 ### Bug fixes
 
+- Coerce `dplyr` `tbl` and `tbl_df` objects to data.frames when they are passed 
+to `predictInterval` and issue a warning
+- Try to coerce other data types passed to `newdata` in `predictInterval` before 
+failing if coercion is unsuccessful
+
 ### New Functionality
 
 - Add support for `probit` models and limited support for other `glmm` link functions, with warning

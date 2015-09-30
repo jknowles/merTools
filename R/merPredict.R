@@ -16,7 +16,7 @@
 #' linear models
 #' @param returnSims logical, should all n.sims simulations be returned?
 #' @param seed numeric, optional argument to set seed for simulations
-#' @return a data.frame iwth three columns:
+#' @return a data.frame with three columns:
 #' \describe{
 #'     \item{\code{fit}}{The center of the distribution of predicted values as defined by
 #'     the \code{stat} parameter.}
@@ -74,6 +74,15 @@ predictInterval <- function(merMod, newdata, level = 0.95,
                             type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE, returnSims = FALSE,
                             seed=NULL){
+  if(any(c("data.frame") != class(newdata))){
+    if(any(c("tbl_df", "tbl") %in% class(newdata))){
+      newdata <- as.data.frame(newdata)
+      warning("newdata is tbl_df or tbl object from dplyr package and has been
+              coerced to a data.frame")
+    } else{
+     newdata <- as.data.frame(newdata)
+    }
+  }
   outs <- newdata
   predict.type <- match.arg(type,
                             c("linear.prediction", "probability"),
