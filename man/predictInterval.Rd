@@ -29,7 +29,7 @@ linear models}
 \item{seed}{numeric, optional argument to set seed for simulations}
 }
 \value{
-a data.frame iwth three columns:
+a data.frame with three columns:
 \describe{
     \item{\code{fit}}{The center of the distribution of predicted values as defined by
     the \code{stat} parameter.}
