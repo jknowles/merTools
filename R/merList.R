@@ -67,7 +67,6 @@ modelRandEffStats <- function(modList){
 #' @importFrom plyr .
 #' @importFrom plyr summarize summarise
 modelFixedEff <- function(modList){
-  require(broom)
   fixEst <- ldply(modList, tidy, effects = "fixed")
   # Collapse
   out <- ddply(fixEst, .(term), summarize,

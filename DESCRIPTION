@@ -22,7 +22,8 @@ Imports:
     shiny,
     plyr,
     abind,
-    ggplot2
+    ggplot2,
+    broom
 License: GPL (>=2)
 LazyData: true
 VignetteBuilder: knitr
