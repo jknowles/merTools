@@ -387,12 +387,13 @@ test_that("predictInterval makes predictions without observed outcome", {
 context("Input validation checks")
 
 test_that("dplyr objects are successfully coerced", {
+  skip_on_cran()
   set.seed(101)
-  library(dplyr)
+  library(dplyr); library(magrittr)
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   predData <- sleepstudy %>% group_by(Subject) %>% summarize(Days = mean(Days))
-  expect_warning(predictInterval(m1, newdata = predData), "newdata is tbl_df or tbl object from dplyr package and has been
-              coerced to a data.frame")
+  expect_warning(predictInterval(m1, newdata = predData),
+                 regexp = "newdata is tbl_df or tbl object from dplyr package and has been coerced to a data.frame")
   preds2 <- predictInterval(m1, newdata = predData, n.sims=2000)
   expect_is(preds2, "data.frame")
   predData2 <- as.data.frame(predData)

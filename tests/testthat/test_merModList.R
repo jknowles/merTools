@@ -19,3 +19,12 @@ test_that("simple cases work", {
   expect_is(g2, "merModList")
   expect_false(class(g1[[1]]) == class(g2[[1]]))
 })
+
+test_that("print methods work for merModList", {
+
+})
+
+
+test_that("ICC function works", {
+
+})

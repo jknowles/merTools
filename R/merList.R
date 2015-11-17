@@ -38,7 +38,7 @@ REcorrExtract <- function(model){
 
 #' Extract data.frame of random effect statistics from merMod List
 #'
-#' @param modList
+#' @param modList a list of multilevel models
 #'
 #' @return a data.frame
 #' @export
@@ -58,7 +58,7 @@ modelRandEffStats <- function(modList){
 
 #' Extract averaged fixed effect parameters across a list of merMod objects
 #'
-#' @param an object of class merModList
+#' @param modList an object of class merModList
 #'
 #' @return a data.frame of the averaged fixed effect parameters
 #' @export
@@ -75,16 +75,22 @@ modelFixedEff <- function(modList){
   out$statistic <- out$estimate / out$std.error
   return(out)
 }
-
+utils::globalVariables(c("term", "estimate","std.error"))
 #' Print the results of a merMod list
 #'
-#' @param modList an object of class merModList
-#' @param digits a numeric, number of digits to print
+#' @param x a modList of class merModList
+#' @param ... additional arguments
 #'
 #' @return summary content printed to console
 #' @importFrom plyr ldply
 #' @export
-print.merModList <- function(modList, digits = 3){
+print.merModList <- function(x, ...){
+  args <- eval(substitute(alist(...)))
+  if("digits" %in% names(args)){
+    digits <- args$digits
+  } else{
+    digits <- 3
+  }
   len <- length(modList)
   form <- modList[[1]]@call
   print(form)
@@ -149,9 +155,12 @@ print.merModList <- function(modList, digits = 3){
 #' @return a numeric for the intraclass correlation
 #' @export
 #' @import lme4
+#' @examples
+#' data(sleepstudy)
+#' ICC(outcome = "Reaction", group = "Subject", data = sleepstudy)
 ICC <- function(outcome, group, data, subset=NULL){
   fm1 <- as.formula(paste(outcome, "~", "1 + (1|", group, ")"))
-  if(length(table(dat[, outcome])) == 2){
+  if(length(table(data[, outcome])) == 2){
     nullmod <- glmer(fm1, data = data, subset = subset, family = 'binomial')
   } else {
     nullmod <- lmer(fm1, data = data, subset = subset)
@@ -183,6 +192,7 @@ lmerModList <- function(formula, data, parallel = NULL, ...){
 #' @inheritParams lmerModList
 #' @rdname merModList
 #' @return a merModList
+#' @importFrom blme blmer
 #' @export
 blmerModList <- function(formula, data, parallel = NULL, ...){
   ml <- lapply(data, function(d) blmer(formula, data = d, ...))
@@ -207,6 +217,7 @@ glmerModList <- function(formula, data, parallel = NULL, ...){
 #' @inheritParams lmerModList
 #' @rdname merModList
 #' @return a merModList
+#' @importFrom blme bglmer
 #' @export
 bglmerModList <- function(formula, data, parallel = NULL, ...){
   ml <- lapply(data, function(d) bglmer(formula, data = d, ...))

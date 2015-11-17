@@ -21,6 +21,9 @@ r_binary_packages:
   - plyr
   - abind
   - ggplot2
+  - dplyr
+  - data.table
+  - blme
 
 r_github_packages:
   - jimhester/covr

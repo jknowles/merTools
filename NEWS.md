@@ -14,6 +14,10 @@ failing if coercion is unsuccessful
 - Add support for `probit` models and limited support for other `glmm` link functions, with warning
 - Add ability for user-specified seed for reproducibility
 - Add support for `blmer` objects from the `blme` package
+- Add a `merList` object for lists of `merMod` objects fitted to subsets of a dataset, 
+useful for imputation or for working with extremely large datasets
+- Add new package data to demonstrate replication from selected published texts 
+on multilevel modeling using different software
 
 ## merTools 0.1
 - Initial release

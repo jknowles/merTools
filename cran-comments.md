@@ -10,6 +10,8 @@ There were no NOTES:
 
 * Used utils::globalVariables(c(".shinyMerPar", "sig", "sigma")) to fix notes
 about unexported objects.
+* Used utils::globalVariables(c("term", "estimate", "std.error")) to fix notes 
+about unexported objects in `modelFixedEff` function
 
 ## Downstream dependencies
 This is an initial submission so there are no downstream dependencies currently.
