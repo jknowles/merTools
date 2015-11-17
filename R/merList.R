@@ -30,6 +30,7 @@ REsdExtract <- function(model){
 #' @param model an object that inherits from class merMod
 #'
 #' @return a numeric vector of the correlations among the effects
+#' @export
 REcorrExtract <- function(model){
   out <- unlist(lapply(VarCorr(model), attr, "corre"))
   return(min(unique(out)))
@@ -41,10 +42,11 @@ REcorrExtract <- function(model){
 #' @param modList a list of multilevel models
 #'
 #' @return a data.frame
+#' @import plyr
 #' @export
 modelRandEffStats <- function(modList){
-  SDs <- ldply(modList, REsdExtract)
-  corrs <- ldply(modList, REcorrExtract)
+  SDs <- plyr::ldply(modList, REsdExtract)
+  corrs <- plyr::ldply(modList, REcorrExtract)
   tmp <- cbind(SDs, corrs)
   names(tmp) <- c("Imp", "Int", "Slope", "id", "Corr")
   out <- data.frame(IntSD_mean = mean(tmp$Int),
@@ -85,6 +87,7 @@ utils::globalVariables(c("term", "estimate","std.error"))
 #' @importFrom plyr ldply
 #' @export
 print.merModList <- function(x, ...){
+  modList <- x
   args <- eval(substitute(alist(...)))
   if("digits" %in% names(args)){
     digits <- args$digits
