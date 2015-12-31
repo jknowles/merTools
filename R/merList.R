@@ -116,20 +116,44 @@ print.merModList <- function(x, ...){
       corrList[[i]] <- 0
       names(corrList) <- "Intercept"
     } else {
-      subList <- apply(simplify2array(subList), 1:2, mean)
-      errorList[[i]] <- subList
-      subList <- lapply(modList, function(x) attr(VarCorr(x)[[i]], "corre"))
-      subList <- min(unique(apply(simplify2array(subList), 1:2, function(x) mean(x))))
-      corrList[[i]] <- subList
-      errorList <- lapply(errorList, function(x) {
-        diag(x) <- sqrt(diag(x))
-        return(x)
-      })
+      errorList[[i]] <- apply(simplify2array(lapply(subList, attr, "stddev")),
+                              1, mean)
+      # subList <- apply(simplify2array(subList), 1:2, mean)
+      # subList <- lapply(modList, function(x) attr(VarCorr(x)[[i]], "corre"))
+      # subList <- min(unique(apply(simplify2array(subList), 1:2, function(x) mean(x))))
+      corrList[[i]] <- apply(simplify2array(lapply(subList, attr, "corre")), 1:2,mean)
+      # errorList <- lapply(errorList, function(x) {
+      #   diag(x) <- sqrt(diag(x))
+      #   return(x)
+      # })
     }
   }
-  lapply(errorList, pfround, digits)
+  names(errorList) <- names(ranef(modList[[1]]))
+  names(corrList) <- names(ranef(modList[[1]]))
+  cat("\nError Term Standard Deviations by Level:\n")
+  for(i in 1:length(errorList)){
+    cat("\n")
+    cat(names(errorList[i]))
+    cat("\n")
+    if(is.null(names(errorList[[i]]))){
+      names(errorList[[i]]) <- "(Intercept)"
+    }
+    pfround(errorList[[i]], digits = digits)
+    cat("\n")
+  }
+  # lapply(errorList, pfround, digits)
   cat("\nError Term Correlations:\n")
-  lapply(corrList, pfround, digits)
+  for(i in 1:length(corrList)){
+    cat("\n")
+    cat(names(corrList[i]))
+    cat("\n")
+    if(is.null(names(errorList[[i]]))){
+      names(corrList[[i]]) <- "(Intercept)"
+    }
+    pfround(corrList[[i]], digits = digits)
+    cat("\n")
+  }
+  # lapply(corrList, pfround, digits)
   residError <- mean(unlist(lapply(modList, function(x) attr(VarCorr(x), "sc"))))
   cat("\nResidual Error =", fround(residError,
                                    digits), "\n")
