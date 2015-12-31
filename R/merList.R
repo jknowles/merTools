@@ -77,6 +77,48 @@ modelFixedEff <- function(modList){
   out$statistic <- out$estimate / out$std.error
   return(out)
 }
+
+#' Extract the variances and correlations for random effects from a merMod list
+#' @inheritParams lme4::VarCorr
+#' @return a list with two elements "stddev" and "correlation" for the standard
+#' deviations and correlations averaged across models in the list
+#' @export
+#' @import lme4
+VarCorr.merModList <- function(x, sigma = 1, rdig = 3){
+  modList <- x
+  ngrps <- length(VarCorr(modList[[1]]))
+  errorList <- vector(mode = 'list', length = ngrps)
+  corrList <- vector(mode = 'list', length = ngrps)
+  for(i in 1:ngrps){
+    subList <- lapply(modList, function(x) VarCorr(x)[[i]])
+    if(all(dim(subList[[1]]) == c(1, 1))){
+      subList <- mean(sqrt(unlist(subList)))
+      errorList[[i]] <- subList
+      names(errorList) <- "Intercept"
+      corrList[[i]] <- matrix(1)
+      dimnames(corrList[[i]]) <- list("(Intercept)", "(Intercept)")
+    } else {
+      errorList[[i]] <- apply(simplify2array(lapply(subList, attr, "stddev")),
+                              1, mean)
+      corrList[[i]] <- apply(simplify2array(lapply(subList, attr, "corre")),
+                             1:2,mean)
+    }
+  }
+  for(i in 1:length(errorList)){
+    if(is.null(names(errorList[[i]]))){
+      names(errorList[[i]]) <- "(Intercept)"
+    }
+  }
+  for(i in 1:length(corrList)){
+    if(is.null(names(corrList[[i]])) & is.null(dim(corrList[[i]]))){
+      names(corrList[[i]]) <- "(Intercept)"
+    }
+  }
+  names(errorList) <- names(ranef(modList[[1]]))
+  names(corrList) <- names(ranef(modList[[1]]))
+  return(list("stddev" = errorList, "correlation" = corrList))
+}
+
 utils::globalVariables(c("term", "estimate","std.error"))
 #' Print the results of a merMod list
 #'
@@ -96,40 +138,19 @@ print.merModList <- function(x, ...){
   }
   len <- length(modList)
   form <- modList[[1]]@call
+  print(summary(modList[[1]])$methTitle)
+  cat("Model family: ", summary(modList[[1]])$family)
+  cat("\n")
   print(form)
   cat("\nFixed Effects:\n")
   fedat <- modelFixedEff(modList)
   dimnames(fedat)[[1]] <- fedat$term
   pfround(fedat[, -1], digits)
-  cat("\nError Terms Random Effect Std. Devs\n")
-  cat("and covariances:\n")
-  cat("\n")
+  cat("\nRandom Effects:\n")
   ngrps <- length(VarCorr(modList[[1]]))
-  errorList <- vector(mode = 'list', length = ngrps)
-  corrList <- vector(mode = 'list', length = ngrps)
-  for(i in 1:ngrps){
-    subList <- lapply(modList, function(x) VarCorr(x)[[i]])
-    if(all(dim(subList[[1]]) == c(1, 1))){
-      subList <- mean(sqrt(unlist(subList)))
-      errorList[[i]] <- subList
-      names(errorList) <- "Intercept"
-      corrList[[i]] <- 0
-      names(corrList) <- "Intercept"
-    } else {
-      errorList[[i]] <- apply(simplify2array(lapply(subList, attr, "stddev")),
-                              1, mean)
-      # subList <- apply(simplify2array(subList), 1:2, mean)
-      # subList <- lapply(modList, function(x) attr(VarCorr(x)[[i]], "corre"))
-      # subList <- min(unique(apply(simplify2array(subList), 1:2, function(x) mean(x))))
-      corrList[[i]] <- apply(simplify2array(lapply(subList, attr, "corre")), 1:2,mean)
-      # errorList <- lapply(errorList, function(x) {
-      #   diag(x) <- sqrt(diag(x))
-      #   return(x)
-      # })
-    }
-  }
-  names(errorList) <- names(ranef(modList[[1]]))
-  names(corrList) <- names(ranef(modList[[1]]))
+  errorList <- VarCorr(modList)$stddev
+  corrList <- VarCorr(modList)$correlation
+
   cat("\nError Term Standard Deviations by Level:\n")
   for(i in 1:length(errorList)){
     cat("\n")
@@ -147,7 +168,7 @@ print.merModList <- function(x, ...){
     cat("\n")
     cat(names(corrList[i]))
     cat("\n")
-    if(is.null(names(errorList[[i]]))){
+    if(is.null(names(corrList[[i]]))){
       names(corrList[[i]]) <- "(Intercept)"
     }
     pfround(corrList[[i]], digits = digits)

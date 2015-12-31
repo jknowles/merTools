@@ -45,9 +45,10 @@ test_that("print methods work for merModList", {
 
 })
 
+context("Numerical accuracy of merModList print method")
+
 test_that("print method for merModList works in general case", {
-  skip_on_cran()
-  skip_on_travis()
+  # skip_on_cran()
   data(grouseticks)
   grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
   grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
@@ -67,8 +68,36 @@ test_that("print method for merModList works in general case", {
                control = glmerControl(optimizer="bobyqa",
                                       optCtrl=list(maxfun = 1e6)))
 
+  expect_equal(VarCorr(g1)$stddev$BROOD, attr(VarCorr(g1T)$BROOD, "stddev"),
+               tolerance = 0.0001)
+  expect_equal(VarCorr(g1)$stddev$YEAR, attr(VarCorr(g1T)$YEAR, "stddev"),
+               tolerance = 0.0001)
+  expect_equal(VarCorr(g1)$correlation$BROOD, attr(VarCorr(g1T)$BROOD, "corre"),
+               tolerance = 0.0001)
+  expect_equal(VarCorr(g1)$correlation$YEAR, attr(VarCorr(g1T)$YEAR, "corre"),
+               tolerance = 0.0001)
+
+  form <- TICKS_BIN ~ HEIGHT +(1|BROOD)
+  g1 <- glmerModList(formula = form,
+                     data = modDat, family = "binomial",
+                     control = glmerControl(optimizer="bobyqa",
+                                            optCtrl=list(maxfun = 1e6)))
+  g1T <- glmer(form, family = "binomial", data = grouseticks,
+               control = glmerControl(optimizer="bobyqa",
+                                      optCtrl=list(maxfun = 1e6)))
+
+  expect_equal(VarCorr(g1)$stddev$BROOD, attr(VarCorr(g1T)$BROOD, "stddev"),
+               tolerance = 0.0001)
+  expect_equal(VarCorr(g1)$stddev$YEAR, attr(VarCorr(g1T)$YEAR, "stddev"),
+               tolerance = 0.0001)
+  expect_equal(VarCorr(g1)$correlation$BROOD, attr(VarCorr(g1T)$BROOD, "corre"),
+               tolerance = 0.0001)
+  expect_equal(VarCorr(g1)$correlation$YEAR, attr(VarCorr(g1T)$YEAR, "corre"),
+               tolerance = 0.0001)
+
 })
 
+context("ICC function")
 
 test_that("ICC function works", {
   ICC1 <- ICC(outcome = "Reaction", group = "Subject", data = sleepstudy)

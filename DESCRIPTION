@@ -11,7 +11,8 @@ Depends:
     R (>= 3.0.2),
     arm,
     lme4,
-    methods
+    methods,
+    plyr
 Suggests:
     testthat,
     knitr,
@@ -21,7 +22,6 @@ Imports:
     mvtnorm,
     DT,
     shiny,
-    plyr,
     abind,
     ggplot2,
     blme,

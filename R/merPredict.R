@@ -53,8 +53,8 @@
 #' @export
 #' @importFrom mvtnorm rmvnorm
 #' @import lme4
+#' @import plyr
 #' @importFrom abind abind
-#' @importFrom plyr rbind.fill
 #' @examples
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 #' regFit <- predict(m1, newdata = sleepstudy[11, ]) # a single value is returned

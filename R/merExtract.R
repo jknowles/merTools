@@ -2,7 +2,7 @@
 #' @name REextract
 #' @description Extracts random effect terms from an lme4 model
 #' @param merMod a merMod object from the lme4 package
-#' @importFrom plyr adply rbind.fill
+#' @import plyr
 #' @return a data frame with the following columns
 #' \describe{
 #'   \item{groupFctr}{The name of the grouping factor associated with the random effects}
