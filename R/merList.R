@@ -65,9 +65,7 @@ modelRandEffStats <- function(modList){
 #' @return a data.frame of the averaged fixed effect parameters
 #' @export
 #' @importFrom broom tidy
-#' @importFrom plyr ddply ldply
-#' @importFrom plyr .
-#' @importFrom plyr summarize summarise
+#' @import plyr
 modelFixedEff <- function(modList){
   fixEst <- ldply(modList, tidy, effects = "fixed")
   # Collapse
@@ -126,7 +124,7 @@ utils::globalVariables(c("term", "estimate","std.error"))
 #' @param ... additional arguments
 #'
 #' @return summary content printed to console
-#' @importFrom plyr ldply
+#' @import plyr
 #' @export
 print.merModList <- function(x, ...){
   modList <- x
