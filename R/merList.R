@@ -191,31 +191,6 @@ print.merModList <- function(x, ...){
                                                 digits), "\n")
 }
 
-#' Calculate the intraclass correlation using mixed effect models
-#'
-#' @param outcome a character representing the variable of the outcome
-#' @param group a character representing the name of the grouping term
-#' @param data a data.frame
-#' @param subset an optional subset
-#'
-#' @return a numeric for the intraclass correlation
-#' @export
-#' @import lme4
-#' @examples
-#' data(sleepstudy)
-#' ICC(outcome = "Reaction", group = "Subject", data = sleepstudy)
-ICC <- function(outcome, group, data, subset=NULL){
-  fm1 <- as.formula(paste(outcome, "~", "1 + (1|", group, ")"))
-  if(length(table(data[, outcome])) == 2){
-    nullmod <- glmer(fm1, data = data, subset = subset, family = 'binomial')
-  } else {
-    nullmod <- lmer(fm1, data = data, subset = subset)
-  }
-  between <- as.numeric(attr(VarCorr(nullmod)[[1]], "stddev"))
-  within <- sigma(nullmod)
-  ICC <- between / (within + between)
-  return(ICC)
-}
 
 #' Apply a multilevel model to a list of data frames
 #'
