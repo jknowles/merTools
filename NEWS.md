@@ -1,6 +1,6 @@
 # NEWS
 
-## merTools 1.1
+## merTools 0.2
 
 ### Bug fixes
 
@@ -14,10 +14,12 @@ failing if coercion is unsuccessful
 - Add support for `probit` models and limited support for other `glmm` link functions, with warning
 - Add ability for user-specified seed for reproducibility
 - Add support for `blmer` objects from the `blme` package
-- Add a `merList` object for lists of `merMod` objects fitted to subsets of a dataset, 
+- Add a `merModList` object for lists of `merMod` objects fitted to subsets of a dataset, 
 useful for imputation or for working with extremely large datasets
+- Add a `print` method for `merModList` to mimic output of `summary.merMod`
+- Add a `VarCorr` method for `merModList`
 - Add new package data to demonstrate replication from selected published texts 
-on multilevel modeling using different software
+on multilevel modeling using different software (1982 High School and Beyond Survey data)
 
 ## merTools 0.1
 - Initial release
