@@ -118,9 +118,7 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     sigmahat <- rep(1,n.sims)
   }
 
-  # Fix formula to allow for random slopes not in the fixed slopes
   matrixForm <- formulaBuild(merMod)
-
   if(identical(newdata, merMod@frame)){
     newdata.modelMatrix <- model.matrix(matrixForm,
                                         data = merMod@frame)
@@ -156,24 +154,24 @@ predictInterval <- function(merMod, newdata, level = 0.95,
       reMeans <- reMeans[1, , drop=FALSE]
       reMatrix <- reMatrix[, , 1, drop = FALSE]
     }
-    #
-    reSimA <- array(data = NA, dim = c(nrow(reMeans), ncol(reMeans), n.sims))
+    # -- INSERT chunking code here
+    reSimA <- array(data = NA, dim = c(nrow(reMeans), ncol(reMeans), n.sims),
+                    dimnames = list(attr(reMeans, "dimnames")[[1]],
+                                    attr(reMeans, "dimnames")[[2]],
+                                    NULL))
     for(k in 1:nrow(reMeans)){
       meanTmp <- as.matrix(reMeans[k, ])
       matrixTmp <- as.matrix(reMatrix[,,k])
       reSimA[k, ,] <- mvtnorm::rmvnorm(n.sims,
                                        mean=meanTmp,
                                        sigma=matrixTmp,
-                                       method="svd")
-      rownames(reSimA) <- rownames(reMeans)
-      colnames(reSimA) <- colnames(reMeans)
+                                       method="chol") #cholesky is fastest
     }
      tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
      tmp <- tmp[, c(keep, "var"), drop = FALSE]
      tmp[, "var"] <- as.character(tmp[, "var"])
      colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
-     tmpCoef <- reSimA[, keep, , drop = FALSE]
      tmp.pred <- function(data, coefs, group){
        yhatTmp <- array(data = NA, dim = c(nrow(data), ncol(data)-1, dim(coefs)[3]))
    new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[1]]])
@@ -195,7 +193,8 @@ predictInterval <- function(merMod, newdata, level = 0.95,
        }
        return(yhatTmp)
      }
-     re.xb[[j]] <- apply(tmp.pred(data = tmp, coefs = tmpCoef,
+     # -- INSERT CHUNK COMBINING HERE
+     re.xb[[j]] <- apply(tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
                                   group = names(newdata[, j, drop=FALSE])), c(1,3), sum)
   }
 
@@ -212,8 +211,12 @@ predictInterval <- function(merMod, newdata, level = 0.95,
 
   # fixed.xb is nrow(newdata) x n.sims
   ##Calculate yhat as sum of the components (fixed plus all groupling factors)
-  # apply(reSim, c(1,2), function(x), sum(x,na.rm=TRUE))
-  betaSim <- abind::abind(lapply(1:n.sims, function(x) mvtnorm::rmvnorm(1, mean = fixef(merMod), sigma = sigmahat[x]*as.matrix(vcov(merMod)))), along=1)
+  fe.tmp <- fixef(merMod)
+  vcov.tmp <- as.matrix(vcov(merMod))
+  betaSim <- abind::abind(lapply(1:n.sims,
+                                 function(x) mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[x]*vcov.tmp,
+                                                              method="chol")), along=1)
+  rm(fe.tmp, vcov.tmp)
   # Pad betaSim
   if(ncol(newdata.modelMatrix) > ncol(betaSim)){
     pad <- matrix(rep(0), nrow = nrow(betaSim),
@@ -228,15 +231,12 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     newdata.modelMatrix <- newdata.modelMatrix[, keep]
     betaSim <- betaSim[, keep]
   }
-
   re.xb$fixed <- newdata.modelMatrix %*% t(betaSim)
   yhat <- Reduce('+', re.xb)
   # alternative if missing data present:
   # yhat <- apply(simplify2array(re.xb), c(1,2), sum)
-
   if (include.resid.var==TRUE)
     yhat <- abind::abind(lapply(1:n.sims, function(x) rnorm(nrow(newdata), yhat[,x], sigmahat[x])), along = 2)
-
   #Output prediction intervals
   if (stat.type == "median") {
     outs$fit <- apply(yhat,1,function(x) as.numeric(quantile(x, .5, na.rm=TRUE)))
