@@ -83,7 +83,6 @@ predictInterval <- function(merMod, newdata, level = 0.95,
      newdata <- as.data.frame(newdata)
     }
   }
-  outs <- newdata
   predict.type <- match.arg(type,
                             c("linear.prediction", "probability"),
                             several.ok = FALSE)
@@ -146,10 +145,12 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     # Add switch if no random groups are observed to avoid indexing errors,
     # we burn 1 sample of 1 group of all coefficients that will eventually
     # be multiplied by zero later on
-    if(length(keep) > 0){
+    if(length(keep) > 0 & !identical(keep, alllvl)){
       reMeans <- reMeans[keep, , drop=FALSE]
       dimnames(reMatrix)[[3]] <- alllvl
       reMatrix <- reMatrix[, , keep, drop = FALSE]
+    } else if(length(keep) > 0 & identical(keep, alllvl)){
+      dimnames(reMatrix)[[3]] <- alllvl
     } else{
       reMeans <- reMeans[1, , drop=FALSE]
       reMatrix <- reMatrix[, , 1, drop = FALSE]
@@ -172,32 +173,53 @@ predictInterval <- function(merMod, newdata, level = 0.95,
      tmp <- tmp[, c(keep, "var"), drop = FALSE]
      tmp[, "var"] <- as.character(tmp[, "var"])
      colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
+
+     # group <- "s"
+     # data <- tmp
      tmp.pred <- function(data, coefs, group){
-       yhatTmp <- array(data = NA, dim = c(nrow(data), ncol(data)-1, dim(coefs)[3]))
-   new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[1]]])
+      new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[1]]])
        msg <- paste("     The following levels of ", group, " from newdata \n -- ", paste0(new.levels, collapse=", "),
                     " -- are not in the model data. \n     Currently, predictions for these values are based only on the \n fixed coefficients and the observation-level error.", sep="")
        if(length(new.levels > 0)){
          warning(msg, call.=FALSE)
        }
-       for(k in 1:ncol(data)-1){
-         for(i in 1:nrow(data)){
-           lvl <- as.character(data[, group][i])
-           if(lvl %in% dimnames(coefs)[[1]]){
-             yhatTmp[i, k,] <- as.numeric(data[i, k]) * as.numeric(coefs[lvl, k, ])
-           } else{
-             yhatTmp[i, k,] <- as.numeric(data[i, k]) * 0
-           }
-
+       yhatTmp <- array(data = NA, dim = c(nrow(data), dim(coefs)[3]))
+       colIdx <- ncol(data) - 1
+       for(i in 1:nrow(data)){
+         lvl <- as.character(data[, group][i])
+         if(lvl %in% dimnames(coefs)[[1]]){
+           yhatTmp[i, ] <- as.numeric(data[i, 1:colIdx]) %*% coefs[lvl, 1:colIdx, ]
+         } else{
+           # 0 out the RE for these new levels
+           yhatTmp[i, ] <- rep(0, colIdx) %*% coefs[1, 1:colIdx, ]
          }
        }
+       # for(k in 1:ncol(data)-1){
+       #   for(i in 1:nrow(data)){
+       #     lvl <- as.character(data[, group][i])
+       #     if(lvl %in% dimnames(coefs)[[1]]){
+       #       yhatTmp[i, k,] <- data[i, k] * coefs[lvl, k, ]
+       #     } else{
+       #       yhatTmp[i, k,] <- as.numeric(data[i, k]) * 0
+       #     }
+       #
+       #   }
+       # }
        return(yhatTmp)
      }
      # -- INSERT CHUNK COMBINING HERE
-     re.xb[[j]] <- apply(tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
-                                  group = names(newdata[, j, drop=FALSE])), c(1,3), sum)
-  }
+     # yhatTmp <- tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
+     #                     group = names(newdata[, j, drop=FALSE]))
+     # if(dim(yhatTmp)[2] == 1){
+     #   yhatTmp <- apply(yhatTmp, c(1,3), identity)
+     # } else {
+     #   re.xb[[j]] <- apply(yhatTmp, c(1,3), sum)
+     # }
+     re.xb[[j]] <- tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
+              group = names(newdata[, j, drop=FALSE]))
 
+    }
+  rm(reSimA)
   # TODO: Add a check for new.levels that is outside of the above loop
   # for now, ignore this check
   if (include.resid.var==FALSE) {
@@ -235,28 +257,32 @@ predictInterval <- function(merMod, newdata, level = 0.95,
   yhat <- Reduce('+', re.xb)
   # alternative if missing data present:
   # yhat <- apply(simplify2array(re.xb), c(1,2), sum)
+  rm(re.xb)
+  N <- nrow(newdata)
+  outs <- data.frame("fit" = rep(NA, N),
+                     "upr" = rep(NA, N),
+                     "lwr" = rep(NA, N))
+  upCI <- 1 - ((1-level)/2)
+  loCI <- ((1-level)/2)
   if (include.resid.var==TRUE)
-    yhat <- abind::abind(lapply(1:n.sims, function(x) rnorm(nrow(newdata), yhat[,x], sigmahat[x])), along = 2)
+    yhat <- abind::abind(lapply(1:n.sims, function(x) rnorm(N, yhat[,x], sigmahat[x])), along = 2)
   #Output prediction intervals
   if (stat.type == "median") {
-    outs$fit <- apply(yhat,1,function(x) as.numeric(quantile(x, .5, na.rm=TRUE)))
+    outs[, 1:3] <- t(apply(yhat, 1, quantile, prob = c(0.5, upCI, loCI), na.rm=TRUE))
   }
   if (stat.type == "mean") {
-    outs$fit <- apply(yhat,1,function(x) mean(x, na.rm=TRUE))
+    outs$fit <- apply(yhat, 1, mean, na.rm=TRUE)
+    outs[, 2:3] <- t(apply(yhat, 1, quantile, prob = c(upCI, loCI), na.rm=TRUE))
   }
-  outs$upr <- apply(yhat,1,function(x) as.numeric(quantile(x, 1 - ((1-level)/2), na.rm=TRUE)))
-  outs$lwr <- apply(yhat,1,function(x) as.numeric(quantile(x, ((1-level)/2), na.rm=TRUE)))
   if (predict.type == "probability") {
-    outs$fit <- merMod@resp$family$linkinv(outs$fit)
-    outs$upr <- merMod@resp$family$linkinv(outs$upr)
-    outs$lwr <- merMod@resp$family$linkinv(outs$lwr)
+    outs <- apply(outs, 2, merMod@resp$family$linkinv)
   }
   #Close it out
   if(returnSims == FALSE){
-    yhatObj <- outs[, c("fit", "lwr", "upr")]
+    return(as.data.frame(outs))
   } else if(returnSims == TRUE){
-    yhatObj <- outs[, c("fit", "lwr", "upr")]
-    attr(yhatObj, "sim.results") <- yhat
+    outs <- as.data.frame(outs)
+    attr(outs, "sim.results") <- yhat
+    return(outs)
   }
-  return(yhatObj)
 }

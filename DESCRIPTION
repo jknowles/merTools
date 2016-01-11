@@ -17,7 +17,8 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    dplyr
+    dplyr,
+    foreach
 Imports:
     mvtnorm,
     DT,

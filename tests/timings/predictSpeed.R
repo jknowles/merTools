@@ -109,14 +109,14 @@ bench5 <- microbenchmark(predictInterval(g2, newdata = d2[1:100, ], level = 0.9,
                                          stat = 'mean', include.resid.var = TRUE),
                          times = 10, unit = "s")
 
-
-p <- profvis({
-  predictInterval(g2, newdata = d2[1:800, ], level = 0.9,
-                  n.sims = 500,
+g2 <- lmer(y ~ lectage + studage + (1|s) + (1+lectage|d) + (1|dept), data=InstEval)
+p2 <- profvis({
+  predictInterval(g2, level = 0.9, newdata = InstEval,
+                  n.sims = 7500,
                   stat = 'mean', include.resid.var = TRUE)
 })
 # View it with:
-p
+p2
 
 # set.seed(101)
 # d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),

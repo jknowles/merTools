@@ -11,6 +11,9 @@ failing if coercion is unsuccessful
 
 ### New Functionality
 
+- Performance enhancement for `predictInterval` which includes better 
+handling of large numbers of parameters and simulations, performance 
+tweaks for added speed (~25%), and parallel backend support
 - Add support for `probit` models and limited support for other `glmm` link functions, with warning
 - Add ability for user-specified seed for reproducibility
 - Add support for `blmer` objects from the `blme` package
