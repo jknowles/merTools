@@ -6,7 +6,6 @@
 #' Set up parallel environment
 #'
 #' @return Nothing
-#' @import foreach
 setup_parallel <- function() {
   if (!requireNamespace("foreach", quietly = TRUE)) {
     # EXCLUDE COVERAGE START
