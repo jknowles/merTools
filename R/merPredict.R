@@ -16,6 +16,12 @@
 #' linear models
 #' @param returnSims logical, should all n.sims simulations be returned?
 #' @param seed numeric, optional argument to set seed for simulations
+#' @param .parallel, logical should parallel computation be used, default is FALSE
+#' @param .paropts, a list of additional options passed into the foreach function
+#' when parallel computation is enabled. This is important if (for example) your
+#' code relies on external data or packages: use the .export and .packages arguments
+#'  to supply them so that all cluster nodes have the correct environment set up
+#'  for computing.
 #' @return a data.frame with three columns:
 #' \describe{
 #'     \item{\code{fit}}{The center of the distribution of predicted values as defined by
@@ -73,7 +79,7 @@ predictInterval <- function(merMod, newdata, level = 0.95,
                             n.sims=100, stat=c("median","mean"),
                             type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE, returnSims = FALSE,
-                            seed=NULL){
+                            seed=NULL, .parallel = FALSE, .paropts = NULL){
   if(any(c("data.frame") != class(newdata))){
     if(any(c("tbl_df", "tbl") %in% class(newdata))){
       newdata <- as.data.frame(newdata)
@@ -215,8 +221,24 @@ predictInterval <- function(merMod, newdata, level = 0.95,
      # } else {
      #   re.xb[[j]] <- apply(yhatTmp, c(1,3), sum)
      # }
-     re.xb[[j]] <- tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
-              group = names(newdata[, j, drop=FALSE]))
+     if(n.sims > 2000 | .parallel){
+       if(.parallel){
+         setup_parallel()
+       }
+       tmp2 <- split(tmp, (0:nrow(tmp) %/% 100)) #TODO: Find optimum splitting factor
+       i <- seq_len(length(tmp2))
+       i <- 1:10
+       fe_call <- as.call(c(list(quote(foreach::foreach), i = i, .combine = 'rbind')), .paropts)
+       fe <- eval(fe_call)
+       re.xb[[j]] <- foreach::`%dopar%`(fe, tmp.pred(data = tmp2[[i]],
+                                                 coefs =reSimA[, keep, , drop = FALSE],
+                                                 group = names(newdata[, j, drop=FALSE])))
+
+
+     } else{
+       re.xb[[j]] <- tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
+                              group = names(newdata[, j, drop=FALSE]))
+     }
 
     }
   rm(reSimA)
