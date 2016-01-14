@@ -179,9 +179,6 @@ predictInterval <- function(merMod, newdata, level = 0.95,
      tmp <- tmp[, c(keep, "var"), drop = FALSE]
      tmp[, "var"] <- as.character(tmp[, "var"])
      colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
-
-     # group <- "s"
-     # data <- tmp
      tmp.pred <- function(data, coefs, group){
       new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[1]]])
        msg <- paste("     The following levels of ", group, " from newdata \n -- ", paste0(new.levels, collapse=", "),
@@ -214,27 +211,18 @@ predictInterval <- function(merMod, newdata, level = 0.95,
        return(yhatTmp)
      }
      # -- INSERT CHUNK COMBINING HERE
-     # yhatTmp <- tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
-     #                     group = names(newdata[, j, drop=FALSE]))
-     # if(dim(yhatTmp)[2] == 1){
-     #   yhatTmp <- apply(yhatTmp, c(1,3), identity)
-     # } else {
-     #   re.xb[[j]] <- apply(yhatTmp, c(1,3), sum)
-     # }
-     if(n.sims > 2000 | .parallel){
+     if(nrow(tmp) > 200 | .parallel){
        if(.parallel){
          setup_parallel()
        }
        tmp2 <- split(tmp, (0:nrow(tmp) %/% 100)) #TODO: Find optimum splitting factor
        i <- seq_len(length(tmp2))
-       i <- 1:10
-       fe_call <- as.call(c(list(quote(foreach::foreach), i = i, .combine = 'rbind')), .paropts)
+       i <- 1:10 # TODO: fix this
+       fe_call <- as.call(c(list(quote(foreach::foreach), i = i, .combine = 'rbind', .paropts)))
        fe <- eval(fe_call)
        re.xb[[j]] <- foreach::`%dopar%`(fe, tmp.pred(data = tmp2[[i]],
                                                  coefs =reSimA[, keep, , drop = FALSE],
                                                  group = names(newdata[, j, drop=FALSE])))
-
-
      } else{
        re.xb[[j]] <- tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
                               group = names(newdata[, j, drop=FALSE]))
@@ -257,10 +245,23 @@ predictInterval <- function(merMod, newdata, level = 0.95,
   ##Calculate yhat as sum of the components (fixed plus all groupling factors)
   fe.tmp <- fixef(merMod)
   vcov.tmp <- as.matrix(vcov(merMod))
-  betaSim <- abind::abind(lapply(1:n.sims,
-                                 function(x) mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[x]*vcov.tmp,
-                                                              method="chol")), along=1)
-  rm(fe.tmp, vcov.tmp)
+  if(n.sims > 2000 | .parallel){
+    if(.parallel){
+      setup_parallel()
+    }
+    i <- 1:n.sims
+    fe_call <- as.call(c(list(quote(foreach::foreach), i = i,
+                              .packages = "mvtnorm",
+                              .combine = 'rbind', .paropts)))
+    fe <- eval(fe_call)
+    betaSim <- foreach::`%dopar%`(foreach::foreach(i = 1:n.sims, .combine = "rbind"),
+                                  mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[[i]]*vcov.tmp,
+                                                   method="chol"))
+  } else {
+    betaSim <- abind::abind(lapply(1:n.sims,
+                                   function(x) mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[x]*vcov.tmp,
+                                                                method="chol")), along=1)
+  }
   # Pad betaSim
   if(ncol(newdata.modelMatrix) > ncol(betaSim)){
     pad <- matrix(rep(0), nrow = nrow(betaSim),

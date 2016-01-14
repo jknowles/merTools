@@ -6,7 +6,8 @@
 \usage{
 predictInterval(merMod, newdata, level = 0.95, n.sims = 100,
   stat = c("median", "mean"), type = c("linear.prediction", "probability"),
-  include.resid.var = TRUE, returnSims = FALSE, seed = NULL)
+  include.resid.var = TRUE, returnSims = FALSE, seed = NULL,
+  .parallel = FALSE, .paropts = NULL)
 }
 \arguments{
 \item{merMod}{a merMod object from lme4}
@@ -27,6 +28,14 @@ linear models}
 \item{returnSims}{logical, should all n.sims simulations be returned?}
 
 \item{seed}{numeric, optional argument to set seed for simulations}
+
+\item{.parallel, }{logical should parallel computation be used, default is FALSE}
+
+\item{.paropts, }{a list of additional options passed into the foreach function
+when parallel computation is enabled. This is important if (for example) your
+code relies on external data or packages: use the .export and .packages arguments
+ to supply them so that all cluster nodes have the correct environment set up
+ for computing.}
 }
 \value{
 a data.frame with three columns:

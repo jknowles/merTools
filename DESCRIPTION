@@ -18,7 +18,8 @@ Suggests:
     knitr,
     rmarkdown,
     dplyr,
-    foreach
+    foreach,
+    parallel
 Imports:
     mvtnorm,
     DT,
