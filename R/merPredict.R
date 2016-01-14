@@ -136,6 +136,7 @@ predictInterval <- function(merMod, newdata, level = 0.95,
                                         data = tmp)[1:nrow(newdata), , drop=FALSE]
     rm(tmp)
   }
+  N <- nrow(newdata)
   ##Right now I am not multiplying the BLUP variance covariance matrices by our
   ##draw of sigma (for linear models) because their variation is unique.  If anything,
   ##this is where one would multiply them by draws of theta from the model.
@@ -171,8 +172,7 @@ predictInterval <- function(merMod, newdata, level = 0.95,
       matrixTmp <- as.matrix(reMatrix[,,k])
       reSimA[k, ,] <- mvtnorm::rmvnorm(n.sims,
                                        mean=meanTmp,
-                                       sigma=matrixTmp,
-                                       method="chol") #cholesky is fastest
+                                       sigma=matrixTmp) #cholesky is fastest
     }
      tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
@@ -211,14 +211,14 @@ predictInterval <- function(merMod, newdata, level = 0.95,
        return(yhatTmp)
      }
      # -- INSERT CHUNK COMBINING HERE
-     if(nrow(tmp) > 200 | .parallel){
+     if(N > 1000 | .parallel){
        if(.parallel){
          setup_parallel()
        }
-       tmp2 <- split(tmp, (0:nrow(tmp) %/% 100)) #TODO: Find optimum splitting factor
+       tmp2 <- split(tmp, (1:N %/% 500)) #TODO: Find optimum splitting factor
+       tmp2 <- tmp2[lapply(tmp2,length)>0]
        i <- seq_len(length(tmp2))
-       i <- 1:10 # TODO: fix this
-       fe_call <- as.call(c(list(quote(foreach::foreach), i = i, .combine = 'rbind', .paropts)))
+       fe_call <- as.call(c(list(quote(foreach::foreach), i = i, .combine = 'rbind'), .paropts))
        fe <- eval(fe_call)
        re.xb[[j]] <- foreach::`%dopar%`(fe, tmp.pred(data = tmp2[[i]],
                                                  coefs =reSimA[, keep, , drop = FALSE],
@@ -252,15 +252,12 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     i <- 1:n.sims
     fe_call <- as.call(c(list(quote(foreach::foreach), i = i,
                               .packages = "mvtnorm",
-                              .combine = 'rbind', .paropts)))
+                              .combine = 'rbind'), .paropts))
     fe <- eval(fe_call)
-    betaSim <- foreach::`%dopar%`(foreach::foreach(i = 1:n.sims, .combine = "rbind"),
-                                  mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[[i]]*vcov.tmp,
-                                                   method="chol"))
-  } else {
+    betaSim <- foreach::`%dopar%`(fe,  mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[i]*vcov.tmp))
+    } else {
     betaSim <- abind::abind(lapply(1:n.sims,
-                                   function(x) mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[x]*vcov.tmp,
-                                                                method="chol")), along=1)
+                                   function(x) mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[x]*vcov.tmp)), along=1)
   }
   # Pad betaSim
   if(ncol(newdata.modelMatrix) > ncol(betaSim)){
@@ -281,12 +278,12 @@ predictInterval <- function(merMod, newdata, level = 0.95,
   # alternative if missing data present:
   # yhat <- apply(simplify2array(re.xb), c(1,2), sum)
   rm(re.xb)
-  N <- nrow(newdata)
   outs <- data.frame("fit" = rep(NA, N),
                      "upr" = rep(NA, N),
                      "lwr" = rep(NA, N))
   upCI <- 1 - ((1-level)/2)
   loCI <- ((1-level)/2)
+  N <- nrow(newdata)
   if (include.resid.var==TRUE)
     yhat <- abind::abind(lapply(1:n.sims, function(x) rnorm(N, yhat[,x], sigmahat[x])), along = 2)
   #Output prediction intervals

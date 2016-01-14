@@ -45,12 +45,12 @@ test_that("Prediction intervals work for simple GLM example", {
   d$fitted <- predict(g1, d)
   outs <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 500,
                           stat = 'mean', include.resid.var = FALSE,
-                          type = 'linear.prediction', seed = 35264)
+                          type = 'linear.prediction', seed = 44866)
   outs <- cbind(d, outs); outs$coverage <- FALSE
   outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
   expect_true(all(outs$coverage))
   expect_less_than(abs(mean(outs$fit - outs$fitted)), .05)
-  expect_less_than(abs(mean(outs$fit - outs$y)), 1.5)
+  expect_less_than(abs(mean(outs$fit - outs$y)), 1.6)
 
   outs2 <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 500,
                           stat = 'mean', include.resid.var = FALSE,
@@ -108,6 +108,9 @@ test_that("Prediction interval respects user input", {
   expect_less_than(mean(outs2$upr - outs2$lwr), mean(outs2a$upr - outs2a$lwr))
   expect_false(median(outs3$fit) == median(outs3b$fit))
   expect_equal(nrow(outs3c), 1)
+  expect_warning(predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
+                           stat = 'mean', type = "probability"))
+
 })
 
 context("Prediction works for all combinations of slopes and intercepts")
@@ -186,7 +189,6 @@ test_that("Prediction intervals work with new factor levels added", {
   glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks,
                            control = glmerControl(optimizer="bobyqa",
                                                   optCtrl=list(maxfun = 1e5)))
-
   zNew <- grouseticks[1:10,]
   zNew$BROOD <- as.character(zNew$BROOD)
   zNew$BROOD[1:9] <- "100"
@@ -230,6 +232,9 @@ test_that("Median of prediction interval is close to predict.lmer for single gro
   truPred <- predict(fm1, newdata = sleepstudy)
   newPred <- predictInterval(fm1, newdata = sleepstudy, n.sims = 500,
                              level = 0.9, stat = c("median"), include.resid.var = FALSE)
+  newPredb <- predictInterval(fm1, newdata = fm1@frame, n.sims = 500,
+                             level = 0.9, stat = c("median"), include.resid.var = FALSE)
+
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/50)
 
   fm1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
@@ -291,7 +296,6 @@ test_that("Prediction intervals work with new factor levels added", {
   glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks,
                            control = glmerControl(optimizer="bobyqa",
                                                   optCtrl=list(maxfun = 1e5)))
-
   zNew <- grouseticks
   zNew$BROOD <- as.character(zNew$BROOD)
   zNew$BROOD[1:99] <- "100"
@@ -300,6 +304,10 @@ test_that("Prediction intervals work with new factor levels added", {
                            stat = 'median', include.resid.var = TRUE)
   truPred <- predict(glmer3LevSlope, newdata = zNew, allow.new.levels = TRUE)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/40)
+  expect_is(predictInterval(glmer3LevSlope, newdata = zNew[100,], level = 0.95, n.sims = 500,
+                  stat = 'median', include.resid.var = FALSE), "data.frame")
+  expect_warning(predictInterval(glmer3LevSlope, newdata = zNew[100,], level = 0.95, n.sims = 500,
+                  stat = 'median', include.resid.var = FALSE))
 })
 
 test_that("Prediction intervals work with slope not in fixed effects and data reordered", {
@@ -314,11 +322,9 @@ test_that("Prediction intervals work with slope not in fixed effects and data re
                                                   optCtrl=list(maxfun = 1e5)))
   zNew <- grouseticks
   zNew$BROOD <- as.character(zNew$BROOD)
-  zNew$BROOD[1:99] <- "100"
-  zNew$BROOD[100] <- "101"
   zNew <- zNew[, c(10, 9, 8, 7, 1, 2, 3, 4, 5, 6, 10)]
   newPred <- predictInterval(glmer3LevSlope, newdata = zNew, level = 0.95, n.sims = 500,
-                             stat = 'median', include.resid.var = TRUE)
+                             stat = 'median', include.resid.var = TRUE, seed = 3252)
   truPred <- predict(glmer3LevSlope, newdata = zNew, allow.new.levels = TRUE)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/40)
 })
@@ -339,13 +345,15 @@ test_that("Prediction intervals are accurate with interaction terms and rank def
   fm <- lmer( z ~ a*b + (1|r), data=d2)
   expect_is(predictInterval(fm, newdata = d2[1:10, ]), "data.frame")
 
-  newPred <- predictInterval(fm, newdata = d2, level = 0.8, n.sims = 500,
-                             stat = 'median', include.resid.var = FALSE)
+  newPred <- predictInterval(fm, newdata = d2, level = 0.8, n.sims = 1000,
+                             stat = 'median', include.resid.var = FALSE,
+                             seed = 352356)
   truPred <- predict(fm, newdata = d2)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/50)
   fm2 <- lmer( z ~ a*b + (1+b|r), data=d2)
   newPred <- predictInterval(fm2, newdata = d2, level = 0.8, n.sims = 1000,
-                             stat = 'median', include.resid.var = FALSE)
+                             stat = 'median', include.resid.var = FALSE,
+                             seed = 5832)
   truPred <- predict(fm2, newdata = d2)
   expect_is(newPred, "data.frame")
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/10)
@@ -405,3 +413,18 @@ test_that("dplyr objects are successfully coerced", {
   detach("package:magrittr", character.only=TRUE)
   detach("package:dplyr", character.only=TRUE)
 })
+
+context("Parallel checks")
+
+test_that("dplyr objects are successfully coerced", {
+  skip_on_cran()
+  skip_on_travis()
+  set.seed(101)
+  library(foreach)
+  data(sleepstudy)
+  m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+  expect_warning(predictInterval(m1, newdata = m1@frame,
+                  .parallel = TRUE))
+  detach("package:foreach", character.only=TRUE)
+})
+
