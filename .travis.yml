@@ -24,6 +24,7 @@ r_binary_packages:
   - dplyr
   - data.table
   - magrittr
+  - doParallel
 
 r_github_packages:
   - jimhester/covr
