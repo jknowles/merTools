@@ -1,9 +1,5 @@
-# # -----------------------------------------------------
-# #-------------------------------------------------------
-set.seed(101)
-
 context("Prediction intervals cover for simulated problems")
-
+set.seed(101)
 
 test_that("Prediction intervals work for simple linear example", {
   # skip_on_travis()
@@ -13,7 +9,8 @@ test_that("Prediction intervals work for simple linear example", {
   d$y <- simulate(~fac1+(1|grp),family = gaussian,
                   newdata=d,
                   newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
-                                 sigma = c(.23)))[[1]]
+                                 sigma = c(.23)),
+                  seed = 12351)[[1]]
   subD <- d[sample(row.names(d), 1000),]
 
   g1 <- lmer(y~fac1+(1|grp), data=subD)
@@ -38,13 +35,12 @@ test_that("Prediction intervals work for simple GLM example", {
                    obs=1:50)
   d$y <- simulate(~fac1+(1|grp),family = binomial,
                   newdata=d,
-                  newparams=list(beta=c(2,-1,3,-2,1.2), theta=c(.33)))[[1]]
-  subD <- d[sample(row.names(d), 1200),]
-
-  g1 <- glmer(y~fac1+(1|grp), data=subD, family = 'binomial')
+                  newparams=list(beta=c(2,-1,3,-2,1.2), theta=c(.33)),
+                  seed = 5636)[[1]]
+  g1 <- glmer(y~fac1+(1|grp), data=d, family = 'binomial')
   d$fitted <- predict(g1, d)
   outs <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 500,
-                          stat = 'mean', include.resid.var = FALSE,
+                          stat = 'mean', include.resid.var = TRUE,
                           type = 'linear.prediction', seed = 35264)
   outs <- cbind(d, outs); outs$coverage <- FALSE
   outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
@@ -79,7 +75,8 @@ test_that("Prediction interval respects user input", {
   d$y <- simulate(~fac1+(1|grp),family = gaussian,
                   newdata=d,
                   newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
-                                 sigma = c(.23)))[[1]]
+                                 sigma = c(.23)),
+                  seed = 2141)[[1]]
   subD <- d[sample(row.names(d), 1000),]
 
   g1 <- lmer(y~fac1+(1|grp), data=subD)
@@ -255,28 +252,29 @@ test_that("Median of PI is close to predict.glmer for basic and complex grouping
   skip_on_cran()
   skip_on_travis()
   set.seed(3845)
-  d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10), fac2 = LETTERS[10:20],
-                   obs=1:25)
-  d$x <- runif(nrow(d))
-  d$y <- simulate(~ x + fac1 + fac2 + (1 + fac1|grp) + (1|obs), family = binomial,
+  d <- expand.grid(fac1=LETTERS[1:4], grp=factor(1:10), fac2 = LETTERS[11:20],
+                   obs=1:18)
+  d$x1 <- runif(nrow(d))
+  d$x2 <- runif(nrow(d))
+  d$x3 <- runif(nrow(d))
+  d$y <- simulate(~ x1 + x2 + x3 + fac1 + fac2 + (1 + fac1|grp) + (1|obs),
+                  family = binomial,
                   newdata=d,
-                  newparams=list(beta = rnorm(16),
-                                 theta = rnorm(16, 5, 1)))[[1]]
-  subD <- d[sample(row.names(d), 5000),]
+                  newparams=list(beta = rnorm(16, 0, 1),
+                                 theta = rnorm(11, 0, 1)),
+                  seed = 54645)[[1]]
+  subD <- d[sample(row.names(d), 7000),]
 
-  g1 <- glmer(y ~ x + fac1 + fac2 + (1+fac1|grp) + (1|obs), data = subD, family = 'binomial')
-  truPred <- predict(g1, subD, type = "response")
-  newPred <- predictInterval(g1, newdata = subD, level = 0.95, n.sims = 500,
-                          stat = 'median', include.resid.var = FALSE,
-                          type = 'probability')
-  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/40)
-  # This test fails currently
-#   g1 <- glmer(y ~ x +  fac2 + (1 + fac1|grp) + (1|obs), data = subD, family = 'binomial')
-#   truPred <- predict(g1, subD, type = "response")
-#   newPred <- predictInterval(g1, newdata = subD, level = 0.8, n.sims = 500,
-#                              stat = 'median', include.resid.var = FALSE,
-#                              type = 'probability')
-#   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/20)
+  g1 <- glmer(y ~ x1 + x2+x3 + fac1 + fac2 + (1+fac1|grp) + (1|obs), data = subD,
+              family = 'binomial',
+              control = glmerControl(optimizer="bobyqa",
+                                     optCtrl=list(maxfun = 1e5)))
+  truPred <- predict(g1, d, type = "response", allow.new.levels= TRUE)
+  newPred <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 2500,
+                          stat = 'mean', include.resid.var = TRUE,
+                          type = 'probability', seed = 546)
+  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/2)
+  # This is hard on the probability scale to get alignment
 })
 
 test_that("Prediction intervals work with new factor levels added", {
@@ -296,8 +294,9 @@ test_that("Prediction intervals work with new factor levels added", {
   zNew$BROOD <- as.character(zNew$BROOD)
   zNew$BROOD[1:99] <- "100"
   zNew$BROOD[100] <- "101"
-  newPred <- predictInterval(glmer3LevSlope, newdata = zNew, level = 0.95, n.sims = 500,
-                           stat = 'median', include.resid.var = TRUE)
+  newPred <- predictInterval(glmer3LevSlope, newdata = zNew, level = 0.95,
+                             n.sims = 1000, stat = 'median',
+                             include.resid.var = TRUE, seed = 3532)
   truPred <- predict(glmer3LevSlope, newdata = zNew, allow.new.levels = TRUE)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/40)
 })
@@ -405,3 +404,38 @@ test_that("dplyr objects are successfully coerced", {
   detach("package:magrittr", character.only=TRUE)
   detach("package:dplyr", character.only=TRUE)
 })
+
+context("Test Parallel")
+
+test_that("parallelization does not throw errors and generates good results", {
+  skip_on_cran()
+  skip_on_travis()
+  library(foreach)
+  library(doParallel)
+  set.seed(1241)
+  m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+  predA <- predictInterval(m1, newdata = m1@frame, n.sims = 2200, seed = 54,
+                           include.resid.var = FALSE, stat = "median")
+  predB <- predictInterval(m1, newdata = m1@frame, n.sims = 1750, seed = 54,
+                           include.resid.var = FALSE, stat = "median")
+  expect_equal(mean(predA$fit - predB$fit), 0 , tolerance = .2)
+  predA <- predictInterval(m1, newdata = m1@frame, n.sims = 2500, seed = 2141,
+                           include.resid.var = FALSE)
+  predB <- predictInterval(m1, newdata = m1@frame, n.sims = 1500, seed = 2141,
+                           include.resid.var = FALSE)
+  expect_equal(mean(predA$fit - predB$fit), 0 , tolerance = .01)
+  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
+  predA <- predictInterval(g1, newdata = g1@frame, n.sims = 2500, seed = 2141,
+                           include.resid.var = FALSE)
+  predB <- predictInterval(g1, newdata = g1@frame, n.sims = 1500, seed = 2141,
+                           include.resid.var = FALSE)
+  expect_equal(mean(predA$fit - predB$fit), 0 , tolerance = .01)
+  predA <- predictInterval(g1, newdata = g1@frame[1:499,], n.sims = 2500, seed = 2141,
+                           include.resid.var = TRUE)
+  predB <- predictInterval(g1, newdata = g1@frame[1:501,], n.sims = 2500, seed = 2141,
+                           include.resid.var = TRUE)
+  expect_equal(mean(predA$fit[1:499] - predB$fit[1:499]), 0 , tolerance = .001)
+  detach("package:doParallel", character.only=TRUE)
+  detach("package:foreach", character.only=TRUE)
+})
+

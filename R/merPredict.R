@@ -197,27 +197,16 @@ predictInterval <- function(merMod, newdata, level = 0.95,
            yhatTmp[i, ] <- rep(0, colIdx) %*% coefs[1, 1:colIdx, ]
          }
        }
-       # for(k in 1:ncol(data)-1){
-       #   for(i in 1:nrow(data)){
-       #     lvl <- as.character(data[, group][i])
-       #     if(lvl %in% dimnames(coefs)[[1]]){
-       #       yhatTmp[i, k,] <- data[i, k] * coefs[lvl, k, ]
-       #     } else{
-       #       yhatTmp[i, k,] <- as.numeric(data[i, k]) * 0
-       #     }
-       #
-       #   }
-       # }
        return(yhatTmp)
      }
      # -- INSERT CHUNK COMBINING HERE
-     if(nrow(tmp) > 200 | .parallel){
+     if(nrow(tmp) > 1000 | .parallel){
        if(.parallel){
          setup_parallel()
        }
-       tmp2 <- split(tmp, (0:nrow(tmp) %/% 100)) #TODO: Find optimum splitting factor
+       tmp2 <- split(tmp, (1:nrow(tmp) %/% 500)) #TODO: Find optimum splitting factor
+       tmp2 <- tmp2[lapply(tmp2,length)>0]
        i <- seq_len(length(tmp2))
-       i <- 1:10 # TODO: fix this
        fe_call <- as.call(c(list(quote(foreach::foreach), i = i, .combine = 'rbind', .paropts)))
        fe <- eval(fe_call)
        re.xb[[j]] <- foreach::`%dopar%`(fe, tmp.pred(data = tmp2[[i]],
@@ -252,11 +241,11 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     i <- 1:n.sims
     fe_call <- as.call(c(list(quote(foreach::foreach), i = i,
                               .packages = "mvtnorm",
-                              .combine = 'rbind', .paropts)))
+                              .combine = 'rbind'), .paropts))
     fe <- eval(fe_call)
-    betaSim <- foreach::`%dopar%`(foreach::foreach(i = 1:n.sims, .combine = "rbind"),
-                                  mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[[i]]*vcov.tmp,
-                                                   method="chol"))
+    betaSim <- foreach::`%dopar%`(fe, mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[[i]]*vcov.tmp,
+                                                       method="chol"))
+
   } else {
     betaSim <- abind::abind(lapply(1:n.sims,
                                    function(x) mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[x]*vcov.tmp,
