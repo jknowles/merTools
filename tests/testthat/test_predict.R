@@ -63,6 +63,11 @@ test_that("Prediction intervals work for simple GLM example", {
   expect_false(max(outs$lwr) <= 1)
   expect_false(min(outs$lwr) >= 0)
   expect_false(max(outs$upr) <= 1)
+  expect_warning(predictInterval(g1, type = "linear.prediction",
+                                 n.sims = 100, newdata = d[1:20,]))
+  expect_is(predictInterval(g1, type = "linear.prediction",
+                                 n.sims = 100, newdata = g1@frame),
+            "data.frame")
   rm(outs)
 })
 
@@ -405,11 +410,25 @@ test_that("dplyr objects are successfully coerced", {
   detach("package:dplyr", character.only=TRUE)
 })
 
+context("Model type warnings for NLMM and GLMM")
+
+test_that("Warnings issued", {
+  d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
+                   obs=1:50)
+  d$y <- simulate(~fac1+(1|grp),family = poisson,
+                  newdata=d,
+                  newparams=list(beta=c(2,-1,3,-2,1.2), theta=c(.33)),
+                  seed = 5636)[[1]]
+  g1 <- glmer(y~fac1+(1|grp), data=d, family = 'poisson')
+  expect_warning(predictInterval(g1, newdata = d[1:100,]))
+
+})
+
 context("Test Parallel")
 
 test_that("parallelization does not throw errors and generates good results", {
   skip_on_cran()
-  skip_on_travis()
+  # skip_on_travis()
   library(foreach)
   library(doParallel)
   set.seed(1241)
