@@ -430,7 +430,6 @@ test_that("parallelization does not throw errors and generates good results", {
   skip_on_cran()
   # skip_on_travis()
   library(foreach)
-  library(doParallel)
   set.seed(1241)
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   predA <- predictInterval(m1, newdata = m1@frame, n.sims = 2200, seed = 54,
@@ -454,7 +453,6 @@ test_that("parallelization does not throw errors and generates good results", {
   predB <- predictInterval(g1, newdata = g1@frame[1:501,], n.sims = 2500, seed = 2141,
                            include.resid.var = TRUE)
   expect_equal(mean(predA$fit[1:499] - predB$fit[1:499]), 0 , tolerance = .001)
-  detach("package:doParallel", character.only=TRUE)
   detach("package:foreach", character.only=TRUE)
 })
 
