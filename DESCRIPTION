@@ -17,7 +17,9 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    dplyr
+    dplyr,
+    foreach,
+    parallel
 Imports:
     mvtnorm,
     DT,
@@ -30,3 +32,4 @@ License: GPL (>=2)
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
+BugReports: http://www.github.com/jknowles/merTools
