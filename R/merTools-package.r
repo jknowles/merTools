@@ -38,6 +38,9 @@
 #'
 #' @name merTools
 #' @docType package
+#' @importFrom Rcpp evalCpp
+#' @useDynLib merTools
+#' @aliases merTools merTools-package
 NULL
 
 #' A subset of data from the 1982 High School and Beyond survey used as examples for HLM software
@@ -66,3 +69,5 @@ NULL
 #' data(hsb)
 #' head(hsb)
 "hsb"
+
+

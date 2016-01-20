@@ -7,6 +7,8 @@ Authors@R: c(person(c("Jared", "E."), "Knowles", email = "jknowles@gmail.com",
 Description: Provides methods for extracting results from merMod objects in the
     lme4 package. Allows construction of prediction intervals efficiently from large
     scale LMM and GLMM models.
+LinkingTo:
+    Rcpp, RcppArmadillo
 Depends:
     R (>= 3.0.2),
     arm,
@@ -21,6 +23,8 @@ Suggests:
     foreach,
     parallel
 Imports:
+    Rcpp (>= 0.11.0),
+    RcppArmadillo,
     mvtnorm,
     DT,
     shiny,
