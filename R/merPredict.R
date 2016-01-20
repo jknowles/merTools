@@ -57,7 +57,6 @@
 #' to allow the user to estimate the variability in \code{theta} from a larger
 #' model by bootstrapping the model fit on a subset, to allow faster estimation.
 #' @export
-#' @importFrom mvtnorm rmvnorm
 #' @import lme4
 #' @import plyr
 #' @importFrom abind abind
@@ -169,10 +168,9 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     for(k in 1:nrow(reMeans)){
       meanTmp <- as.matrix(reMeans[k, ])
       matrixTmp <- as.matrix(reMatrix[,,k])
-      reSimA[k, ,] <- mvtnorm::rmvnorm(n.sims,
-                                       mean=meanTmp,
-                                       sigma=matrixTmp,
-                                       method="chol") #cholesky is fastest
+      reSimA[k, ,] <- mvrnormArma(n.sims,
+                                       mu=meanTmp,
+                                       sigma=matrixTmp) #cholesky is fastest
     }
      tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
@@ -240,16 +238,13 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     }
     i <- 1:n.sims
     fe_call <- as.call(c(list(quote(foreach::foreach), i = i,
-                              .packages = "mvtnorm",
                               .combine = 'rbind'), .paropts))
     fe <- eval(fe_call)
-    betaSim <- foreach::`%dopar%`(fe, mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[[i]]*vcov.tmp,
-                                                       method="chol"))
+    betaSim <- foreach::`%dopar%`(fe, mvrnormArma(1, mu = fe.tmp, sigma = sigmahat[[i]]*vcov.tmp))
 
   } else {
     betaSim <- abind::abind(lapply(1:n.sims,
-                                   function(x) mvtnorm::rmvnorm(1, mean = fe.tmp, sigma = sigmahat[x]*vcov.tmp,
-                                                                method="chol")), along=1)
+                                   function(x) mvrnormArma(1, mu = fe.tmp, sigma = sigmahat[x]*vcov.tmp)), along=1)
   }
   # Pad betaSim
   if(ncol(newdata.modelMatrix) > ncol(betaSim)){

@@ -15,5 +15,12 @@ using namespace Rcpp;
 arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
   int ncols = sigma.n_cols;
   arma::mat Y = arma::randn(n, ncols);
-  return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
+  arma::mat R = arma::randn(n, ncols);
+  try {
+    R = chol(sigma);
+  } catch ( ... ) {
+    sigma += arma::eye(sigma.n_rows,sigma.n_rows) * 1e-6;
+    R = chol(sigma);
+  }
+  return arma::repmat(mu, 1, n).t() + Y * R;
 }

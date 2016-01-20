@@ -21,6 +21,26 @@ for(i in 1:nrow(tests)){
   expect_equal(ncol(p), tests[i, "dim"])
   expect_equal(nrow(p), tests[i, "n"])
 }
+#
+# library(microbenchmark)
+#
+# microbenchmark(
+#   for(i in 1:nrow(tests)){
+#     mu <- rnorm(tests[i, "dim"], 0, 1)
+#     w <- runif(tests[i, "dim"])
+#     k <- length(w)
+#     if(length(w) == 1){
+#       w <-w
+#     } else{
+#       w <- diag(w)
+#     }
+#     x <- matrix(rnorm(k^2), nrow=k, ncol=k) %*% w
+#     x <- x/sqrt(rowSums(x^2))
+#     a <- x %*% t(x)
+#     p <- mvtnorm::rmvnorm(tests[i, "n"], mean =  mu, sigma = a)
+#   }, times = 50
+# )
+#
 
 
 # sigma <- matrix(c(1, 0.9, -0.3, 0.9, 1, -0.4, -0.3, -0.4, 1), ncol = 3)
