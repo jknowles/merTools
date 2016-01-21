@@ -6,39 +6,6 @@
 
 using namespace Rcpp;
 
-// rcppeigen_invert_matrix
-Eigen::MatrixXd rcppeigen_invert_matrix(const Eigen::Map<Eigen::MatrixXd>& A);
-RcppExport SEXP merTools_rcppeigen_invert_matrix(SEXP ASEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type A(ASEXP);
-    __result = Rcpp::wrap(rcppeigen_invert_matrix(A));
-    return __result;
-END_RCPP
-}
-// rcppeigen_get_diag
-Eigen::MatrixXd rcppeigen_get_diag(const Eigen::Map<Eigen::MatrixXd>& A);
-RcppExport SEXP merTools_rcppeigen_get_diag(SEXP ASEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type A(ASEXP);
-    __result = Rcpp::wrap(rcppeigen_get_diag(A));
-    return __result;
-END_RCPP
-}
-// rcppeigen_get_det
-double rcppeigen_get_det(const Eigen::Map<Eigen::MatrixXd>& A);
-RcppExport SEXP merTools_rcppeigen_get_det(SEXP ASEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type A(ASEXP);
-    __result = Rcpp::wrap(rcppeigen_get_det(A));
-    return __result;
-END_RCPP
-}
 // rcppeigen_get_chol
 Eigen::MatrixXd rcppeigen_get_chol(const Eigen::Map<Eigen::MatrixXd>& A);
 RcppExport SEXP merTools_rcppeigen_get_chol(SEXP ASEXP) {
