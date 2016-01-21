@@ -16,7 +16,7 @@ for(i in 1:nrow(tests)){
   x <- matrix(rnorm(k^2), nrow=k, ncol=k) %*% w
   x <- x/sqrt(rowSums(x^2))
   a <- x %*% t(x)
-  p <- mvrnormArma(tests[i, "n"], mu = mu, sigma = a)
+  p <- rcpp_rmvnorm(tests[i, "n"], mu = mu, sigma = a)
   expect_is(p, "matrix")
   expect_equal(ncol(p), tests[i, "dim"])
   expect_equal(nrow(p), tests[i, "n"])
@@ -37,10 +37,12 @@ for(i in 1:nrow(tests)){
 #     x <- matrix(rnorm(k^2), nrow=k, ncol=k) %*% w
 #     x <- x/sqrt(rowSums(x^2))
 #     a <- x %*% t(x)
-#     p <- mvtnorm::rmvnorm(tests[i, "n"], mean =  mu, sigma = a)
+#     # p <- mvrnormArma(tests[i, "n"], mu = mu, sigma = a)
+#     # p <- mvtnorm::rmvnorm(tests[i, "n"], mean =  mu, sigma = a)
+#     p <- FastGP::rcpp_rmvnorm(n = tests[i, "n"], mu = mu, S = a)
 #   }, times = 50
 # )
-#
+
 
 
 # sigma <- matrix(c(1, 0.9, -0.3, 0.9, 1, -0.4, -0.3, -0.4, 1), ncol = 3)

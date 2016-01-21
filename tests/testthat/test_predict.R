@@ -15,14 +15,19 @@ test_that("Prediction intervals work for simple linear example", {
 
   g1 <- lmer(y~fac1+(1|grp), data=subD)
   d$fitted <- predict(g1, d)
-  outs <- predictInterval(g1, newdata = d, level = 0.9, n.sims = 500,
+  outs <- predictInterval(g1, newdata = d, level = 0.9, n.sims = 1000,
                           stat = 'mean', include.resid.var = TRUE,
                           seed = 4548)
   outs <- cbind(d, outs); outs$coverage <- FALSE
   outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
   expect_true(all(outs$coverage))
-  expect_less_than(abs(mean(outs$fit - outs$fitted)), .0005)
+  expect_less_than(abs(mean(outs$fit - outs$fitted)), .005)
   expect_less_than(abs(mean(outs$fit - outs$y)), .01)
+  expect_warning(predictInterval(g1, type = "probability",
+                                 n.sims = 100, newdata = d[1:20,]))
+  expect_is(predictInterval(g1, type = "probability",
+                            n.sims = 100, newdata = g1@frame),
+            "data.frame")
   rm(outs)
 })
 
@@ -63,8 +68,6 @@ test_that("Prediction intervals work for simple GLM example", {
   expect_false(max(outs$lwr) <= 1)
   expect_false(min(outs$lwr) >= 0)
   expect_false(max(outs$upr) <= 1)
-  expect_warning(predictInterval(g1, type = "linear.prediction",
-                                 n.sims = 100, newdata = d[1:20,]))
   expect_is(predictInterval(g1, type = "linear.prediction",
                                  n.sims = 100, newdata = g1@frame),
             "data.frame")
@@ -168,7 +171,8 @@ test_that("Prediction works for random slopes not in fixed", {
                                                   optCtrl=list(maxfun = 1e5)))
 
   zNew <- grouseticks[1:10,]
-  outs1 <- predictInterval(glmer3LevSlope, newdata = zNew)
+  outs1 <- predictInterval(glmer3LevSlope, newdata = zNew, stat = "mean",
+                           n.sims = 2000, seed = 213)
   expect_is(outs1, "data.frame")
   expect_message(predictInterval(glmer3LevSlope, newdata = zNew))
 })

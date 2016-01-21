@@ -168,7 +168,7 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     for(k in 1:nrow(reMeans)){
       meanTmp <- as.matrix(reMeans[k, ])
       matrixTmp <- as.matrix(reMatrix[,,k])
-      reSimA[k, ,] <- mvrnormArma(n.sims,
+      reSimA[k, ,] <- rcpp_rmvnorm(n= n.sims,
                                        mu=meanTmp,
                                        sigma=matrixTmp) #cholesky is fastest
     }
@@ -240,13 +240,14 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     fe_call <- as.call(c(list(quote(foreach::foreach), i = i,
                               .combine = 'rbind'), .paropts))
     fe <- eval(fe_call)
-    betaSim <- foreach::`%dopar%`(fe, mvrnormArma(1, mu = fe.tmp, sigma = sigmahat[[i]]*vcov.tmp))
+    betaSim <- foreach::`%dopar%`(fe, rcpp_rmvnorm(n = 1, mu = fe.tmp, sigma = sigmahat[[i]]*vcov.tmp))
 
   } else {
     betaSim <- abind::abind(lapply(1:n.sims,
-                                   function(x) mvrnormArma(1, mu = fe.tmp, sigma = sigmahat[x]*vcov.tmp)), along=1)
+                               function(x) rcpp_rmvnorm(n = 1, mu = fe.tmp, sigma = sigmahat[x]*vcov.tmp)), along=1)
   }
   # Pad betaSim
+  colnames(betaSim) <- names(fe.tmp)
   if(ncol(newdata.modelMatrix) > ncol(betaSim)){
     pad <- matrix(rep(0), nrow = nrow(betaSim),
                   ncol = ncol(newdata.modelMatrix) - ncol(betaSim))
