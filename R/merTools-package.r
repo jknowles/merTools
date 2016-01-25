@@ -38,8 +38,6 @@
 #'
 #' @name merTools
 #' @docType package
-#' @importFrom Rcpp evalCpp
-#' @useDynLib merTools
 #' @aliases merTools merTools-package
 NULL
 
