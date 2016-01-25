@@ -60,6 +60,7 @@
 #' @import lme4
 #' @import plyr
 #' @importFrom abind abind
+#' @importFrom FastGP rcpp_rmvnorm_stable
 #' @examples
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 #' regFit <- predict(m1, newdata = sleepstudy[11, ]) # a single value is returned
@@ -166,11 +167,11 @@ predictInterval <- function(merMod, newdata, level = 0.95,
                                     attr(reMeans, "dimnames")[[2]],
                                     NULL))
     for(k in 1:nrow(reMeans)){
-      meanTmp <- as.matrix(reMeans[k, ])
+      meanTmp <- reMeans[k, ]
       matrixTmp <- as.matrix(reMatrix[,,k])
-      reSimA[k, ,] <- rcpp_rmvnorm(n= n.sims,
+      reSimA[k, ,] <- FastGP::rcpp_rmvnorm_stable(n= n.sims,
                                        mu=meanTmp,
-                                       sigma=matrixTmp) #cholesky is fastest
+                                       S=matrixTmp) #cholesky is fastest
     }
      tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
@@ -240,11 +241,11 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     fe_call <- as.call(c(list(quote(foreach::foreach), i = i,
                               .combine = 'rbind'), .paropts))
     fe <- eval(fe_call)
-    betaSim <- foreach::`%dopar%`(fe, rcpp_rmvnorm(n = 1, mu = fe.tmp, sigma = sigmahat[[i]]*vcov.tmp))
+    betaSim <- foreach::`%dopar%`(fe, FastGP::rcpp_rmvnorm_stable(n = 1, mu = fe.tmp, S = sigmahat[[i]]*vcov.tmp))
 
   } else {
     betaSim <- abind::abind(lapply(1:n.sims,
-                               function(x) rcpp_rmvnorm(n = 1, mu = fe.tmp, sigma = sigmahat[x]*vcov.tmp)), along=1)
+                               function(x) FastGP::rcpp_rmvnorm_stable(n = 1, mu = fe.tmp, S = sigmahat[x]*vcov.tmp)), along=1)
   }
   # Pad betaSim
   colnames(betaSim) <- names(fe.tmp)
