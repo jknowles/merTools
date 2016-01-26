@@ -12,17 +12,18 @@ test_that("Prediction intervals work for simple linear example", {
   d$y <- simulate(~fac1+(1|grp),family = gaussian,
                   newdata=d,
                   newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
-                                 sigma = c(.23)))[[1]]
+                                 sigma = c(.23)), seed = 4548)[[1]]
   subD <- d[sample(row.names(d), 1000),]
 
   g1 <- lmer(y~fac1+(1|grp), data=subD)
   d$fitted <- predict(g1, d)
-  outs <- predictInterval(g1, newdata = d, level = 0.9, n.sims = 500,
+  outs <- predictInterval(g1, newdata = d, level = 0.9, n.sims = 1000,
+                          seed = 4353,
                           stat = 'mean', include.resid.var = TRUE)
   outs <- cbind(d, outs); outs$coverage <- FALSE
   outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
   expect_true(all(outs$coverage))
-  expect_less_than(abs(mean(outs$fit - outs$fitted)), .0001)
+  expect_less_than(abs(mean(outs$fit - outs$fitted)), .0003)
   expect_less_than(abs(mean(outs$fit - outs$y)), .01)
   rm(outs)
 })
@@ -36,14 +37,15 @@ test_that("Prediction intervals work for simple GLM example", {
                    obs=1:50)
   d$y <- simulate(~fac1+(1|grp),family = binomial,
                   newdata=d,
-                  newparams=list(beta=c(2,-1,3,-2,1.2), theta=c(.33)))[[1]]
+                  newparams=list(beta=c(2,-1,3,-2,1.2), theta=c(.33)),
+                  seed =634)[[1]]
   subD <- d[sample(row.names(d), 1200),]
 
   g1 <- glmer(y~fac1+(1|grp), data=subD, family = 'binomial')
   d$fitted <- predict(g1, d)
   outs <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 500,
                           stat = 'mean', include.resid.var = FALSE,
-                          type = 'linear.prediction')
+                          type = 'linear.prediction', seed = 4563)
   outs <- cbind(d, outs); outs$coverage <- FALSE
   outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
   expect_true(all(outs$coverage))
@@ -77,25 +79,25 @@ test_that("Prediction interval respects user input", {
   d$y <- simulate(~fac1+(1|grp),family = gaussian,
                   newdata=d,
                   newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
-                                 sigma = c(.23)))[[1]]
+                                 sigma = c(.23)), seed =463)[[1]]
   subD <- d[sample(row.names(d), 1000),]
 
   g1 <- lmer(y~fac1+(1|grp), data=subD)
   d$fitted <- predict(g1, d)
   outs1 <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
-                           stat = 'mean', include.resid.var = TRUE)
+                           stat = 'mean', include.resid.var = TRUE, seed=643)
   outs2 <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 500,
-                           stat = 'mean', include.resid.var = TRUE)
+                           stat = 'mean', include.resid.var = TRUE, seed=643)
   outs1a <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 1500,
-                            stat = 'mean', include.resid.var = TRUE)
+                            stat = 'mean', include.resid.var = TRUE, seed=643)
   outs2a <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 1500,
-                            stat = 'mean', include.resid.var = TRUE)
+                            stat = 'mean', include.resid.var = TRUE, seed=643)
   outs3 <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
-                           stat = 'mean', include.resid.var = FALSE)
+                           stat = 'mean', include.resid.var = FALSE, seed=643)
   outs3b <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
-                            stat = 'median', include.resid.var = FALSE)
+                            stat = 'median', include.resid.var = FALSE, seed=643)
   outs3c <- predictInterval(g1, newdata = d[1, ], level = 0.8, n.sims = 500,
-                            stat = 'median', include.resid.var = FALSE)
+                            stat = 'median', include.resid.var = FALSE, seed=643)
 
   expect_more_than(median(outs2$upr - outs1$upr), 0.1)
   expect_more_than(median(outs2a$upr - outs1a$upr), 0.1)
@@ -117,10 +119,10 @@ test_that("Predict handles unused and subset of factor levels", {
   g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
   d1 <- InstEval[1:100, ]
   outs1 <- predictInterval(g1, newdata = d1, level = 0.8, n.sims = 500,
-                           stat = 'mean', include.resid.var = TRUE)
+                           stat = 'mean', include.resid.var = TRUE, seed = 4632)
   d2 <- rbind(d1, InstEval[670:900,])
   outs1a <- predictInterval(g1, newdata = d2, level = 0.8, n.sims = 500,
-                            stat = 'mean', include.resid.var=TRUE)[1:100,]
+                            stat = 'mean', include.resid.var=TRUE, seed = 4632)[1:100,]
   expect_is(outs1, "data.frame")
   expect_is(outs1a, "data.frame")
   expect_equal(nrow(outs1), 100)
@@ -128,7 +130,7 @@ test_that("Predict handles unused and subset of factor levels", {
   g2 <- lmer(y ~ lectage + studage + (1+lectage|d) + (1|dept), data=InstEval)
   d2 <- InstEval[670:900,]
   outs1a <- predictInterval(g2, newdata = d2, level = 0.8, n.sims = 500,
-                            stat = 'mean', include.resid.var=TRUE)
+                            stat = 'mean', include.resid.var=TRUE, seed = 4632)
   expect_is(outs1a, "data.frame")
   expect_equal(nrow(outs1a), 231)
 })
@@ -214,6 +216,9 @@ test_that("Prediction works for factor as a random slope not in fixed", {
   outs1 <- predictInterval(glmer3LevSlope, newdata = zNew)
   zNew <- grouseticks[1:10,]
   outs2 <- predictInterval(glmer3LevSlope, newdata = zNew)
+  expect_is(outs1, "data.frame")
+  expect_is(outs2, "data.frame")
+  expect_identical(dim(outs1), dim(outs2))
 })
 
 
@@ -227,13 +232,15 @@ test_that("Median of prediction interval is close to predict.lmer for single gro
   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
   truPred <- predict(fm1, newdata = sleepstudy)
   newPred <- predictInterval(fm1, newdata = sleepstudy, n.sims = 500,
-                             level = 0.9, stat = c("median"), include.resid.var = FALSE)
+                             level = 0.9, stat = c("median"),
+                             include.resid.var = FALSE, seed = 4563)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/50)
 
   fm1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   truPred <- predict(fm1, newdata = sleepstudy)
-  newPred <- predictInterval(fm1, newdata = sleepstudy, n.sims = 500,
-                             level = 0.9, stat = c("median"), include.resid.var = FALSE)
+  newPred <- predictInterval(fm1, newdata = sleepstudy, n.sims = 1500,
+                             level = 0.9, stat = c("median"),
+                             include.resid.var = FALSE, seed = 9598)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/100)
 })
 
@@ -244,7 +251,8 @@ test_that("Median of PI is close to predict.lmer for complex group models", {
   g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
   d1 <- InstEval[1:200, ]
   newPred <- predictInterval(g1, newdata = d1, level = 0.8, n.sims = 500,
-                             stat = 'median', include.resid.var = FALSE)
+                             stat = 'median', include.resid.var = FALSE,
+                             seed = 4563)
   truPred <- predict(g1, newdata = d1)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/100)
 })
@@ -259,7 +267,7 @@ test_that("Median of PI is close to predict.glmer for basic and complex grouping
   d$y <- simulate(~ x + fac1 + fac2 + (1 + fac1|grp) + (1|obs), family = binomial,
                   newdata=d,
                   newparams=list(beta = rnorm(16),
-                                 theta = rnorm(16, 5, 1)))[[1]]
+                                 theta = rnorm(16, 5, 1)), seed = 4563)[[1]]
   subD <- d[sample(row.names(d), 8000),]
 
   g1 <- glmer(y ~ x + fac1 + fac2 + (1+fac1|grp) + (1|obs), data = subD,
@@ -297,8 +305,9 @@ test_that("Prediction intervals work with new factor levels added", {
   zNew$BROOD <- as.character(zNew$BROOD)
   zNew$BROOD[1:99] <- "100"
   zNew$BROOD[100] <- "101"
-  newPred <- predictInterval(glmer3LevSlope, newdata = zNew, level = 0.95, n.sims = 500,
-                             stat = 'median', include.resid.var = TRUE)
+  newPred <- predictInterval(glmer3LevSlope, newdata = zNew, level = 0.95,
+                             n.sims = 500, stat = 'median',
+                             include.resid.var = TRUE, seed = 4563)
   truPred <- predict(glmer3LevSlope, newdata = zNew, allow.new.levels = TRUE)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/40)
 })
@@ -318,8 +327,9 @@ test_that("Prediction intervals work with slope not in fixed effects and data re
   zNew$BROOD[1:99] <- "100"
   zNew$BROOD[100] <- "101"
   zNew <- zNew[, c(10, 9, 8, 7, 1, 2, 3, 4, 5, 6, 10)]
-  newPred <- predictInterval(glmer3LevSlope, newdata = zNew, level = 0.95, n.sims = 500,
-                             stat = 'median', include.resid.var = TRUE)
+  newPred <- predictInterval(glmer3LevSlope, newdata = zNew, level = 0.95,
+                             n.sims = 500, stat = 'median',
+                             include.resid.var = TRUE, seed = 4563)
   truPred <- predict(glmer3LevSlope, newdata = zNew, allow.new.levels = TRUE)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/40)
 })
