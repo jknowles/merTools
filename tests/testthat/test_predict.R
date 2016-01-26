@@ -331,7 +331,7 @@ test_that("Prediction intervals work with slope not in fixed effects and data re
                              n.sims = 500, stat = 'median',
                              include.resid.var = TRUE, seed = 4563)
   truPred <- predict(glmer3LevSlope, newdata = zNew, allow.new.levels = TRUE)
-  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/40)
+  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/20)
 })
 
 context("Special cases - rank deficiency")
