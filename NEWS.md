@@ -8,12 +8,14 @@
 to `predictInterval` and issue a warning
 - Try to coerce other data types passed to `newdata` in `predictInterval` before 
 failing if coercion is unsuccessful
+- Numeric stabilization of unit tests by including seed values for random tests
 
 ### New Functionality
 
-- Performance enhancement for `predictInterval` which includes better 
+- Switch to C++ RMVN sampler courtesy of Giri Gopalan 's excellent [FastGP](http://www.github.com/ggopalan/FastGP) package
+- Substantial performance enhancement for `predictInterval` which includes better 
 handling of large numbers of parameters and simulations, performance 
-tweaks for added speed (~25%), and parallel backend support
+tweaks for added speed (~10x), and parallel backend support (currently not optimized)
 - Add support for `probit` models and limited support for other `glmm` link functions, with warning (still do not know how to handle sigma parameter 
 for these)
 - Add ability for user-specified seed for reproducibility

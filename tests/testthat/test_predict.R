@@ -260,14 +260,17 @@ test_that("Median of PI is close to predict.glmer for basic and complex grouping
                   newdata=d,
                   newparams=list(beta = rnorm(16),
                                  theta = rnorm(16, 5, 1)))[[1]]
-  subD <- d[sample(row.names(d), 5000),]
+  subD <- d[sample(row.names(d), 8000),]
 
-  g1 <- glmer(y ~ x + fac1 + fac2 + (1+fac1|grp) + (1|obs), data = subD, family = 'binomial')
-  truPred <- predict(g1, subD, type = "response")
-  newPred <- predictInterval(g1, newdata = subD, level = 0.95, n.sims = 500,
+  g1 <- glmer(y ~ x + fac1 + fac2 + (1+fac1|grp) + (1|obs), data = subD,
+              family = 'binomial',
+              control = glmerControl(optimizer="bobyqa",
+                                     optCtrl=list(maxfun = 1e5)))
+  truPred <- predict(g1, subD)
+  newPred <- predictInterval(g1, newdata = subD, level = 0.95, n.sims = 2000,
                              stat = 'median', include.resid.var = FALSE,
-                             type = 'probability')
-  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/40)
+                             type = 'linear.prediction', seed = 3252)
+  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/15)
   # This test fails currently
   #   g1 <- glmer(y ~ x +  fac2 + (1 + fac1|grp) + (1|obs), data = subD, family = 'binomial')
   #   truPred <- predict(g1, subD, type = "response")
@@ -324,6 +327,7 @@ test_that("Prediction intervals work with slope not in fixed effects and data re
 context("Special cases - rank deficiency")
 
 test_that("Prediction intervals are accurate with interaction terms and rank deficiency", {
+  set.seed(54656)
   n <- 20
   x <- y <- rnorm(n)
   z <- rnorm(n)
@@ -337,10 +341,11 @@ test_that("Prediction intervals are accurate with interaction terms and rank def
   fm <- lmer( z ~ a*b + (1|r), data=d2)
   expect_is(predictInterval(fm, newdata = d2[1:10, ]), "data.frame")
 
-  newPred <- predictInterval(fm, newdata = d2, level = 0.8, n.sims = 500,
-                             stat = 'median', include.resid.var = FALSE)
+  newPred <- predictInterval(fm, newdata = d2, level = 0.8, n.sims = 1500,
+                             stat = 'median', include.resid.var = FALSE,
+                             seed = 2342)
   truPred <- predict(fm, newdata = d2)
-  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/50)
+  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/15)
   fm2 <- lmer( z ~ a*b + (1+b|r), data=d2)
   newPred <- predictInterval(fm2, newdata = d2, level = 0.8, n.sims = 1000,
                              stat = 'median', include.resid.var = FALSE)
