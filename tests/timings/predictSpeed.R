@@ -119,7 +119,7 @@ p2 <- profvis({
 # View it with:
 p2
 
-
+library(doParallel)
 cl <- makeCluster(4)
 registerDoParallel(cl, 4)
 zzz <- predictInterval(g3, level = 0.9, newdata = InstEval,

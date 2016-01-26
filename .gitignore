@@ -4,3 +4,7 @@
 Thumbs.db
 inst/doc
 vignettes/Using_predictInterval_cache/
+#Rcpp files
+src/*.o
+src/*.so
+src/*.dll

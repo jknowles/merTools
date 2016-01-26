@@ -65,17 +65,17 @@ With `predictInterval` we obtain predictions that are more like the standard obj
 #predictInterval(m1, newdata = InstEval[1:10, ]) # all other parameters are optional
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
-#>         fit      lwr      upr
-#> 1  3.205852 1.119040 5.073677
-#> 2  3.014957 1.188017 4.894843
-#> 3  3.540154 1.853743 5.582607
-#> 4  3.068565 1.140955 5.257027
-#> 5  3.106084 1.423745 5.191017
-#> 6  3.112947 1.287469 5.414535
-#> 7  4.204398 2.183662 6.274698
-#> 8  3.894898 1.784715 5.885646
-#> 9  3.795654 1.757574 6.010877
-#> 10 3.311081 1.307305 5.291231
+#>         fit      upr      lwr
+#> 1  3.076677 5.003599 1.136557
+#> 2  3.096491 5.233988 1.205294
+#> 3  3.372522 5.437127 1.450743
+#> 4  3.041402 4.997011 1.163716
+#> 5  3.299229 5.229003 1.349082
+#> 6  3.367862 5.222391 1.184870
+#> 7  4.092996 6.104901 2.313722
+#> 8  3.758966 5.601710 1.858686
+#> 9  3.815623 5.872416 1.799072
+#> 10 3.512199 5.533667 1.569613
 ```
 
 Note that `predictInterval` is slower because it is computing simulations. It can also return all of the simulated `yhat` values as an attribute to the predict object itself.
@@ -91,12 +91,12 @@ Plotting
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22487833  3.22311114 0.01712966
-#> 2    service1 -0.06723781 -0.06652520 0.01269254
-#> 3   lectage.L -0.18628490 -0.18722651 0.01534445
-#> 4   lectage.Q  0.02358642  0.02403768 0.01270285
-#> 5   lectage.C -0.02486989 -0.02294295 0.01314396
-#> 6   lectage^4 -0.01734253 -0.01696322 0.01410475
+#> 1 (Intercept)  3.22369693  3.22559188 0.02044559
+#> 2    service1 -0.07192204 -0.07203787 0.01284803
+#> 3   lectage.L -0.18593192 -0.18608018 0.01526385
+#> 4   lectage.Q  0.02344241  0.02211976 0.01252350
+#> 5   lectage.C -0.02349396 -0.02377418 0.01235913
+#> 6   lectage^4 -0.02078961 -0.02074230 0.01295802
 ```
 
 And we can also plot this:
@@ -106,19 +106,18 @@ plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FAL
 ```
 
 ![](readmeplot/README-FEsimPlot-1.png)
-
-We can also quickly make caterpillar plots for the random-effect terms:
+ We can also quickly make caterpillar plots for the random-effect terms:
 
 ``` r
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 #>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.13651949  0.12518917 0.3028107
-#> 2         s       2 (Intercept) -0.06930294 -0.07109045 0.3048142
-#> 3         s       3 (Intercept)  0.30419535  0.29992844 0.2935636
-#> 4         s       4 (Intercept)  0.33169961  0.34054570 0.2880752
-#> 5         s       5 (Intercept)  0.07810358  0.06039528 0.3427175
-#> 6         s       6 (Intercept)  0.12541267  0.12544140 0.2388220
+#> 1         s       1 (Intercept)  0.18201286  0.19515930 0.3004651
+#> 2         s       2 (Intercept) -0.13026955 -0.13170366 0.3041906
+#> 3         s       3 (Intercept)  0.33702843  0.33424161 0.2595199
+#> 4         s       4 (Intercept)  0.25165774  0.21142631 0.2881497
+#> 5         s       5 (Intercept)  0.07837553  0.05368640 0.3410308
+#> 6         s       6 (Intercept)  0.07889512  0.08010547 0.2007497
 ```
 
 ``` r
@@ -126,8 +125,7 @@ plotREsim(REsim(m1, n.sims = 100), stat = 'median', sd = TRUE)
 ```
 
 ![](readmeplot/README-reSimplot-1.png)
-
-Note that `plotREsim` highlights group levels that have a simulated distribution that does not overlap 0 -- these appear darker. The lighter bars represent grouping levels that are not distinguishable from 0 in the data.
+ Note that `plotREsim` highlights group levels that have a simulated distribution that does not overlap 0 -- these appear darker. The lighter bars represent grouping levels that are not distinguishable from 0 in the data.
 
 Sometimes the random effects can be hard to interpret and not all of them are meaningfully different from zero. To help with this `merTools` provides the `expectedRank` function, which provides the percentile ranks for the observed groups in the random effect distribution taking into account both the magnitude and uncertainty of the estimated effect for each group.
 
@@ -151,13 +149,14 @@ It can still be difficult to interpret the results of LMM and GLMM models, espec
 ``` r
 impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5, 
                    n.sims = 300, level = 0.9)
+#> Warning: executing %dopar% sequentially: no parallel backend registered
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.803774 2.931571e-04  193
-#> 2    1   2 3.262422 6.069156e-05  240
-#> 3    1   3 3.558152 5.751638e-05  254
-#> 4    1   4 3.840147 5.743902e-05  265
-#> 5    1   5 4.239925 1.959778e-04  176
+#> 1    1   1 3.227589 3.938623e-05  193
+#> 2    1   2 3.229472 2.755018e-05  240
+#> 3    1   3 3.216665 2.930201e-05  254
+#> 4    1   4 3.212558 3.210939e-05  265
+#> 5    1   5 3.219888 4.038770e-05  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we supplied to `newdata` is moved from the first to the fifth quintile in terms of the magnitude of the group factor coefficient. We can see here that the individual professor effect has a strong impact on the outcome variable. This can be shown graphically as well:
@@ -170,8 +169,7 @@ ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE,
 ```
 
 ![](readmeplot/README-reImpactplot-1.png)
-
-Here the standard error is a bit different -- it is the weighted standard error of the mean effect within the bin. It does not take into account the variability within the effects of each observation in the bin -- accounting for this variation will be a future addition to `merTools`.
+ Here the standard error is a bit different -- it is the weighted standard error of the mean effect within the bin. It does not take into account the variability within the effects of each observation in the bin -- accounting for this variation will be a future addition to `merTools`.
 
 Explore Substantive Impacts
 ---------------------------
