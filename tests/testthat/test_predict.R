@@ -466,3 +466,16 @@ test_that("parallelization does not throw errors and generates good results", {
   detach("package:foreach", character.only=TRUE)
 })
 
+
+context("Test nested effect specifications")
+
+test_that("Nested effects can work", {
+  # library(ggplot2)
+  # library(lme4)
+  # mod1 <- lmer(sleep_total ~ bodywt + (1|vore/order), data=msleep)
+  # msleep$combn <- paste(msleep$vore, msleep$order, sep = "__")
+  # mod2 <- lmer(sleep_total ~ bodywt +  (1|combn) + (1|vore), data=msleep)
+  # predInt <- predictInterval(merMod=mod1, newdata=msleep)
+  # predInt <- predictInterval(merMod=mod2, newdata=msleep)
+})
+
