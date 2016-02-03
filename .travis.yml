@@ -25,10 +25,10 @@ r_binary_packages:
   - data.table
   - magrittr
   - doParallel
+  - FastGP
 
 r_github_packages:
   - jimhester/covr
-  - jknowles/FastGP
 
 after_success:
   - Rscript -e 'library(covr);coveralls()'
