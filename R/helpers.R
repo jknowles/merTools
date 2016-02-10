@@ -109,6 +109,72 @@ formulaBuild <- function(model){
   return(newForm)
 }
 
+#' Build model matrix
+#' @description a function to create a model matrix with all predictor terms in
+#' both the group level and fixed effect level
+#' @param model a merMod object from lme4
+#' @param newdata a data frame to construct the matrix from
+#' @param character which matrix to return,default is full matrix with fixed and
+#' random terms, other options are "fixed" and "random"
+#' @import lme4
+#' @keywords internal
+buildModelMatrix <- function(model, newdata, which = "full"){
+  X <- getME(model, "X")
+  X.col.dropped <- attr(X, "col.dropped")
+  ## modified from predict.glm ...
+  if (is.null(newdata)) {
+    newdata <- model@frame
+  }
+
+  ## evaluate new fixed effect
+  RHS <- formula(substitute(~R,
+                    list(R= lme4:::RHSForm(formula(model,fixed.only=TRUE)))))
+  Terms <- terms(model,fixed.only=TRUE)
+  mf <- model.frame(model, fixed.only=TRUE)
+  isFac <- vapply(mf, is.factor, FUN.VALUE=TRUE)
+  ## ignore response variable
+  isFac[attr(Terms,"response")] <- FALSE
+  orig_levs <- if (length(isFac)==0) NULL else lapply(mf[isFac],levels)
+  mfnew <- model.frame(delete.response(Terms),
+                         newdata,
+                         na.action="na.pass",
+                         xlev=orig_levs)
+  X <- model.matrix(RHS, data=mfnew,
+                      contrasts.arg=attr(X,"contrasts"))
+  offset <- 0 # rep(0, nrow(X))
+  tt <- terms(model)
+  if (!is.null(off.num <- attr(tt, "offset"))) {
+    for (i in off.num)
+      offset <- offset + eval(attr(tt,"variables")[[i + 1]], newdata)
+  }
+  ## FIXME?: simplify(no need for 'mfnew'): can this be different from 'na.action'?
+  fit.na.action <- attr(mfnew,"na.action")
+  ## only need to drop if new data specified ...
+  if(is.numeric(X.col.dropped) && length(X.col.dropped) > 0)
+    X <- X[, -X.col.dropped, drop=FALSE]
+  ## FIXME:: need to unname()  ?
+  ## FIXME: is this redundant??
+  ## if (!is.null(frOffset <- attr(model@frame,"offset")))
+  ##     offset <- offset + eval(frOffset, newdata)
+  # pred <- pred+offset
+  re.form <- lme4:::reOnly(formula(model)) # RE formula only
+  newRE <- lme4:::mkNewReTrms(object = model,
+                         newdata = newdata, re.form, na.action="na.pass",
+                         allow.new.levels=TRUE)
+  reMat <- t(as.matrix(newRE$Zt))
+  reMat <- as.matrix(reMat)
+  colnames(reMat) <- rownames(newRE$Zt)
+  mm <- cbind(X, reMat)
+  if(which == "full"){
+    return(mm)
+  } else if(which == "fixed"){
+    return(X)
+  } else if(which == "random"){
+    return(reMat)
+  }
+
+}
+
 #' Calculate the intraclass correlation using mixed effect models
 #'
 #' @param outcome a character representing the variable of the outcome

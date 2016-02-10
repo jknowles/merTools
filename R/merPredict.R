@@ -80,6 +80,9 @@ predictInterval <- function(merMod, newdata, level = 0.95,
                             type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE, returnSims = FALSE,
                             seed=NULL, .parallel = FALSE, .paropts = NULL){
+  if(missing(newdata)){
+    newdata <- merMod@frame
+  }
   if(any(c("data.frame") != class(newdata))){
     if(any(c("tbl_df", "tbl") %in% class(newdata))){
       newdata <- as.data.frame(newdata)
@@ -122,20 +125,20 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     warning("   Prediction for NLMMs or GLMMs that are not mixed binomial regressions is not tested. Sigma set at 1.")
     sigmahat <- rep(1,n.sims)
   }
-
-  matrixForm <- formulaBuild(merMod)
-  if(identical(newdata, merMod@frame)){
-    newdata.modelMatrix <- model.matrix(matrixForm,
-                                        data = merMod@frame)
-  } else{
-    # combine modelframe trimmed and newdata to ensure proper factor expansion
-    tmp <- plyr::rbind.fill(newdata, trimModelFrame(merMod@frame))
-    modDV <- as.character(formula(merMod)[2])
-    tmp[, modDV] <- 1 # avoid dropping cases without a valid value for the DV
-    newdata.modelMatrix <- model.matrix(matrixForm,
-                                        data = tmp)[1:nrow(newdata), , drop=FALSE]
-    rm(tmp)
-  }
+  newdata.modelMatrix <- buildModelMatrix(model= merMod, newdata = newdata)
+  # matrixForm <- formulaBuild(merMod) # TODO: Check this out
+  # if(identical(newdata, merMod@frame)){
+  #   newdata.modelMatrix <- model.matrix(matrixForm,
+  #                                       data = merMod@frame)
+  # } else{
+  #   # combine modelframe trimmed and newdata to ensure proper factor expansion
+  #   tmp <- plyr::rbind.fill(newdata, trimModelFrame(merMod@frame))
+  #   modDV <- as.character(formula(merMod)[2])
+  #   tmp[, modDV] <- 1 # avoid dropping cases without a valid value for the DV
+  #   newdata.modelMatrix <- model.matrix(matrixForm,
+  #                                       data = tmp)[1:nrow(newdata), , drop=FALSE]
+  #   rm(tmp)
+  # }
   ##Right now I am not multiplying the BLUP variance covariance matrices by our
   ##draw of sigma (for linear models) because their variation is unique.  If anything,
   ##this is where one would multiply them by draws of theta from the model.
@@ -145,9 +148,15 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     reMeans <- as.matrix(ranef(merMod)[[j]])
     reMatrix <- attr(ranef(merMod, condVar=TRUE)[[j]], which = "postVar")
     # OK, let's knock out all the random effects we don't need
-    obslvl <- unique(as.character(newdata[, j]))
-    alllvl <- rownames(reMeans)
-    keep <- intersect(obslvl, alllvl)
+    if(j %in% names(newdata)){ # get around if names do not line up because of nesting
+      obslvl <- unique(as.character(newdata[, j]))
+      alllvl <- rownames(reMeans)
+      keep <- intersect(obslvl, alllvl)
+    } else {
+      obslvl <- colnames(newdata.modelMatrix)
+      alllvl <- rownames(reMeans)
+      keep <- intersect(obslvl, alllvl)
+    }
     # Add switch if no random groups are observed to avoid indexing errors,
     # we burn 1 sample of 1 group of all coefficients that will eventually
     # be multiplied by zero later on
@@ -173,11 +182,20 @@ predictInterval <- function(merMod, newdata, level = 0.95,
                                        mu=meanTmp,
                                        S=matrixTmp) #cholesky is fastest
     }
-     tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
-     keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
-     tmp <- tmp[, c(keep, "var"), drop = FALSE]
-     tmp[, "var"] <- as.character(tmp[, "var"])
-     colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
+    if(j %in% names(newdata)){ # get around if names do not line up because of nesting
+      tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
+      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
+      tmp <- tmp[, c(keep, "var"), drop = FALSE]
+      tmp[, "var"] <- as.character(tmp[, "var"])
+      colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
+    } else {
+      tmp <- as.data.frame(newdata.modelMatrix)
+      tmp$var <- names(tmp[alllvl])[max.col(tmp[alllvl])]
+      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
+      tmp <- tmp[, c(keep, "var"), drop = FALSE]
+      tmp[, "var"] <- as.character(tmp[, "var"])
+      colnames(tmp)[which(names(tmp) == "var")] <- j
+    }
      tmp.pred <- function(data, coefs, group){
       new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[1]]])
        msg <- paste("     The following levels of ", group, " from newdata \n -- ", paste0(new.levels, collapse=", "),
@@ -210,10 +228,10 @@ predictInterval <- function(merMod, newdata, level = 0.95,
        fe <- eval(fe_call)
        re.xb[[j]] <- foreach::`%dopar%`(fe, tmp.pred(data = tmp2[[i]],
                                                  coefs =reSimA[, keep, , drop = FALSE],
-                                                 group = names(newdata[, j, drop=FALSE])))
+                                                 group = j))
      } else{
        re.xb[[j]] <- tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
-                              group = names(newdata[, j, drop=FALSE]))
+                              group = j)
      }
 
     }
@@ -249,6 +267,7 @@ predictInterval <- function(merMod, newdata, level = 0.95,
   }
   # Pad betaSim
   colnames(betaSim) <- names(fe.tmp)
+  newdata.modelMatrix <- buildModelMatrix(merMod, newdata = newdata, which = "fixed")
   if(ncol(newdata.modelMatrix) > ncol(betaSim)){
     pad <- matrix(rep(0), nrow = nrow(betaSim),
                   ncol = ncol(newdata.modelMatrix) - ncol(betaSim))

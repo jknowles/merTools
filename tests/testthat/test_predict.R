@@ -168,7 +168,8 @@ test_that("Prediction works for random slopes not in fixed", {
   zNew <- grouseticks[1:10,]
   outs1 <- predictInterval(glmer3LevSlope, newdata = zNew)
   expect_is(outs1, "data.frame")
-  expect_message(predictInterval(glmer3LevSlope, newdata = zNew))
+  # Message may not be necessary any more
+  # expect_message(predictInterval(glmer3LevSlope, newdata = zNew))
 })
 
 
@@ -470,12 +471,19 @@ test_that("parallelization does not throw errors and generates good results", {
 context("Test nested effect specifications")
 
 test_that("Nested effects can work", {
-  # library(ggplot2)
-  # library(lme4)
-  # mod1 <- lmer(sleep_total ~ bodywt + (1|vore/order), data=msleep)
-  # msleep$combn <- paste(msleep$vore, msleep$order, sep = "__")
-  # mod2 <- lmer(sleep_total ~ bodywt +  (1|combn) + (1|vore), data=msleep)
-  # predInt <- predictInterval(merMod=mod1, newdata=msleep)
-  # predInt <- predictInterval(merMod=mod2, newdata=msleep)
+  library(ggplot2)
+  library(lme4)
+  mod1 <- lmer(sleep_total ~ bodywt + (1|vore/order), data=msleep)
+  msleep$combn <- paste(msleep$vore, msleep$order, sep = "__")
+  mod2 <- lmer(sleep_total ~ bodywt +  (1|combn) + (1|vore), data=msleep)
+  predInt1 <- predictInterval(merMod=mod1, newdata=msleep, seed = 121,
+                              n.sims = 2000, include.resid.var = FALSE)
+  predInt2 <- predictInterval(merMod=mod2, newdata=msleep, seed = 121,
+                              n.sims = 2000, include.resid.var = FALSE)
+  expect_is(predInt1, "data.frame")
+  expect_is(predInt2, "data.frame")
+  expect_equal(mean(predInt1[,1] - predInt2[,1]), 0, tol = sd(predInt1[,1])/20)
+  expect_equal(mean(predInt1[,2] - predInt2[,2]), 0, tol = sd(predInt1[,2])/20)
+  expect_equal(mean(predInt1[,3] - predInt2[,3]), 0, tol = sd(predInt1[,3])/20)
 })
 
