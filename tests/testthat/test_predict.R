@@ -476,14 +476,16 @@ test_that("Nested effects can work", {
   mod1 <- lmer(sleep_total ~ bodywt + (1|vore/order), data=msleep)
   msleep$combn <- paste(msleep$vore, msleep$order, sep = "__")
   mod2 <- lmer(sleep_total ~ bodywt +  (1|combn) + (1|vore), data=msleep)
-  predInt1 <- predictInterval(merMod=mod1, newdata=msleep, seed = 121,
-                              n.sims = 2000, include.resid.var = FALSE)
-  predInt2 <- predictInterval(merMod=mod2, newdata=msleep, seed = 121,
-                              n.sims = 2000, include.resid.var = FALSE)
+  predInt1 <- predictInterval(merMod=mod1, newdata=msleep, seed = 548,
+                              n.sims = 2000, include.resid.var = FALSE,
+                              stat = "median", level = 0.8)
+  predInt2 <- predictInterval(merMod=mod2, newdata=msleep, seed = 548,
+                              n.sims = 2000, include.resid.var = FALSE,
+                              stat = "median", level = 0.8)
   expect_is(predInt1, "data.frame")
   expect_is(predInt2, "data.frame")
   expect_equal(mean(predInt1[,1] - predInt2[,1]), 0, tol = sd(predInt1[,1])/20)
-  expect_equal(mean(predInt1[,2] - predInt2[,2]), 0, tol = sd(predInt1[,2])/20)
+  expect_equal(mean(predInt1[,2] - predInt2[,2]), 0, tol = sd(predInt1[,2])/10)
   expect_equal(mean(predInt1[,3] - predInt2[,3]), 0, tol = sd(predInt1[,3])/20)
 })
 
