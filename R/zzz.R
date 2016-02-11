@@ -1,5 +1,5 @@
 # Global variables
-utils::globalVariables(c(".shinyMerPar", "sig", "sigma"))
+utils::globalVariables(c(".shinyMerPar", "sig", "sigma", "Lind"))
 
 # Namespace fixes
 

@@ -14,7 +14,8 @@ knitr::opts_chunk$set(
   cache=FALSE,
   comment="#>",
   collapse=TRUE, 
-  echo=TRUE
+  echo=TRUE, 
+  fig.width = 7
 )
 library(knitr); library(merTools)
 ```

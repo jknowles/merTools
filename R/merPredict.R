@@ -126,22 +126,7 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     sigmahat <- rep(1,n.sims)
   }
   newdata.modelMatrix <- buildModelMatrix(model= merMod, newdata = newdata)
-  # matrixForm <- formulaBuild(merMod) # TODO: Check this out
-  # if(identical(newdata, merMod@frame)){
-  #   newdata.modelMatrix <- model.matrix(matrixForm,
-  #                                       data = merMod@frame)
-  # } else{
-  #   # combine modelframe trimmed and newdata to ensure proper factor expansion
-  #   tmp <- plyr::rbind.fill(newdata, trimModelFrame(merMod@frame))
-  #   modDV <- as.character(formula(merMod)[2])
-  #   tmp[, modDV] <- 1 # avoid dropping cases without a valid value for the DV
-  #   newdata.modelMatrix <- model.matrix(matrixForm,
-  #                                       data = tmp)[1:nrow(newdata), , drop=FALSE]
-  #   rm(tmp)
-  # }
-  ##Right now I am not multiplying the BLUP variance covariance matrices by our
-  ##draw of sigma (for linear models) because their variation is unique.  If anything,
-  ##this is where one would multiply them by draws of theta from the model.
+
   re.xb <- vector(getME(merMod, "n_rfacs"), mode = "list")
   names(re.xb) <- names(ngrps(merMod))
     for(j in names(re.xb)){

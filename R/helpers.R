@@ -109,6 +109,16 @@ formulaBuild <- function(model){
   return(newForm)
 }
 
+##' Random Effects formula only
+##' @keywords internal
+reOnly <- function(f,response=FALSE) {
+  response <- if (response && length(f)==3) f[[2]] else NULL
+  reformulate(paste0("(", vapply(findbars(f), safeDeparse, ""), ")"),
+              response=response)
+}
+
+safeDeparse <- function(x, collapse=" ") paste(deparse(x, 500L), collapse=collapse)
+
 #' Build model matrix
 #' @description a function to create a model matrix with all predictor terms in
 #' both the group level and fixed effect level
@@ -125,14 +135,11 @@ buildModelMatrix <- function(model, newdata, which = "full"){
   if (is.null(newdata)) {
     newdata <- model@frame
   }
-
-  ## evaluate new fixed effect
   RHS <- formula(substitute(~R,
-                    list(R= lme4:::RHSForm(formula(model,fixed.only=TRUE)))))
+                    list(R= RHSForm(formula(model,fixed.only=TRUE)))))
   Terms <- terms(model,fixed.only=TRUE)
   mf <- model.frame(model, fixed.only=TRUE)
   isFac <- vapply(mf, is.factor, FUN.VALUE=TRUE)
-  ## ignore response variable
   isFac[attr(Terms,"response")] <- FALSE
   orig_levs <- if (length(isFac)==0) NULL else lapply(mf[isFac],levels)
   mfnew <- model.frame(delete.response(Terms),
@@ -147,18 +154,11 @@ buildModelMatrix <- function(model, newdata, which = "full"){
     for (i in off.num)
       offset <- offset + eval(attr(tt,"variables")[[i + 1]], newdata)
   }
-  ## FIXME?: simplify(no need for 'mfnew'): can this be different from 'na.action'?
   fit.na.action <- attr(mfnew,"na.action")
-  ## only need to drop if new data specified ...
   if(is.numeric(X.col.dropped) && length(X.col.dropped) > 0)
     X <- X[, -X.col.dropped, drop=FALSE]
-  ## FIXME:: need to unname()  ?
-  ## FIXME: is this redundant??
-  ## if (!is.null(frOffset <- attr(model@frame,"offset")))
-  ##     offset <- offset + eval(frOffset, newdata)
-  # pred <- pred+offset
-  re.form <- lme4:::reOnly(formula(model)) # RE formula only
-  newRE <- lme4:::mkNewReTrms(object = model,
+  re.form <- reOnly(formula(model)) # RE formula only
+  newRE <- mkNewReTrms(object = model,
                          newdata = newdata, re.form, na.action="na.pass",
                          allow.new.levels=TRUE)
   reMat <- t(as.matrix(newRE$Zt))
@@ -202,4 +202,87 @@ ICC <- function(outcome, group, data, subset=NULL){
 }
 
 
+#' Utility function to make RE terms objects
+#' @import lme4
+#' @keywords internal
+mkNewReTrms <- function(object, newdata, re.form=NULL, na.action=na.pass,
+                        allow.new.levels=FALSE)
+{
+  if (is.null(newdata)) {
+    rfd <- mfnew <- model.frame(object)
+  } else {
+    mfnew <- model.frame(delete.response(terms(object,fixed.only=TRUE)),
+                         newdata, na.action=na.action)
+    old <- FALSE
+    if (old) {
+      rfd <- na.action(newdata)
+      if (is.null(attr(rfd,"na.action")))
+        attr(rfd,"na.action") <- na.action
+    } else {
+      newdata.NA <- newdata
+      if (!is.null(fixed.na.action <- attr(mfnew,"na.action"))) {
+        newdata.NA <- newdata.NA[-fixed.na.action,]
+      }
+      tt <- delete.response(terms(object,random.only=TRUE))
+      ## need to let NAs in RE components go through -- they're handled downstream
+      rfd <- model.frame(tt,newdata.NA,na.action=na.pass)
+      if (!is.null(fixed.na.action))
+        attr(rfd,"na.action") <- fixed.na.action
+    }
+  }
+  if (inherits(re.form, "formula")) {
+    ## DROP values with NAs in fixed effects
+    if (length(fit.na.action <- attr(mfnew,"na.action")) > 0) {
+      newdata <- newdata[-fit.na.action,]
+    }
+    ## note: mkReTrms automatically *drops* unused levels
+    ReTrms <- mkReTrms(findbars(re.form[[2]]), rfd)
+    ## update Lambdat (ugh, better way to do this?)
+    ReTrms <- within(ReTrms,Lambdat@x <- unname(getME(object,"theta")[Lind]))
+    if (!allow.new.levels && any(vapply(ReTrms$flist, anyNA, NA)))
+      stop("NAs are not allowed in prediction data",
+           " for grouping variables unless allow.new.levels is TRUE")
+    ns.re <- names(re <- ranef(object))
+    nRnms <- names(Rcnms <- ReTrms$cnms)
+    if (!all(nRnms %in% ns.re))
+      stop("grouping factors specified in re.form that were not present in original model")
+    new_levels <- lapply(ReTrms$flist, function(x) levels(factor(x)))
+    ## fill in/delete levels as appropriate
+    re_x <- Map(function(r,n) levelfun(r,n,allow.new.levels=allow.new.levels),
+                re[names(new_levels)], new_levels)
+    re_new <- lapply(seq_along(nRnms), function(i) {
+      rname <- nRnms[i]
+      if (!all(Rcnms[[i]] %in% names(re[[rname]])))
+        stop("random effects specified in re.form that were not present in original model")
+      re_x[[rname]][,Rcnms[[i]]]
+    })
+    re_new <- unlist(lapply(re_new, t))
+  }
+  Zt <- ReTrms$Zt
+  attr(Zt, "na.action") <- attr(re_new, "na.action") <- attr(mfnew, "na.action")
+  list(Zt=Zt, b=re_new, Lambdat = ReTrms$Lambdat)
+}
 
+#' Parse merMod formulas
+#' @keywords internal
+RHSForm <- function(form,as.form=FALSE) {
+  rhsf <- form[[length(form)]]
+  if (as.form) reformulate(deparse(rhsf)) else rhsf
+}
+
+
+#' Parse merMod levels
+#' @keywords internal
+levelfun <- function(x,nl.n,allow.new.levels=FALSE) {
+  if (!all(nl.n %in% rownames(x))) {
+    if (!allow.new.levels) stop("new levels detected in newdata")
+      newx <- as.data.frame(matrix(0, nrow=length(nl.n), ncol=ncol(x),
+                                 dimnames=list(nl.n, names(x))))
+      newx[rownames(x),] <- x
+      x <- newx
+  }
+  if (!all(r.inn <- rownames(x) %in% nl.n)) {
+    x <- x[r.inn,,drop=FALSE]
+  }
+  return(x)
+}
