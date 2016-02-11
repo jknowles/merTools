@@ -314,6 +314,8 @@ test_that("Prediction intervals work with new factor levels added", {
 })
 
 test_that("Prediction intervals work with slope not in fixed effects and data reordered", {
+  skip_on_travis()
+  skip_on_cran()
   data(grouseticks)
   grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
   grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
@@ -338,6 +340,8 @@ test_that("Prediction intervals work with slope not in fixed effects and data re
 context("Special cases - rank deficiency")
 
 test_that("Prediction intervals are accurate with interaction terms and rank deficiency", {
+  skip_on_travis()
+  skip_on_cran()
   set.seed(54656)
   n <- 20
   x <- y <- rnorm(n)
@@ -382,6 +386,8 @@ test_that("simResults option behaves", {
 context("Test out of sample predictions")
 
 test_that("predictInterval makes predictions without observed outcome", {
+  skip_on_travis()
+  skip_on_cran()
   possNames <- expand.grid(letters,LETTERS)
   possNames <- paste(possNames[, 1], possNames[, 2])
   newFac <- sample(possNames, 32)
@@ -439,7 +445,7 @@ context("Test Parallel")
 
 test_that("parallelization does not throw errors and generates good results", {
   skip_on_cran()
-  # skip_on_travis()
+  skip_on_travis()
   library(foreach)
   set.seed(1241)
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
