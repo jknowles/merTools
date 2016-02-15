@@ -13,9 +13,6 @@
 
 \item{sigma}{an optional numeric value used as a multiplier for the
     standard deviations.}
-
-\item{rdig}{an optional integer value specifying the number of digits
-    used to represent correlation estimates.}
 }
 \value{
 a list with two elements "stddev" and "correlation" for the standard

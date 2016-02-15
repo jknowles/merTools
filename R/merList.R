@@ -78,11 +78,12 @@ modelFixedEff <- function(modList){
 
 #' Extract the variances and correlations for random effects from a merMod list
 #' @inheritParams lme4::VarCorr
+#' @param rdig the number of digits to round to, integer
 #' @return a list with two elements "stddev" and "correlation" for the standard
 #' deviations and correlations averaged across models in the list
 #' @export
 #' @import lme4
-VarCorr.merModList <- function(x, sigma = 1, rdig = 3){
+VarCorr.merModList <- function(x, sigma = 1, rdig = 3L){
   modList <- x
   ngrps <- length(VarCorr(modList[[1]]))
   errorList <- vector(mode = 'list', length = ngrps)

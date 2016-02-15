@@ -379,7 +379,7 @@ test_that("simResults option behaves", {
   expect_null(attr(preds1, "sim.results"))
   expect_is(attr(preds2, "sim.results"), "matrix")
   out <- attr(preds2, "sim.results")
-  expect_equal(ncol(out), 100)
+  expect_equal(ncol(out), 1000)
   expect_equal(nrow(out), 5)
 })
 
