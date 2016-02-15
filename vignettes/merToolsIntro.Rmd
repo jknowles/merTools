@@ -354,7 +354,7 @@ very quickly. And, it works a lot like `predict`:
 
 ```{r}
 exampPreds <- predictInterval(m2, newdata = tempdf, 
-                              type = "probability")
+                              type = "probability", level = 0.8)
 
 tempdf <- cbind(tempdf, exampPreds)
 
@@ -373,8 +373,8 @@ the random and fixed effects, we get:
 
 ```{r}
 exampPreds <- predictInterval(m2, newdata = tempdf, 
-                              type = "probability", include.resid.var = FALSE)
-
+                              type = "probability", 
+                              include.resid.var = FALSE, level = 0.8)
 tempdf <- cbind(tempdf[, 1:8], exampPreds)
 
 ggplot(tempdf, aes(x = item, y = fit, ymin = lwr, ymax = upr, 

@@ -211,9 +211,14 @@ mkNewReTrms <- function(object, newdata, re.form=NULL, na.action=na.pass,
   if (is.null(newdata)) {
     rfd <- mfnew <- model.frame(object)
   } else {
-    mfnew <- model.frame(delete.response(terms(object,fixed.only=TRUE)),
+    mfnew <- model.frame(delete.response(terms(object, fixed.only=TRUE)),
                          newdata, na.action=na.action)
-    old <- FALSE
+    if(packageVersion("lme4") < "1.1.9"){
+      old <- TRUE
+    } else{
+      old <- FALSE
+    }
+
     if (old) {
       rfd <- na.action(newdata)
       if (is.null(attr(rfd,"na.action")))

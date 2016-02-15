@@ -9,6 +9,8 @@ to `predictInterval` and issue a warning
 - Try to coerce other data types passed to `newdata` in `predictInterval` before 
 failing if coercion is unsuccessful
 - Numeric stabilization of unit tests by including seed values for random tests
+- Fix handling of models with nested random effect terms (GitHub #47)
+- Fix vignette images
 
 ### New Functionality
 
@@ -26,6 +28,11 @@ of a dataset, useful for imputation or for working with extremely large datasets
 - Add a `VarCorr` method for `merModList`
 - Add new package data to demonstrate replication from selected published texts 
 on multilevel modeling using different software (1982 High School and Beyond Survey data)
+
+### Other changes
+
+- Changed the default `n.sims` for the `predictInterval` function from 100 to 1,000 
+to give better coverage and reflect performance increase
 
 ## merTools 0.1
 - Initial release

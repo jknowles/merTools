@@ -76,7 +76,7 @@
 #'  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "probability")
 #'  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "linear.prediction")
 predictInterval <- function(merMod, newdata, level = 0.95,
-                            n.sims=100, stat=c("median","mean"),
+                            n.sims = 1000, stat=c("median","mean"),
                             type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE, returnSims = FALSE,
                             seed=NULL, .parallel = FALSE, .paropts = NULL){
@@ -163,18 +163,22 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     for(k in 1:nrow(reMeans)){
       meanTmp <- reMeans[k, ]
       matrixTmp <- as.matrix(reMatrix[,,k])
-      reSimA[k, ,] <- FastGP::rcpp_rmvnorm_stable(n= n.sims,
+      reSimA[k, ,] <- as.matrix(FastGP::rcpp_rmvnorm_stable(n= n.sims,
                                        mu=meanTmp,
-                                       S=matrixTmp) #cholesky is fastest
+                                       S=matrixTmp))
     }
     if(j %in% names(newdata)){ # get around if names do not line up because of nesting
       tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
+      tmp <- tmp[, !duplicated(colnames(tmp))]
       keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
       tmp <- tmp[, c(keep, "var"), drop = FALSE]
       tmp[, "var"] <- as.character(tmp[, "var"])
       colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
     } else {
       tmp <- as.data.frame(newdata.modelMatrix)
+      tmp <- tmp[, !duplicated(colnames(tmp))] # deduplicate columns because
+      # column names can be duplicated to account for multiple effects
+      # but we've already reconciled all the effects
       tmp$var <- names(tmp[alllvl])[max.col(tmp[alllvl])]
       keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
       tmp <- tmp[, c(keep, "var"), drop = FALSE]

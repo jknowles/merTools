@@ -93,3 +93,12 @@ test_that("Formula works for interactions", {
   expect_is(merTools:::formulaBuild(fm), "formula")
   expect_identical(merTools:::formulaBuild(fm), as.formula("z ~ a * b * c + x + I(x^2)"))
 })
+
+
+# sampMean <- c(-1.14958347420375, 0.799362559737197)
+# sampVar <- structure(c(0.0324152055389749, -0.0231529596612961, -0.0231529596612961,
+#              0.0197757141099802), .Dim = c(2L, 2L))
+# mvnormSamp1 <- mvtnorm::rmvnorm(100, mean = sampMean, sigma =sampVar)
+# mvnormSamp2 <- FastGP::rcpp_rmvnorm_stable(100, mu = sampMean, S =sampVar)
+# summary(mvnormSamp1)
+# summary(mvnormSamp2)
