@@ -4,7 +4,7 @@
 \alias{VarCorr.merModList}
 \title{Extract the variances and correlations for random effects from a merMod list}
 \usage{
-\method{VarCorr}{merModList}(x, sigma = 1, rdig = 3)
+\method{VarCorr}{merModList}(x, sigma = 1, rdig = 3L)
 }
 \arguments{
 \item{x}{for \code{VarCorr}: a fitted model object, usually an object inheriting from
@@ -13,6 +13,8 @@
 
 \item{sigma}{an optional numeric value used as a multiplier for the
     standard deviations.}
+
+\item{rdig}{the number of digits to round to, integer}
 }
 \value{
 a list with two elements "stddev" and "correlation" for the standard

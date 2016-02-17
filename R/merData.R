@@ -177,6 +177,9 @@ averageObs <- function(merMod, varList = NULL){
   }
   out <- collapseFrame(data)
   reTerms <- names(ngrps(merMod))
+  if(any(reTerms %in% names(varList))){
+    reTerms <- reTerms[!reTerms %in% names(varList)]
+  }
   for(i in 1:length(reTerms)){
     out[, reTerms[i]] <- REquantile(merMod = merMod,
                                         quantile = 0.5, groupFctr = reTerms[[i]])
@@ -184,7 +187,7 @@ averageObs <- function(merMod, varList = NULL){
   }
   chars <- !sapply(out, is.numeric)
   for(i in names(out[, chars])){
-    out[, i] <- superFactor(out[, i], fullLev = unique(merMod@frame[, i]))
+    out[, i] <- try(superFactor(out[, i], fullLev = unique(merMod@frame[, i])), silent = TRUE)
   }
   out <- stripAttributes(out)
   out <- out[, names(merMod@frame)]

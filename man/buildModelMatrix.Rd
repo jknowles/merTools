@@ -3,6 +3,9 @@
 \name{buildModelMatrix}
 \alias{buildModelMatrix}
 \title{Build model matrix}
+\source{
+Taken from predict.merMod in lme4
+}
 \usage{
 buildModelMatrix(model, newdata, which = "full")
 }
