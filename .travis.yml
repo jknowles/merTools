@@ -1,5 +1,5 @@
 language: r
-
+r: devel
 sudo: required
 
 env:
@@ -25,6 +25,7 @@ r_binary_packages:
   - data.table
   - magrittr
   - doParallel
+  - devtools
 
 r_github_packages:
   - jimhester/covr
