@@ -361,5 +361,9 @@ test_that("Nested specifications work", {
   data1 <- draw(mod1, "average", varList = mylist2)
   expect_is(data1, "data.frame")
   expect_identical(as.character(data1$order), "Cetacea")
+  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+  data1 <- draw(fm1, type = "average", varList = list("Subject" = "308"))
+  expect_is(data1, "data.frame")
+  expect_identical(as.character(data1$Subject), "308")
 })
 

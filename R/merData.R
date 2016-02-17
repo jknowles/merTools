@@ -180,10 +180,12 @@ averageObs <- function(merMod, varList = NULL){
   if(any(reTerms %in% names(varList))){
     reTerms <- reTerms[!reTerms %in% names(varList)]
   }
-  for(i in 1:length(reTerms)){
-    out[, reTerms[i]] <- REquantile(merMod = merMod,
-                                        quantile = 0.5, groupFctr = reTerms[[i]])
-    out[, reTerms[i]] <- as.character(out[, reTerms[i]])
+  if(length(reTerms) > 0){
+    for(i in 1:length(reTerms)){
+      out[, reTerms[i]] <- REquantile(merMod = merMod,
+                                      quantile = 0.5, groupFctr = reTerms[[i]])
+      out[, reTerms[i]] <- as.character(out[, reTerms[i]])
+    }
   }
   chars <- !sapply(out, is.numeric)
   for(i in names(out[, chars])){
