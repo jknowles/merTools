@@ -25,7 +25,6 @@ r_binary_packages:
   - data.table
   - magrittr
   - doParallel
-  - devtools
 
 r_github_packages:
   - jimhester/covr
