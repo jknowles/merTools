@@ -1,7 +1,7 @@
 language: r
 r: devel
 # sudo: required
-# cache: packages
+cache: packages
 
 env:
   global:
