@@ -1,6 +1,6 @@
 language: r
 r: devel
-sudo: required
+# sudo: required
 cache: packages
 
 env:
