@@ -22,6 +22,29 @@ install_github("jknowles/merTools")
 install.packages("merTools")
 ```
 
+Recent Updates
+--------------
+
+### Version 0.2
+
+### New Functionality
+
+-   Substantial performance enhancement for `predictInterval` which includes better handling of large numbers of parameters and simulations, performance tweaks for added speed (~10x), and parallel backend support (currently not optimized)
+-   Add support for `probit` models and limited support for other `glmm` link functions, with warning (still do not know how to handle sigma parameter for these)
+-   Add ability for user-specified seed for reproducibility
+-   Add support for `blmerMod` and `bglmerMod` objects from the `blme` package
+-   Add a `merModList` object for lists of `merMod` objects fitted to subsets of a dataset, useful for imputation or for working with extremely large datasets
+-   Add a `print` method for `merModList` to mimic output of `summary.merMod`
+-   Add a `VarCorr` method for `merModList`
+-   Add new package data to demonstrate replication from selected published texts on multilevel modeling using different software (1982 High School and Beyond Survey data)
+
+### Other changes
+
+-   Changed the default `n.sims` for the `predictInterval` function from 100 to 1,000 to give better coverage and reflect performance increase
+-   Changed the default for `level` in `predictInterval` to be 0.8 instead of 0.95 to reflect that 0.95 prediction intervals are more conservative than most users need
+
+See [NEWS.md](https://github.com/jknowles/merTools/blob/master/NEWS.md) for more details.
+
 Shiny App and Demo
 ------------------
 
@@ -66,16 +89,16 @@ With `predictInterval` we obtain predictions that are more like the standard obj
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
 #>         fit      upr      lwr
-#> 1  3.076677 5.003599 1.136557
-#> 2  3.096491 5.233988 1.205294
-#> 3  3.372522 5.437127 1.450743
-#> 4  3.041402 4.997011 1.163716
-#> 5  3.299229 5.229003 1.349082
-#> 6  3.367862 5.222391 1.184870
-#> 7  4.092996 6.104901 2.313722
-#> 8  3.758966 5.601710 1.858686
-#> 9  3.815623 5.872416 1.799072
-#> 10 3.512199 5.533667 1.569613
+#> 1  3.176038 5.233758 1.064012
+#> 2  3.206135 5.422116 1.253410
+#> 3  3.336472 5.386472 1.348937
+#> 4  3.033041 5.078521 1.263795
+#> 5  3.398734 5.224032 1.280036
+#> 6  3.329136 5.166995 1.259935
+#> 7  4.219184 6.045051 2.113726
+#> 8  3.868250 5.990382 2.020127
+#> 9  3.775713 5.684676 1.638706
+#> 10 3.335752 5.433852 1.384539
 ```
 
 Note that `predictInterval` is slower because it is computing simulations. It can also return all of the simulated `yhat` values as an attribute to the predict object itself.
@@ -91,12 +114,12 @@ Plotting
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22369693  3.22559188 0.02044559
-#> 2    service1 -0.07192204 -0.07203787 0.01284803
-#> 3   lectage.L -0.18593192 -0.18608018 0.01526385
-#> 4   lectage.Q  0.02344241  0.02211976 0.01252350
-#> 5   lectage.C -0.02349396 -0.02377418 0.01235913
-#> 6   lectage^4 -0.02078961 -0.02074230 0.01295802
+#> 1 (Intercept)  3.22493377  3.22409928 0.01861451
+#> 2    service1 -0.06966261 -0.06994406 0.01253572
+#> 3   lectage.L -0.18707065 -0.18573099 0.01668732
+#> 4   lectage.Q  0.02472017  0.02406085 0.01154555
+#> 5   lectage.C -0.02437002 -0.02384631 0.01236354
+#> 6   lectage^4 -0.01903224 -0.01951767 0.01456238
 ```
 
 And we can also plot this:
@@ -105,27 +128,29 @@ And we can also plot this:
 plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FALSE)
 ```
 
-![](readmeplot/README-FEsimPlot-1.png)
- We can also quickly make caterpillar plots for the random-effect terms:
+![](readmeplot/README-FEsimPlot-1.png)<!-- -->
+
+We can also quickly make caterpillar plots for the random-effect terms:
 
 ``` r
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
-#>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.18201286  0.19515930 0.3004651
-#> 2         s       2 (Intercept) -0.13026955 -0.13170366 0.3041906
-#> 3         s       3 (Intercept)  0.33702843  0.33424161 0.2595199
-#> 4         s       4 (Intercept)  0.25165774  0.21142631 0.2881497
-#> 5         s       5 (Intercept)  0.07837553  0.05368640 0.3410308
-#> 6         s       6 (Intercept)  0.07889512  0.08010547 0.2007497
+#>   groupFctr groupID        term         mean     median        sd
+#> 1         s       1 (Intercept)  0.131603941 0.09825419 0.2691620
+#> 2         s       2 (Intercept) -0.002815464 0.01225361 0.2751944
+#> 3         s       3 (Intercept)  0.291506870 0.28416089 0.3188291
+#> 4         s       4 (Intercept)  0.226318898 0.22180267 0.3002860
+#> 5         s       5 (Intercept)  0.082030612 0.09090553 0.2953157
+#> 6         s       6 (Intercept)  0.068993749 0.06753002 0.2277059
 ```
 
 ``` r
 plotREsim(REsim(m1, n.sims = 100), stat = 'median', sd = TRUE)
 ```
 
-![](readmeplot/README-reSimplot-1.png)
- Note that `plotREsim` highlights group levels that have a simulated distribution that does not overlap 0 -- these appear darker. The lighter bars represent grouping levels that are not distinguishable from 0 in the data.
+![](readmeplot/README-reSimplot-1.png)<!-- -->
+
+Note that `plotREsim` highlights group levels that have a simulated distribution that does not overlap 0 -- these appear darker. The lighter bars represent grouping levels that are not distinguishable from 0 in the data.
 
 Sometimes the random effects can be hard to interpret and not all of them are meaningfully different from zero. To help with this `merTools` provides the `expectedRank` function, which provides the percentile ranks for the observed groups in the random effect distribution taking into account both the magnitude and uncertainty of the estimated effect for each group.
 
@@ -133,10 +158,10 @@ Sometimes the random effects can be hard to interpret and not all of them are me
 ranks <- expectedRank(m1, groupFctr = "d")
 head(ranks)
 #>      d (Intercept) (Intercept)_var       ER pctER
-#> 1 1866   1.2553613     0.012755634 1123.806   100
-#> 2 1258   1.1674852     0.034291228 1115.766    99
+#> 1 1866   1.2553612     0.012755634 1123.806   100
+#> 2 1258   1.1674851     0.034291227 1115.766    99
 #> 3  240   1.0933372     0.008761218 1115.090    99
-#> 4   79   1.0998653     0.023095979 1112.315    99
+#> 4   79   1.0998652     0.023095979 1112.315    99
 #> 5  676   1.0169070     0.026562174 1101.553    98
 #> 6   66   0.9568607     0.008602823 1098.049    97
 ```
@@ -152,11 +177,11 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
 #> Warning: executing %dopar% sequentially: no parallel backend registered
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 3.227589 3.938623e-05  193
-#> 2    1   2 3.229472 2.755018e-05  240
-#> 3    1   3 3.216665 2.930201e-05  254
-#> 4    1   4 3.212558 3.210939e-05  265
-#> 5    1   5 3.219888 4.038770e-05  176
+#> 1    1   1 3.224916 3.342205e-05  193
+#> 2    1   2 3.225564 2.866119e-05  240
+#> 3    1   3 3.226658 2.780772e-05  254
+#> 4    1   4 3.218555 2.238131e-05  265
+#> 5    1   5 3.220744 4.429566e-05  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we supplied to `newdata` is moved from the first to the fifth quintile in terms of the magnitude of the group factor coefficient. We can see here that the individual professor effect has a strong impact on the outcome variable. This can be shown graphically as well:
@@ -168,8 +193,9 @@ ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE,
   geom_pointrange() + theme_bw() + labs(x = "Bin of `d` term", y = "Predicted Fit")
 ```
 
-![](readmeplot/README-reImpactplot-1.png)
- Here the standard error is a bit different -- it is the weighted standard error of the mean effect within the bin. It does not take into account the variability within the effects of each observation in the bin -- accounting for this variation will be a future addition to `merTools`.
+![](readmeplot/README-reImpactplot-1.png)<!-- -->
+
+Here the standard error is a bit different -- it is the weighted standard error of the mean effect within the bin. It does not take into account the variability within the effects of each observation in the bin -- accounting for this variation will be a future addition to `merTools`.
 
 Explore Substantive Impacts
 ---------------------------
@@ -184,7 +210,7 @@ fmVA <- glmer(r2 ~ (Anger + Gender + btype + situ)^2 +
            (1|id) + (1|item), family = binomial, 
            data = VerbAgg)
 #> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
-#> $checkConv, : Model failed to converge with max|grad| = 0.055153 (tol =
+#> $checkConv, : Model failed to converge with max|grad| = 0.0534956 (tol =
 #> 0.001, component 1)
 ```
 
@@ -215,8 +241,6 @@ The next step is familiar -- we simply pass this new dataset to `predictInterval
 ``` r
 plotdf <- predictInterval(fmVA, newdata = newData, type = "probability", 
             stat = "median", n.sims = 1000)
-#> Fixed effect matrix has been padded with 0 coefficients
-#>             for random slopes not included in the fixed effects and interaction terms.
 plotdf <- cbind(plotdf, newData)
 
 ggplot(plotdf, aes(y = fit, x = Anger, color = btype, group = btype)) + 
@@ -225,4 +249,4 @@ ggplot(plotdf, aes(y = fit, x = Anger, color = btype, group = btype)) +
   labs(y = "Predicted Probability")
 ```
 
-![](readmeplot/README-substImpactPredict-1.png)
+![](readmeplot/README-substImpactPredict-1.png)<!-- -->

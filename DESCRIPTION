@@ -21,7 +21,7 @@ Suggests:
     foreach,
     parallel
 Imports:
-    FastGP (>= 1.2),
+    mvtnorm,
     DT,
     shiny,
     abind,

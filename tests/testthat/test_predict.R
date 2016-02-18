@@ -23,7 +23,7 @@ test_that("Prediction intervals work for simple linear example", {
   outs <- cbind(d, outs); outs$coverage <- FALSE
   outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
   expect_true(all(outs$coverage))
-  expect_less_than(abs(mean(outs$fit - outs$fitted)), .0003)
+  expect_less_than(abs(mean(outs$fit - outs$fitted)), .0005)
   expect_less_than(abs(mean(outs$fit - outs$y)), .01)
   rm(outs)
 })
@@ -43,8 +43,8 @@ test_that("Prediction intervals work for simple GLM example", {
 
   g1 <- glmer(y~fac1+(1|grp), data=subD, family = 'binomial')
   d$fitted <- predict(g1, d)
-  outs <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 500,
-                          stat = 'mean', include.resid.var = FALSE,
+  outs <- predictInterval(g1, newdata = d, level = 0.9, n.sims = 500,
+                          stat = 'mean', include.resid.var = TRUE,
                           type = 'linear.prediction', seed = 4563)
   outs <- cbind(d, outs); outs$coverage <- FALSE
   outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
@@ -427,7 +427,7 @@ test_that("dplyr objects are successfully coerced", {
   detach("package:dplyr", character.only=TRUE)
 })
 
-context("Model type warnings for NLMM and GLMM")
+context("Model type warnings for non-binomial GLMM")
 
 test_that("Warnings issued", {
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
@@ -438,7 +438,6 @@ test_that("Warnings issued", {
                   seed = 5636)[[1]]
   g1 <- glmer(y~fac1+(1|grp), data=d, family = 'poisson')
   expect_warning(predictInterval(g1, newdata = d[1:100,]))
-
 })
 
 context("Test Parallel")

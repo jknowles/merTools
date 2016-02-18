@@ -4,7 +4,7 @@
 \alias{predictInterval}
 \title{Predict from merMod objects with a prediction interval}
 \usage{
-predictInterval(merMod, newdata, level = 0.95, n.sims = 1000,
+predictInterval(merMod, newdata, level = 0.8, n.sims = 1000,
   stat = c("median", "mean"), type = c("linear.prediction", "probability"),
   include.resid.var = TRUE, returnSims = FALSE, seed = NULL,
   .parallel = FALSE, .paropts = NULL)

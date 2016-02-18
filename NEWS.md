@@ -14,7 +14,6 @@ failing if coercion is unsuccessful
 
 ### New Functionality
 
-- Switch to C++ RMVN sampler courtesy of Giri Gopalan 's excellent [FastGP](http://www.github.com/ggopalan/FastGP) package
 - Substantial performance enhancement for `predictInterval` which includes better 
 handling of large numbers of parameters and simulations, performance 
 tweaks for added speed (~10x), and parallel backend support (currently not optimized)
@@ -33,6 +32,15 @@ on multilevel modeling using different software (1982 High School and Beyond Sur
 
 - Changed the default `n.sims` for the `predictInterval` function from 100 to 1,000 
 to give better coverage and reflect performance increase
+- Changed the default for `level` in `predictInterval` to be 0.8 instead of 0.95 
+to reflect that 0.95 prediction intervals are more conservative than most users 
+need
+
+### Future changes
+- For the next release (1.0) we are considering a permanent switch to 
+C++ RMVN sampler courtesy of Giri Gopalan 's excellent [FastGP](http://www.github.com/ggopalan/FastGP) package
+
+
 
 ## merTools 0.1
 - Initial release
