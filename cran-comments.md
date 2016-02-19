@@ -6,7 +6,9 @@
 ## R CMD check results
 There were no ERRORs or WARNINGs.
 
-There were no NOTES:
+There was one NOTE:
+The inclusion of `lme4` in the Description field of the DESCRIPTION file is 
+helpful for users to know which package objects the function works best for.
 
 * Used utils::globalVariables(c(".shinyMerPar", "sig", "sigma")) to fix notes
 about unexported objects.
