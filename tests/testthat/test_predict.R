@@ -372,6 +372,7 @@ test_that("Prediction intervals are accurate with interaction terms and rank def
 context("Test the simResults")
 
 test_that("simResults option behaves", {
+  skip_on_cran()
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   preds1 <- predictInterval(m1, newdata = sleepstudy[1:5, ])
   preds2 <- predictInterval(m1, newdata = sleepstudy[1:5, ],
@@ -430,6 +431,7 @@ test_that("dplyr objects are successfully coerced", {
 context("Model type warnings for non-binomial GLMM")
 
 test_that("Warnings issued", {
+  skip_on_cran()
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:50)
   d$y <- simulate(~fac1+(1|grp),family = poisson,
@@ -476,8 +478,8 @@ test_that("parallelization does not throw errors and generates good results", {
 context("Test nested effect specifications")
 
 test_that("Nested effects can work", {
+  skip_on_cran()
   library(ggplot2)
-  library(lme4)
   mod1 <- lmer(sleep_total ~ bodywt + (1|vore/order), data=msleep)
   msleep$combn <- paste(msleep$vore, msleep$order, sep = "__")
   mod2 <- lmer(sleep_total ~ bodywt +  (1|combn) + (1|vore), data=msleep)

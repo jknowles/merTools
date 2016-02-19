@@ -5,5 +5,4 @@ cran-comments.md
 .Rhistory
 ^README\.Rmd$
 ^README-.*\.png$
-^NEWS\.md$
 readmeplot

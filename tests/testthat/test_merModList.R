@@ -3,6 +3,7 @@
 context("Do merModList objects get built and work")
 
 test_that("simple cases work", {
+  skip_on_cran()
   library(blme)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:100)
@@ -29,6 +30,7 @@ test_that("simple cases work", {
 })
 
 test_that("print methods work for merModList", {
+  skip_on_cran()
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:100)
   split <- sample(x = LETTERS[9:15], size = nrow(d), replace=TRUE)
@@ -48,7 +50,7 @@ test_that("print methods work for merModList", {
 context("Numerical accuracy of merModList print method")
 
 test_that("print method for merModList works in general case", {
-  # skip_on_cran()
+  skip_on_cran()
   data(grouseticks)
   grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
   grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
