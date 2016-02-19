@@ -163,7 +163,7 @@ predictInterval <- function(merMod, newdata, level = 0.8,
     for(k in 1:nrow(reMeans)){
       meanTmp <- reMeans[k, ]
       matrixTmp <- as.matrix(reMatrix[,,k])
-      reSimA[k, ,] <- as.matrix(mvtnorm:::rmvnorm(n= n.sims,
+      reSimA[k, ,] <- as.matrix(mvtnorm::rmvnorm(n= n.sims,
                                        mean=meanTmp,
                                        sigma=matrixTmp, method = "chol"))
     }
@@ -247,13 +247,13 @@ predictInterval <- function(merMod, newdata, level = 0.8,
     fe_call <- as.call(c(list(quote(foreach::foreach), i = i,
                               .combine = 'rbind'), .paropts))
     fe <- eval(fe_call)
-    betaSim <- foreach::`%dopar%`(fe, mvtnorm:::rmvnorm(n = 1, mean = fe.tmp,
+    betaSim <- foreach::`%dopar%`(fe, mvtnorm::rmvnorm(n = 1, mean = fe.tmp,
                                                 sigma = sigmahat[[i]]*vcov.tmp,
                                   method = "chol"))
 
   } else {
     betaSim <- abind::abind(lapply(1:n.sims,
-                               function(x) mvtnorm:::rmvnorm(n = 1, mean = fe.tmp,
+                               function(x) mvtnorm::rmvnorm(n = 1, mean = fe.tmp,
                                                     sigma = sigmahat[x]*vcov.tmp,
                                 method = "chol")), along=1)
   }
