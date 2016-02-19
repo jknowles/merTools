@@ -60,7 +60,7 @@
 #' @import lme4
 #' @import plyr
 #' @importFrom abind abind
-#' @importFrom FastGP rcpp_rmvnorm_stable
+#' @importFrom mvtnorm rmvnorm
 #' @examples
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 #' regFit <- predict(m1, newdata = sleepstudy[11, ]) # a single value is returned
@@ -75,7 +75,7 @@
 #'  regFit <- predict(gm2, newdata = d1[1:10, ], type = "response")
 #'  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "probability")
 #'  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "linear.prediction")
-predictInterval <- function(merMod, newdata, level = 0.95,
+predictInterval <- function(merMod, newdata, level = 0.8,
                             n.sims = 1000, stat=c("median","mean"),
                             type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE, returnSims = FALSE,
@@ -163,9 +163,9 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     for(k in 1:nrow(reMeans)){
       meanTmp <- reMeans[k, ]
       matrixTmp <- as.matrix(reMatrix[,,k])
-      reSimA[k, ,] <- as.matrix(FastGP::rcpp_rmvnorm_stable(n= n.sims,
-                                       mu=meanTmp,
-                                       S=matrixTmp))
+      reSimA[k, ,] <- as.matrix(mvtnorm:::rmvnorm(n= n.sims,
+                                       mean=meanTmp,
+                                       sigma=matrixTmp, method = "chol"))
     }
     if(j %in% names(newdata)){ # get around if names do not line up because of nesting
       tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
@@ -205,7 +205,6 @@ predictInterval <- function(merMod, newdata, level = 0.95,
        }
        return(yhatTmp)
      }
-     # -- INSERT CHUNK COMBINING HERE
      if(nrow(tmp) > 1000 | .parallel){
        if(.parallel){
          setup_parallel()
@@ -248,11 +247,15 @@ predictInterval <- function(merMod, newdata, level = 0.95,
     fe_call <- as.call(c(list(quote(foreach::foreach), i = i,
                               .combine = 'rbind'), .paropts))
     fe <- eval(fe_call)
-    betaSim <- foreach::`%dopar%`(fe, FastGP::rcpp_rmvnorm_stable(n = 1, mu = fe.tmp, S = sigmahat[[i]]*vcov.tmp))
+    betaSim <- foreach::`%dopar%`(fe, mvtnorm:::rmvnorm(n = 1, mean = fe.tmp,
+                                                sigma = sigmahat[[i]]*vcov.tmp,
+                                  method = "chol"))
 
   } else {
     betaSim <- abind::abind(lapply(1:n.sims,
-                               function(x) FastGP::rcpp_rmvnorm_stable(n = 1, mu = fe.tmp, S = sigmahat[x]*vcov.tmp)), along=1)
+                               function(x) mvtnorm:::rmvnorm(n = 1, mean = fe.tmp,
+                                                    sigma = sigmahat[x]*vcov.tmp,
+                                method = "chol")), along=1)
   }
   # Pad betaSim
   colnames(betaSim) <- names(fe.tmp)
