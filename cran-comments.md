@@ -1,6 +1,6 @@
 ## Test environments
-* local Windows 10 install, R 3.2.1
-* ubuntu 12.04 (on travis-ci), R 3.2.1
+* local Windows 7 install, R 3.2.3
+* ubuntu 12.04 (on travis-ci), R devel
 * win-builder (devel and release)
 
 ## R CMD check results
@@ -14,4 +14,4 @@ about unexported objects.
 about unexported objects in `modelFixedEff` function
 
 ## Downstream dependencies
-This is an initial submission so there are no downstream dependencies currently.
+There are currently no downstream dependencies. 

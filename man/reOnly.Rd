@@ -6,6 +6,14 @@
 \usage{
 reOnly(f, response = FALSE)
 }
+\arguments{
+\item{f}{a model formula}
+
+\item{response}{logical, should the result include the response}
+}
+\value{
+a formula
+}
 \description{
 Random Effects formula only
 }
