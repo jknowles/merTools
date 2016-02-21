@@ -5,7 +5,7 @@ Authors@R: c(person(c("Jared", "E."), "Knowles", email = "jknowles@gmail.com",
     role = c("aut", "cre")), person("Carl", "Frederick", email="carlbfrederick@gmail.com",
     role = c("aut")))
 Description: Provides methods for extracting results from mixed-effect model
-  objects fit with the lme4 package. Allows construction of prediction intervals
+  objects fit with the `lme4` package. Allows construction of prediction intervals
   efficiently from large scale linear and generalized linear mixed-effects models.
 Depends:
     R (>= 3.0.2),
