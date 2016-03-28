@@ -6,7 +6,7 @@ A package for getting the most of our multilevel models in R
 
 by Jared E. Knowles and Carl Frederick
 
-[![Travis-CI Build Status](https://travis-ci.org/jknowles/merTools.png?branch=master)](https://travis-ci.org/jknowles/merTools) [![Coverage Status](https://coveralls.io/repos/jknowles/merTools/badge.svg?branch=master)](https://coveralls.io/r/jknowles/merTools?branch=master) [![Github Issues](http://githubbadges.herokuapp.com/jknowles/merTools/issues.svg)](https://github.com/jknowles/merTools/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?style=flat)](https://github.com/jknowles/merTools/pulls) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/merTools)](http://cran.r-project.org/web/packages/merTools) [![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](http://cran.rstudio.com/package=merTools)
+[![Travis-CI Build Status](https://travis-ci.org/jknowles/merTools.png?branch=master)](https://travis-ci.org/jknowles/merTools) [![Coverage Status](https://coveralls.io/repos/jknowles/merTools/badge.svg?branch=master)](https://coveralls.io/r/jknowles/merTools?branch=master) [![Github Issues](http://githubbadges.herokuapp.com/jknowles/merTools/issues.svg)](https://github.com/jknowles/merTools/issues) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?style=flat)](https://github.com/jknowles/merTools/pulls) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/merTools)](https://cran.r-project.org/package=merTools) [![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](https://cran.rstudio.com/web/packages/merTools/index.html)
 
 Working with generalized linear mixed models (GLMM) and linear mixed models (LMM) has become increasingly easy with advances in the `lme4` package. As we have found ourselves using these models more and more within our work, we, the authors, have developed a set of tools for simplifying and speeding up common tasks for interacting with `merMod` objects from `lme4`. This package provides those tools.
 
@@ -89,16 +89,16 @@ With `predictInterval` we obtain predictions that are more like the standard obj
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
 #>         fit      upr      lwr
-#> 1  3.176038 5.233758 1.064012
-#> 2  3.206135 5.422116 1.253410
-#> 3  3.336472 5.386472 1.348937
-#> 4  3.033041 5.078521 1.263795
-#> 5  3.398734 5.224032 1.280036
-#> 6  3.329136 5.166995 1.259935
-#> 7  4.219184 6.045051 2.113726
-#> 8  3.868250 5.990382 2.020127
-#> 9  3.775713 5.684676 1.638706
-#> 10 3.335752 5.433852 1.384539
+#> 1  3.287559 5.300586 1.104040
+#> 2  3.229892 5.075207 1.153660
+#> 3  3.307726 5.470449 1.311966
+#> 4  3.053471 5.018208 1.299256
+#> 5  3.437312 5.337975 1.375065
+#> 6  3.296146 5.235116 1.500297
+#> 7  4.236472 6.235952 2.184523
+#> 8  3.801851 5.688499 1.963856
+#> 9  3.784415 5.804556 1.815676
+#> 10 3.204516 5.232257 1.286672
 ```
 
 Note that `predictInterval` is slower because it is computing simulations. It can also return all of the simulated `yhat` values as an attribute to the predict object itself.
@@ -114,12 +114,12 @@ Plotting
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22493377  3.22409928 0.01861451
-#> 2    service1 -0.06966261 -0.06994406 0.01253572
-#> 3   lectage.L -0.18707065 -0.18573099 0.01668732
-#> 4   lectage.Q  0.02472017  0.02406085 0.01154555
-#> 5   lectage.C -0.02437002 -0.02384631 0.01236354
-#> 6   lectage^4 -0.01903224 -0.01951767 0.01456238
+#> 1 (Intercept)  3.22635911  3.22726590 0.01868970
+#> 2    service1 -0.06862613 -0.06853439 0.01152868
+#> 3   lectage.L -0.18628196 -0.18817151 0.01448635
+#> 4   lectage.Q  0.02315816  0.02379139 0.01066136
+#> 5   lectage.C -0.02355269 -0.02380259 0.01076683
+#> 6   lectage^4 -0.01967984 -0.01908929 0.01430187
 ```
 
 And we can also plot this:
@@ -135,13 +135,13 @@ We can also quickly make caterpillar plots for the random-effect terms:
 ``` r
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
-#>   groupFctr groupID        term         mean     median        sd
-#> 1         s       1 (Intercept)  0.131603941 0.09825419 0.2691620
-#> 2         s       2 (Intercept) -0.002815464 0.01225361 0.2751944
-#> 3         s       3 (Intercept)  0.291506870 0.28416089 0.3188291
-#> 4         s       4 (Intercept)  0.226318898 0.22180267 0.3002860
-#> 5         s       5 (Intercept)  0.082030612 0.09090553 0.2953157
-#> 6         s       6 (Intercept)  0.068993749 0.06753002 0.2277059
+#>   groupFctr groupID        term        mean      median        sd
+#> 1         s       1 (Intercept)  0.20497338  0.22567935 0.3190433
+#> 2         s       2 (Intercept) -0.05233047 -0.06646264 0.2861745
+#> 3         s       3 (Intercept)  0.31615388  0.30443395 0.2841719
+#> 4         s       4 (Intercept)  0.23736099  0.24449046 0.2956142
+#> 5         s       5 (Intercept)  0.05754080  0.07431858 0.3131179
+#> 6         s       6 (Intercept)  0.07356456  0.06119731 0.2473840
 ```
 
 ``` r
@@ -177,11 +177,11 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
 #> Warning: executing %dopar% sequentially: no parallel backend registered
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 3.224916 3.342205e-05  193
-#> 2    1   2 3.225564 2.866119e-05  240
-#> 3    1   3 3.226658 2.780772e-05  254
-#> 4    1   4 3.218555 2.238131e-05  265
-#> 5    1   5 3.220744 4.429566e-05  176
+#> 1    1   1 3.212654 3.286716e-05  193
+#> 2    1   2 3.218521 3.130432e-05  240
+#> 3    1   3 3.219158 2.829058e-05  254
+#> 4    1   4 3.216535 2.425084e-05  265
+#> 5    1   5 3.226097 4.278046e-05  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we supplied to `newdata` is moved from the first to the fifth quintile in terms of the magnitude of the group factor coefficient. We can see here that the individual professor effect has a strong impact on the outcome variable. This can be shown graphically as well:
