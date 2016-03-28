@@ -1,5 +1,9 @@
 # NEWS
 
+## merTools 0.2.1
+
+- Fix dependency on `lme4` to ensure compatibility with latest changes. 
+
 ## merTools 0.2
 
 ### Bug fixes

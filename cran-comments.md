@@ -7,8 +7,8 @@
 There were no ERRORs or WARNINGs.
 
 There was one NOTE:
-The inclusion of `lme4` in the Description field of the DESCRIPTION file is 
-helpful for users to know which package objects the function works best for.
+Regarding the canonical URL in the README, these URLs are only used as links on 
+the rendered GitHub README page.
 
 * Used utils::globalVariables(c(".shinyMerPar", "sig", "sigma")) to fix notes
 about unexported objects.
