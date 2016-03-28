@@ -10,7 +10,7 @@ Description: Provides methods for extracting results from mixed-effect model
 Depends:
     R (>= 3.0.2),
     arm,
-    lme4,
+    lme4 (>= 1.1-11),
     methods,
     plyr
 Suggests:
