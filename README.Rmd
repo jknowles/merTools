@@ -25,7 +25,7 @@ by Jared E. Knowles and Carl Frederick
 [![Github Issues](http://githubbadges.herokuapp.com/jknowles/merTools/issues.svg)](https://github.com/jknowles/merTools/issues)
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?style=flat)](https://github.com/jknowles/merTools/pulls)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/merTools)](https://cran.r-project.org/package=merTools)
-[![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](https://cran.rstudio.com/web/packages/merTools/index.html)
+[![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](https://cran.r-project.org/package=merTools)
 
 Working with generalized linear mixed models (GLMM) and linear mixed models (LMM) 
 has become increasingly easy with advances in the `lme4` package. 
