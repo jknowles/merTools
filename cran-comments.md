@@ -4,11 +4,7 @@
 * win-builder (devel and release)
 
 ## R CMD check results
-There were no ERRORs or WARNINGs.
-
-There was one NOTE:
-Regarding the canonical URL in the README, these URLs are only used as links on 
-the rendered GitHub README page.
+There were no ERRORs or WARNINGs or NOTEs
 
 * Used utils::globalVariables(c(".shinyMerPar", "sig", "sigma")) to fix notes
 about unexported objects.
