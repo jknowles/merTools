@@ -179,7 +179,10 @@ predictInterval <- function(merMod, newdata, level = 0.8,
       tmp <- tmp[, !duplicated(colnames(tmp))] # deduplicate columns because
       # column names can be duplicated to account for multiple effects
       # but we've already reconciled all the effects
-      tmp$var <- names(tmp[alllvl])[max.col(tmp[alllvl])]
+      tmp$var <- names(tmp[keep])[max.col(tmp[keep])] #changed alllvl to keep in
+      #this line re: issue #53 where newdata doesn't have all levels of rfx in
+      #nested specification (with ":") so this just takes the subset of alllvl
+      #that are specified in model
       keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
       tmp <- tmp[, c(keep, "var"), drop = FALSE]
       tmp[, "var"] <- as.character(tmp[, "var"])
