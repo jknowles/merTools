@@ -1,6 +1,8 @@
 # Test substantive effects
 library(lme4)
 set.seed(157)
+
+# Test all user parameters for REimpact----
 context("Test all user parameters for REimpact")
 
 test_that("REimpact parameters are respected", {
@@ -43,7 +45,7 @@ test_that("REimpact respects passed values for predictInterval", {
 
 })
 
-
+# Test for slopes, intercepts, and combinations----
 context("Test for slopes, intercepts, and combinations")
 
 test_that("Multiple terms can be accessed", {
@@ -83,6 +85,7 @@ test_that("Multiple terms can be accessed", {
 
 })
 
+# Custom breaks----
 context("Custom breaks")
 
 test_that("Custom breakpoints can be set", {

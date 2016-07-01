@@ -8,3 +8,4 @@ vignettes/Using_predictInterval_cache/
 src/*.o
 src/*.so
 src/*.dll
+test_20160701.txt

@@ -35,7 +35,8 @@ Orthodont$nsexage <- with(Orthodont, nsex*age)
 lmerSlope2 <- lmer(distance ~ age + (0 + age + nsex|Subject), data=Orthodont)
 
 ###############################################
-context("Santize Names")
+#Sanitize Names----
+context("Sanitize Names")
 ################################################
 
 test_that("Sanitize names renames variables in data.frame", {
@@ -50,6 +51,7 @@ test_that("Sanitize names renames variables in data.frame", {
 
 
 ###############################################
+#Strip Attributes----
 context("Strip attributes")
 ################################################
 
@@ -65,6 +67,7 @@ test_that("Attributes can be stripped from data.frame", {
 
 
 ###############################################
+#Random Observation----
 context("Random observation")
 ################################################
 
@@ -111,6 +114,7 @@ test_that("Random observation preserves factor levels", {
 })
 
 ###############################################
+#Collapse frame----
 context("Collapse frame")
 ################################################
 
@@ -156,6 +160,7 @@ test_that("Data can be subset by a list", {
 })
 
 ###############################################
+#Super factor ----
 context("Super factor")
 ################################################
 
@@ -189,6 +194,7 @@ test_that("SuperFactor handles new factor levels correctly", {
 
 
 ###############################################
+#Shuffle----
 context("Shuffle")
 ################################################
 
@@ -200,6 +206,7 @@ test_that("Data can be shuffled", {
 })
 
 ###############################################
+#Find RE Quantiles----
 context("Find RE Quantiles")
 ################################################
 
@@ -227,6 +234,7 @@ test_that("Errors and messages are issued", {
 # })
 
 ###############################################
+#Test observation wiggle----
 context("Test observation wiggle")
 ################################################
 
@@ -306,6 +314,7 @@ test_that("Values are placed correctly", {
 })
 
 ###############################################
+#Test average observation extraction----
 context("Test average observation extraction")
 ################################################
 
@@ -335,9 +344,11 @@ test_that("Subsets work", {
   expect_equal(data1$TICKS, mean(grouseticks$TICKS[grouseticks$YEAR == "97"]))
   expect_equal(data1a$TICKS, mean(grouseticks$TICKS))
   mylist2 <- list("YEAR" = "97", "LOCATION" = "16")
-  data2 <- draw(glmer3LevSlope, type = 'average', varList = mylist2)
+  expect_warning(draw(glmer3LevSlope, type = 'average', varList = mylist2),
+                 "less than 20 rows, averages may be problematic")
   mylist3 <- list("YEAR" = "97", "LOCATION" = c("16", "56"))
-  data3 <- draw(glmer3LevSlope, type = 'average', varList = mylist3)
+  expect_warning(draw(glmer3LevSlope, type = 'average', varList = mylist3),
+                 "fewer than 3 rows, computing global average instead")
 })
 
 test_that("Nested specifications work", {
@@ -355,14 +366,14 @@ test_that("Nested specifications work", {
   data1 <- draw(mod1, "random", varList = mylist2)
   expect_is(data1, "data.frame")
   expect_identical(as.character(data1$order), "Cetacea")
-  data1 <- draw(mod1, "average", varList = mylist1)
+  data1 <- suppressWarnings(draw(mod1, "average", varList = mylist1))
   expect_is(data1, "data.frame")
   expect_identical(as.character(data1$vore), "carni")
-  data1 <- draw(mod1, "average", varList = mylist2)
+  data1 <- suppressWarnings(draw(mod1, "average", varList = mylist2))
   expect_is(data1, "data.frame")
   expect_identical(as.character(data1$order), "Cetacea")
   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-  data1 <- draw(fm1, type = "average", varList = list("Subject" = "308"))
+  data1 <- suppressWarnings(draw(fm1, type = "average", varList = list("Subject" = "308")))
   expect_is(data1, "data.frame")
   expect_identical(as.character(data1$Subject), "308")
 })

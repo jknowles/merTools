@@ -1,5 +1,5 @@
 # Test helper functions
-
+# Trimming data frame----
 context("Trimming data frame")
 test_that("Trimming results in correct size", {
   data(InstEval)
@@ -27,7 +27,7 @@ test_that("Trimming does not corrupt order", {
   expect_identical(tmp, trimDat[1:10, ])
 })
 
-
+# subBoot and Theta----
 context("subBoot and Theta")
 
 test_that("Can extract theta from a fit model", {
@@ -52,6 +52,7 @@ test_that("Can extract theta from a fit model", {
   expect_equal(ncol(z1), 2)
 })
 
+# Test formula Build-----
 context("Test formula build")
 
 test_that("Formula works for additive functions", {

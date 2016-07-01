@@ -1,4 +1,8 @@
 # Test plotting functions
+
+# Plot functions return gg objects? ----
+context("Plot functions return gg objects?")
+
 test_that("Prediction intervals work for simple linear example", {
   skip_on_cran()
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),

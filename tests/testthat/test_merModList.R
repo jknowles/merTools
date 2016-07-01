@@ -1,5 +1,6 @@
 # test merModList functions
 
+#Do merModList objects get built and work----
 context("Do merModList objects get built and work")
 
 test_that("simple cases work", {
@@ -47,6 +48,7 @@ test_that("print methods work for merModList", {
 
 })
 
+# Numerical accuracy of merModList print method----
 context("Numerical accuracy of merModList print method")
 
 test_that("print method for merModList works in general case", {
@@ -99,6 +101,7 @@ test_that("print method for merModList works in general case", {
 
 })
 
+#ICC function----
 context("ICC function")
 
 test_that("ICC function works", {

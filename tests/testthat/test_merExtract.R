@@ -31,6 +31,7 @@ Orthodont$nsexage <- with(Orthodont, nsex*age)
 lmerSlope2 <- lmer(distance ~ age + (0 + age + nsex|Subject), data=Orthodont)
 
 ###############################################
+# Extract Random Effects from merMod----
 context("Extract Random Effects from merMod")
 ################################################
 
@@ -62,6 +63,7 @@ test_that("REextract gets correct dimensions", {
 # Check numerics
 
 ###############################################
+# Fixed effect estimates from posterior----
 context("Fixed effect estimates from posterior")
 ################################################
 
@@ -80,6 +82,7 @@ test_that("n.sims changes simulation results", {
 # numeric checks
 
 ###############################################
+# Random effect estimates from posterior----
 context("Random effect estimates from posterior")
 ################################################
 
@@ -92,6 +95,7 @@ test_that("REsim produces data.frames", {
 
 
 ###############################################
+# RMSE estimates----
 context("RMSE estimates")
 ################################################
 
@@ -108,8 +112,8 @@ test_that("RMSE respects scale parameter", {
                          RMSE.merMod(lmerSlope1, scale = TRUE)))
   expect_false(identical(RMSE.merMod(lmerSlope2),
                          RMSE.merMod(lmerSlope2, scale = TRUE)))
-  expect_less_than(RMSE.merMod(lmerSlope2, scale = TRUE),
+  expect_lt(RMSE.merMod(lmerSlope2, scale = TRUE),
                    RMSE.merMod(lmerSlope2))
-  expect_less_than(RMSE.merMod(lmerSlope1, scale = TRUE),
+  expect_lt(RMSE.merMod(lmerSlope1, scale = TRUE),
                    RMSE.merMod(lmerSlope1))
 })
