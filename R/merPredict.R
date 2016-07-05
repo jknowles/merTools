@@ -155,7 +155,8 @@ predictInterval <- function(merMod, newdata, level = 0.8,
       reMeans <- reMeans[1, , drop=FALSE]
       reMatrix <- reMatrix[, , 1, drop = FALSE]
     }
-    # -- INSERT chunking code here
+
+        # -- INSERT chunking code here
     reSimA <- array(data = NA, dim = c(nrow(reMeans), ncol(reMeans), n.sims),
                     dimnames = list(attr(reMeans, "dimnames")[[1]],
                                     attr(reMeans, "dimnames")[[2]],
