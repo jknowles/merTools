@@ -46,6 +46,7 @@ m5  <- glmer(form, family="poisson",data=grouseticks,
 
 
 ###############################################
+# Testing expected rank----
 context("Testing expected rank")
 ###############################################
 test_that("expectedRank parameters work and dont work as intended", {

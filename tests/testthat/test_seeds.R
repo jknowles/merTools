@@ -1,3 +1,4 @@
+# 'seed' options in draw, REsim, FEsim, predictInterval and subBoot----
 context("'seed' options in draw, REsim, FEsim, predictInterval and subBoot")
 
 test_that("Equivalent seeds return equivalent results", {

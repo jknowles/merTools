@@ -23,6 +23,6 @@ test_that("fastdisp speed is good", {
     sink()}
    {sink("NUL"); t2 <- system.time(force(display(lmerSlope1)))["elapsed"];
     sink()}
-   expect_less_than(t1, t2)
-   expect_less_than(t1, 0.1)
+   expect_lt(t1, t2)
+   expect_lt(t1, 0.1)
 })

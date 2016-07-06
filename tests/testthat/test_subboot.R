@@ -7,6 +7,7 @@ lmerSlope1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 
 
 ###############################################
+# Extract theta----
 context("Extract theta")
 ################################################
 
@@ -22,6 +23,7 @@ test_that("thetaExtract throws errors for non-merMod objects", {
 })
 
 ###############################################
+# subBoot----
 context("subBoot")
 ################################################
 

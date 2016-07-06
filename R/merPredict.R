@@ -17,7 +17,7 @@
 #' @param returnSims logical, should all n.sims simulations be returned?
 #' @param seed numeric, optional argument to set seed for simulations
 #' @param .parallel, logical should parallel computation be used, default is FALSE
-#' @param .paropts, a list of additional options passed into the foreach function
+#' @param .paropts, -NOT USED: Caused issue #54- a list of additional options passed into the foreach function
 #' when parallel computation is enabled. This is important if (for example) your
 #' code relies on external data or packages: use the .export and .packages arguments
 #'  to supply them so that all cluster nodes have the correct environment set up
@@ -155,7 +155,8 @@ predictInterval <- function(merMod, newdata, level = 0.8,
       reMeans <- reMeans[1, , drop=FALSE]
       reMatrix <- reMatrix[, , 1, drop = FALSE]
     }
-    # -- INSERT chunking code here
+
+        # -- INSERT chunking code here
     reSimA <- array(data = NA, dim = c(nrow(reMeans), ncol(reMeans), n.sims),
                     dimnames = list(attr(reMeans, "dimnames")[[1]],
                                     attr(reMeans, "dimnames")[[2]],
@@ -179,7 +180,10 @@ predictInterval <- function(merMod, newdata, level = 0.8,
       tmp <- tmp[, !duplicated(colnames(tmp))] # deduplicate columns because
       # column names can be duplicated to account for multiple effects
       # but we've already reconciled all the effects
-      tmp$var <- names(tmp[alllvl])[max.col(tmp[alllvl])]
+      tmp$var <- names(tmp[keep])[max.col(tmp[keep])] #changed alllvl to keep in
+      #this line re: issue #53 where newdata doesn't have all levels of rfx in
+      #nested specification (with ":") so this just takes the subset of alllvl
+      #that are specified in model
       keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
       tmp <- tmp[, c(keep, "var"), drop = FALSE]
       tmp[, "var"] <- as.character(tmp[, "var"])
@@ -203,6 +207,8 @@ predictInterval <- function(merMod, newdata, level = 0.8,
            yhatTmp[i, ] <- rep(0, colIdx) %*% coefs[1, 1:colIdx, ]
          }
        }
+       #Attempt to fix issue54
+       rownames(yhatTmp) <- rownames(data)
        return(yhatTmp)
      }
      if(nrow(tmp) > 1000 | .parallel){
@@ -211,9 +217,9 @@ predictInterval <- function(merMod, newdata, level = 0.8,
        }
        tmp2 <- split(tmp, (1:nrow(tmp) %/% 500)) #TODO: Find optimum splitting factor
        tmp2 <- tmp2[lapply(tmp2,length)>0]
-       i <- seq_len(length(tmp2))
-       fe_call <- as.call(c(list(quote(foreach::foreach), i = i, .combine = 'rbind', .paropts)))
+       fe_call <- as.call(c(list(quote(foreach::foreach), i = seq_along(tmp2), .combine = 'rbind')))
        fe <- eval(fe_call)
+
        re.xb[[j]] <- foreach::`%dopar%`(fe, tmp.pred(data = tmp2[[i]],
                                                  coefs =reSimA[, keep, , drop = FALSE],
                                                  group = j))
@@ -245,7 +251,7 @@ predictInterval <- function(merMod, newdata, level = 0.8,
     }
     i <- 1:n.sims
     fe_call <- as.call(c(list(quote(foreach::foreach), i = i,
-                              .combine = 'rbind'), .paropts))
+                              .combine = 'rbind')))
     fe <- eval(fe_call)
     betaSim <- foreach::`%dopar%`(fe, mvtnorm::rmvnorm(n = 1, mean = fe.tmp,
                                                 sigma = sigmahat[[i]]*vcov.tmp,

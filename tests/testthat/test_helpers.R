@@ -1,10 +1,10 @@
 # Test helper functions
-
+# Trimming data frame----
 context("Trimming data frame")
 test_that("Trimming results in correct size", {
   data(InstEval)
   trimDat <- merTools:::trimModelFrame(InstEval)
-  expect_more_than(nrow(InstEval), nrow( merTools:::trimModelFrame(InstEval)))
+  expect_gt(nrow(InstEval), nrow( merTools:::trimModelFrame(InstEval)))
   expect_equal(nrow(trimDat), 4065)
   cbpp$obs <- 1:nrow(cbpp)
   d1 <- cbpp
@@ -21,13 +21,13 @@ test_that("Trimming does not corrupt order", {
   tmp <- InstEval[1:10, ]
   trimDat <- merTools:::trimModelFrame(InstEval)
   trimDat <- rbind(tmp, trimDat)
-  expect_less_than(nrow(trimDat), nrow(tmp) + nrow(InstEval))
+  expect_lt(nrow(trimDat), nrow(tmp) + nrow(InstEval))
   row.names(tmp) <- NULL
   row.names(trimDat) <- NULL
   expect_identical(tmp, trimDat[1:10, ])
 })
 
-
+# subBoot and Theta----
 context("subBoot and Theta")
 
 test_that("Can extract theta from a fit model", {
@@ -52,6 +52,7 @@ test_that("Can extract theta from a fit model", {
   expect_equal(ncol(z1), 2)
 })
 
+# Test formula Build-----
 context("Test formula build")
 
 test_that("Formula works for additive functions", {

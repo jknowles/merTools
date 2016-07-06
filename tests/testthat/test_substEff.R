@@ -1,13 +1,16 @@
 # Test substantive effects
 library(lme4)
 set.seed(157)
+
+# Test all user parameters for REimpact----
 context("Test all user parameters for REimpact")
 
 test_that("REimpact parameters are respected", {
   skip_on_cran()
   g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
-  zed <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", n.sims = 50,
-                  include.resid.var = TRUE)
+  #Warning is about %dopar% call in predictInterval
+  zed <- suppressWarnings(REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", n.sims = 50,
+                  include.resid.var = TRUE))
   expect_identical(names(zed), c("case", "bin", "AvgFit", "AvgFitSE", "nobs"))
   zed2 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "s", n.sims = 50,
                   include.resid.var = TRUE)
@@ -43,7 +46,7 @@ test_that("REimpact respects passed values for predictInterval", {
 
 })
 
-
+# Test for slopes, intercepts, and combinations----
 context("Test for slopes, intercepts, and combinations")
 
 test_that("Multiple terms can be accessed", {
@@ -57,32 +60,37 @@ test_that("Multiple terms can be accessed", {
   glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks,
                            control = glmerControl(optimizer="bobyqa",
                                                   optCtrl=list(maxfun = 1e5)))
-
-  zed1 <- REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "BROOD",
+  # This is the same issue of zero mean zero variance in the predict interval call
+  zed1 <- suppressWarnings(REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "BROOD",
                   term = "HEIGHT", n.sims = 500,
-                  include.resid.var = FALSE, breaks = 4, type = "probability")
-  zed2 <- REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "BROOD",
+                  include.resid.var = FALSE, breaks = 4, type = "probability"))
+  # This is the same issue of zero mean zero variance in the predict interval call
+  zed2 <- suppressWarnings(REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "BROOD",
                    term = "Intercept",
                   n.sims = 500,
-                  include.resid.var = FALSE, breaks = 4, type = "probability")
-  zed4 <- REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "LOCATION",
+                  include.resid.var = FALSE, breaks = 4, type = "probability"))
+  # This is the same issue of zero mean zero variance in the predict interval call
+  zed4 <- suppressWarnings(REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "LOCATION",
                    n.sims = 500,
-                   include.resid.var = FALSE, breaks = 4)
+                   include.resid.var = FALSE, breaks = 4))
 
   expect_true(all(zed4$AvgFit < zed2$AvgFit))
   expect_true(all(zed4$AvgFit < zed1$AvgFit))
   expect_false(identical(zed1, zed2))
   expect_false(identical(zed1, zed2))
-  expect_error(zed3 <- REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "BROOD",
+  # This is the same issue of zero mean zero variance in the predict interval call
+  expect_error(zed3 <- suppressWarnings(REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "BROOD",
                    n.sims = 500,
-                   include.resid.var = FALSE, breaks = 4), "Must specify which")
-  expect_error(zed5 <- REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "LOCATION",
+                   include.resid.var = FALSE, breaks = 4)), "Must specify which")
+  # Don't think we need this ... it throws an subsetting error
+  expect_error(zed5 <- suppressWarnings(REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "LOCATION",
                    term = "HEIGHT",
                    n.sims = 500,
-                   include.resid.var = FALSE, breaks = 4), "Error in ")
+                   include.resid.var = FALSE, breaks = 4)), "undefined columns selected")
 
 })
 
+# Custom breaks----
 context("Custom breaks")
 
 test_that("Custom breakpoints can be set", {
@@ -98,7 +106,7 @@ test_that("Custom breakpoints can be set", {
                    groupFctr = "d", n.sims = 50,
                    include.resid.var = TRUE)
   expect_false(nrow(zed) == nrow(zed2))
-  expect_more_than(sd(zed$nobs), sd(zed2$nobs))
-  expect_more_than(mean(zed$nobs), mean(zed2$nobs))
+  expect_gt(sd(zed$nobs), sd(zed2$nobs))
+  expect_gt(mean(zed$nobs), mean(zed2$nobs))
   expect_equal(zed3$nobs, zed2$nobs, tolerance = .05)
 })
