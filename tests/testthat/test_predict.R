@@ -20,7 +20,7 @@ test_that("Prediction intervals work for simple linear example", {
   #This suppresses the warning about no parallel backend registered
   outs <- suppressWarnings(
     predictInterval(g1, newdata = d, level = 0.9, n.sims = 1000,
-                    seed = 4353,
+                    seed = 468,
                     stat = 'mean', include.resid.var = TRUE)
   )
   outs <- cbind(d, outs); outs$coverage <- FALSE
