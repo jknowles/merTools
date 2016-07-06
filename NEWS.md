@@ -1,5 +1,20 @@
 # NEWS
 
+## merTools 0.2.2
+
+- Fix issue #54 `predictInterval` did not included random effects in calculations
+  when `newdata` had more than 1000 rows and/or user specified `parallel=TRUE`. 
+  Note: fix was to disable the `.paropts` option for `predictInterval` ... user
+  can still specify for *temporary* backward compatibility but this should be
+  either removed or fixed in the permanent solution.
+
+- Fix issue #53 about problems with `predictInterval` when only specific levels
+  of a grouping factor are in `newdata` with the colon specification of 
+  interactions
+  
+- Fix issue #52 ICC wrong calculations ... we just needed to square the standard
+  deviations that we pulled
+
 ## merTools 0.2.1
 
 - Fix dependency on `lme4` to ensure compatibility with latest changes. 

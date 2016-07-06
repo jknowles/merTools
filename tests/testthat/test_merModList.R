@@ -107,5 +107,5 @@ context("ICC function")
 test_that("ICC function works", {
   ICC1 <- ICC(outcome = "Reaction", group = "Subject", data = sleepstudy)
   expect_is(ICC1, "numeric")
-  expect_equal(ICC1, 0.44685, tol = .001)
+  expect_equal(ICC1, 0.3948896, tol = .001)
 })
