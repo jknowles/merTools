@@ -31,7 +31,7 @@ linear models}
 
 \item{.parallel, }{logical should parallel computation be used, default is FALSE}
 
-\item{.paropts, }{a list of additional options passed into the foreach function
+\item{.paropts, }{-NOT USED: Caused issue #54- a list of additional options passed into the foreach function
 when parallel computation is enabled. This is important if (for example) your
 code relies on external data or packages: use the .export and .packages arguments
  to supply them so that all cluster nodes have the correct environment set up

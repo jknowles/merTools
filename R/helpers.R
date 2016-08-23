@@ -209,7 +209,7 @@ ICC <- function(outcome, group, data, subset=NULL){
     nullmod <- lmer(fm1, data = data, subset = subset)
   }
   between <- as.numeric(attr(VarCorr(nullmod)[[1]], "stddev"))
-  within <- lme4::sigma(nullmod)
+  within <- arm::sigma.hat(nullmod)$sigma$data
   ICC <- between^2 / (within^2 + between^2)
   return(ICC)
 }
