@@ -1,6 +1,8 @@
 language: r
-r: devel
-# sudo: required
+r:
+    - devel
+    - release
+sudo: false
 cache: packages
 
 env:
@@ -9,6 +11,12 @@ env:
   matrix:
     - NOT_CRAN="true"
     - NOT_CRAN="false"
+
+
+addons:
+  apt:
+    packages:
+    - texlive-latex-extra
 
 r_binary_packages:
   - Rcpp
@@ -29,7 +37,7 @@ r_binary_packages:
   - covr
 
 after_success:
-  - Rscript -e 'library(covr);coveralls()'
+  - travis_wait Rscript -e 'library(covr);coveralls()'
 
 after_failure:
   - cat merTools.Rcheck/00*
