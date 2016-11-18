@@ -6,8 +6,6 @@ sudo: false
 cache: packages
 
 env:
-  global:
-    - WARNINGS_ARE_ERRORS=1
   matrix:
     - NOT_CRAN="true"
     - NOT_CRAN="false"
@@ -38,7 +36,7 @@ r_binary_packages:
 
 script :
  - travis_wait 30 R CMD build --no-build-vignettes --no-manual
- - travis_wait 30 R CMD check "${PKG_FILE_NAME}" --no-build-vignettes --no-manual
+ - travis_wait 30 R CMD check merTools_0.2.2.tar.gz --no-build-vignettes --no-manual
 
 after_success:
   - travis_wait Rscript -e 'library(covr);coveralls()'
@@ -50,3 +48,6 @@ notifications:
   email:
     on_success: change
     on_failure: change
+
+branches:
+  only: master
