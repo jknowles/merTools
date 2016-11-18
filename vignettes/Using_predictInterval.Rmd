@@ -9,14 +9,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide'}
+```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide', cache=FALSE}
+library(knitr); library(merTools)
 knitr::opts_chunk$set(
   cache=FALSE,
   comment="#>",
   collapse=TRUE, 
   echo = TRUE
 )
-library(knitr); library(merTools)
 ```
 
 ## Introduction

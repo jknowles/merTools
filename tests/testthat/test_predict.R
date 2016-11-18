@@ -32,7 +32,7 @@ test_that("Prediction intervals work for simple linear example", {
 })
 
 
-test_that("Prediction intervals work for simple GLM example", {
+test_that("Prediction intervals work for simple GLMM example", {
   skip_on_travis()
   skip_on_cran()
   set.seed(101)
@@ -120,24 +120,27 @@ test_that("Predict handles unused and subset of factor levels", {
   skip_on_cran()
   skip_on_travis()
   set.seed(101)
-  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
+  moddf <- InstEval[sample(rownames(InstEval), 10000), ]
+  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=moddf)
   d1 <- InstEval[1:100, ]
-  outs1 <- predictInterval(g1, newdata = d1, level = 0.8, n.sims = 500,
-                           stat = 'mean', include.resid.var = TRUE, seed = 4632)
+  outs1 <- suppressWarnings(predictInterval(g1, newdata = d1, level = 0.8, n.sims = 500,
+                           stat = 'mean', include.resid.var = TRUE, seed = 4632))
   d2 <- rbind(d1, InstEval[670:900,])
-  outs1a <- predictInterval(g1, newdata = d2, level = 0.8, n.sims = 500,
-                            stat = 'mean', include.resid.var=TRUE, seed = 4632)[1:100,]
+  outs1a <- suppressWarnings(predictInterval(g1, newdata = d2, level = 0.8, n.sims = 500,
+                            stat = 'mean', include.resid.var=TRUE, seed = 4632)[1:100,])
   expect_is(outs1, "data.frame")
   expect_is(outs1a, "data.frame")
   expect_equal(nrow(outs1), 100)
   expect_equal(nrow(outs1a), 100)
-  g2 <- lmer(y ~ lectage + studage + (1+lectage|d) + (1|dept), data=InstEval)
+  g2 <- lmer(y ~ lectage + studage + (1+lectage|d) + (1|dept), data=moddf)
   d2 <- InstEval[670:900,]
-  outs1a <- predictInterval(g2, newdata = d2, level = 0.8, n.sims = 500,
-                            stat = 'mean', include.resid.var=TRUE, seed = 4632)
+  outs1a <- suppressWarnings(predictInterval(g2, newdata = d2, level = 0.8, n.sims = 500,
+                            stat = 'mean', include.resid.var=TRUE, seed = 4632))
   expect_is(outs1a, "data.frame")
   expect_equal(nrow(outs1a), 231)
 })
+
+rm(list = ls())
 
 test_that("Prediction intervals work for multiple parameters per level", {
   skip_on_travis()
@@ -265,37 +268,39 @@ test_that("Median of PI is close to predict.lmer for complex group models", {
   skip_on_cran()
   skip_on_travis()
   set.seed(101)
-  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
-  d1 <- InstEval[1:200, ]
+  moddf <- InstEval[sample(rownames(InstEval), 10000), ]
+  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=moddf)
+  d1 <- moddf[1:200, ]
   newPred <- predictInterval(g1, newdata = d1, level = 0.8, n.sims = 500,
                              stat = 'median', include.resid.var = FALSE,
                              seed = 4563)
   truPred <- predict(g1, newdata = d1)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/100)
+  rm(list=ls())
 })
 
 test_that("Median of PI is close to predict.glmer for basic and complex grouping", {
   skip_on_cran()
   skip_on_travis()
   set.seed(3845)
-  d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10), fac2 = LETTERS[10:20],
-                   obs=1:25)
+  d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:8), fac2 = LETTERS[12:19],
+                   obs=1:20)
   d$x <- runif(nrow(d))
   d$y <- simulate(~ x + fac1 + fac2 + (1 + fac1|grp) + (1|obs), family = binomial,
                   newdata=d,
-                  newparams=list(beta = rnorm(16),
+                  newparams=list(beta = rnorm(13),
                                  theta = rnorm(16, 5, 1)), seed = 4563)[[1]]
-  subD <- d[sample(row.names(d), 8000),]
-
+  subD <- d[sample(row.names(d), 1500),]
+# TOO SLOW
   g1 <- glmer(y ~ x + fac1 + fac2 + (1+fac1|grp) + (1|obs), data = subD,
               family = 'binomial',
               control = glmerControl(optimizer="bobyqa",
                                      optCtrl=list(maxfun = 1e5)))
   truPred <- predict(g1, subD)
-  newPred <- predictInterval(g1, newdata = subD, level = 0.95, n.sims = 2000,
+  newPred <- suppressWarnings(predictInterval(g1, newdata = subD, level = 0.95, n.sims = 2000,
                              stat = 'median', include.resid.var = FALSE,
-                             type = 'linear.prediction', seed = 3252)
-  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/15)
+                             type = 'linear.prediction', seed = 3252))
+  expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/20)
   # This test fails currently
   #   g1 <- glmer(y ~ x +  fac2 + (1 + fac1|grp) + (1|obs), data = subD, family = 'binomial')
   #   truPred <- predict(g1, subD, type = "response")
@@ -303,6 +308,7 @@ test_that("Median of PI is close to predict.glmer for basic and complex grouping
   #                              stat = 'median', include.resid.var = FALSE,
   #                              type = 'probability')
   #   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/20)
+  rm(list = ls())
 })
 
 test_that("Prediction intervals work with new factor levels added", {
@@ -388,7 +394,8 @@ test_that("Prediction intervals are accurate with interaction terms and rank def
   #In the call below we are getting warnings because our call to mvtnorm::rmvnorm
   #is shotting a warning when mean and sigma of multivariate distribution are
   #zero using the method="chol
-  newPred <- suppressWarnings(predictInterval(fm2, newdata = d2, level = 0.8, n.sims = 1000,
+  newPred <- suppressWarnings(predictInterval(fm2, newdata = d2, level = 0.8,
+                                              n.sims = 1000,
                              stat = 'median', include.resid.var = FALSE))
   truPred <- predict(fm2, newdata = d2)
   expect_is(newPred, "data.frame")
@@ -474,6 +481,7 @@ test_that("Warnings issued", {
                   seed = 5636)[[1]]
   g1 <- glmer(y~fac1+(1|grp), data=d, family = 'poisson')
   expect_warning(predictInterval(g1, newdata = d[1:100,]))
+  rm(list = ls())
 })
 
 # Test Parallel----
@@ -484,6 +492,7 @@ test_that("parallelization does not throw errors and generates good results", {
   skip_on_travis()
   library(foreach)
   set.seed(1241)
+  #TODO reign in memory usage and cpu time here
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   predA <- predictInterval(m1, newdata = m1@frame, n.sims = 2200, seed = 54,
                            include.resid.var = FALSE, stat = "median")
@@ -495,7 +504,8 @@ test_that("parallelization does not throw errors and generates good results", {
   predB <- predictInterval(m1, newdata = m1@frame, n.sims = 1500, seed = 2141,
                            include.resid.var = FALSE)
   expect_equal(mean(predA$fit - predB$fit), 0 , tolerance = .01)
-  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
+  moddf <- InstEval[sample(rownames(InstEval), 5000),]
+  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=moddf)
   predA <- predictInterval(g1, newdata = g1@frame, n.sims = 2500, seed = 2141,
                            include.resid.var = FALSE)
   predB <- predictInterval(g1, newdata = g1@frame, n.sims = 1500, seed = 2141,
@@ -505,7 +515,7 @@ test_that("parallelization does not throw errors and generates good results", {
                            include.resid.var = TRUE)
   predB <- predictInterval(g1, newdata = g1@frame[1:501,], n.sims = 2500, seed = 2141,
                            include.resid.var = TRUE)
-  expect_equal(mean(predA$fit[1:499] - predB$fit[1:499]), 0 , tolerance = .001)
+  expect_equal(mean(predA$fit[1:499] - predB$fit[1:499]), 0 , tolerance = .002)
   detach("package:foreach", character.only=TRUE)
 })
 

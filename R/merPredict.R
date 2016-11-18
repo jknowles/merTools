@@ -198,17 +198,17 @@ predictInterval <- function(merMod, newdata, level = 0.8,
        }
        yhatTmp <- array(data = NA, dim = c(nrow(data), dim(coefs)[3]))
        colIdx <- ncol(data) - 1
-       for(i in 1:nrow(data)){
+      for(i in 1:nrow(data)){
          lvl <- as.character(data[, group][i])
-         if(lvl %in% dimnames(coefs)[[1]]){
+         if(!lvl %in% new.levels){
            yhatTmp[i, ] <- as.numeric(data[i, 1:colIdx]) %*% coefs[lvl, 1:colIdx, ]
          } else{
            # 0 out the RE for these new levels
            yhatTmp[i, ] <- rep(0, colIdx) %*% coefs[1, 1:colIdx, ]
          }
        }
-       #Attempt to fix issue54
        rownames(yhatTmp) <- rownames(data)
+       rm(data)
        return(yhatTmp)
      }
      if(nrow(tmp) > 1000 | .parallel){
@@ -216,18 +216,19 @@ predictInterval <- function(merMod, newdata, level = 0.8,
          setup_parallel()
        }
        tmp2 <- split(tmp, (1:nrow(tmp) %/% 500)) #TODO: Find optimum splitting factor
-       tmp2 <- tmp2[lapply(tmp2,length)>0]
-       fe_call <- as.call(c(list(quote(foreach::foreach), i = seq_along(tmp2), .combine = 'rbind')))
+       tmp2 <- tmp2[lapply(tmp2,length) > 0]
+       fe_call <- as.call(c(list(quote(foreach::foreach), i = seq_along(tmp2),
+                                 .combine = 'rbind')))
        fe <- eval(fe_call)
-
        re.xb[[j]] <- foreach::`%dopar%`(fe, tmp.pred(data = tmp2[[i]],
                                                  coefs =reSimA[, keep, , drop = FALSE],
                                                  group = j))
+       rm(tmp2)
      } else{
        re.xb[[j]] <- tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
                               group = j)
      }
-
+     rm(tmp)
     }
   rm(reSimA)
   # TODO: Add a check for new.levels that is outside of the above loop
