@@ -141,6 +141,9 @@ collapseFrame <- function(data){
 #' @param list a named list of splitting conditions
 #' @return a data frame with values that match the conditions in the list
 subsetList <- function(data, list){
+  if("logical" %in% unlist(lapply(list, class))){
+    stop("List is improperly formatted. Try using only `=` instead of `==` in subsets")
+  }
   for(i in names(list)){
     data <- split(data, data[, i])
     data <- data[[list[[i]]]]
