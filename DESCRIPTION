@@ -12,12 +12,11 @@ Depends:
     arm,
     lme4 (>= 1.1-11),
     methods,
-    plyr
+    dplyr
 Suggests:
     testthat,
     knitr,
     rmarkdown,
-    dplyr,
     foreach,
     parallel
 Imports:

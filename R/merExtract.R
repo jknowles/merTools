@@ -40,7 +40,7 @@ REextract <- function(merMod){
       names(tmp.out[[i]])[4] <-  paste0(names(out[[i]]), "_se")
     }
   }
-  dat <- do.call(plyr::rbind.fill, tmp.out)
+  dat <- dplyr::bind_rows(tmp.out)
   # reorg output
   dat <- dat[, c("groupFctr", "groupID",
           names(dat)[!names(dat) %in% c("groupFctr", "groupID")])]
@@ -85,7 +85,12 @@ REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE, seed=NULL){
   tmp.out <- vector("list", reDims)
   names(tmp.out) <- names(mysim@ranef)
   for(i in c(1:reDims)){
-    tmp.out[[i]] <- plyr::adply(mysim@ranef[[i]], c(2, 3), plyr::each(c(mean, median, sd)))
+    zed <- apply(mysim@ranef[[i]], c(2, 3),
+                 function(x) as.data.frame(x) %>% dplyr::summarise_all(.funs = c("mean", "median", "sd")))
+    zed <- bind_rows(zed)
+    zed$X1 <- rep(dimnames(mysim@ranef[[i]])[[2]], length(dimnames(mysim@ranef[[i]])[[3]]))
+    zed$X2 <- rep(dimnames(mysim@ranef[[i]])[[3]], each = length(dimnames(mysim@ranef[[i]])[[2]]))
+    tmp.out[[i]] <- zed; rm(zed)
     tmp.out[[i]]$groupFctr <- names(tmp.out)[i]
     tmp.out[[i]]$X1 <- as.character(tmp.out[[i]]$X1)
     tmp.out[[i]]$X2 <- as.character(tmp.out[[i]]$X2)

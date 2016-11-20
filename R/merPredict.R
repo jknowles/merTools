@@ -58,7 +58,6 @@
 #' model by bootstrapping the model fit on a subset, to allow faster estimation.
 #' @export
 #' @import lme4
-#' @import plyr
 #' @importFrom abind abind
 #' @importFrom mvtnorm rmvnorm
 #' @examples
