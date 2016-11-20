@@ -42,38 +42,35 @@ REcorrExtract <- function(model){
 #' @param modList a list of multilevel models
 #'
 #' @return a data.frame
-#' @import plyr
+#' @import dplyr
 #' @export
 modelRandEffStats <- function(modList){
-  SDs <- plyr::ldply(modList, REsdExtract)
-  corrs <- plyr::ldply(modList, REcorrExtract)
-  tmp <- cbind(SDs, corrs)
-  names(tmp) <- c("Imp", "Int", "Slope", "id", "Corr")
-  out <- data.frame(IntSD_mean = mean(tmp$Int),
-                    SlopeSD_mean = mean(tmp$Slope),
-                    Corr_mean = mean(tmp$Corr),
-                    IntSD_sd = sd(tmp$Int),
-                    SlopeSD_sd = sd(tmp$Slope),
-                    Corr_sd = sd(tmp$Corr))
-  return(out)
+  effList <- lapply(modList, tidy, effects = "ran_pars")
+  effList <- do.call(rbind, effList)
+  out <- effList %>% group_by(term, group) %>%
+    summarize(estimate = mean(estimate),
+              std.error = sd(estimate))
+  return(as.data.frame(out))
 }
 
 #' Extract averaged fixed effect parameters across a list of merMod objects
 #'
 #' @param modList an object of class merModList
+#' @param ... additional arguments to pass to \code{\link{tidy}}
 #'
 #' @return a data.frame of the averaged fixed effect parameters
 #' @export
 #' @importFrom broom tidy
-#' @import plyr
-modelFixedEff <- function(modList){
-  fixEst <- ldply(modList, tidy, effects = "fixed")
+#' @import dplyr
+modelFixedEff <- function(modList, ...){
+  fixEst <- lapply(modList, tidy, effects = "fixed", ...)
+  fixEst <- do.call(rbind, fixEst)
   # Collapse
-  out <- ddply(fixEst, .(term), summarize,
-               estimate = mean(estimate),
+  out <- fixEst %>% dplyr::group_by(term) %>%
+          dplyr::summarize(estimate = mean(estimate),
                std.error = mean(std.error))
   out$statistic <- out$estimate / out$std.error
-  return(out)
+  return(as.data.frame(out))
 }
 
 #' Extract the variances and correlations for random effects from a merMod list
@@ -125,7 +122,6 @@ utils::globalVariables(c("term", "estimate","std.error"))
 #' @param ... additional arguments
 #'
 #' @return summary content printed to console
-#' @import plyr
 #' @export
 print.merModList <- function(x, ...){
   modList <- x

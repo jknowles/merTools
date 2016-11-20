@@ -2,7 +2,6 @@
 #' @name REextract
 #' @description Extracts random effect terms from an lme4 model
 #' @param merMod a merMod object from the lme4 package
-#' @import plyr
 #' @return a data frame with the following columns
 #' \describe{
 #'   \item{groupFctr}{The name of the grouping factor associated with the random effects}
@@ -29,10 +28,10 @@ REextract <- function(merMod){
     tmp.out[[i]]$groupFctr <- lvlNames[i]
     tmp.out[[i]]$groupID <- row.names(out[[i]])
     if(ncol(out[[i]]) > 1){
-      tmp.out.se <- plyr::adply(attr(out[[i]], which = "postVar"), c(3),
-                              function(x) sqrt(diag(x)))
-      colnames(tmp.out.se)[-1] <- paste0(names(out[[i]]), "_se")
-      tmp.out.se$X1 <- NULL
+      tmp.out.se <- apply(attr(out[[i]], which = "postVar"), 3,
+                          function(x) sqrt(diag(x)))
+      tmp.out.se <- as.data.frame(t(tmp.out.se))
+      colnames(tmp.out.se) <- paste0(names(out[[i]]), "_se")
       tmp.out[[i]] <- cbind(tmp.out[[i]], tmp.out.se)
     } else {
       tmp.out.se <- sapply(attr(out[[i]], which = "postVar"), sqrt)
