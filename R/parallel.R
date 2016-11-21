@@ -1,8 +1,5 @@
 # Parallel functions
 
-# from plyr
-
-
 #' Set up parallel environment
 #'
 #' @return Nothing

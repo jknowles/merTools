@@ -4,10 +4,12 @@
 \alias{modelFixedEff}
 \title{Extract averaged fixed effect parameters across a list of merMod objects}
 \usage{
-modelFixedEff(modList)
+modelFixedEff(modList, ...)
 }
 \arguments{
 \item{modList}{an object of class merModList}
+
+\item{...}{additional arguments to pass to \code{\link{tidy}}}
 }
 \value{
 a data.frame of the averaged fixed effect parameters
