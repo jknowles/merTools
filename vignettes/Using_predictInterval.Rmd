@@ -314,6 +314,36 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
 
 These results are virtually identical to those above. 
 
+#### Step 3c: Comparison to rstanarm
+
+```{r echo=FALSE, message=FALSE}
+fm_stan <- stan_lmer(Reaction ~ Days + (Days|Subject), data = sleepstudy)
+display(fm_stan)
+```
+
+
+```{r}
+PI.time.stan <- system.time({
+  zed <- posterior_predict(fm_stan)
+  PI.stan <- cbind(apply(zed, 2, median), predictive_interval(fm_stan, prob=0.95))
+})
+
+PI.stan <- as.data.frame(PI.stan)
+names(PI.stan) <- c("fit", "lwr", "upr")
+PI.stan <- PI.stan[, c("fit", "upr", "lwr")]
+comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
+                   data.frame(Predict.Method="rstanArm", x=(1:nrow(PI.stan))+0.1, PI.stan))
+
+ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
+  geom_point() + 
+  geom_linerange() +
+  labs(x="Index", y="Prediction w/ 95% PI") +
+  theme_bw() +  theme(legend.position="bottom") +
+  scale_color_brewer(type = "qual", palette = 2)
+
+```
+
+
 ### Computation time
 
 Our initial motivation for writing this function was to develop a method for 
