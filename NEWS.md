@@ -4,6 +4,10 @@
 
 ## merTools 0.2.2
 
+- Make `expectedRank` output more `tidy` like and allow function to calculate 
+expected rank for all terms at once
+  - Note, this breaks the API by changing the names of the columns in the output 
+  of this function
 - Remove tests that test for timing to avoid issues with R-devel JIT compiler
 - Remove `plyr` and replace with `dplyr`
 - Fix issue #62 `varList` will now throw an error if `==` is used instead of `=`

@@ -102,8 +102,8 @@ REimpact <- function(merMod, newdata, groupFctr=NULL, term = NULL, breaks = 3, .
   outs1$var <- outs1$upr - outs1$lwr
   outs1$lwr <- NULL; outs1$upr <- NULL
   ranks <- expectedRank(merMod, groupFctr = groupFctr, term = term)
-  ranks <- ranks[, c(1, 5)]
-  outs1 <- merge(ranks, outs1, by = groupFctr); rm(ranks)
+  ranks <- ranks[, c(2, 7)]
+  outs1 <- merge(ranks, outs1, by.x = "groupLevel", by.y = groupFctr); rm(ranks)
 
   weighted.var.se <- function(x, w, na.rm=FALSE)
     #  Computes the variance of a weighted mean following Cochran 1977 definition

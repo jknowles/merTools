@@ -35,13 +35,12 @@
 #'
 #' @param merMod An object of class merMod
 #'
-#' @param groupFctr The name of the grouping factor over which the random
-#'   coefficient of interest varies.  This is the variable to the right of the
-#'   pipe, \code{|}, in the [g]lmer formula. This parameter is optional if only
-#'   a single grouping factor is included in the model, but required if there
-#'   are two or more.
+#' @param groupFctr An optional character vector specifying the name(s) the grouping factor(s)
+#'   over which the random coefficient of interest varies.  This is the
+#'   variable to the right of the pipe, \code{|}, in the [g]lmer formula.
+#'   This parameter is optional. If none is specified all terms will be returned.
 #'
-#' @param term The name of the random coefficient of interest. This is the
+#' @param term An optional character vector specifying the name(s) of the random coefficient of interest. This is the
 #'   variable to the left of the pipe, \code{|}, in the [g]lmer formula. Partial
 #'   matching is attempted on the intercept term so the following character
 #'   strings will all return rankings based on the intercept (\emph{provided that
@@ -50,10 +49,11 @@
 #'
 #' @return A data.frame with the following five columns:
 #'   \describe{
-#'     \item{Column 1}{The original grouping factor}
-#'     \item{Column 2}{The estimated random effects (from
-#'                  \code{lme4::ranef(, condVar=TRUE)}); name taken from \code{term}.}
-#'     \item{Column 3}{The posterior variance of the estimate random effect
+#'     \item{groupFctr}{a character representing name of the grouping factor}
+#'     \item{groupLevel}{a character representing the level of the grouping factor}
+#'     \item{term}{a character representing the formula term for the group}
+#'     \item{estimate}{effect estimate from \code{lme4::ranef(, condVar=TRUE)}).}
+#'     \item{std.error}{the posterior variance of the estimate random effect
 #'                      (from \code{lme4::ranef(, condVar=TRUE)}); named "\code{term}"_var.}
 #'     \item{ER}{The expected rank.}
 #'     \item{pctER}{The percentile expected rank.}
@@ -105,7 +105,7 @@ expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
   } else{
     groupFctr <- names(rfx)
   }
-  out <- data.frame(groupFctr = NA, term = NA,
+  out <- data.frame(groupFctr = NA, groupLevel = NA, term = NA,
                     estimate = NA, std.error = NA,
                     ER = NA, pctER = NA)
 
@@ -137,7 +137,7 @@ expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
         #group ... if we just wanted percentage ranked less than then remove the 0.5
         pctER <- round(100 * (ER - 0.5) / n.grps)
 
-        tmp <- data.frame(groupFctr = i, term = j,
+        tmp <- data.frame(groupFctr = i, groupLevel = rfx.names, term = j,
                           estimate = theta, std.error = var.theta,
                           ER = ER, pctER = pctER)
         out <- rbind(out, tmp)

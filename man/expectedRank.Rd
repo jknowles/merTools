@@ -10,13 +10,12 @@ expectedRank(merMod, groupFctr = NULL, term = NULL)
 \arguments{
 \item{merMod}{An object of class merMod}
 
-\item{groupFctr}{The name of the grouping factor over which the random
-coefficient of interest varies.  This is the variable to the right of the
-pipe, \code{|}, in the [g]lmer formula. This parameter is optional if only
-a single grouping factor is included in the model, but required if there
-are two or more.}
+\item{groupFctr}{An optional character vector specifying the name(s) the grouping factor(s)
+over which the random coefficient of interest varies.  This is the
+variable to the right of the pipe, \code{|}, in the [g]lmer formula.
+This parameter is optional. If none is specified all terms will be returned.}
 
-\item{term}{The name of the random coefficient of interest. This is the
+\item{term}{An optional character vector specifying the name(s) of the random coefficient of interest. This is the
 variable to the left of the pipe, \code{|}, in the [g]lmer formula. Partial
 matching is attempted on the intercept term so the following character
 strings will all return rankings based on the intercept (\emph{provided that
@@ -26,10 +25,11 @@ they do not match the name of another random coefficient for that factor}):
 \value{
 A data.frame with the following five columns:
   \describe{
-    \item{Column 1}{The original grouping factor}
-    \item{Column 2}{The estimated random effects (from
-                 \code{lme4::ranef(, condVar=TRUE)}); name taken from \code{term}.}
-    \item{Column 3}{The posterior variance of the estimate random effect
+    \item{groupFctr}{a character representing name of the grouping factor}
+    \item{groupLevel}{a character representing the level of the grouping factor}
+    \item{term}{a character representing the formula term for the group}
+    \item{estimate}{effect estimate from \code{lme4::ranef(, condVar=TRUE)}).}
+    \item{std.error}{the posterior variance of the estimate random effect
                      (from \code{lme4::ranef(, condVar=TRUE)}); named "\code{term}"_var.}
     \item{ER}{The expected rank.}
     \item{pctER}{The percentile expected rank.}
