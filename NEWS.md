@@ -4,6 +4,7 @@
 
 ## merTools 0.2.2
 
+- Remove tests that test for timing to avoid issues with R-devel JIT compiler
 - Remove `plyr` and replace with `dplyr`
 - Fix issue #62 `varList` will now throw an error if `==` is used instead of `=`
 - Fix issue #54 `predictInterval` did not included random effects in calculations
