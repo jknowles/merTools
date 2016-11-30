@@ -145,8 +145,7 @@ expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
   }
 
   out <- out[-1, ]
-  #Close out and return in order of best to worst
-  # out <- out[order(out$ER, decreasing=TRUE),]
-  # row.names(out) <- 1:n.grps
+  # Avoid parentheses in parameter names
+  out$term <- gsub("(Intercept)", "_Intercept", out$term, fixed = TRUE)
   return(out)
 }
