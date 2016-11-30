@@ -78,10 +78,10 @@ test_that("Multiple terms can be accessed", {
   expect_true(all(zed4$AvgFit < zed1$AvgFit))
   expect_false(identical(zed1, zed2))
   expect_false(identical(zed1, zed2))
-  # This is the same issue of zero mean zero variance in the predict interval call
-  expect_error(zed3 <- suppressWarnings(REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "BROOD",
-                   n.sims = 500,
-                   include.resid.var = FALSE, breaks = 4)), "Must specify which")
+  # No longer an error after revision 0.2.3
+  # expect_error(zed3 <- suppressWarnings(REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "BROOD",
+  #                  n.sims = 500,
+  #                  include.resid.var = FALSE, breaks = 4)), "Must specify which")
   # Don't think we need this ... it throws an subsetting error
   expect_error(zed5 <- suppressWarnings(REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "LOCATION",
                    term = "HEIGHT",

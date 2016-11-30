@@ -2,7 +2,6 @@
 #' @name REextract
 #' @description Extracts random effect terms from an lme4 model
 #' @param merMod a merMod object from the lme4 package
-#' @import plyr
 #' @return a data frame with the following columns
 #' \describe{
 #'   \item{groupFctr}{The name of the grouping factor associated with the random effects}
@@ -29,10 +28,10 @@ REextract <- function(merMod){
     tmp.out[[i]]$groupFctr <- lvlNames[i]
     tmp.out[[i]]$groupID <- row.names(out[[i]])
     if(ncol(out[[i]]) > 1){
-      tmp.out.se <- plyr::adply(attr(out[[i]], which = "postVar"), c(3),
-                              function(x) sqrt(diag(x)))
-      colnames(tmp.out.se)[-1] <- paste0(names(out[[i]]), "_se")
-      tmp.out.se$X1 <- NULL
+      tmp.out.se <- apply(attr(out[[i]], which = "postVar"), 3,
+                          function(x) sqrt(diag(x)))
+      tmp.out.se <- as.data.frame(t(tmp.out.se))
+      colnames(tmp.out.se) <- paste0(names(out[[i]]), "_se")
       tmp.out[[i]] <- cbind(tmp.out[[i]], tmp.out.se)
     } else {
       tmp.out.se <- sapply(attr(out[[i]], which = "postVar"), sqrt)
@@ -41,7 +40,7 @@ REextract <- function(merMod){
       names(tmp.out[[i]])[4] <-  paste0(names(out[[i]]), "_se")
     }
   }
-  dat <- do.call(plyr::rbind.fill, tmp.out)
+  dat <- dplyr::bind_rows(tmp.out)
   # reorg output
   dat <- dat[, c("groupFctr", "groupID",
           names(dat)[!names(dat) %in% c("groupFctr", "groupID")])]
@@ -86,7 +85,12 @@ REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE, seed=NULL){
   tmp.out <- vector("list", reDims)
   names(tmp.out) <- names(mysim@ranef)
   for(i in c(1:reDims)){
-    tmp.out[[i]] <- plyr::adply(mysim@ranef[[i]], c(2, 3), plyr::each(c(mean, median, sd)))
+    zed <- apply(mysim@ranef[[i]], c(2, 3),
+                 function(x) as.data.frame(x) %>% dplyr::summarise_all(.funs = c("mean", "median", "sd")))
+    zed <- bind_rows(zed)
+    zed$X1 <- rep(dimnames(mysim@ranef[[i]])[[2]], length(dimnames(mysim@ranef[[i]])[[3]]))
+    zed$X2 <- rep(dimnames(mysim@ranef[[i]])[[3]], each = length(dimnames(mysim@ranef[[i]])[[2]]))
+    tmp.out[[i]] <- zed; rm(zed)
     tmp.out[[i]]$groupFctr <- names(tmp.out)[i]
     tmp.out[[i]]$X1 <- as.character(tmp.out[[i]]$X1)
     tmp.out[[i]]$X2 <- as.character(tmp.out[[i]]$X2)

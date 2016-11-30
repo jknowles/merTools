@@ -25,7 +25,6 @@ r_binary_packages:
   - mvtnorm
   - lattice
   - shiny
-  - plyr
   - abind
   - ggplot2
   - dplyr
