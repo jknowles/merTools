@@ -35,13 +35,12 @@
 #'
 #' @param merMod An object of class merMod
 #'
-#' @param groupFctr The name of the grouping factor over which the random
-#'   coefficient of interest varies.  This is the variable to the right of the
-#'   pipe, \code{|}, in the [g]lmer formula. This parameter is optional if only
-#'   a single grouping factor is included in the model, but required if there
-#'   are two or more.
+#' @param groupFctr An optional character vector specifying the name(s) the grouping factor(s)
+#'   over which the random coefficient of interest varies.  This is the
+#'   variable to the right of the pipe, \code{|}, in the [g]lmer formula.
+#'   This parameter is optional. If none is specified all terms will be returned.
 #'
-#' @param term The name of the random coefficient of interest. This is the
+#' @param term An optional character vector specifying the name(s) of the random coefficient of interest. This is the
 #'   variable to the left of the pipe, \code{|}, in the [g]lmer formula. Partial
 #'   matching is attempted on the intercept term so the following character
 #'   strings will all return rankings based on the intercept (\emph{provided that
@@ -50,10 +49,11 @@
 #'
 #' @return A data.frame with the following five columns:
 #'   \describe{
-#'     \item{Column 1}{The original grouping factor}
-#'     \item{Column 2}{The estimated random effects (from
-#'                  \code{lme4::ranef(, condVar=TRUE)}); name taken from \code{term}.}
-#'     \item{Column 3}{The posterior variance of the estimate random effect
+#'     \item{groupFctr}{a character representing name of the grouping factor}
+#'     \item{groupLevel}{a character representing the level of the grouping factor}
+#'     \item{term}{a character representing the formula term for the group}
+#'     \item{estimate}{effect estimate from \code{lme4::ranef(, condVar=TRUE)}).}
+#'     \item{std.error}{the posterior variance of the estimate random effect
 #'                      (from \code{lme4::ranef(, condVar=TRUE)}); named "\code{term}"_var.}
 #'     \item{ER}{The expected rank.}
 #'     \item{pctER}{The percentile expected rank.}
@@ -96,58 +96,56 @@ expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
   #Count random terms in merMod
   n.rfx <- lme4::getME(merMod, "k")
   n.rfac <- lme4::getME(merMod, "n_rfac")
-
   rfx <- lme4::ranef(merMod, condVar=TRUE)
+  out <- data.frame(groupFctr = NA, term = NA, estimate = NA,
+                      std.error = NA, ER = NA, pctER = NA)
 
-  #Take care of factors
-  if (n.rfac == 1 & is.null(groupFctr)) {
+  if(!is.null(groupFctr)){
+    groupFctr <- groupFctr
+  } else{
     groupFctr <- names(rfx)
   }
-  else if (n.rfac > 1 & is.null(groupFctr)) {
-    stop("Must specify which grouping factor when there are more than one")
+  out <- data.frame(groupFctr = NA, groupLevel = NA, term = NA,
+                    estimate = NA, std.error = NA,
+                    ER = NA, pctER = NA)
+
+  for(i in groupFctr){
+      rfx.names <- rownames(rfx[[i]])
+      n.grps <- length(rfx.names)
+      n.terms <- length(rfx[[i]])
+      if(!is.null(term)){
+        termIdx <- term
+      } else{
+        termIdx <- names(rfx[[i]])
+      }
+      for(j in termIdx){
+        if (grepl("[iI]nt[a-z]*", j) && is.na(match(j, names(rfx[[i]])))) {
+           j <- "(Intercept)"
+        }
+
+        term.idx <- grep(j, names(rfx[[i]]), fixed=TRUE)
+        theta <- rfx[[i]][,term.idx]
+        var.theta <- attr(rfx[[i]], which="postVar")[term.idx, term.idx, 1:n.grps]
+        #Calculate Expected Rank which is the sum of the probabilities that group i is greater than all
+        #other groups j (assuming normal distribution of random effects)
+        ER <- pctER <- rep(NA, n.grps)
+        for (k in 1:n.grps) {
+          ER[k] <- 1 + sum(pnorm((theta[k]-theta[-k]) / sqrt(var.theta[k] + var.theta[-k])))
+        }
+        #Calculated percentile expected rank ... the version of the formula I am using is
+        #the percentage of groups that are ranked **equal to or less than** the selected
+        #group ... if we just wanted percentage ranked less than then remove the 0.5
+        pctER <- round(100 * (ER - 0.5) / n.grps)
+
+        tmp <- data.frame(groupFctr = i, groupLevel = rfx.names, term = j,
+                          estimate = theta, std.error = var.theta,
+                          ER = ER, pctER = pctER)
+        out <- rbind(out, tmp)
+      }
   }
 
-  groupFctr.idx <- grep(groupFctr, names(rfx), fixed=TRUE)
-
-  #Grab row names, number of columns
-  rfx.names <- rownames(rfx[[groupFctr.idx]])
-  n.grps <- length(rfx.names)
-  n.terms <- length(rfx[[groupFctr.idx]])
-
-  #Take care of term
-  if (n.terms == 1 & is.null(term)) {
-    term <- names(rfx[[groupFctr.idx]])
-  }
-  else if (n.terms > 1 & is.null(term)) {
-    stop("Must specify which random coefficient when there are more than one per selected grouping factor")
-  }
-
-  if (grepl("[iI]nt[a-z]*", term) && is.na(match(term, names(rfx[[groupFctr.idx]])))) {
-    term <- "(Intercept)"
-  }
-
-  term.idx <- grep(term, names(rfx[[groupFctr.idx]]), fixed=TRUE)
-
-  #Grab theta and var.theta
-  theta <- rfx[[groupFctr.idx]][,term.idx]
-  var.theta <- attr(rfx[[groupFctr.idx]], which="postVar")[term.idx, term.idx, 1:n.grps]
-
-  #Calculate Expected Rank which is the sum of the probabilities that group i is greater than all
-  #other groups j (assuming normal distribution of random effects)
-  ER <- pctER <- rep(NA, n.grps)
-  for (i in 1:n.grps) {
-    ER[i] <- 1 + sum(pnorm((theta[i]-theta[-i]) / sqrt(var.theta[i] + var.theta[-i])))
-  }
-
-  #Calculated percentile expected rank ... the version of the formula I am using is
-  #the percentage of groups that are ranked **equal to or less than** the selected
-  #group ... if we just wanted percentage ranked less than then remove the 0.5
-  pctER <- round(100 * (ER - 0.5) / n.grps)
-
-  #Close out and return in order of best to worst
-  out <- data.frame(rfx.names, theta, var.theta, ER, pctER, stringsAsFactors=FALSE)
-  names(out) <- c(groupFctr, term, paste(term,"_var", sep=""), "ER", "pctER")
-  out <- out[order(out$ER, decreasing=TRUE),]
-  row.names(out) <- 1:n.grps
+  out <- out[-1, ]
+  # Avoid parentheses in parameter names
+  out$term <- gsub("(Intercept)", "_Intercept", out$term, fixed = TRUE)
   return(out)
 }
