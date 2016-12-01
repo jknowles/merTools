@@ -452,7 +452,6 @@ context("Input validation checks")
 test_that("dplyr objects are successfully coerced", {
   skip_on_cran()
   set.seed(101)
-  library(dplyr); library(magrittr)
   data(sleepstudy)
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   predData <- sleepstudy %>% group_by(Subject) %>% dplyr::summarise(Days = mean(Days))
@@ -464,8 +463,6 @@ test_that("dplyr objects are successfully coerced", {
   predData2 <- as.data.frame(predData)
   preds1 <- predictInterval(m1, newdata = predData2, n.sims=2000)
   expect_true(sum(preds1$fit - preds2$fit) > -50 & sum(preds1$fit - preds2$fit) < 50)
-  detach("package:magrittr", character.only=TRUE)
-  detach("package:dplyr", character.only=TRUE)
 })
 
 # Model type warnings for non-binomial GLMM----
