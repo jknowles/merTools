@@ -130,7 +130,7 @@ predictInterval <- function(merMod, newdata, level = 0.8,
   names(re.xb) <- names(ngrps(merMod))
     for(j in names(re.xb)){
     reMeans <- as.matrix(ranef(merMod)[[j]])
-    reMatrix <- attr(ranef(merMod, condVar=TRUE)[[j]], which = "postVar")
+    reMatrix <- attr(ranef(merMod, condVar = TRUE)[[j]], which = "postVar")
     # OK, let's knock out all the random effects we don't need
     if(j %in% names(newdata)){ # get around if names do not line up because of nesting
       obslvl <- unique(as.character(newdata[, j]))
@@ -155,22 +155,23 @@ predictInterval <- function(merMod, newdata, level = 0.8,
       reMatrix <- reMatrix[, , 1, drop = FALSE]
     }
 
-        # -- INSERT chunking code here
-    reSimA <- array(data = NA, dim = c(nrow(reMeans), ncol(reMeans), n.sims),
-                    dimnames = list(attr(reMeans, "dimnames")[[1]],
-                                    attr(reMeans, "dimnames")[[2]],
-                                    NULL))
+    tmpList <- vector(length = nrow(reMeans), mode = "list")
     for(k in 1:nrow(reMeans)){
       meanTmp <- reMeans[k, ]
-      matrixTmp <- as.matrix(reMatrix[,,k])
-      reSimA[k, ,] <- as.matrix(mvtnorm::rmvnorm(n= n.sims,
-                                       mean=meanTmp,
-                                       sigma=matrixTmp, method = "chol"))
+      matrixTmp <- as.matrix(reMatrix[, , k])
+      tmpList[[k]] <- as.matrix(mvtnorm::rmvnorm(n= n.sims,
+                                                mean=meanTmp,
+                                                sigma=matrixTmp, method = "chol"))
     }
+
+    REcoefs <- sapply(tmpList, identity, simplify="array"); rm(tmpList)
+    dimnames(REcoefs) <- list(NULL,
+                            attr(reMeans, "dimnames")[[2]],
+                            attr(reMeans, "dimnames")[[1]])
     if(j %in% names(newdata)){ # get around if names do not line up because of nesting
       tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
       tmp <- tmp[, !duplicated(colnames(tmp))]
-      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
+      keep <- names(tmp)[names(tmp) %in% dimnames(REcoefs)[[2]]]
       tmp <- tmp[, c(keep, "var"), drop = FALSE]
       tmp[, "var"] <- as.character(tmp[, "var"])
       colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
@@ -183,27 +184,27 @@ predictInterval <- function(merMod, newdata, level = 0.8,
       #this line re: issue #53 where newdata doesn't have all levels of rfx in
       #nested specification (with ":") so this just takes the subset of alllvl
       #that are specified in model
-      keep <- names(tmp)[names(tmp) %in% dimnames(reSimA)[[2]]]
+      keep <- names(tmp)[names(tmp) %in% dimnames(REcoefs)[[2]]]
       tmp <- tmp[, c(keep, "var"), drop = FALSE]
       tmp[, "var"] <- as.character(tmp[, "var"])
       colnames(tmp)[which(names(tmp) == "var")] <- j
     }
      tmp.pred <- function(data, coefs, group){
-      new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[1]]])
+      new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[3]]])
        msg <- paste("     The following levels of ", group, " from newdata \n -- ", paste0(new.levels, collapse=", "),
                     " -- are not in the model data. \n     Currently, predictions for these values are based only on the \n fixed coefficients and the observation-level error.", sep="")
        if(length(new.levels > 0)){
          warning(msg, call.=FALSE)
        }
-       yhatTmp <- array(data = NA, dim = c(nrow(data), dim(coefs)[3]))
+       yhatTmp <- array(data = NA, dim = c(nrow(data), dim(coefs)[1]))
        colIdx <- ncol(data) - 1
       for(i in 1:nrow(data)){
          lvl <- as.character(data[, group][i])
          if(!lvl %in% new.levels){
-           yhatTmp[i, ] <- as.numeric(data[i, 1:colIdx]) %*% coefs[lvl, 1:colIdx, ]
+           yhatTmp[i, ] <- as.numeric(data[i, 1:colIdx]) %*% t(coefs[, 1:colIdx, lvl])
          } else{
            # 0 out the RE for these new levels
-           yhatTmp[i, ] <- rep(0, colIdx) %*% coefs[1, 1:colIdx, ]
+           yhatTmp[i, ] <- rep(0, colIdx) %*% t(coefs[, 1:colIdx, 1])
          }
        }
        rownames(yhatTmp) <- rownames(data)
@@ -220,16 +221,16 @@ predictInterval <- function(merMod, newdata, level = 0.8,
                                  .combine = 'rbind')))
        fe <- eval(fe_call)
        re.xb[[j]] <- foreach::`%dopar%`(fe, tmp.pred(data = tmp2[[i]],
-                                                 coefs =reSimA[, keep, , drop = FALSE],
+                                                 coefs = REcoefs[, keep, , drop = FALSE],
                                                  group = j))
        rm(tmp2)
      } else{
-       re.xb[[j]] <- tmp.pred(data = tmp, coefs = reSimA[, keep, , drop = FALSE],
+       re.xb[[j]] <- tmp.pred(data = tmp, coefs = REcoefs[, keep, , drop = FALSE],
                               group = j)
      }
      rm(tmp)
     }
-  rm(reSimA)
+  rm(REcoefs)
   # TODO: Add a check for new.levels that is outside of the above loop
   # for now, ignore this check
   if (include.resid.var==FALSE) {

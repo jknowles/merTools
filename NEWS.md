@@ -2,8 +2,11 @@
 
 
 
-## merTools 0.2.2
+## merTools 0.3.0
 
+- Fixed a bug with slope+intercept random terms that caused a miscalculation of 
+the random component
+- Add comparison to `rstanarm` to the Vignette
 - Make `expectedRank` output more `tidy` like and allow function to calculate 
 expected rank for all terms at once
   - Note, this breaks the API by changing the names of the columns in the output 

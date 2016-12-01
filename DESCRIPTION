@@ -1,6 +1,6 @@
 Package: merTools
 Title: Tools for Analyzing Mixed Effect Regression Models
-Version: 0.2.2
+Version: 0.3.0
 Authors@R: c(person(c("Jared", "E."), "Knowles", email = "jknowles@gmail.com",
     role = c("aut", "cre")), person("Carl", "Frederick", email="carlbfrederick@gmail.com",
     role = c("aut")))
@@ -18,7 +18,8 @@ Suggests:
     knitr,
     rmarkdown,
     foreach,
-    parallel
+    parallel,
+    rstanarm
 Imports:
     mvtnorm,
     DT,
