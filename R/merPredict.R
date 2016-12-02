@@ -8,6 +8,9 @@
 #' bootstrapping for models fit to medium to large datasets.
 #' @param merMod a merMod object from lme4
 #' @param newdata a data.frame of new data to predict
+#' @param which a character specifying what to return, by default it returns the
+#' full interval, but you can also select to return only the fixed variation or
+#' the random component variation
 #' @param level the width of the prediction interval
 #' @param n.sims number of simulation samples to construct
 #' @param stat take the median or mean of simulated intervals
@@ -74,7 +77,8 @@
 #'  regFit <- predict(gm2, newdata = d1[1:10, ], type = "response")
 #'  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "probability")
 #'  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "linear.prediction")
-predictInterval <- function(merMod, newdata, level = 0.8,
+predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", "all"),
+                            level = 0.8,
                             n.sims = 1000, stat=c("median","mean"),
                             type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE, returnSims = FALSE,
@@ -281,9 +285,24 @@ predictInterval <- function(merMod, newdata, level = 0.8,
     betaSim <- betaSim[, keep]
   }
   re.xb$fixed <- newdata.modelMatrix %*% t(betaSim)
-  yhat <- Reduce('+', re.xb)
-  # alternative if missing data present:
-  # yhat <- apply(simplify2array(re.xb), c(1,2), sum)
+  ######
+  if(which == "full"){
+    yhat <- Reduce('+', re.xb)
+  } else if(which == "fixed"){
+    yhatB <- Reduce('+', re.xb["fixed"])
+  } else if(which == "random"){
+    re.xb["fixed"] <- NULL
+    yhat <- Reduce('+', re.xb)
+  } else if(which == "all"){
+    yhat <- Reduce('+', re.xb)
+    N <- nrow(newdata)
+    if (include.resid.var==TRUE){
+      for(i in 1:length(re.xb)){
+        re.xb[[i]] <- abind::abind(lapply(1:n.sims, function(x) rnorm(N, re.xb[[i]][, x], sigmahat[x])), along=2)
+      }
+    }
+    pi.comps <- re.xb
+  }
   rm(re.xb)
   N <- nrow(newdata)
   outs <- data.frame("fit" = rep(NA, N),
