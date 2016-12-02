@@ -16,7 +16,8 @@ predictInterval(merMod, newdata, which = c("full", "fixed", "random", "all"),
 
 \item{which}{a character specifying what to return, by default it returns the
 full interval, but you can also select to return only the fixed variation or
-the random component variation}
+the random component variation. If full is selected the resulting data.frame
+will be \code{nrow(newdata) * number of model levels} long}
 
 \item{level}{the width of the prediction interval}
 

@@ -4,6 +4,10 @@
 
 ## merTools 0.3.0
 
+- Rebuilt the readme.md to include new information about new features
+- New option for `predictInterval` that allows the user to return the full 
+interval, the fixed component, the random component, or the fixed and each random 
+component separately for each observation
 - Fixed a bug with slope+intercept random terms that caused a miscalculation of 
 the random component
 - Add comparison to `rstanarm` to the Vignette
@@ -19,11 +23,9 @@ expected rank for all terms at once
   Note: fix was to disable the `.paropts` option for `predictInterval` ... user
   can still specify for *temporary* backward compatibility but this should be
   either removed or fixed in the permanent solution.
-
 - Fix issue #53 about problems with `predictInterval` when only specific levels
   of a grouping factor are in `newdata` with the colon specification of 
   interactions
-  
 - Fix issue #52 ICC wrong calculations ... we just needed to square the standard
   deviations that we pulled
 

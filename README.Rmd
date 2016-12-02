@@ -48,9 +48,43 @@ install.packages("merTools")
 
 ## Recent Updates
 
+### merTools 0.3.0
+
+- Rebuilt the readme.md to include new information about new features
+- New option for `predictInterval` that allows the user to return the full 
+interval, the fixed component, the random component, or the fixed and each random 
+component separately for each observation
+- Fixed a bug with slope+intercept random terms that caused a miscalculation of 
+the random component
+- Add comparison to `rstanarm` to the Vignette
+- Make `expectedRank` output more `tidy` like and allow function to calculate 
+expected rank for all terms at once
+  - Note, this breaks the API by changing the names of the columns in the output 
+  of this function
+- Remove tests that test for timing to avoid issues with R-devel JIT compiler
+- Remove `plyr` and replace with `dplyr`
+- Fix issue #62 `varList` will now throw an error if `==` is used instead of `=`
+- Fix issue #54 `predictInterval` did not included random effects in calculations
+  when `newdata` had more than 1000 rows and/or user specified `parallel=TRUE`. 
+  Note: fix was to disable the `.paropts` option for `predictInterval` ... user
+  can still specify for *temporary* backward compatibility but this should be
+  either removed or fixed in the permanent solution.
+
+- Fix issue #53 about problems with `predictInterval` when only specific levels
+  of a grouping factor are in `newdata` with the colon specification of 
+  interactions
+  
+- Fix issue #52 ICC wrong calculations ... we just needed to square the standard
+  deviations that we pulled
+
+### merTools 0.2.1
+
+- Fix dependency on `lme4` to ensure compatibility with latest changes. 
+
+
 ### Version 0.2
 
-### New Functionality
+#### New Functionality
 
 - Substantial performance enhancement for `predictInterval` which includes better 
 handling of large numbers of parameters and simulations, performance 
@@ -67,7 +101,7 @@ of a dataset, useful for imputation or for working with extremely large datasets
 - Add new package data to demonstrate replication from selected published texts 
 on multilevel modeling using different software (1982 High School and Beyond Survey data)
 
-### Other changes
+#### Other changes
 
 - Changed the default `n.sims` for the `predictInterval` function from 100 
 to 1,000 to give better coverage and reflect performance increase
@@ -93,6 +127,7 @@ shinyMer(m1, simData = InstEval[1:100, ]) # just try the first 100 rows of data
 
 ```{r, include=FALSE}
 library(merTools)
+library(ggplot2)
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 ```
 
@@ -152,6 +187,48 @@ predict object itself.
 draw the distributions of the parameters of the model. It then combines these 
 simulated values to create a distribution of the `yhat` for each observation. 
 
+### Inspecting the Prediction Components
+
+We can also explore the components of the prediction interval by asking 
+`predictInterval` to return specific components of the prediction interval. 
+
+```{r}
+predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9, 
+                stat = 'median', which = "all")
+```
+
+This can lead to some useful plotting:
+
+```{r}
+plotdf <- predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 2000, 
+                          level = 0.9, stat = 'median', which = "all", 
+                          include.resid.var = FALSE)
+plotdfb <- predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 2000, 
+                          level = 0.9, stat = 'median', which = "all", 
+                          include.resid.var = TRUE)
+
+plotdf <- bind_rows(plotdf, plotdfb, .id = "residVar")
+plotdf$residVar <- ifelse(plotdf$residVar == 1, "No Model Variance", 
+                          "Model Variance")
+
+ggplot(plotdf, aes(x = obs, y = fit, ymin = lwr, ymax = upr)) + 
+  geom_pointrange() +
+  geom_hline(yintercept = 0, color = I("red"), size = 1.1) +
+  scale_x_continuous(breaks = c(1, 10)) +
+  facet_grid(residVar~effect) + theme_bw()
+
+```
+
+We can also investigate the makeup of the prediction for each observation.
+
+```{r}
+ggplot(plotdf[plotdf$obs < 6,], 
+       aes(x = effect, y = fit, ymin = lwr, ymax = upr)) + 
+  geom_pointrange() +
+  geom_hline(yintercept = 0, color = I("red"), size = 1.1) +
+  facet_grid(residVar~obs) + theme_bw()
+```
+
 ## Plotting
 
 `merTools` also provides functionality for inspecting `merMod` objects visually. 
@@ -195,6 +272,17 @@ ranks <- expectedRank(m1, groupFctr = "d")
 head(ranks)
 ```
 
+A nice features `expectedRank` is that you can return the expected rank for all 
+factors simultaneously and use them:
+
+```{r}
+ranks <- expectedRank(m1)
+head(ranks)
+
+ggplot(ranks, aes(x = term, y = estimate)) + 
+  geom_violin(fill = "gray50") + facet_wrap(~groupFctr) +
+  theme_bw()
+```
 
 ## Effect Simulation
 
@@ -216,7 +304,6 @@ effect has a strong impact on the outcome variable. This can be shown graphicall
 as well:
 
 ```{r reImpactplot}
-library(ggplot2)
 ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE, 
                    ymax = AvgFit + 1.96*AvgFitSE)) + 
   geom_pointrange() + theme_bw() + labs(x = "Bin of `d` term", y = "Predicted Fit")

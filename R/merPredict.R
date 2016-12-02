@@ -10,7 +10,8 @@
 #' @param newdata a data.frame of new data to predict
 #' @param which a character specifying what to return, by default it returns the
 #' full interval, but you can also select to return only the fixed variation or
-#' the random component variation
+#' the random component variation. If full is selected the resulting data.frame
+#' will be \code{nrow(newdata) * number of model levels} long
 #' @param level the width of the prediction interval
 #' @param n.sims number of simulation samples to construct
 #' @param stat take the median or mean of simulated intervals
@@ -313,25 +314,69 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                      "lwr" = rep(NA, N))
   upCI <- 1 - ((1-level)/2)
   loCI <- ((1-level)/2)
-  if (include.resid.var==TRUE)
-    yhat <- abind::abind(lapply(1:n.sims, function(x) rnorm(N, yhat[,x], sigmahat[x])), along = 2)
+  if (include.resid.var==TRUE){
+    yhat <- abind::abind(lapply(1:n.sims,
+                                function(x) rnorm(N, yhat[,x], sigmahat[x])),
+                         along = 2)
+  }
   # Output prediction intervals
   if (stat.type == "median") {
-    outs[, 1:3] <- t(apply(yhat, 1, quantile, prob = c(0.5, upCI, loCI), na.rm=TRUE))
+    outs[, 1:3] <- t(apply(yhat, 1, quantile, prob = c(0.5, upCI, loCI),
+                           na.rm=TRUE))
   }
   if (stat.type == "mean") {
     outs$fit <- apply(yhat, 1, mean, na.rm=TRUE)
-    outs[, 2:3] <- t(apply(yhat, 1, quantile, prob = c(upCI, loCI), na.rm=TRUE))
+    outs[, 2:3] <- t(apply(yhat, 1, quantile, prob = c(upCI, loCI),
+                           na.rm=TRUE))
   }
   if (predict.type == "probability") {
     outs <- apply(outs, 2, merMod@resp$family$linkinv)
   }
+
+  ##############################
+  # Construct observation predictors for each component of the model
+  ##########################
+  if(which.eff == "all"){
+    if(returnSims == TRUE){
+      allSims <- pi.comps
+    }
+    for(i in 1:length(pi.comps)){
+      if( stat.type == "median"){
+        pi.comps[[i]] <-  t(apply(pi.comps[[i]], 1, quantile,
+                                  prob = c(0.5, upCI, loCI), na.rm=TRUE))
+        pi.comps[[i]] <- as.data.frame(pi.comps[[i]])
+        names(pi.comps[[i]]) <- c("fit", "upr", "lwr")
+      }
+      if(stat.type == "mean"){
+        tmp <- pi.comps[[i]]
+        pi.comps[[i]] <- data.frame("fit" = rep(NA, N), "upr" =NA,
+                          "lwr" = NA)
+        pi.comps[[i]]$fit <- apply(tmp, 1, mean, na.rm=TRUE)
+        pi.comps[[i]][, 2:3] <- t(apply(tmp, 1, quantile, prob = c(upCI, loCI), na.rm=TRUE))
+      }
+      if (predict.type == "probability") {
+        pi.comps[[i]] <- apply(pi.comps[[i]], 2, merMod@resp$family$linkinv)
+        pi.comps[[i]] <- as.data.frame(pi.comps[[i]])
+        names(pi.comps[[i]]) <- c("fit", "upr", "lwr")
+      }
+    }
+    componentOut <- dplyr::bind_rows(pi.comps, .id="effect")
+    outs <- cbind(data.frame("effect" = "combined"), outs)
+    outs <- suppressWarnings(bind_rows(outs, componentOut))
+    outs$obs <- rep(1:N, nrow(outs) %/% N)
+    rm(pi.comps)
+  }
+
   #Close it out
   if(returnSims == FALSE){
     return(as.data.frame(outs))
   } else if(returnSims == TRUE){
     outs <- as.data.frame(outs)
-    attr(outs, "sim.results") <- yhat
+    if(which.eff == "all"){
+      attr(outs, "sim.results") <- allSims
+    } else{
+      attr(outs, "sim.results") <- yhat
+    }
     return(outs)
   }
 }
