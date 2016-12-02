@@ -516,6 +516,103 @@ test_that("parallelization does not throw errors and generates good results", {
   detach("package:foreach", character.only=TRUE)
 })
 
+# Test the option to return different predictInterval components
+m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+form <- TICKS_BIN ~ YEAR + HEIGHT +(1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)
+data(grouseticks)
+grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
+glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks,
+                         control = glmerControl(optimizer="bobyqa",
+                                                optCtrl=list(maxfun = 1e5)))
+
+test_that("Compare random, fixed, include-resid", {
+  predInt <- predictInterval(m1)
+  predInt1$width <- predInt1[, 2] - predInt1[, 3]
+  predInt2 <- predictInterval(m1, which = "random")
+  predInt2$width <- predInt2[, 2] - predInt2[, 3]
+  predInt3 <- predictInterval(m1, which = "fixed")
+  predInt3$width <- predInt3[, 2] - predInt3[, 3]
+  predInt4 <- predictInterval(m1, which = "all")
+  predInt4$width <- predInt4[, 2] - predInt4[, 3]
+  predInt1b <- predictInterval(m1, include.resid.var = FALSE)
+  predInt1b$width <- predInt1b[, 2] - predInt1b[, 3]
+  predInt2b <- predictInterval(m1, which = "random", include.resid.var = FALSE)
+  predInt2b$width <- predInt2b[, 2] - predInt2b[, 3]
+  predInt3b <- predictInterval(m1, which = "fixed", include.resid.var = FALSE)
+  predInt3b$width <- predInt3b[, 2] - predInt3b[, 3]
+  predInt4b <- predictInterval(m1, which = "all", include.resid.var = FALSE)
+  predInt4b$width <- predInt4b[, 2] - predInt4b[, 3]
+  # Full and all are similar
+  expect_true(all(predInt1$width > predInt2$width))
+  expect_true(all(predInt3$width > predInt2$width))
+  expect_true(all(predInt4$width > predInt2$width))
+  expect_true(all(predInt4$width > predInt3$width))
+  expect_true(!all(predInt4$width > predInt1$width))
+  #
+  expect_true(all(predInt1b$width > predInt2b$width))
+  expect_true(all(predInt3b$width > predInt2b$width))
+  expect_true(all(predInt4b$width > predInt2b$width))
+  expect_true(!all(predInt4b$width > predInt1b$width))
+  # Fits
+  expect_true(all(predInt1$fit > predInt2$fit))
+  expect_true(all(predInt3$fit > predInt2$fit))
+  expect_true(all(predInt1$upr > predInt1b$upr))
+  expect_true(all(predInt1$lwr < predInt1b$lwr))
+  expect_true(all(predInt2$upr > predInt2b$upr))
+  expect_true(all(predInt2$lwr < predInt2b$lwr))
+  expect_true(all(predInt2$upr > predInt2b$upr))
+  expect_true(all(predInt3$lwr < predInt3b$lwr))
+  expect_true(all(predInt4$upr > predInt4b$upr))
+  expect_true(all(predInt4$lwr < predInt4b$lwr))
+
+  predInt <- predictInterval(m2)
+  predInt1$width <- predInt1[, 2] - predInt1[, 3]
+  predInt2 <- predictInterval(m2, which = "random")
+  predInt2$width <- predInt2[, 2] - predInt2[, 3]
+  predInt3 <- predictInterval(m2, which = "fixed")
+  predInt3$width <- predInt3[, 2] - predInt3[, 3]
+  predInt4 <- predictInterval(m2, which = "all")
+  predInt4$width <- predInt4[, 2] - predInt4[, 3]
+  predInt1b <- predictInterval(m2, include.resid.var = FALSE)
+  predInt1b$width <- predInt1b[, 2] - predInt1b[, 3]
+  predInt2b <- predictInterval(m2, which = "random", include.resid.var = FALSE)
+  predInt2b$width <- predInt2b[, 2] - predInt2b[, 3]
+  predInt3b <- predictInterval(m2, which = "fixed", include.resid.var = FALSE)
+  predInt3b$width <- predInt3b[, 2] - predInt3b[, 3]
+  predInt4b <- predictInterval(m2, which = "all", include.resid.var = FALSE)
+  predInt4b$width <- predInt4b[, 2] - predInt4b[, 3]
+  # Full and all are similar
+  expect_true(all(predInt1$width > predInt2$width))
+  expect_true(mean(predInt3$width) > mean(predInt2$width))
+  expect_true(all(predInt4$width > predInt2$width))
+  expect_true(mean(predInt4$width) > mean(predInt3$width))
+  expect_true(!all(predInt4$width > predInt1$width))
+  #
+  expect_true(all(predInt1b$width > predInt2b$width))
+  # expect_true(mean(predInt3b$width) > mean(predInt2b$width))
+  expect_true(all(predInt4b$width > predInt2b$width))
+  expect_true(!all(predInt4b$width > predInt1b$width))
+  # Fits
+  expect_true(all(predInt1$fit > predInt2$fit))
+  expect_true(all(predInt3$fit > predInt2$fit))
+  expect_true(all(predInt1$upr > predInt1b$upr))
+  expect_true(all(predInt1$lwr < predInt1b$lwr))
+  expect_true(all(predInt2$upr > predInt2b$upr))
+  expect_true(all(predInt2$lwr < predInt2b$lwr))
+  expect_true(all(predInt2$upr > predInt2b$upr))
+  expect_true(all(predInt3$lwr < predInt3b$lwr))
+  expect_true(all(predInt4$upr > predInt4b$upr))
+  expect_true(all(predInt4$lwr < predInt4b$lwr))
+})
+
+test_that("Default is set to all effects", {
+  predInt1 <- predictInterval(m1)
+  predInt2 <- predictInterval(m2)
+
+})
+
+
 # Test nested effect specifications----
 context("Test nested effect specifications")
 

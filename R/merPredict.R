@@ -101,6 +101,9 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   stat.type <- match.arg(stat,
                          c("median","mean"),
                          several.ok = FALSE)
+  which.eff <- match.arg(which,
+                         c("full", "fixed", "random", "all"),
+                         several.ok = FALSE)
 
   if (!is.null(seed))
     set.seed(seed)
@@ -286,14 +289,14 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   }
   re.xb$fixed <- newdata.modelMatrix %*% t(betaSim)
   ######
-  if(which == "full"){
+  if(which.eff == "full"){
     yhat <- Reduce('+', re.xb)
-  } else if(which == "fixed"){
-    yhatB <- Reduce('+', re.xb["fixed"])
-  } else if(which == "random"){
+  } else if(which.eff == "fixed"){
+    yhat <- Reduce('+', re.xb["fixed"])
+  } else if(which.eff == "random"){
     re.xb["fixed"] <- NULL
     yhat <- Reduce('+', re.xb)
-  } else if(which == "all"){
+  } else if(which.eff == "all"){
     yhat <- Reduce('+', re.xb)
     N <- nrow(newdata)
     if (include.resid.var==TRUE){
@@ -312,7 +315,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   loCI <- ((1-level)/2)
   if (include.resid.var==TRUE)
     yhat <- abind::abind(lapply(1:n.sims, function(x) rnorm(N, yhat[,x], sigmahat[x])), along = 2)
-  #Output prediction intervals
+  # Output prediction intervals
   if (stat.type == "median") {
     outs[, 1:3] <- t(apply(yhat, 1, quantile, prob = c(0.5, upCI, loCI), na.rm=TRUE))
   }
@@ -332,3 +335,6 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     return(outs)
   }
 }
+
+## TODO: Finish exporting so that all returns the individual predictions for
+# each random effect separately
