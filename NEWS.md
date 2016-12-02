@@ -4,6 +4,11 @@
 
 ## merTools 0.3.0
 
+- Change the calculations of the residual variance. Previously residual variance 
+was used to inflate both the variance around the fixed parameters and around the 
+predicted values themselves. This was incorrect and resulted in overly conservative 
+estimates. Now the residual variance is appropriately only used around the 
+final predictions
 - Rebuilt the readme.md to include new information about new features
 - New option for `predictInterval` that allows the user to return the full 
 interval, the fixed component, the random component, or the fixed and each random 

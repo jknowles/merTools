@@ -263,13 +263,13 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                               .combine = 'rbind')))
     fe <- eval(fe_call)
     betaSim <- foreach::`%dopar%`(fe, mvtnorm::rmvnorm(n = 1, mean = fe.tmp,
-                                                sigma = sigmahat[[i]]*vcov.tmp,
+                                                sigma = vcov.tmp,
                                   method = "chol"))
 
   } else {
     betaSim <- abind::abind(lapply(1:n.sims,
                                function(x) mvtnorm::rmvnorm(n = 1, mean = fe.tmp,
-                                                    sigma = sigmahat[x]*vcov.tmp,
+                                                    sigma = vcov.tmp,
                                 method = "chol")), along=1)
   }
   # Pad betaSim

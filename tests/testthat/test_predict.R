@@ -459,13 +459,13 @@ test_that("simResults option behaves", {
   expect_lt(quantile(attr(preds1, "sim.results"), probs = 0.1) - quantile(attr(preds1b, "sim.results"), probs = 0.1),
                    -20)
   expect_gt(quantile(attr(preds2, "sim.results"), probs = 0.9) - quantile(attr(preds2b, "sim.results"), probs = 0.9),
-                   50)
+                   20)
   expect_lt(quantile(attr(preds2, "sim.results"), probs = 0.1) - quantile(attr(preds2b, "sim.results"), probs = 0.1),
-                   -50)
+                   -20)
   expect_gt(quantile(attr(preds4, "sim.results"), probs = 0.9) - quantile(attr(preds4b, "sim.results"), probs = 0.9),
-                   50)
+                   15)
   expect_lt(quantile(attr(preds4, "sim.results"), probs = 0.1) - quantile(attr(preds4b, "sim.results"), probs = 0.1),
-                   -50)
+                   -15)
 })
 
 # Test out of sample predictions----
@@ -645,11 +645,11 @@ test_that("Compare random, fixed, include-resid", {
   predInt3b$width <- predInt3b[, 2] - predInt3b[, 3]
   predInt4b <- predictInterval(m1, which = "all", include.resid.var = FALSE)
   predInt4b$width <- predInt4b[, 3] - predInt4b[, 4]
-  # Full and all are similar
-  expect_true(all(predInt1$width > predInt2$width))
-  expect_true(all(predInt3$width > predInt2$width))
+  # These should be fairly close now since residual variance is the biggest
+  expect_true(!all(predInt1$width > predInt2$width))
+  expect_true(!all(predInt3$width > predInt2$width))
   expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt1$width))
-  expect_true(all(predInt4$width[predInt4$effect == "combined"] > predInt2$width))
+  expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt2$width))
   expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt3$width))
   #
   expect_true(all(predInt1b$width > predInt2b$width))
@@ -684,11 +684,11 @@ test_that("Compare random, fixed, include-resid", {
   predInt3b$width <- predInt3b[, 2] - predInt3b[, 3]
   predInt4b <- predictInterval(m2, which = "all", include.resid.var = FALSE)
   predInt4b$width <- predInt4b[, 3] - predInt4b[, 4]
-  # Full and all are similar
-  expect_true(all(predInt1$width > predInt2$width))
-  expect_true(all(predInt3$width > predInt2$width))
+  # These should be fairly close now since residual variance is the biggest variance
+  expect_true(!all(predInt1$width > predInt2$width))
+  expect_true(!all(predInt3$width > predInt2$width))
   expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt1$width))
-  expect_true(all(predInt4$width[predInt4$effect == "combined"] > predInt2$width))
+  expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt2$width))
   expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt3$width))
   #
   expect_true(all(predInt1b$width > predInt2b$width))

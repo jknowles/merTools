@@ -27,7 +27,7 @@ Recent Updates
 
 ### merTools 0.3.0
 
--   Rebuilt the readme.md to include new information about new features
+-   Change the calculations of the residual variance. Previously residual variance was used to inflate both the variance around the fixed parameters and around the predicted values themselves. This was incorrect and resulted in overly conservative estimates. Now the residual variance is appropriately only used around the final predictions
 -   New option for `predictInterval` that allows the user to return the full interval, the fixed component, the random component, or the fixed and each random component separately for each observation
 -   Fixed a bug with slope+intercept random terms that caused a miscalculation of the random component
 -   Add comparison to `rstanarm` to the Vignette
@@ -110,16 +110,16 @@ With `predictInterval` we obtain predictions that are more like the standard obj
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
 #>         fit      upr      lwr
-#> 1  3.132867 5.157970 1.183171
-#> 2  3.180017 5.072290 0.973230
-#> 3  3.439371 5.325379 1.358078
-#> 4  3.131259 5.142101 1.236331
-#> 5  3.426534 5.172656 1.325485
-#> 6  3.204123 5.279035 1.245494
-#> 7  4.206803 6.138637 2.241488
-#> 8  3.886083 5.982433 1.830014
-#> 9  3.681801 5.725326 1.802468
-#> 10 3.353775 5.504170 1.467024
+#> 1  3.102474 5.236406 1.192548
+#> 2  3.295667 5.232050 1.174451
+#> 3  3.447091 5.444162 1.337675
+#> 4  3.051432 4.971109 1.261833
+#> 5  3.326784 5.367482 1.117220
+#> 6  3.189199 5.143497 1.496050
+#> 7  4.180856 6.225887 2.219989
+#> 8  3.928560 5.921551 2.061202
+#> 9  3.809693 5.788328 1.796161
+#> 10 3.430701 5.455156 1.499765
 ```
 
 Note that `predictInterval` is slower because it is computing simulations. It can also return all of the simulated `yhat` values as an attribute to the predict object itself.
@@ -133,47 +133,47 @@ We can also explore the components of the prediction interval by asking `predict
 ``` r
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9, 
                 stat = 'median', which = "all")
-#>      effect          fit      upr       lwr obs
-#> 1  combined  3.242855583 5.256198  1.166928   1
-#> 2  combined  3.281278745 5.327124  1.047201   2
-#> 3  combined  3.540671486 5.477600  1.193292   3
-#> 4  combined  3.115095384 5.172895  1.243576   4
-#> 5  combined  3.108293629 5.241617  1.425906   5
-#> 6  combined  3.341020492 5.019363  1.460654   6
-#> 7  combined  4.225094994 5.749342  2.142919   7
-#> 8  combined  3.768235942 6.134869  1.904707   8
-#> 9  combined  3.780869784 5.688571  1.724311   9
-#> 10 combined  3.270161364 5.617584  1.612083  10
-#> 11        s  0.339715613 2.370676 -1.755473   1
-#> 12        s  0.008750713 2.069383 -1.812534   2
-#> 13        s  0.431764762 2.167529 -1.699329   3
-#> 14        s  0.295036886 2.434658 -1.756879   4
-#> 15        s -0.132865616 1.855530 -2.066101   5
-#> 16        s -0.191921491 1.823088 -2.017646   6
-#> 17        s  0.419851243 2.384942 -1.455827   7
-#> 18        s  0.420740816 2.182718 -1.405249   8
-#> 19        s  0.183052132 2.204805 -1.734104   9
-#> 20        s  0.378577708 2.215289 -1.422765  10
-#> 21        d -0.371815298 1.668305 -2.222380   1
-#> 22        d -0.256243810 1.791162 -2.021152   2
-#> 23        d  0.009742000 2.166273 -1.891261   3
-#> 24        d -0.363916557 1.463719 -2.132313   4
-#> 25        d  0.076165324 2.162862 -1.973062   5
-#> 26        d -0.057323390 2.092815 -1.694397   6
-#> 27        d  0.787872063 2.697186 -1.218455   7
-#> 28        d  0.303469971 2.269464 -1.591569   8
-#> 29        d  0.225490500 1.793513 -1.902528   9
-#> 30        d -0.361997595 1.462713 -2.385442  10
-#> 31    fixed  3.197006848 5.183858  1.231755   1
-#> 32    fixed  3.182668601 4.967376  1.691922   2
-#> 33    fixed  3.337971033 5.462194  1.328967   3
-#> 34    fixed  3.003346414 5.144884  1.075642   4
-#> 35    fixed  3.284434481 5.086225  1.539723   5
-#> 36    fixed  3.406863154 4.972823  1.415661   6
-#> 37    fixed  3.161917368 5.388678  1.031420   7
-#> 38    fixed  3.303104960 5.137719  1.314559   8
-#> 39    fixed  3.259537665 4.996122  1.426116   9
-#> 40    fixed  3.173104292 5.081483  1.196755  10
+#>      effect         fit      upr       lwr obs
+#> 1  combined  3.21161258 5.319647  1.178516   1
+#> 2  combined  3.16186935 4.924017  1.177790   2
+#> 3  combined  3.36855715 5.164374  1.706623   3
+#> 4  combined  3.18975489 5.067483  1.153070   4
+#> 5  combined  3.28178669 5.012098  1.305008   5
+#> 6  combined  3.33090873 5.134874  1.057878   6
+#> 7  combined  3.91529090 5.885955  1.875913   7
+#> 8  combined  3.80670528 5.859389  1.922122   8
+#> 9  combined  3.96125035 5.769473  1.495732   9
+#> 10 combined  3.46951678 5.165851  1.244634  10
+#> 11        s  0.14367301 2.144390 -1.841787   1
+#> 12        s  0.22193329 2.284173 -1.425292   2
+#> 13        s  0.08944556 2.210515 -2.138321   3
+#> 14        s  0.23117493 1.996168 -1.707685   4
+#> 15        s -0.06645497 1.963605 -1.996932   5
+#> 16        s -0.23284608 2.015788 -2.266432   6
+#> 17        s  0.22652984 2.251893 -1.527731   7
+#> 18        s  0.10208455 2.281827 -1.813819   8
+#> 19        s  0.15891847 2.288568 -1.900618   9
+#> 20        s  0.31121584 2.193857 -1.874738  10
+#> 21        d -0.23767265 1.705684 -1.880467   1
+#> 22        d -0.33547181 1.581980 -2.070901   2
+#> 23        d -0.06639804 2.210045 -1.802223   3
+#> 24        d -0.21123183 1.653691 -2.090981   4
+#> 25        d  0.11235128 2.029360 -1.728519   5
+#> 26        d  0.10877636 1.909676 -1.876703   6
+#> 27        d  0.93390054 2.468244 -1.390469   7
+#> 28        d  0.21049889 2.162436 -1.758649   8
+#> 29        d  0.04285633 2.343796 -2.055756   9
+#> 30        d -0.17446663 1.613849 -2.338567  10
+#> 31    fixed  3.06318626 5.006071  1.429051   1
+#> 32    fixed  3.01012545 5.035036  1.232748   2
+#> 33    fixed  3.33288284 5.070794  1.367818   3
+#> 34    fixed  2.97596186 5.046913  1.246229   4
+#> 35    fixed  3.20840602 5.261907  1.440324   5
+#> 36    fixed  3.28284181 5.266927  1.622155   6
+#> 37    fixed  3.08369143 4.901249  1.510426   7
+#> 38    fixed  3.35815811 5.020734  1.294276   8
+#> 39    fixed  3.20195729 5.604318  1.353049   9
+#> 40    fixed  3.35422041 5.358624  1.339721  10
 ```
 
 This can lead to some useful plotting:
@@ -220,12 +220,12 @@ Plotting
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22172541  3.22127980 0.01747097
-#> 2    service1 -0.07056833 -0.07136218 0.01531774
-#> 3   lectage.L -0.18996987 -0.19067454 0.01428177
-#> 4   lectage.Q  0.02393843  0.02261053 0.01173272
-#> 5   lectage.C -0.02527826 -0.02578302 0.01416652
-#> 6   lectage^4 -0.02031094 -0.02174745 0.01122081
+#> 1 (Intercept)  3.22267705  3.22452269 0.02213727
+#> 2    service1 -0.07260187 -0.07423609 0.01313804
+#> 3   lectage.L -0.18501808 -0.18751759 0.01818921
+#> 4   lectage.Q  0.02405490  0.02441686 0.01186001
+#> 5   lectage.C -0.02459851 -0.02408909 0.01346501
+#> 6   lectage^4 -0.02335060 -0.02325181 0.01242481
 ```
 
 And we can also plot this:
@@ -242,12 +242,12 @@ We can also quickly make caterpillar plots for the random-effect terms:
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 #>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.22599246  0.25097098 0.2985394
-#> 2         s       2 (Intercept) -0.06229065 -0.11287415 0.2851206
-#> 3         s       3 (Intercept)  0.26950589  0.25761638 0.2817762
-#> 4         s       4 (Intercept)  0.22514387  0.21662447 0.2866336
-#> 5         s       5 (Intercept)  0.06392735  0.08611845 0.3112211
-#> 6         s       6 (Intercept)  0.09866372  0.08245427 0.2644501
+#> 1         s       1 (Intercept)  0.09277845  0.08215722 0.3187676
+#> 2         s       2 (Intercept) -0.02007281 -0.04535959 0.3204536
+#> 3         s       3 (Intercept)  0.29955776  0.31264600 0.3169339
+#> 4         s       4 (Intercept)  0.23004921  0.22741757 0.2896952
+#> 5         s       5 (Intercept)  0.07953611  0.07506486 0.3063931
+#> 6         s       6 (Intercept)  0.12394938  0.11199365 0.2513063
 ```
 
 ``` r
@@ -303,11 +303,11 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
 #> Warning: executing %dopar% sequentially: no parallel backend registered
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.791733 3.178347e-04  193
-#> 2    1   2 3.268277 7.266088e-05  240
-#> 3    1   3 3.565191 5.879801e-05  254
-#> 4    1   4 3.850698 6.746706e-05  265
-#> 5    1   5 4.238028 1.837003e-04  176
+#> 1    1   1 2.766249 2.987675e-04  193
+#> 2    1   2 3.235268 6.437037e-05  240
+#> 3    1   3 3.518711 5.618275e-05  254
+#> 4    1   4 3.810250 6.907703e-05  265
+#> 5    1   5 4.194120 1.761070e-04  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we supplied to `newdata` is moved from the first to the fifth quintile in terms of the magnitude of the group factor coefficient. We can see here that the individual professor effect has a strong impact on the outcome variable. This can be shown graphically as well:
