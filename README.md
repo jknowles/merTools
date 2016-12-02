@@ -110,16 +110,16 @@ With `predictInterval` we obtain predictions that are more like the standard obj
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
 #>         fit      upr      lwr
-#> 1  3.102474 5.236406 1.192548
-#> 2  3.295667 5.232050 1.174451
-#> 3  3.447091 5.444162 1.337675
-#> 4  3.051432 4.971109 1.261833
-#> 5  3.326784 5.367482 1.117220
-#> 6  3.189199 5.143497 1.496050
-#> 7  4.180856 6.225887 2.219989
-#> 8  3.928560 5.921551 2.061202
-#> 9  3.809693 5.788328 1.796161
-#> 10 3.430701 5.455156 1.499765
+#> 1  3.130795 5.065004 1.037873
+#> 2  3.173705 5.174550 1.204999
+#> 3  3.336104 5.479436 1.134151
+#> 4  3.077739 5.081643 1.172218
+#> 5  3.266686 5.157929 1.430411
+#> 6  3.287117 5.357937 1.236689
+#> 7  4.207267 6.386736 2.291402
+#> 8  3.749406 5.843084 1.619215
+#> 9  3.835742 5.704999 1.744970
+#> 10 3.242602 5.140361 1.093461
 ```
 
 Note that `predictInterval` is slower because it is computing simulations. It can also return all of the simulated `yhat` values as an attribute to the predict object itself.
@@ -133,47 +133,47 @@ We can also explore the components of the prediction interval by asking `predict
 ``` r
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9, 
                 stat = 'median', which = "all")
-#>      effect         fit      upr       lwr obs
-#> 1  combined  3.21161258 5.319647  1.178516   1
-#> 2  combined  3.16186935 4.924017  1.177790   2
-#> 3  combined  3.36855715 5.164374  1.706623   3
-#> 4  combined  3.18975489 5.067483  1.153070   4
-#> 5  combined  3.28178669 5.012098  1.305008   5
-#> 6  combined  3.33090873 5.134874  1.057878   6
-#> 7  combined  3.91529090 5.885955  1.875913   7
-#> 8  combined  3.80670528 5.859389  1.922122   8
-#> 9  combined  3.96125035 5.769473  1.495732   9
-#> 10 combined  3.46951678 5.165851  1.244634  10
-#> 11        s  0.14367301 2.144390 -1.841787   1
-#> 12        s  0.22193329 2.284173 -1.425292   2
-#> 13        s  0.08944556 2.210515 -2.138321   3
-#> 14        s  0.23117493 1.996168 -1.707685   4
-#> 15        s -0.06645497 1.963605 -1.996932   5
-#> 16        s -0.23284608 2.015788 -2.266432   6
-#> 17        s  0.22652984 2.251893 -1.527731   7
-#> 18        s  0.10208455 2.281827 -1.813819   8
-#> 19        s  0.15891847 2.288568 -1.900618   9
-#> 20        s  0.31121584 2.193857 -1.874738  10
-#> 21        d -0.23767265 1.705684 -1.880467   1
-#> 22        d -0.33547181 1.581980 -2.070901   2
-#> 23        d -0.06639804 2.210045 -1.802223   3
-#> 24        d -0.21123183 1.653691 -2.090981   4
-#> 25        d  0.11235128 2.029360 -1.728519   5
-#> 26        d  0.10877636 1.909676 -1.876703   6
-#> 27        d  0.93390054 2.468244 -1.390469   7
-#> 28        d  0.21049889 2.162436 -1.758649   8
-#> 29        d  0.04285633 2.343796 -2.055756   9
-#> 30        d -0.17446663 1.613849 -2.338567  10
-#> 31    fixed  3.06318626 5.006071  1.429051   1
-#> 32    fixed  3.01012545 5.035036  1.232748   2
-#> 33    fixed  3.33288284 5.070794  1.367818   3
-#> 34    fixed  2.97596186 5.046913  1.246229   4
-#> 35    fixed  3.20840602 5.261907  1.440324   5
-#> 36    fixed  3.28284181 5.266927  1.622155   6
-#> 37    fixed  3.08369143 4.901249  1.510426   7
-#> 38    fixed  3.35815811 5.020734  1.294276   8
-#> 39    fixed  3.20195729 5.604318  1.353049   9
-#> 40    fixed  3.35422041 5.358624  1.339721  10
+#>      effect          fit      upr        lwr obs
+#> 1  combined  3.111958396 4.943808  1.4940381   1
+#> 2  combined  3.093686527 5.176210  1.3065683   2
+#> 3  combined  3.511803411 5.571129  1.4670349   3
+#> 4  combined  3.119560118 5.131889  1.1799435   4
+#> 5  combined  3.467088530 5.331159  1.1681849   5
+#> 6  combined  3.245864630 4.904752  1.4033114   6
+#> 7  combined  4.036193541 6.115898  2.0621964   7
+#> 8  combined  3.748513632 6.003187  2.0076774   8
+#> 9  combined  3.641876664 5.748033  1.4159384   9
+#> 10 combined  3.471088174 5.401857  1.3361724  10
+#> 11        s  0.248861309 1.811232 -1.6659799   1
+#> 12        s  0.128459923 1.789694 -1.9671084   2
+#> 13        s  0.008273590 1.848639 -1.9829211   3
+#> 14        s -0.021331241 2.153596 -1.8696251   4
+#> 15        s -0.007988803 2.125942 -2.0536626   5
+#> 16        s -0.085890059 1.929190 -1.8668811   6
+#> 17        s  0.394389421 2.190647 -1.5763180   7
+#> 18        s  0.253751751 2.210885 -1.6850443   8
+#> 19        s  0.455742843 2.395393 -1.5149178   9
+#> 20        s  0.386316751 2.514216 -1.8126796  10
+#> 21        d -0.215339888 2.042615 -2.3122159   1
+#> 22        d -0.152624069 1.747182 -1.9035313   2
+#> 23        d  0.050604270 1.500330 -2.1501256   3
+#> 24        d -0.133137713 1.861121 -2.1178827   4
+#> 25        d  0.249281449 2.053201 -1.7444232   5
+#> 26        d -0.026607427 1.732352 -1.8295888   6
+#> 27        d  0.669601437 2.759213 -1.0721587   7
+#> 28        d  0.417240514 2.375744 -1.7609038   8
+#> 29        d  0.079489553 2.022910 -1.7510263   9
+#> 30        d -0.330320125 1.735718 -2.1207048  10
+#> 31    fixed  2.953071789 4.883953  0.9544711   1
+#> 32    fixed  3.184726344 5.147560  1.1700889   2
+#> 33    fixed  3.130405050 5.175959  1.3433845   3
+#> 34    fixed  3.093313641 5.133146  1.0166365   4
+#> 35    fixed  3.298838876 5.143941  1.1291235   5
+#> 36    fixed  3.305773810 5.469737  1.3239511   6
+#> 37    fixed  3.222028828 5.126309  1.4131123   7
+#> 38    fixed  3.226066893 4.971335  1.0319547   8
+#> 39    fixed  3.202844458 4.956589  1.4295938   9
+#> 40    fixed  3.307815030 5.261969  1.3366628  10
 ```
 
 This can lead to some useful plotting:
@@ -220,12 +220,12 @@ Plotting
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22267705  3.22452269 0.02213727
-#> 2    service1 -0.07260187 -0.07423609 0.01313804
-#> 3   lectage.L -0.18501808 -0.18751759 0.01818921
-#> 4   lectage.Q  0.02405490  0.02441686 0.01186001
-#> 5   lectage.C -0.02459851 -0.02408909 0.01346501
-#> 6   lectage^4 -0.02335060 -0.02325181 0.01242481
+#> 1 (Intercept)  3.22407319  3.22097382 0.01853156
+#> 2    service1 -0.07218953 -0.07229397 0.01428395
+#> 3   lectage.L -0.18334696 -0.18383850 0.01807314
+#> 4   lectage.Q  0.02335868  0.02397666 0.01158134
+#> 5   lectage.C -0.02368226 -0.02613050 0.01401145
+#> 6   lectage^4 -0.02027953 -0.01961439 0.01386055
 ```
 
 And we can also plot this:
@@ -242,12 +242,12 @@ We can also quickly make caterpillar plots for the random-effect terms:
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 #>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.09277845  0.08215722 0.3187676
-#> 2         s       2 (Intercept) -0.02007281 -0.04535959 0.3204536
-#> 3         s       3 (Intercept)  0.29955776  0.31264600 0.3169339
-#> 4         s       4 (Intercept)  0.23004921  0.22741757 0.2896952
-#> 5         s       5 (Intercept)  0.07953611  0.07506486 0.3063931
-#> 6         s       6 (Intercept)  0.12394938  0.11199365 0.2513063
+#> 1         s       1 (Intercept)  0.16845279  0.17648452 0.3301535
+#> 2         s       2 (Intercept) -0.04663002 -0.03422610 0.3245762
+#> 3         s       3 (Intercept)  0.29151513  0.30577969 0.3076025
+#> 4         s       4 (Intercept)  0.21749434  0.21539088 0.3070408
+#> 5         s       5 (Intercept)  0.01928655  0.01486791 0.3020013
+#> 6         s       6 (Intercept)  0.10590551  0.10215057 0.1858483
 ```
 
 ``` r
@@ -278,12 +278,12 @@ A nice features `expectedRank` is that you can return the expected rank for all 
 ranks <- expectedRank(m1)
 head(ranks)
 #>   groupFctr groupLevel       term    estimate  std.error       ER pctER
-#> 2         s          1 _Intercept  0.16732717 0.08165627 1931.568    65
-#> 3         s          2 _Intercept -0.04409512 0.09234201 1368.161    46
-#> 4         s          3 _Intercept  0.30382116 0.05204066 2309.940    78
-#> 5         s          4 _Intercept  0.24756072 0.06641674 2151.827    72
-#> 6         s          5 _Intercept  0.05232306 0.08174091 1627.693    55
-#> 7         s          6 _Intercept  0.10191617 0.06648369 1772.548    60
+#> 2         s          1 _Intercept  0.16732718 0.08165628 1931.568    65
+#> 3         s          2 _Intercept -0.04409513 0.09234202 1368.161    46
+#> 4         s          3 _Intercept  0.30382117 0.05204066 2309.940    78
+#> 5         s          4 _Intercept  0.24756074 0.06641674 2151.827    72
+#> 6         s          5 _Intercept  0.05232307 0.08174092 1627.693    55
+#> 7         s          6 _Intercept  0.10191618 0.06648369 1772.548    60
 
 ggplot(ranks, aes(x = term, y = estimate)) + 
   geom_violin(fill = "gray50") + facet_wrap(~groupFctr) +
@@ -303,11 +303,11 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
 #> Warning: executing %dopar% sequentially: no parallel backend registered
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.766249 2.987675e-04  193
-#> 2    1   2 3.235268 6.437037e-05  240
-#> 3    1   3 3.518711 5.618275e-05  254
-#> 4    1   4 3.810250 6.907703e-05  265
-#> 5    1   5 4.194120 1.761070e-04  176
+#> 1    1   1 2.776327 2.864048e-04  193
+#> 2    1   2 3.233531 7.277366e-05  240
+#> 3    1   3 3.551668 5.668469e-05  254
+#> 4    1   4 3.816491 5.903682e-05  265
+#> 5    1   5 4.197212 1.880704e-04  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we supplied to `newdata` is moved from the first to the fifth quintile in terms of the magnitude of the group factor coefficient. We can see here that the individual professor effect has a strong impact on the outcome variable. This can be shown graphically as well:
@@ -335,7 +335,7 @@ fmVA <- glmer(r2 ~ (Anger + Gender + btype + situ)^2 +
            (1|id) + (1|item), family = binomial, 
            data = VerbAgg)
 #> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
-#> $checkConv, : Model failed to converge with max|grad| = 0.028633 (tol =
+#> $checkConv, : Model failed to converge with max|grad| = 0.0534956 (tol =
 #> 0.001, component 1)
 ```
 
@@ -349,16 +349,16 @@ newData <- wiggle(newData, var = "situ", values = unique(VerbAgg$situ))
 newData <- wiggle(newData, var = "Anger", values = unique(VerbAgg$Anger))
 head(newData, 10)
 #>    r2 Anger Gender btype  situ id        item
-#> 1   N    20      F curse other  3 S3WantCurse
-#> 2   N    20      F scold other  3 S3WantCurse
-#> 3   N    20      F shout other  3 S3WantCurse
-#> 4   N    20      F curse  self  3 S3WantCurse
-#> 5   N    20      F scold  self  3 S3WantCurse
-#> 6   N    20      F shout  self  3 S3WantCurse
-#> 7   N    11      F curse other  3 S3WantCurse
-#> 8   N    11      F scold other  3 S3WantCurse
-#> 9   N    11      F shout other  3 S3WantCurse
-#> 10  N    11      F curse  self  3 S3WantCurse
+#> 1   N    20      F curse other  5 S3WantCurse
+#> 2   N    20      F scold other  5 S3WantCurse
+#> 3   N    20      F shout other  5 S3WantCurse
+#> 4   N    20      F curse  self  5 S3WantCurse
+#> 5   N    20      F scold  self  5 S3WantCurse
+#> 6   N    20      F shout  self  5 S3WantCurse
+#> 7   N    11      F curse other  5 S3WantCurse
+#> 8   N    11      F scold other  5 S3WantCurse
+#> 9   N    11      F shout other  5 S3WantCurse
+#> 10  N    11      F curse  self  5 S3WantCurse
 ```
 
 The next step is familiar -- we simply pass this new dataset to `predictInterval` in order to generate predictions for these counterfactuals. Then we plot the predicted values against the continuous variable, `Anger`, and facet and group on the two categorical variables `situ` and `btype` respectively.
