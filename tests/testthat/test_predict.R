@@ -282,7 +282,7 @@ test_that("Median of PI is close to predict.lmer for complex group models", {
 test_that("Median of PI is close to predict.glmer for basic and complex grouping", {
   skip_on_cran()
   skip_on_travis()
-  set.seed(3845)
+  set.seed(8496)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:8), fac2 = LETTERS[12:19],
                    obs=1:20)
   d$x <- runif(nrow(d))
@@ -416,6 +416,56 @@ test_that("simResults option behaves", {
   out <- attr(preds2, "sim.results")
   expect_equal(ncol(out), 1000)
   expect_equal(nrow(out), 5)
+  m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+  preds1 <- predictInterval(m1, newdata = sleepstudy[1:5, ],
+                            returnSims = TRUE,
+                            which = "random", seed = 23151)
+  preds2 <- predictInterval(m1, newdata = sleepstudy[1:5, ], which = "fixed",
+                            returnSims = TRUE, seed = 23151)
+  preds3 <- predictInterval(m1, newdata = sleepstudy[1:5, ], which = "all",
+                            returnSims = TRUE, seed = 23151)
+  preds4 <- predictInterval(m1, newdata = sleepstudy[1:5, ],
+                            returnSims = TRUE, seed = 23151)
+  preds1b <- predictInterval(m1, newdata = sleepstudy[1:5, ],
+                            returnSims = TRUE,
+                            which = "random", seed = 23151,
+                            include.resid.var = FALSE)
+  preds2b <- predictInterval(m1, newdata = sleepstudy[1:5, ], which = "fixed",
+                            returnSims = TRUE, seed = 23151,
+                            include.resid.var = FALSE)
+  preds3b <- predictInterval(m1, newdata = sleepstudy[1:5, ], which = "all",
+                            returnSims = TRUE, seed = 23151,
+                            include.resid.var = FALSE)
+  preds4b <- predictInterval(m1, newdata = sleepstudy[1:5, ],
+                            returnSims = TRUE, seed = 23151,
+                            include.resid.var = FALSE)
+  expect_is(attr(preds1, "sim.results"), "matrix")
+  expect_gt(abs(mean(attr(preds1, "sim.results") - attr(preds2, "sim.results"))),
+                   200)
+  expect_is(attr(preds2, "sim.results"), "matrix")
+  expect_gt(abs(mean(attr(preds4, "sim.results") - attr(preds1, "sim.results"))),
+                   200)
+  expect_gt(abs(mean(attr(preds4, "sim.results") - attr(preds1, "sim.results"))),
+                   abs(mean(attr(preds1, "sim.results") - attr(preds2, "sim.results"))))
+  expect_is(attr(preds3, "sim.results"), "list")
+  expect_is(attr(preds4, "sim.results"), "matrix")
+  expect_is(attr(preds1b, "sim.results"), "matrix")
+  expect_is(attr(preds2b, "sim.results"), "matrix")
+  expect_is(attr(preds3b, "sim.results"), "list")
+  expect_is(attr(preds4b, "sim.results"), "matrix")
+  # Check that samples are wider for include.resid.var = TRUE
+  expect_gt(quantile(attr(preds1, "sim.results"), probs = 0.9) - quantile(attr(preds1b, "sim.results"), probs = 0.9),
+                   20)
+  expect_lt(quantile(attr(preds1, "sim.results"), probs = 0.1) - quantile(attr(preds1b, "sim.results"), probs = 0.1),
+                   -20)
+  expect_gt(quantile(attr(preds2, "sim.results"), probs = 0.9) - quantile(attr(preds2b, "sim.results"), probs = 0.9),
+                   20)
+  expect_lt(quantile(attr(preds2, "sim.results"), probs = 0.1) - quantile(attr(preds2b, "sim.results"), probs = 0.1),
+                   -20)
+  expect_gt(quantile(attr(preds4, "sim.results"), probs = 0.9) - quantile(attr(preds4b, "sim.results"), probs = 0.9),
+                   15)
+  expect_lt(quantile(attr(preds4, "sim.results"), probs = 0.1) - quantile(attr(preds4b, "sim.results"), probs = 0.1),
+                   -15)
 })
 
 # Test out of sample predictions----
@@ -452,7 +502,6 @@ context("Input validation checks")
 test_that("dplyr objects are successfully coerced", {
   skip_on_cran()
   set.seed(101)
-  library(dplyr); library(magrittr)
   data(sleepstudy)
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   predData <- sleepstudy %>% group_by(Subject) %>% dplyr::summarise(Days = mean(Days))
@@ -464,8 +513,6 @@ test_that("dplyr objects are successfully coerced", {
   predData2 <- as.data.frame(predData)
   preds1 <- predictInterval(m1, newdata = predData2, n.sims=2000)
   expect_true(sum(preds1$fit - preds2$fit) > -50 & sum(preds1$fit - preds2$fit) < 50)
-  detach("package:magrittr", character.only=TRUE)
-  detach("package:dplyr", character.only=TRUE)
 })
 
 # Model type warnings for non-binomial GLMM----
@@ -519,6 +566,168 @@ test_that("parallelization does not throw errors and generates good results", {
   detach("package:foreach", character.only=TRUE)
 })
 
+context("Test returning predict interval components")
+
+# Test the option to return different predictInterval components
+m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+form <- TICKS_BIN ~ YEAR + HEIGHT +(1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)
+data(grouseticks)
+grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
+grouseticks$YEAR  <- as.numeric(grouseticks$YEAR)
+grouseticks$HEIGHT  <- grouseticks$HEIGHT - 462.2
+glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks)
+
+test_that("Output is correct dimensions", {
+  pred1 <- predictInterval(m1, which = "random")
+  pred2 <- predictInterval(m2, which = "fixed")
+  pred3 <- predictInterval(m2, which = "all")
+  expect_equal(nrow(pred1), nrow(pred2))
+  expect_equal(ncol(pred1), 3)
+  expect_equal(ncol(pred2), 3)
+  expect_equal(ncol(pred3), 5)
+  expect_equal(nrow(pred3), 180*3)
+  expect_equal(nrow(pred1), 180)
+  expect_false(nrow(pred3) == nrow(pred2))
+  expect_true(nrow(pred3) > nrow(pred2))
+  pred1 <- predictInterval(m1, which = "random", stat = "mean")
+  pred2 <- predictInterval(m2, which = "fixed", stat = "mean")
+  pred3 <- predictInterval(m2, which = "all", stat = "mean")
+  expect_equal(nrow(pred1), nrow(pred2))
+  expect_equal(ncol(pred1), 3)
+  expect_equal(ncol(pred2), 3)
+  expect_equal(ncol(pred3), 5)
+  expect_equal(nrow(pred3), 180*3)
+  expect_equal(nrow(pred1), 180)
+  expect_false(nrow(pred3) == nrow(pred2))
+  expect_true(nrow(pred3) > nrow(pred2))
+  pred1 <- suppressWarnings(predictInterval(glmer3LevSlope, which = "random",
+                                            type = "linear.prediction"))
+  pred2 <- suppressWarnings(predictInterval(glmer3LevSlope, which = "random",
+                                            type = "probability"))
+  pred3 <- suppressWarnings(predictInterval(glmer3LevSlope, which = "all",
+                           type = "linear.prediction"))
+  pred4 <- suppressWarnings(predictInterval(glmer3LevSlope, which = "all",
+                                            type = "probability"))
+  expect_equal(nrow(pred1), nrow(pred2))
+  expect_equal(nrow(pred3), nrow(pred4))
+  expect_equal(ncol(pred1), 3)
+  expect_equal(ncol(pred2), 3)
+  expect_equal(ncol(pred3), 5)
+  expect_equal(ncol(pred3), 5)
+  expect_true(mean(pred2$fit) > mean(pred1$fit))
+  expect_equal(mean(pred2$fit), 0.5, tol = 0.01)
+  expect_equal(mean(pred1$fit), 0.00, tol = 0.05)
+  expect_equal(mean(pred4$fit), mean(grouseticks$TICKS_BIN), tol = 0.15)
+  expect_false(mean(pred4$fit) == mean(pred3$fit))
+  expect_equal(nrow(pred1), 403)
+  expect_equal(nrow(pred2), 403)
+  expect_equal(nrow(pred3), 403*5)
+  expect_equal(nrow(pred4), 403*5)
+})
+
+
+
+test_that("Compare random, fixed, include-resid", {
+  predInt1 <- predictInterval(m1)
+  predInt1$width <- predInt1[, 2] - predInt1[, 3]
+  predInt2 <- predictInterval(m1, which = "random")
+  predInt2$width <- predInt2[, 2] - predInt2[, 3]
+  predInt3 <- predictInterval(m1, which = "fixed")
+  predInt3$width <- predInt3[, 2] - predInt3[, 3]
+  predInt4 <- predictInterval(m1, which = "all")
+  predInt4$width <- predInt4[, 3] - predInt4[, 4]
+  predInt1b <- predictInterval(m1, include.resid.var = FALSE)
+  predInt1b$width <- predInt1b[, 2] - predInt1b[, 3]
+  predInt2b <- predictInterval(m1, which = "random", include.resid.var = FALSE)
+  predInt2b$width <- predInt2b[, 2] - predInt2b[, 3]
+  predInt3b <- predictInterval(m1, which = "fixed", include.resid.var = FALSE)
+  predInt3b$width <- predInt3b[, 2] - predInt3b[, 3]
+  predInt4b <- predictInterval(m1, which = "all", include.resid.var = FALSE)
+  predInt4b$width <- predInt4b[, 3] - predInt4b[, 4]
+  # These should be fairly close now since residual variance is the biggest
+  expect_true(!all(predInt1$width > predInt2$width))
+  expect_true(!all(predInt3$width > predInt2$width))
+  expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt1$width))
+  expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt2$width))
+  expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt3$width))
+  #
+  expect_true(all(predInt1b$width > predInt2b$width))
+  expect_true(all(predInt3b$width != predInt2b$width))
+  expect_true(all(predInt4b$width[predInt4b$effect == "combined"] > predInt2b$width))
+  expect_true(!all(predInt4b$width[predInt4b$effect == "combined"] > predInt1b$width))
+  # Fits
+  expect_true(all(predInt1$fit > predInt2$fit))
+  expect_true(all(predInt3$fit > predInt2$fit))
+  expect_true(all(predInt1$upr > predInt1b$upr))
+  expect_true(all(predInt1$lwr < predInt1b$lwr))
+  expect_true(all(predInt2$upr > predInt2b$upr))
+  expect_true(all(predInt2$lwr < predInt2b$lwr))
+  expect_true(all(predInt2$upr > predInt2b$upr))
+  expect_true(all(predInt3$lwr < predInt3b$lwr))
+  expect_true(all(predInt4$upr > predInt4b$upr))
+  expect_true(all(predInt4$lwr < predInt4b$lwr))
+
+  predInt1 <- predictInterval(m2)
+  predInt1$width <- predInt1[, 2] - predInt1[, 3]
+  predInt2 <- predictInterval(m2, which = "random")
+  predInt2$width <- predInt2[, 2] - predInt2[, 3]
+  predInt3 <- predictInterval(m2, which = "fixed")
+  predInt3$width <- predInt3[, 2] - predInt3[, 3]
+  predInt4 <- predictInterval(m2, which = "all")
+  predInt4$width <- predInt4[, 3] - predInt4[, 4]
+  predInt1b <- predictInterval(m2, include.resid.var = FALSE)
+  predInt1b$width <- predInt1b[, 2] - predInt1b[, 3]
+  predInt2b <- predictInterval(m2, which = "random", include.resid.var = FALSE)
+  predInt2b$width <- predInt2b[, 2] - predInt2b[, 3]
+  predInt3b <- predictInterval(m2, which = "fixed", include.resid.var = FALSE)
+  predInt3b$width <- predInt3b[, 2] - predInt3b[, 3]
+  predInt4b <- predictInterval(m2, which = "all", include.resid.var = FALSE)
+  predInt4b$width <- predInt4b[, 3] - predInt4b[, 4]
+  # These should be fairly close now since residual variance is the biggest variance
+  expect_true(!all(predInt1$width > predInt2$width))
+  expect_true(!all(predInt3$width > predInt2$width))
+  expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt1$width))
+  expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt2$width))
+  expect_true(!all(predInt4$width[predInt4$effect == "combined"] > predInt3$width))
+  #
+  expect_true(all(predInt1b$width > predInt2b$width))
+  expect_true(all(predInt3b$width != predInt2b$width))
+  expect_true(all(predInt4b$width[predInt4b$effect == "combined"] > predInt2b$width))
+  expect_true(!all(predInt4b$width[predInt4b$effect == "combined"] > predInt1b$width))
+  # Fits
+  expect_true(all(predInt1$fit > predInt2$fit))
+  expect_true(all(predInt3$fit > predInt2$fit))
+  expect_true(all(predInt1$upr > predInt1b$upr))
+  expect_true(all(predInt1$lwr < predInt1b$lwr))
+  expect_true(all(predInt2$upr > predInt2b$upr))
+  expect_true(all(predInt2$lwr < predInt2b$lwr))
+  expect_true(all(predInt2$upr > predInt2b$upr))
+  expect_true(all(predInt3$lwr < predInt3b$lwr))
+  expect_true(all(predInt4$upr > predInt4b$upr))
+  expect_true(all(predInt4$lwr < predInt4b$lwr))
+})
+
+test_that("Default is set to all effects", {
+  predInt1 <- predictInterval(m1, seed = 8231)
+  predInt2 <- predictInterval(m1, which = "full", seed = 8231)
+  expect_identical(predInt1, predInt2)
+  predInt1 <- predictInterval(m1, seed = 8231, include.resid.var = TRUE)
+  predInt2 <- predictInterval(m1, which = "full", seed = 8231,
+                              include.resid.var = TRUE)
+  expect_identical(predInt1, predInt2)
+  predInt1 <- predictInterval(m1, seed = 8231, include.resid.var = TRUE)
+  predInt2 <- predictInterval(m1, which = "all", seed = 8231,
+                              include.resid.var = TRUE)
+  expect_equal(mean(predInt1$fit - predInt2$fit[predInt2$effect == "combined"]),
+               0, tol = 0.14)
+  expect_equal(mean(predInt1$lwr - predInt2$lwr[predInt2$effect == "combined"]),
+               0, tol = 0.1)
+  expect_equal(mean(predInt1$upr - predInt2$upr[predInt2$effect == "combined"]),
+               0, tol=0.1)
+})
+
+
 # Test nested effect specifications----
 context("Test nested effect specifications")
 
@@ -541,4 +750,5 @@ test_that("Nested effects can work", {
   expect_equal(mean(predInt1[,2] - predInt2[,2]), 0, tol = sd(predInt1[,2])/10)
   expect_equal(mean(predInt1[,3] - predInt2[,3]), 0, tol = sd(predInt1[,3])/20)
 })
+
 

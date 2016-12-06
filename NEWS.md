@@ -2,8 +2,20 @@
 
 
 
-## merTools 0.2.2
+## merTools 0.3.0
 
+- Change the calculations of the residual variance. Previously residual variance 
+was used to inflate both the variance around the fixed parameters and around the 
+predicted values themselves. This was incorrect and resulted in overly conservative 
+estimates. Now the residual variance is appropriately only used around the 
+final predictions
+- Rebuilt the readme.md to include new information about new features
+- New option for `predictInterval` that allows the user to return the full 
+interval, the fixed component, the random component, or the fixed and each random 
+component separately for each observation
+- Fixed a bug with slope+intercept random terms that caused a miscalculation of 
+the random component
+- Add comparison to `rstanarm` to the Vignette
 - Make `expectedRank` output more `tidy` like and allow function to calculate 
 expected rank for all terms at once
   - Note, this breaks the API by changing the names of the columns in the output 
@@ -16,11 +28,9 @@ expected rank for all terms at once
   Note: fix was to disable the `.paropts` option for `predictInterval` ... user
   can still specify for *temporary* backward compatibility but this should be
   either removed or fixed in the permanent solution.
-
 - Fix issue #53 about problems with `predictInterval` when only specific levels
   of a grouping factor are in `newdata` with the colon specification of 
   interactions
-  
 - Fix issue #52 ICC wrong calculations ... we just needed to square the standard
   deviations that we pulled
 

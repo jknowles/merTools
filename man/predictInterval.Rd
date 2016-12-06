@@ -4,15 +4,20 @@
 \alias{predictInterval}
 \title{Predict from merMod objects with a prediction interval}
 \usage{
-predictInterval(merMod, newdata, level = 0.8, n.sims = 1000,
-  stat = c("median", "mean"), type = c("linear.prediction", "probability"),
-  include.resid.var = TRUE, returnSims = FALSE, seed = NULL,
-  .parallel = FALSE, .paropts = NULL)
+predictInterval(merMod, newdata, which = c("full", "fixed", "random", "all"),
+  level = 0.8, n.sims = 1000, stat = c("median", "mean"),
+  type = c("linear.prediction", "probability"), include.resid.var = TRUE,
+  returnSims = FALSE, seed = NULL, .parallel = FALSE, .paropts = NULL)
 }
 \arguments{
 \item{merMod}{a merMod object from lme4}
 
 \item{newdata}{a data.frame of new data to predict}
+
+\item{which}{a character specifying what to return, by default it returns the
+full interval, but you can also select to return only the fixed variation or
+the random component variation. If full is selected the resulting data.frame
+will be \code{nrow(newdata) * number of model levels} long}
 
 \item{level}{the width of the prediction interval}
 

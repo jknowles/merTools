@@ -314,6 +314,53 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
 
 These results are virtually identical to those above. 
 
+#### Step 3c: Comparison to rstanarm
+
+```{r echo=FALSE, message=FALSE}
+library(rstanarm)
+
+central_intervals <- function(x, prob) {
+  if (!identical(length(prob), 1L) || prob <= 0 || prob >= 1)
+    stop("'prob' should be a single number greater than 0 and less than 1.",
+         call. = FALSE)
+  alpha <- (1 - prob) / 2
+  probs <- c(alpha, 1 - alpha)
+  labs <- paste0(100 * probs, "%")
+  out <- t(apply(x, 2L, quantile, probs = probs))
+  structure(out, dimnames = list(colnames(x), labs))
+}
+
+```
+
+
+```{r, message=FALSE}
+PI.time.stan <- system.time({
+  fm_stan <- stan_lmer(Reaction ~ Days + (Days|Subject), data = sleepstudy, 
+                       verbose = FALSE, open_progress = FALSE, refresh = -1, 
+                       show_messages=FALSE)
+  zed <- posterior_predict(fm_stan)
+  PI.stan <- cbind(apply(zed, 2, median), central_intervals(zed, prob=0.95))
+})
+
+
+print(fm_stan)
+
+PI.stan <- as.data.frame(PI.stan)
+names(PI.stan) <- c("fit", "lwr", "upr")
+PI.stan <- PI.stan[, c("fit", "upr", "lwr")]
+comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
+                   data.frame(Predict.Method="rstanArm", x=(1:nrow(PI.stan))+0.1, PI.stan))
+
+ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
+  geom_point() + 
+  geom_linerange() +
+  labs(x="Index", y="Prediction w/ 95% PI") +
+  theme_bw() +  theme(legend.position="bottom") +
+  scale_color_brewer(type = "qual", palette = 2)
+
+```
+
+
 ### Computation time
 
 Our initial motivation for writing this function was to develop a method for 
@@ -326,8 +373,9 @@ of computational time? The table below lists the output of `system.time()` for
 all five methods for calculating prediction intervals for `merMod` objects.
 
 ```{r, echo=FALSE}
-times <- rbind(PI.time, PI.arm.time, PI.boot1.time, PI.boot2.time, PI.boot3.time)[,1:3]
-rownames(times) <- c("predictInterval()", "arm::sim()", "lme4::bootMer()-Method 1", "lme4::bootMer()-Method 2", "lme4::bootMer()-Method 3")
+times <- rbind(PI.time, PI.arm.time, PI.boot1.time, PI.boot2.time, PI.boot3.time, 
+               PI.time.stan)[, 1:3]
+rownames(times) <- c("predictInterval()", "arm::sim()", "lme4::bootMer()-Method 1", "lme4::bootMer()-Method 2", "lme4::bootMer()-Method 3", "rstanarm:predict")
 kable(times)
 ```
 
