@@ -35,7 +35,7 @@ a ggplot2 plot of the coefficient effects
 Plot the simulated random effects on a ggplot2 chart. Points that
 are distinguishable from zero (i.e. the confidence band based on \code{level}
 does not cross the red line) are highlighted. Currently, the plots are ordered
-according to the
+according to the grouping factor.
 }
 \examples{
  require(ggplot2); require(lme4);
