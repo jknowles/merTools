@@ -40,12 +40,13 @@ stripAttributes <- function(data){
 #' @param varList a list specifying filters to subset the data by when making the
 #' draw
 #' @param seed numeric, optional argument to set seed for simulations, ignored if type="average"
+#' @param ... additional arguments required by certain methods
 #' @return a data.frame with a single row representing the desired observation
 #' @details In cases of tie, ".", may be substituted for factors.
 #' @export draw
 #' @rdname draw
 draw <- function(object, type = c("random", "average"),
-                 varList = NULL, seed = NULL){
+                 varList = NULL, seed = NULL, ...){
   UseMethod("draw")
 }
 
@@ -64,13 +65,13 @@ draw <- function(object, type = c("random", "average"),
 #' draw(fm1, type = "average", varList = list("Subject" = "308"))
 #'
 draw.merMod <- function(object, type = c("random", "average"),
-                        varList = NULL, seed = NULL){
+                        varList = NULL, seed = NULL, ...){
   type <- match.arg(type, c("random", "average"), several.ok = FALSE)
   if(type == 'random'){
     out <- randomObs(object, varList, seed)
     return(out)
   } else if(type == 'average'){
-    out <- averageObs(object, varList)
+    out <- averageObs(object, varList, ...)
     return(out)
   }
 }
@@ -85,6 +86,7 @@ draw.merMod <- function(object, type = c("random", "average"),
 #' factor levels. See details for more.
 #' @details Each factor variable in the data frame has all factor levels from the
 #' full model.frame stored so that the new data is compatible with predict.merMod
+#' @export
 randomObs <- function(merMod, varList, seed = NULL){
   if(!missing(varList)){
     data <- subsetList(merMod@frame, varList)
@@ -152,6 +154,76 @@ subsetList <- function(data, list){
   return(data)
 }
 
+#' \code{findFormFuns} used by \link[merTools]{averageObs} to calculate proper
+#' averages
+#'
+#' The purpose is to properly derive data for the average observation in the
+#' data by being 'aware' of formulas that contain interactions and/or function
+#' calls. For example, in the old behavior, if the formula contained a square
+#' term specified as \code{I(x^2)}, we were returning the mean of x{^2} not the
+#' square of mean(x).
+#'
+#' @param merMod the merMod object from which to draw the average observation
+#' @param origData (default=NULL) a data frame containing the original,
+#'        untransformed data used to call the model. This MUST be specified if
+#'        the original variables used in formula function calls are NOT present
+#'        as 'main effects'.
+#'
+#' @return a data frame with a single row for the average observation, but with full
+#' factor levels. See details for more.
+#'
+#' @export
+findFormFuns <- function(merMod, origData = NULL) {
+  form <- getCall(merMod)$formula
+  form.rhs <- delete.response(terms(form))
+  modFrame <- model.frame(merMod)
+  if (identical(modFrame, origData)) {
+    origData = NULL
+  }
+  modFrame.tt <- terms(modFrame)
+  #This part is a bit kludgy but should work
+  modFrame.labels <- unique(unlist(strsplit(attr(modFrame.tt, "term.labels"), split = ":", fixed = TRUE)))
+  modFrame.resp <- setdiff(rownames(attr(modFrame.tt, "factors")),
+                           unique(unlist(strsplit(colnames(attr(modFrame.tt, "factors")), split = ":", fixed = TRUE))))
+  modFrame <- modFrame[, c(modFrame.resp, modFrame.labels)]
+  #Scan RHS of formula labels for parens -> exit if clean
+  paren_terms <- grepl("[()]", c(modFrame.resp, modFrame.labels))
+  if (!any(paren_terms)) {
+    out <- collapseFrame(modFrame)
+    return(out)
+  } else {
+    rhs.vars <- all.vars(form.rhs)
+    #Warning if functions are detected but neither MAIN EFFECTS NOR DATA are supplied
+    if (is.null(origData))  {
+      if (!all(rhs.vars %in% modFrame.labels)) {
+        warning(paste("\n\n  Functions detected in formula without user supplied data",
+                      "  or main effects of affected variables so returning means of",
+                      "  transformed variables.\n",
+                      "  Make sure that this is appropriate or supply untransformed",
+                      "  data using the 'origData' argument. See ?merTools::findFormFuns", sep = "\n"))
+        out <- collapseFrame(modFrame)
+        return(out)
+      } else {
+        #Functions Detected and Main Effects Present
+        out <- collapseFrame(modFrame)
+        for (i in which(paren_terms)) {
+          out[1,i] <- eval(parse(text = colnames(out)[i]), envir = out[, rhs.vars])
+        }
+        return(out)
+      }
+    } else {
+      #Functions Detected and Not All Main Effects Present ... but Data supplied
+      out <- collapseFrame(modFrame)
+      outData <- collapseFrame(origData)
+      for (i in which(paren_terms)) {
+        out[1,i] <- eval(parse(text = colnames(out)[i]), envir = outData)
+      }
+      return(out)
+    }
+  }
+}
+
+
 #' @title Find the average observation for a merMod object
 #' @name averageObs
 #' @description Extract a data frame of a single row that represents the
@@ -160,25 +232,43 @@ subsetList <- function(data, list){
 #' observation conditional on other characteristics.
 #' @param merMod a merMod object
 #' @param varList optional, a named list of conditions to subset the data on
+#' @param origData (default=NULL) a data frame containing the original,
+#'        untransformed data used to call the model. This MUST be specified of
+#'        the original variables used in formula function calls are NOT present
+#'        as 'main effects'.
+#' @param ... not used currently
 #' @return a data frame with a single row for the average observation, but with full
 #' factor levels. See details for more.
 #' @details Each character and factor variable in the data.frame is assigned to the
 #' modal category and each numeric variable is collapsed to the mean. Currently if
 #' mode is a tie, returns a "." Uses the collapseFrame function.
-averageObs <- function(merMod, varList = NULL){
+#' @export
+averageObs <- function(merMod, varList = NULL, origData = NULL, ...){
   if(!missing(varList)){
-    data <- subsetList(merMod@frame, varList)
+    if (is.null(origData)) {
+      data <- subsetList(merMod@frame, varList)
+    } else {
+      data <- subsetList(origData, varList)
+    }
     if(nrow(data) < 20 & nrow(data) > 2){
       warning("Subset has less than 20 rows, averages may be problematic.")
     }
     if(nrow(data) <3){
       warning("Subset has fewer than 3 rows, computing global average instead.")
-      data <- merMod@frame
+      if (is.null(origData)) {
+        data <- merMod@frame
+      } else {
+        data <- origData
+      }
     }
   } else{
-    data <- merMod@frame
+    if (is.null(origData)) {
+      data <- merMod@frame
+    } else {
+      data <- origData
+    }
   }
-  out <- collapseFrame(data)
+  out <- findFormFuns(merMod, origData = data)
   reTerms <- names(ngrps(merMod))
   if(any(reTerms %in% names(varList))){
     reTerms <- reTerms[!reTerms %in% names(varList)]

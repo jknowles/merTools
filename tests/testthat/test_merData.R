@@ -384,3 +384,79 @@ test_that("Nested specifications work", {
   expect_identical(as.character(data1$Subject), "308")
 })
 
+test_that("findFormFuns works", {
+  #Replicable toy data
+  set.seed(72167)
+  play <- data.frame(
+    a = runif(1000),
+    b = rnorm(1000),
+    c = rbinom(1000, 1, .35),
+    d = rpois(1000, 2)
+  )
+  play$d <- factor(play$d, labels = LETTERS[seq_along(unique(play$d))])
+  play$y <- play$a + 0.5*play$b + 2*play$c -1.8*(play$d=="B") + .43*(play$d == "C") + runif(100, 0, .35)
+  play$grp <- factor(sample(x = paste("Group", 1:43), size = 1000, replace = TRUE))
+  statmode <- function(x){
+    z <- table(as.vector(x))
+    m <- names(z)[z == max(z)]
+    if (length(m) == 1) {
+      return(m)
+    }
+    return(".")
+  }
+  trueMeans <- merTools:::collapseFrame(play)
+  #Estimate toy models
+  ##. Scenario 1: I()
+  s1 <- lmer(y ~ a + b + I(b^2) + c + d + (1|grp), data=play)
+  expect_equal(findFormFuns(s1)[names(trueMeans)], trueMeans)
+  expect_equal(findFormFuns(s1)$b^2, findFormFuns(s1)$`I(b^2)`)
+  expect_length(findFormFuns(s1), 7L)
+
+  ##. Scenario 2: log and no regular a
+  s2 <- lmer(y ~ log(a) + b + c + d + (1|grp), data=play)
+  expect_warning(findFormFuns(s2))
+  expect_false(suppressWarnings(findFormFuns(s2)$`log(a)` == log(trueMeans$a)))
+  expect_silent(findFormFuns(s2, origData = play))
+  expect_equal(findFormFuns(s2, origData = play)$`log(a)`, log(trueMeans$a))
+  ##. Scenario 3: 2 continuous interaction with *
+  s3 <- lmer(y ~ a*b + c + d + (1|grp), data=play)
+  expect_equal(findFormFuns(s3)[names(trueMeans)], trueMeans)
+  expect_length(findFormFuns(s3), 6L)
+  ##. Scenario 4: 2 continuous interaction with :
+  s4 <- lmer(y ~ a:b + c + d + (1|grp), data=play)
+  expect_equal(findFormFuns(s4)[names(trueMeans)], trueMeans)
+  expect_length(findFormFuns(s4), 6L)
+  ##. Scenario 5: 1 cont 1 cat interaction with *
+  s5 <- lmer(y ~ a + c + b*d + (1|grp), data = play)
+  expect_equal(findFormFuns(s5)[names(trueMeans)], trueMeans)
+  expect_length(findFormFuns(s5), 6L)
+  ##. Scenario 6: 1 cont 1 cat interaction with :
+  s6 <- lmer(y ~ a + c + b:d + (1|grp), data = play)
+  expect_equal(findFormFuns(s6)[names(trueMeans)], trueMeans)
+  expect_length(findFormFuns(s6), 6L)
+  ##. Scenario 7: 2 cat interaction with *
+  s7 <- lmer(y ~ a + b + c*d + (1|grp), data = play)
+  expect_equal(findFormFuns(s7)[names(trueMeans)], trueMeans)
+  expect_length(findFormFuns(s7), 6L)
+  ##. Scenario 8: 2 cat interaction with :
+  s8 <- lmer(y ~ a + b + c:d + (1|grp), data = play)
+  expect_equal(findFormFuns(s8)[names(trueMeans)], trueMeans)
+  expect_length(findFormFuns(s8), 6L)
+  ##. Scenario 9: function in random slope
+  s9 <- lmer(y ~ a + b + c + d + (1 + sqrt(abs(b))|grp), data = play)
+  expect_equal(findFormFuns(s9)[names(trueMeans)], trueMeans)
+  expect_equal(findFormFuns(s9)$`sqrt(abs(b))`, sqrt(abs(trueMeans$b)))
+  expect_length(findFormFuns(s9), 7L)
+  ##. Scenario 10: two columns in I with no main effects
+  s10 <- lmer(y ~ I(log(a) + b^3) + c + d + (1|grp), data=play)
+  expect_warning(findFormFuns(s10))
+  expect_false(suppressWarnings(findFormFuns(s10)$`I(log(a) + b^3)`) == log(trueMeans$a) + trueMeans$b^3)
+  expect_silent(findFormFuns(s10, origData = play))
+  expect_equal(findFormFuns(s10, origData = play)$`I(log(a) + b^3)`, log(trueMeans$a) + trueMeans$b^3)
+  ##. Test that draw, draw.merMod and averageObs accept origData and issue warning if appropriate
+  expect_warning(averageObs(s10))
+  expect_silent(averageObs(s10, origData = play))
+  expect_warning(merTools:::draw.merMod(s10, type = "average"))
+  expect_silent(merTools:::draw.merMod(s10, origData = play, type = "average"))
+  expect_silent(merTools:::draw.merMod(s10, type = "random"))
+})

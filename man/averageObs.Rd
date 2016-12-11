@@ -4,12 +4,19 @@
 \alias{averageObs}
 \title{Find the average observation for a merMod object}
 \usage{
-averageObs(merMod, varList = NULL)
+averageObs(merMod, varList = NULL, origData = NULL, ...)
 }
 \arguments{
 \item{merMod}{a merMod object}
 
 \item{varList}{optional, a named list of conditions to subset the data on}
+
+\item{origData}{(default=NULL) a data frame containing the original,
+untransformed data used to call the model. This MUST be specified of
+the original variables used in formula function calls are NOT present
+as 'main effects'.}
+
+\item{...}{not used currently}
 }
 \value{
 a data frame with a single row for the average observation, but with full
