@@ -189,7 +189,11 @@ findFormFuns <- function(merMod, origData = NULL) {
   #Scan RHS of formula labels for parens -> exit if clean
   paren_terms <- grepl("[()]", c(modFrame.resp, modFrame.labels))
   if (!any(paren_terms)) {
-    out <- collapseFrame(modFrame)
+    if(is.null(origData)){
+      out <- collapseFrame(modFrame)
+    } else{
+      out <- collapseFrame(origData)
+    }
     return(out)
   } else {
     rhs.vars <- all.vars(form.rhs)
@@ -233,7 +237,7 @@ findFormFuns <- function(merMod, origData = NULL) {
 #' @param merMod a merMod object
 #' @param varList optional, a named list of conditions to subset the data on
 #' @param origData (default=NULL) a data frame containing the original,
-#'        untransformed data used to call the model. This MUST be specified of
+#'        untransformed data used to call the model. This MUST be specified if
 #'        the original variables used in formula function calls are NOT present
 #'        as 'main effects'.
 #' @param ... not used currently

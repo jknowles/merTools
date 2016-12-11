@@ -12,7 +12,7 @@ averageObs(merMod, varList = NULL, origData = NULL, ...)
 \item{varList}{optional, a named list of conditions to subset the data on}
 
 \item{origData}{(default=NULL) a data frame containing the original,
-untransformed data used to call the model. This MUST be specified of
+untransformed data used to call the model. This MUST be specified if
 the original variables used in formula function calls are NOT present
 as 'main effects'.}
 
