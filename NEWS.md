@@ -4,6 +4,11 @@
 
 ## merTools 0.3.0
 
+- Improve handling of formulas. If the original `merMod` has functions specified 
+in the formula, the `draw` and `wiggle` functions will check for this and attempt 
+to respect these variable transformations. Where this is not possible a warning 
+will be issued. Most common transformations are respected as long as the the 
+original variable is passed untransformed to the model. 
 - Change the calculations of the residual variance. Previously residual variance 
 was used to inflate both the variance around the fixed parameters and around the 
 predicted values themselves. This was incorrect and resulted in overly conservative 

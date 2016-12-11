@@ -310,7 +310,8 @@ example6$situ <- "self"
 tempdf <- wiggle(example6, var = "Gender", c("M", "F"))
 tempdf <- wiggle(tempdf, var = "item", 
                     unique(VerbAgg$item))
-tempdf$yhat <- predict(m2, newdata = tempdf, type = "response")
+tempdf$yhat <- predict(m2, newdata = tempdf, type = "response", 
+                       allow.new.levels = TRUE)
 
 ggplot(tempdf, aes(x = item, y = yhat, group = Gender)) + 
   geom_line(aes(color = Gender))+ 

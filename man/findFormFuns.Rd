@@ -11,7 +11,7 @@ findFormFuns(merMod, origData = NULL)
 \item{merMod}{the merMod object from which to draw the average observation}
 
 \item{origData}{(default=NULL) a data frame containing the original,
-untransformed data used to call the model. This MUST be specified of
+untransformed data used to call the model. This MUST be specified if
 the original variables used in formula function calls are NOT present
 as 'main effects'.}
 }

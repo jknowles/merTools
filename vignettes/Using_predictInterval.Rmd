@@ -333,7 +333,7 @@ central_intervals <- function(x, prob) {
 ```
 
 
-```{r, message=FALSE}
+```{r, message=FALSE, fig.width=7, fig.height=4, fig.align="center"}
 PI.time.stan <- system.time({
   fm_stan <- stan_lmer(Reaction ~ Days + (Days|Subject), data = sleepstudy, 
                        verbose = FALSE, open_progress = FALSE, refresh = -1, 
