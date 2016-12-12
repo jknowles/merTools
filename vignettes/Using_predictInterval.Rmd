@@ -10,7 +10,7 @@ vignette: >
 ---
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide', cache=FALSE}
-library(knitr); library(merTools)
+library(ggplot2); library(knitr); library(merTools)
 knitr::opts_chunk$set(
   cache=FALSE,
   comment="#>",
