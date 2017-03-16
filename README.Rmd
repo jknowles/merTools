@@ -10,7 +10,7 @@ output:
 knitr::opts_chunk$set(
   collapse = TRUE, echo = TRUE,
   comment = "#>",
-  fig.path = "readmeplot/README-"
+  fig.path = "tools/readmeplot/README-"
 )
 ```
 

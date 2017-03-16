@@ -1,6 +1,8 @@
 # NEWS
 
+## merTools 0.3.1
 
+- Update the `readme.rmd` to package graphics with the R package, per CRAN
 
 ## merTools 0.3.0
 
