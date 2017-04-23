@@ -17,4 +17,3 @@ summary content printed to console
 \description{
 Print the results of a merMod list
 }
-

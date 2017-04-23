@@ -31,4 +31,3 @@ fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 REquantile(fm1, quantile = 0.25, groupFctr = "Subject")
 REquantile(fm1, quantile = 0.25, groupFctr = "Subject", term = "Days")
 }
-

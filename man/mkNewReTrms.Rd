@@ -26,4 +26,3 @@ a random effect terms object for a merMod
 Utility function to make RE terms objects
 }
 \keyword{internal}
-

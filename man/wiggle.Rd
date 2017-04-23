@@ -31,4 +31,3 @@ data(iris)
 wiggle(iris[3,], "Sepal.Width", values = c(1, 2, 3, 5))
 wiggle(iris[3:5,], "Sepal.Width", values = c(1, 2, 3, 5))
 }
-

@@ -24,4 +24,3 @@ Select a random observation from the model frame of a merMod
 Each factor variable in the data frame has all factor levels from the
 full model.frame stored so that the new data is compatible with predict.merMod
 }
-

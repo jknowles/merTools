@@ -106,4 +106,3 @@ d1$y <- d1$incidence / d1$size
  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "probability")
  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "linear.prediction")
 }
-

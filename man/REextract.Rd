@@ -28,4 +28,3 @@ rfx <- REextract(m2)
 #Note the column names
 head(rfx)
 }
-

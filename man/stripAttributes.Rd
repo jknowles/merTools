@@ -16,4 +16,3 @@ names, row.names, and class
 \description{
 Strips attributes off of a data frame that come with a merMod model.frame
 }
-
