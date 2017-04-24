@@ -15,3 +15,4 @@ a numeric vector for standard deviations of the random effects
 \description{
 Extract the standard deviation of the random effects from a merMod object
 }
+

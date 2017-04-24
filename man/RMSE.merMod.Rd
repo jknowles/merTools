@@ -23,3 +23,4 @@ require(lme4)
 m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 RMSE.merMod(m2)
 }
+

@@ -100,3 +100,4 @@ Cochran, WG. 1977. Sampling Techniques (3rd Edition). Wiley, New York.
 \seealso{
 \code{\link{expectedRank}}, \code{\link{predictInterval}}
 }
+

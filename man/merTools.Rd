@@ -4,7 +4,6 @@
 \name{merTools}
 \alias{merTools}
 \alias{merTools-package}
-\alias{merTools-package}
 \title{merTools: Provides methods for extracting and exploring results from merMod
 objects in the lme4 package.}
 \description{

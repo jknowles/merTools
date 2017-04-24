@@ -15,3 +15,4 @@ a numeric vector of the correlations among the effects
 \description{
 Extract the correlations between the slopes and the intercepts from a model
 }
+

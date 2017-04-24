@@ -39,3 +39,4 @@ Plot the simulated fixed effects on a ggplot2 chart
  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
  (p1 <- plotFEsim(FEsim(fm1)))
 }
+

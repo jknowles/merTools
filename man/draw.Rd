@@ -45,3 +45,4 @@ draw(fm1, type = "average")
 draw(fm1, type = "average", varList = list("Subject" = "308"))
 
 }
+

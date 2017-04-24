@@ -44,3 +44,4 @@ according to the grouping factor.
  #Plot just the random effects for the Days slope
  (p2 <- plotREsim(REsim(fm1)[REsim(fm1)$term=="Days",]))
 }
+

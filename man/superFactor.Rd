@@ -28,3 +28,4 @@ newLevs <- c("D", "E", "F")
 regularFactor <- superFactor(regularFactor, fullLev = newLevs)
 levels(regularFactor) # now super
 }
+

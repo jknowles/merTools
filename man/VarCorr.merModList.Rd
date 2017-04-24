@@ -23,3 +23,4 @@ deviations and correlations averaged across models in the list
 \description{
 Extract the variances and correlations for random effects from a merMod list
 }
+

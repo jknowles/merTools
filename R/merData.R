@@ -332,14 +332,28 @@ shuffle <- function(data){
   return(data[sample(nrow(data)),])
 }
 
+
+# wiggle for a single variable (var) and single set of changing values (values)
+single_wiggle <- function(data, var, values) {
+  tmp.data <- data
+  data <- do.call("rbind", replicate(length(values), data, simplify= FALSE))
+  data[, var] <- rep(values, each = nrow(tmp.data))
+  if(any(class(tmp.data[, var]) %in% c("factor", "ordered"))){
+    data[, var] <- superFactor(data[, var],
+                               fullLev = levels(tmp.data[, var]))
+    
+  }
+  return(data)
+}
+
 #' @title Assign an observation to different values
 #' @name wiggle
 #' @description Creates a new data.frame with copies of the original observation,
-#' each assigned to a different user specified value of a variable. Allows the
+#' each assigned to a different user-specified value of a variable. Allows the
 #' user to look at the effect of changing a variable on predicted values.
 #' @param data a data frame with one or more observations to be reassigned
-#' @param var a character specifying the name of the variable to adjust
-#' @param values a vector with the variables to assign to var
+#' @param varlist a character vector specifying the name(s) of the variable to adjust
+#' @param valueslist a list of vectors with the values to assign to var
 #' @return a data frame with each row in data assigned to all values for
 #' the variable chosen
 #' @details If the variable specified is a factor, then wiggle will return it
@@ -349,18 +363,19 @@ shuffle <- function(data){
 #' data(iris)
 #' wiggle(iris[3,], "Sepal.Width", values = c(1, 2, 3, 5))
 #' wiggle(iris[3:5,], "Sepal.Width", values = c(1, 2, 3, 5))
-wiggle <- function(data, var, values){
-  tmp.data <- data
-  while(nrow(data) < length(values) * nrow(tmp.data)){
-    data <- rbind(data, tmp.data)
+#' wiggle(iris[3,], c("Sepal.Width", "Petal.Length"), list(c(1,2,3,5), c(3,5,6)))
+#' wiggle(iris[3:5,], c("Sepal.Width", "Petal.Length"), list(c(1,2,3,5), c(3,5,6)))
+wiggle <- function(data, varlist, valueslist) {
+  if (length(varlist) != length(valueslist)) stop("varlist and valueslist must be equi-length.")
+  n_var <- length(varlist)
+  if (n_var == 1) {
+    return(single_wiggle(data, varlist[[1]], valueslist[[1]]))
+  } else {
+    temp <- single_wiggle(data, varlist[[1]], valueslist[[1]])
+    temp <- split(temp, f= varlist[[1]])
+    varlist <- varlist[-1]; valueslist <- valueslist[-1]
+    return(do.call("rbind", lapply(temp, wiggle, varlist= varlist, valueslist= valueslist)))
   }
-  data[, var] <- rep(values, each = nrow(tmp.data))
-  if(any(class(tmp.data[, var]) %in% c("factor", "ordered"))){
-    data[, var] <- superFactor(data[, var],
-                               fullLev = levels(tmp.data[, var]))
-
-  }
-  return(data)
 }
 
 #' @title Identify group level associated with RE quantile

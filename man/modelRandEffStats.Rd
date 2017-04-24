@@ -15,3 +15,4 @@ a data.frame
 \description{
 Extract data.frame of random effect statistics from merMod List
 }
+
