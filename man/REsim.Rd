@@ -41,3 +41,4 @@ m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 re2 <- REsim(m2, 25)
 head(re2)
 }
+

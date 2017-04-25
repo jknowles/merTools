@@ -244,16 +244,16 @@ test_that("Errors and messages are issued", {
 context("Test observation wiggle")
 ################################################
 
-test_that("Row and column lengths are correct", {
+test_that("Row and column lengths are correct -- single_wiggle", {
   data1 <- grouseticks[5:9, ]
-data1a <- wiggle(data1, var = "BROOD", values = c("606", "602", "537"))
-  data1b <- wiggle(data1a, var = "YEAR", values = c("96", "97"))
+data1a <- wiggle(data1, var = "BROOD", values = list(c("606", "602", "537")))
+  data1b <- wiggle(data1a, var = "YEAR", values = list(c("96", "97")))
   data2 <- grouseticks[3, ]
-  data2a <- wiggle(data2, var = "BROOD", values = c("606", "602", "537"))
-  data2b <- wiggle(data2a, var = "YEAR", values = c("96", "97"))
+  data2a <- wiggle(data2, var = "BROOD", values = list(c("606", "602", "537")))
+  data2b <- wiggle(data2a, var = "YEAR", values = list(c("96", "97")))
   data3 <- grouseticks[12:14, ]
-  data3a <- wiggle(data3, var = "BROOD", values = c("606"))
-  data3b <- wiggle(data3a, var = "YEAR", values = c("96", "97"))
+  data3a <- wiggle(data3, var = "BROOD", values = list(c("606")))
+  data3b <- wiggle(data3a, var = "YEAR", values = list(c("96", "97")))
   expect_equal(nrow(data1), 5)
   expect_equal(nrow(data1a), 15)
   expect_equal(nrow(data1b), 30)
@@ -270,28 +270,28 @@ data1a <- wiggle(data1, var = "BROOD", values = c("606", "602", "537"))
   expect_equal(length(data3), length(data3a))
   expect_equal(length(data3a), length(data3b))
   data4 <- wiggle(data3, var = "BROOD",
-                     values = REquantile(glmer3Lev,
+                     values = list(REquantile(glmer3Lev,
                                          quantile = c(0.25, 0.5, 0.75),
-                                         group = "BROOD"))
+                                         group = "BROOD")))
   expect_true(all(table(as.character(data4$BROOD),
                         as.character(data4$INDEX)) ==1))
 
 })
 
 
-test_that("Values are placed correctly", {
+test_that("Values are placed correctly -- single_wiggle", {
   data1 <- grouseticks[5:9, ]
-  data1a <- wiggle(data1, var = "BROOD", values = c("606", "602", "537"))
-  data1b <- wiggle(data1a, var = "YEAR", values = c("96", "97"))
+  data1a <- wiggle(data1, var = "BROOD", list(values = c("606", "602", "537")))
+  data1b <- wiggle(data1a, var = "YEAR", values = list(c("96", "97")))
   data2 <- grouseticks[3, ]
-  data2a <- wiggle(data2, var = "BROOD", values = c("606", "602", "537"))
-  data2b <- wiggle(data2a, var = "YEAR", values = c("96", "97"))
+  data2a <- wiggle(data2, var = "BROOD", values = list(c("606", "602", "537")))
+  data2b <- wiggle(data2a, var = "YEAR", values = list(c("96", "97")))
   data3 <- grouseticks[12:14, ]
-  data3a <- wiggle(data3, var = "BROOD", values = c("606"))
-  data3b <- wiggle(data3a, var = "YEAR", values = c("96", "97"))
+  data3a <- wiggle(data3, var = "BROOD", values = list(c("606")))
+  data3b <- wiggle(data3a, var = "YEAR", values = list(c("96", "97")))
   data4 <- Orthodont[15, ]
-  data4a <- wiggle(data4, var = "age", values = c(10, 11, 12))
-  data4b <- wiggle(data4a, var = "Sex", values = c("Male", "Female"))
+  data4a <- wiggle(data4, var = "age", values = list(c(10, 11, 12)))
+  data4b <- wiggle(data4a, var = "Sex", values = list(c("Male", "Female")))
   expect_false(any(unique(data1$BROOD) %in% unique(data1a$BROOD)))
   expect_false(any(unique(data1$BROOD) %in% unique(data1b$BROOD)))
   expect_false(any(unique(data1a$YEAR) %in% unique(data1b$YEAR)))
@@ -318,6 +318,41 @@ test_that("Values are placed correctly", {
   expect_true(all(unique(data4a$Sex) %in% c("Male", "Female")))
   expect_true(all(unique(data4b$Sex) %in% c("Male", "Female")))
 })
+
+test_that("we can use wiggle for multiple variables", {
+  data1 <- grouseticks[5:9, ]
+  data1a <- wiggle(data1, var = c("BROOD", "YEAR"), 
+                   list(c("606", "602", "537"), c("96", "97")))
+  data3 <- grouseticks[12:14, ]
+  data3a <- wiggle(data3, var = c("BROOD", "YEAR"), list(c("606"), c("96", "97")))
+  data4 <- Orthodont[15, ]
+  data4a <- wiggle(data4, var = c("age", "Sex"), list(c(10, 11, 12), c("Male", "Female")))
+  
+  # tests 1 -- row and columns
+  expect_equal(nrow(data1a), nrow(data1) * 3  * 2)
+  expect_equal(nrow(data3a), nrow(data3) * 1  * 2)
+  expect_equal(nrow(data4a), nrow(data4) * 3  * 2)
+  expect_equal(ncol(data1a), ncol(data1))
+  expect_equal(ncol(data3a), ncol(data3))
+  expect_equal(ncol(data4a), ncol(data4))
+  
+  # tests 2 -- values
+  expect_false(any(unique(data1$BROOD) %in% unique(data1a$BROOD)))
+  expect_false(any(unique(data1$YEAR) %in% unique(data1a$YEAR)))
+  expect_true(all.equal(sort(as.character(unique(data1a$BROOD))), c("537", "602", "606")))
+  expect_true(all.equal(sort(as.character(unique(data1a$YEAR))), c("96", "97")))
+  
+  expect_false(any(unique(data3$BROOD) %in% unique(data3a$BROOD)))
+  expect_false(any(unique(data3$YEAR) %in% unique(data3a$YEAR)))
+  expect_true(all.equal(sort(as.character(unique(data3a$BROOD))), "606"))
+  expect_true(all.equal(sort(as.character(unique(data3a$YEAR))), c("96", "97")))
+  
+  expect_true(all(unique(data4a$age) %in% 10:12))
+  expect_true(all(unique(data4a$Sex) %in% (c("Female", "Male"))))
+  expect_true(all.equal(sort(unique(data4a$age)), 10:12))
+  expect_true(all.equal(sort(as.character(unique(data4a$Sex))), c("Female", "Male")))
+})
+
 
 ###############################################
 #Test average observation extraction----

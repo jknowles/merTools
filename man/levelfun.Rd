@@ -10,3 +10,4 @@ levelfun(x, nl.n, allow.new.levels = FALSE)
 Parse merMod levels
 }
 \keyword{internal}
+

@@ -23,3 +23,4 @@ A shiny app
 \code{shinyMer} launches a shiny app that allows you to interactively
 explore an estimated merMod using functions from \code{merTools}.
 }
+

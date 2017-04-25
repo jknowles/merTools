@@ -35,3 +35,4 @@ large merMod object using bootstraps on a subset of the data.
 resultMatrix <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20)
 }
 }
+
