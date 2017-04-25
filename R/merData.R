@@ -353,7 +353,7 @@ single_wiggle <- function(data, var, values) {
 #' user to look at the effect on predicted values of changing either a single variable 
 #' or multiple variables.
 #' @param data a data frame with one or more observations to be reassigned
-#' @param varlist a character vector specifying the names of the variable to adjust
+#' @param varlist a character vector specifying the name(s) of the variable to adjust
 #' @param valueslist a list of vectors with the values to assign to var
 #' @return a \code{data.frame} with each row assigned to the one of the new variable combinations.
 #' All variable combinations are returned, eg wiggling two variables with 3 and 4 variables 
