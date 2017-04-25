@@ -9,18 +9,20 @@ wiggle(data, varlist, valueslist)
 \arguments{
 \item{data}{a data frame with one or more observations to be reassigned}
 
-\item{varlist}{a character vector specifying the name(s) of the variable to adjust}
+\item{varlist}{a character vector specifying the names of the variable to adjust}
 
 \item{valueslist}{a list of vectors with the values to assign to var}
 }
 \value{
-a data frame with each row in data assigned to all values for
-the variable chosen
+a \code{data.frame} with each row assigned to the one of the new variable combinations.
+All variable combinations are returned, eg wiggling two variables with 3 and 4 variables 
+respectively will return a new dataset with \code{3 * 4 = 12} observations.
 }
 \description{
 Creates a new data.frame with copies of the original observation,
 each assigned to a different user-specified value of a variable. Allows the
-user to look at the effect of changing a variable on predicted values.
+user to look at the effect on predicted values of changing either a single variable 
+or multiple variables.
 }
 \details{
 If the variable specified is a factor, then wiggle will return it
