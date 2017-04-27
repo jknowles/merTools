@@ -275,7 +275,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     for(j in names(groupsizes)){ #for every group of random e
 
       groupExtraPrecision = 0
-      groupVar = (attr(VarCorr(cvoteg)[[j]],"stddev")["(Intercept)"])^2
+      groupVar = (attr(VarCorr(merMod)[[j]],"stddev")["(Intercept)"])^2
       reMatrix <- attr(ranef(merMod, condVar = TRUE)[[j]], which = "postVar")
       for (eff in 1:dim(reMatrix)[3]) {
         term = 1/(reMatrix[1,1,eff] + groupVar)
@@ -292,15 +292,18 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     if (intercept.variance < 0) {
         warning("fix.intercept.variance got negative variance; better turn it off.")
     }
-    ratio = sqrt(intercept.variance/vcov.tmp[1,1])
+    ratio = intercept.variance/vcov.tmp[1,1]
+    prec.tmp = solve(vcov.tmp)
+    prec.tmp[1,1] <- prec.tmp[1,1] / ratio
     vcov.tmp[1,] = vcov.tmp[1,] * ratio
-    vcov.tmp[,1] = vcov.tmp[,1] * ratio
+    vcov.tmp = solve(prec.tmp, tol=1e-50)
   }
-  for (term in ignore.fixed.terms) {
-        vcov.tmp[term,] <- rep(0,length(vcov.tmp[term,]))
-        vcov.tmp[,term] <- rep(0,length(vcov.tmp[term,]))
-
-        vcov.tmp[term,term] <- 1e-100
+  if (length(ignore.fixed.terms) > 0) {
+      prec.tmp = solve(vcov.tmp)
+      for (term in ignore.fixed.terms) {
+            prec.tmp[term,term] <- prec.tmp[term,term] * 1e15
+      }
+      vcov.tmp = solve(prec.tmp, tol=1e-50)
   }
   if(n.sims > 2000 | .parallel){
     if(.parallel){
