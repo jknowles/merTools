@@ -201,9 +201,9 @@ effects as fully-known (that is, with an effectively 0 variance.) This is done
 using the `ignore.fixed.effects` argument.
 
 ```{r ShowFat2, message=FALSE, warning=FALSE}
-predictInterval(ifmodel, ais[1,], include.resid.var=0, ignore.fixed.terms = 1) #predict the average body fat for a group of 196cm female baseball players, taking the global intercept (mean body fat) as fully known
-predictInterval(ifmodel, ais[1,], include.resid.var=0, ignore.fixed.terms = "(Intercept)") #Same as above
-predictInterval(ifmodel, ais[1,], include.resid.var=0, ignore.fixed.terms = 1:2) #as above, taking the first two fixed effects (intercept and height effect) as fully known
+predictInterval(fatmodel, ais[1,], include.resid.var=0, ignore.fixed.terms = 1) #predict the average body fat for a group of 196cm female baseball players, taking the global intercept (mean body fat) as fully known
+predictInterval(fatmodel, ais[1,], include.resid.var=0, ignore.fixed.terms = "(Intercept)") #Same as above
+predictInterval(fatmodel, ais[1,], include.resid.var=0, ignore.fixed.terms = 1:2) #as above, taking the first two fixed effects (intercept and height effect) as fully known
 ```
 
 The second way is to use an ad-hoc variance adjustment, with the
@@ -217,7 +217,7 @@ precision equal to the of the precisions due to the individual groups at that
 level.
 
 ```{r ShowFat2, message=FALSE, warning=FALSE}
-predictInterval(ifmodel, ais[1,], include.resid.var=0, fix.intercept.variance = T) #predict the average body fat for a group of 196cm female baseball players, using an ad-hoc correction for the covariance of the intercept with the random intercept effects.
+predictInterval(fatmodel, ais[1,], include.resid.var=0, fix.intercept.variance = T) #predict the average body fat for a group of 196cm female baseball players, using an ad-hoc correction for the covariance of the intercept with the random intercept effects.
 ```
 
 A few notes about these two arguments:

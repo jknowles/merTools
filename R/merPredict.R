@@ -269,41 +269,41 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   vcov.tmp <- as.matrix(vcov(merMod))
   if (fix.intercept.variance) {
     #Assuming all random effects include intercepts.
-    intercept.variance = vcov.tmp[1,1]
+    intercept.variance <-v cov.tmp[1,1]
 
-    groupsizes = ngrps(merMod)
+    groupsizes <- ngrps(merMod)
     for(j in names(groupsizes)){ #for every group of random e
 
-      groupExtraPrecision = 0
-      groupVar = (attr(VarCorr(merMod)[[j]],"stddev")["(Intercept)"])^2
+      groupExtraPrecision <- 0
+      groupVar <- (attr(VarCorr(merMod)[[j]],"stddev")["(Intercept)"])^2
       reMatrix <- attr(ranef(merMod, condVar = TRUE)[[j]], which = "postVar")
       for (eff in 1:dim(reMatrix)[3]) {
-        term = 1/(reMatrix[1,1,eff] + groupVar)
+        term <- 1/(reMatrix[1,1,eff] + groupVar)
         if (term > 0) {
-            groupExtraPrecision = groupExtraPrecision + term
+            groupExtraPrecision <- groupExtraPrecision + term
         } else {
             warning("fix.intercept.variance got negative precision; better turn it off.")
         }
       }
-      intercept.variance = intercept.variance - 1/groupExtraPrecision
+      intercept.variance <- intercept.variance - 1/groupExtraPrecision
     }
 
 
     if (intercept.variance < 0) {
         warning("fix.intercept.variance got negative variance; better turn it off.")
     }
-    ratio = intercept.variance/vcov.tmp[1,1]
-    prec.tmp = solve(vcov.tmp)
+    ratio <- intercept.variance/vcov.tmp[1,1]
+    prec.tmp <- solve(vcov.tmp)
     prec.tmp[1,1] <- prec.tmp[1,1] / ratio
-    vcov.tmp[1,] = vcov.tmp[1,] * ratio
-    vcov.tmp = solve(prec.tmp, tol=1e-50)
+    vcov.tmp[1,] <- vcov.tmp[1,] * ratio
+    vcov.tmp <- solve(prec.tmp, tol=1e-50)
   }
   if (length(ignore.fixed.terms) > 0) {
-      prec.tmp = solve(vcov.tmp)
+      prec.tmp <- solve(vcov.tmp)
       for (term in ignore.fixed.terms) {
             prec.tmp[term,term] <- prec.tmp[term,term] * 1e15
       }
-      vcov.tmp = solve(prec.tmp, tol=1e-50)
+      vcov.tmp <- solve(prec.tmp, tol=1e-50)
   }
   if(n.sims > 2000 | .parallel){
     if(.parallel){
