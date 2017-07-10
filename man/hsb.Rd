@@ -41,4 +41,3 @@ Stephen W. Raudenbush and Anthony S. Bryk (2002). Hierarchical
 Linear Models: Applications and Data Analysis Methods (2nd ed.). SAGE.
 }
 \keyword{datasets}
-

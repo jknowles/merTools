@@ -1,5 +1,14 @@
 # NEWS
 
+## merTools 0.4.0
+
+### New Features
+- Added vignette on using multilevel models with multiply imputed data
+
+### Bug Fixes
+- Fix bug that returned NaN for `std.error` of a multiply imputed `merModList` 
+when calling `modelRandEffStats`
+
 ## merTools 0.3.1
 
 - Update the `readme.rmd` to package graphics with the R package, per CRAN

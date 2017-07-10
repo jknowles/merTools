@@ -23,4 +23,3 @@ thetaExtract(fm1) #(a numeric vector of the covariance parameters)
 \seealso{
 merMod
 }
-

@@ -16,4 +16,3 @@ of observations, and adjusted R squared
 \description{
 Extract model information from a merMod
 }
-

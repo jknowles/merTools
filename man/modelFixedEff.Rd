@@ -17,4 +17,3 @@ a data.frame of the averaged fixed effect parameters
 \description{
 Extract averaged fixed effect parameters across a list of merMod objects
 }
-

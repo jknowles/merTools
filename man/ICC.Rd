@@ -25,4 +25,3 @@ Calculate the intraclass correlation using mixed effect models
 data(sleepstudy)
 ICC(outcome = "Reaction", group = "Subject", data = sleepstudy)
 }
-

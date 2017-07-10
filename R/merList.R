@@ -48,8 +48,9 @@ modelRandEffStats <- function(modList){
   effList <- lapply(modList, tidy, effects = "ran_pars")
   effList <- do.call(rbind, effList)
   out <- effList %>% group_by(term, group) %>%
-    summarize(estimate = mean(estimate),
-              std.error = sd(estimate))
+    summarize(est = mean(estimate),
+              std.error = sd(estimate)) %>%
+    rename(estimate = est)
   return(as.data.frame(out))
 }
 

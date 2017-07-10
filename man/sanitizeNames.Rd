@@ -15,4 +15,3 @@ a data frame with variable names cleaned to remove factor() construction
 \description{
 Strips out transformations from variable names in data frames
 }
-

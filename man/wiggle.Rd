@@ -9,7 +9,7 @@ wiggle(data, varlist, valueslist)
 \arguments{
 \item{data}{a data frame with one or more observations to be reassigned}
 
-\item{varlist}{a character vector specifying the names of the variable to adjust}
+\item{varlist}{a character vector specifying the name(s) of the variable to adjust}
 
 \item{valueslist}{a list of vectors with the values to assign to var}
 }
@@ -35,4 +35,3 @@ wiggle(iris[3:5,], "Sepal.Width", values = c(1, 2, 3, 5))
 wiggle(iris[3,], c("Sepal.Width", "Petal.Length"), list(c(1,2,3,5), c(3,5,6)))
 wiggle(iris[3:5,], c("Sepal.Width", "Petal.Length"), list(c(1,2,3,5), c(3,5,6)))
 }
-

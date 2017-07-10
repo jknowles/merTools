@@ -102,4 +102,3 @@ ranking hospitals based on outcome: results from The Netherlands Stroke Survey.
 \emph{QJM: An International Journal of Medicine}. 2010;103(2):99-108.
 doi:10.1093/qjmed/hcp169
 }
-

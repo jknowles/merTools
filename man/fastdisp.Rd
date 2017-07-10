@@ -35,4 +35,3 @@ system.time(fastdisp(m1))
 \seealso{
 \code{\link[arm]{display}}
 }
-
