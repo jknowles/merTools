@@ -74,6 +74,39 @@ modelFixedEff <- function(modList, ...){
   return(as.data.frame(out))
 }
 
+
+#' Extract fixed-effects estimates for a merModList
+#'
+#' @inheritParams lme4::fixef
+#' @return a named, numeric vector of fixed-effects estimates.
+#' @details Extract the estimates of the fixed-effects parameters from a list of
+#' fitted \code{merMod} models. Takes the mean of the individual \code{fixef}
+#' objects for each of the component models in the \code{merModList}.
+#' @export
+fixef.merModList <- function(object, add.dropped = FALSE, ...){
+  Reduce(`+`, lapply(object, fixef)) / length(object)
+}
+
+#' Extract random-effects estimates for a merModList
+#'
+#' @inheritParams lme4::ranef
+#' @return a named, numeric vector of random-effects estimates.
+#' @details Extract the estimates of the random-effects parameters from a list of
+#' fitted \code{merMod} models. Takes the mean of the individual \code{ranef}
+#' objects for each of the component models in the \code{merModList}.
+#' @export
+ranef.merModList <- function(object, add.dropped = FALSE, ...){
+  levels <- getME(object[[1]], "n_rfacs")
+  re <- vector(length = levels, mode = "list")
+  for(i in seq_along(1:levels)){
+    # <- Reduce(`+`, lapply(object, ranef)[i]) / length(object)
+  re[i]  <- lapply(Reduce(`+`, lapply(mod, ranef)[1]), function(x) x/length(mod))
+  }
+  names(re) <- names(ranef(mod[[1]]))
+  return(re)
+}
+
+
 #' Extract the variances and correlations for random effects from a merMod list
 #' @inheritParams lme4::VarCorr
 #' @param rdig the number of digits to round to, integer

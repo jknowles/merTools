@@ -2,7 +2,9 @@
 
 S3method(VarCorr,merModList)
 S3method(draw,merMod)
+S3method(fixef,merModList)
 S3method(print,merModList)
+S3method(ranef,merModList)
 export(FEsim)
 export(ICC)
 export(REcorrExtract)

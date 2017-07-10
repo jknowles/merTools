@@ -4,6 +4,7 @@
 
 ### New Features
 - Added vignette on using multilevel models with multiply imputed data
+- Added `fixef` and `ranef` generics for `merModList` objects
 
 ### Bug Fixes
 - Fix bug that returned NaN for `std.error` of a multiply imputed `merModList` 
