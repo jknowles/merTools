@@ -40,9 +40,9 @@
 #' \describe{
 #'     \item{\code{fit}}{The center of the distribution of predicted values as defined by
 #'     the \code{stat} parameter.}
-#'     \item{\code{lwr}}{The lower confidence interval bound corresponding to the quantile cut
+#'     \item{\code{lwr}}{The lower prediction interval bound corresponding to the quantile cut
 #'     defined in \code{level}.}
-#'     \item{\code{upr}}{The upper confidence interval bound corresponding to the quantile cut
+#'     \item{\code{upr}}{The upper prediction interval bound corresponding to the quantile cut
 #'     defined in \code{level}.}
 #'   }
 #' If returnSims = TRUE, then the individual simulations are attached to this
