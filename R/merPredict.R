@@ -269,7 +269,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   vcov.tmp <- as.matrix(vcov(merMod))
   if (fix.intercept.variance) {
     #Assuming all random effects include intercepts.
-    intercept.variance <-v cov.tmp[1,1]
+    intercept.variance <- vcov.tmp[1,1]
 
     groupsizes <- ngrps(merMod)
     for(j in names(groupsizes)){ #for every group of random e

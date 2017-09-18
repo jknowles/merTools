@@ -222,6 +222,29 @@ print.merModList <- function(x, ...){
                                                 digits), "\n")
 }
 
+#' Summarize a merMod list
+#'
+#' @param object a modList of class merModList
+#' @param ... additional arguments
+#'
+#' @return a summary object of model information
+#' @export
+summary.merModList <- function(object, ...){
+  out <- lapply(object, sum.mm)
+  class(out) <- "summary.merModList"
+  return(out)
+}
+
+#' Print the summary of a merMod list
+#'
+#' @param x a summary of amerModList object
+#' @param ... additional arguments
+#'
+#' @return summary content printed to console
+#' @export
+print.summary.merModList <- function(x, ...){
+  lapply(x, print)
+}
 
 #' Apply a multilevel model to a list of data frames
 #'

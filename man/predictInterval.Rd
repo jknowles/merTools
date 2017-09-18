@@ -7,7 +7,8 @@
 predictInterval(merMod, newdata, which = c("full", "fixed", "random", "all"),
   level = 0.8, n.sims = 1000, stat = c("median", "mean"),
   type = c("linear.prediction", "probability"), include.resid.var = TRUE,
-  returnSims = FALSE, seed = NULL, .parallel = FALSE, .paropts = NULL)
+  returnSims = FALSE, seed = NULL, .parallel = FALSE, .paropts = NULL,
+  fix.intercept.variance = FALSE, ignore.fixed.terms = c())
 }
 \arguments{
 \item{merMod}{a merMod object from lme4}
@@ -41,6 +42,18 @@ when parallel computation is enabled. This is important if (for example) your
 code relies on external data or packages: use the .export and .packages arguments
  to supply them so that all cluster nodes have the correct environment set up
  for computing.}
+
+\item{fix.intercept.variance}{logical; should the variance of the intercept
+term be adjusted downwards to roughly correct for its covariance with the
+random effects, as if all the random effects are intercept effects?}
+
+\item{ignore.fixed.terms}{a numeric or string vector of indexes or names of
+fixed effects which should be considered as fully known (zero variance). This
+can result in under-conservative intervals, but for models with random effects
+nested inside fixed effects, holding the fixed effects constant intervals may
+give intervals with closer to nominal coverage than the over-conservative
+intervals without this option, which ignore negative correlation between the
+outer (fixed) and inner (random) coefficients.}
 }
 \value{
 a data.frame with three columns:

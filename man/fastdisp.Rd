@@ -2,24 +2,41 @@
 % Please edit documentation in R/merFastDisplay.R
 \name{fastdisp}
 \alias{fastdisp}
+\alias{fastdisp}
+\alias{fastdisp.merModList}
 \title{Display model fit summary of merMod objects, fast}
 \usage{
 fastdisp(merMod, ...)
+
+fastdisp.merModList(merModList, ...)
 }
 \arguments{
 \item{merMod}{a merMod object from the lme4 package}
 
 \item{...}{additional arguments to pass to \code{arm::\link[arm]{display}}
 including number of digits}
+
+\item{merModList}{a merModList object from the merTools package}
+
+\item{...}{additional arguments to pass to \code{arm::\link[arm]{display}}
+including number of digits}
 }
 \value{
 A printed summary of a merMod object
+
+A printed summary of a merModList object
 }
 \description{
 A faster version of the \code{arm::\link[arm]{display}} function that
 is quicker because it does not refit the model to extract the deviance
+
+A faster version of the \code{arm::\link[arm]{display}} function that
+is quicker because it does not refit the model to extract the deviance
 }
 \details{
+The time saving is only noticeable for large, time-consuming (g)lmer
+fits.
+
 The time saving is only noticeable for large, time-consuming (g)lmer
 fits.
 }
@@ -33,5 +50,7 @@ system.time(fastdisp(m1))
 }
 }
 \seealso{
+\code{\link[arm]{display}}
+
 \code{\link[arm]{display}}
 }
