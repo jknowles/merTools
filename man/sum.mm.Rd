@@ -14,7 +14,7 @@
 
 \item{use.hessian}{logical}
 
-\item{...}{}
+\item{...}{additional arguments to pass through}
 }
 \value{
 a summary of the object

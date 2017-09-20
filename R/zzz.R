@@ -1,7 +1,8 @@
 # Global variables
-utils::globalVariables(c(".shinyMerPar", "sig", "sigma", "Lind", "group"))
+utils::globalVariables(c(".shinyMerPar", "sig", "sigma", "Lind", "group",
+                         "est"))
 
-#' @importFrom methods as
+#' @importFrom methods as is
 #' @importFrom stats AIC as.formula formula logLik median model.matrix na.omit
 #' pnorm qnorm quantile residuals rgamma rnorm sd vcov weighted.mean delete.response
 #' model.frame na.pass reformulate runif terms getCall
@@ -17,7 +18,7 @@ zzz <- function(){
 #' @param object a merMod object
 #' @param correlation optional p value
 #' @param use.hessian logical
-#' @param ...
+#' @param ... additional arguments to pass through
 #'
 #' @return a summary of the object
 sum.mm <- function(object,

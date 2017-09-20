@@ -15,13 +15,13 @@ wiggle(data, varlist, valueslist)
 }
 \value{
 a \code{data.frame} with each row assigned to the one of the new variable combinations.
-All variable combinations are returned, eg wiggling two variables with 3 and 4 variables 
+All variable combinations are returned, eg wiggling two variables with 3 and 4 variables
 respectively will return a new dataset with \code{3 * 4 = 12} observations.
 }
 \description{
 Creates a new data.frame with copies of the original observation,
 each assigned to a different user-specified value of a variable. Allows the
-user to look at the effect on predicted values of changing either a single variable 
+user to look at the effect on predicted values of changing either a single variable
 or multiple variables.
 }
 \details{
@@ -30,8 +30,8 @@ as a character.
 }
 \examples{
 data(iris)
-wiggle(iris[3,], "Sepal.Width", values = c(1, 2, 3, 5))
-wiggle(iris[3:5,], "Sepal.Width", values = c(1, 2, 3, 5))
+wiggle(iris[3,], varlist = "Sepal.Width", valueslist = list(c(1, 2, 3, 5)))
+wiggle(iris[3:5,], "Sepal.Width", valueslist = list(c(1, 2, 3, 5)))
 wiggle(iris[3,], c("Sepal.Width", "Petal.Length"), list(c(1,2,3,5), c(3,5,6)))
 wiggle(iris[3:5,], c("Sepal.Width", "Petal.Length"), list(c(1,2,3,5), c(3,5,6)))
 }

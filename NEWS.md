@@ -5,10 +5,21 @@
 ### New Features
 - Added vignette on using multilevel models with multiply imputed data
 - Added `fixef` and `ranef` generics for `merModList` objects
+- Added `fastdisp` generic for `merModList`
+- Added `summary` generic for `merModList`
+- Added `print` generic for `merModList`
+- Documented all generics for `merModList` including examples and a new 
+imputation vignette
+- Added `modelInfo` generic for `merMod` objects that provides simple summary 
+stats about a whole model
 
 ### Bug Fixes
 - Fix bug that returned NaN for `std.error` of a multiply imputed `merModList` 
 when calling `modelRandEffStats`
+- Fixed bug in `REimpact` where some column names in `newdata` would prevent the 
+prediction intervals from being computed correctly. Users will now be warned.
+- Fixed bug in `wiggle` where documentation incorrectly stated the arguments to 
+the function and the documentation did not describe function correctly
 
 ## merTools 0.3.1
 

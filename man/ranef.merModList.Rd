@@ -4,7 +4,7 @@
 \alias{ranef.merModList}
 \title{Extract random-effects estimates for a merModList}
 \usage{
-\method{ranef}{merModList}(object, add.dropped = FALSE, ...)
+\method{ranef}{merModList}(object, ...)
 }
 \arguments{
 \item{object}{an object of a class of fitted models with
@@ -24,4 +24,12 @@ Extract random-effects estimates for a merModList
 Extract the estimates of the random-effects parameters from a list of
 fitted \code{merMod} models. Takes the mean of the individual \code{ranef}
 objects for each of the component models in the \code{merModList}.
+}
+\examples{
+sim_list <- replicate(n = 10,
+        expr = sleepstudy[sample(row.names(sleepstudy), 180),],
+        simplify=FALSE)
+fml <- "Reaction ~ Days + (Days | Subject)"
+mod <- lmerModList(fml, data = sim_list)
+ranef(mod)
 }

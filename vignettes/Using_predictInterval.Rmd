@@ -183,6 +183,7 @@ percentage of student athletes using fixed effects for their height and sex and
 a random effect for their sport:
 
 ```{r PrepFat, message=FALSE, warning=FALSE}
+ais <- DAAG::ais
 fatmodel = lmer(pcBfat~ ht + sex + (1 | sport),data=ais)
 ```
 
@@ -216,7 +217,7 @@ variance for each level, where each of the spurious variance terms has a
 precision equal to the of the precisions due to the individual groups at that
 level.
 
-```{r ShowFat2, message=FALSE, warning=FALSE}
+```{r ShowFat3, message=FALSE, warning=FALSE}
 predictInterval(fatmodel, ais[1,], include.resid.var=0, fix.intercept.variance = T) #predict the average body fat for a group of 196cm female baseball players, using an ad-hoc correction for the covariance of the intercept with the random intercept effects.
 ```
 

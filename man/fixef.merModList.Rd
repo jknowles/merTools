@@ -28,3 +28,11 @@ Extract the estimates of the fixed-effects parameters from a list of
 fitted \code{merMod} models. Takes the mean of the individual \code{fixef}
 objects for each of the component models in the \code{merModList}.
 }
+\examples{
+sim_list <- replicate(n = 10,
+        expr = sleepstudy[sample(row.names(sleepstudy), 180),],
+        simplify=FALSE)
+fml <- "Reaction ~ Days + (Days | Subject)"
+mod <- lmerModList(fml, data = sim_list)
+fixef(mod)
+}

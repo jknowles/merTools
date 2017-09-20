@@ -341,7 +341,7 @@ single_wiggle <- function(data, var, values) {
   if(any(class(tmp.data[, var]) %in% c("factor", "ordered"))){
     data[, var] <- superFactor(data[, var],
                                fullLev = levels(tmp.data[, var]))
-    
+
   }
   return(data)
 }
@@ -350,21 +350,21 @@ single_wiggle <- function(data, var, values) {
 #' @name wiggle
 #' @description Creates a new data.frame with copies of the original observation,
 #' each assigned to a different user-specified value of a variable. Allows the
-#' user to look at the effect on predicted values of changing either a single variable 
+#' user to look at the effect on predicted values of changing either a single variable
 #' or multiple variables.
 #' @param data a data frame with one or more observations to be reassigned
 #' @param varlist a character vector specifying the name(s) of the variable to adjust
 #' @param valueslist a list of vectors with the values to assign to var
 #' @return a \code{data.frame} with each row assigned to the one of the new variable combinations.
-#' All variable combinations are returned, eg wiggling two variables with 3 and 4 variables 
+#' All variable combinations are returned, eg wiggling two variables with 3 and 4 variables
 #' respectively will return a new dataset with \code{3 * 4 = 12} observations.
 #' @details If the variable specified is a factor, then wiggle will return it
 #' as a character.
 #' @export
 #' @examples
 #' data(iris)
-#' wiggle(iris[3,], "Sepal.Width", values = c(1, 2, 3, 5))
-#' wiggle(iris[3:5,], "Sepal.Width", values = c(1, 2, 3, 5))
+#' wiggle(iris[3,], varlist = "Sepal.Width", valueslist = list(c(1, 2, 3, 5)))
+#' wiggle(iris[3:5,], "Sepal.Width", valueslist = list(c(1, 2, 3, 5)))
 #' wiggle(iris[3,], c("Sepal.Width", "Petal.Length"), list(c(1,2,3,5), c(3,5,6)))
 #' wiggle(iris[3:5,], c("Sepal.Width", "Petal.Length"), list(c(1,2,3,5), c(3,5,6)))
 wiggle <- function(data, varlist, valueslist) {

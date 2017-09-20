@@ -20,7 +20,8 @@ Suggests:
     rmarkdown,
     parallel,
     rstanarm,
-    Amelia
+    Amelia, 
+    DAAG
 Imports:
     mvtnorm,
     DT,

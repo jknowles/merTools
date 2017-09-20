@@ -10,9 +10,18 @@ modelInfo(object)
 \item{object}{a merMod object}
 }
 \value{
-Simple summary information about the object, coefficients, number
-of observations, and adjusted R squared
+Simple summary information about the object, number
+of observations, number of grouping terms, AIC, and residual standard deviation
 }
 \description{
 Extract model information from a merMod
+}
+\examples{
+sim_list <- replicate(n = 10,
+        expr = sleepstudy[sample(row.names(sleepstudy), 180),],
+        simplify=FALSE)
+fml <- "Reaction ~ Days + (Days | Subject)"
+mod <- lmerModList(fml, data = sim_list)
+modelInfo(mod[[1]])
+lapply(mod, modelInfo)
 }

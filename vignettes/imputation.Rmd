@@ -75,7 +75,7 @@ table(is.na(hsb$size))
 
 ```
 
-```{r}
+```{r impute, message=FALSE}
 # Load imputation library
 library(Amelia)
 # Declare the variables to include in the imputation data
@@ -87,30 +87,88 @@ impute.out <- amelia(hsb[, varIndex], idvars = IDS,
                          noms = c("minority", "female"), 
                          m = 5)
 summary(impute.out)
-
-
 ```
 
 
-## Modeling and Exploring
+## Fitting and Summarizing a Model List
+
+Fitting a model is very similar 
 
 ```{r}
-mod <- lmerModList(mathach ~ minority + female + ses + meanses + (1 + ses|schid), 
-                   data = impute.out$imputations)
+fmla <- "mathach ~ minority + female + ses + meanses + (1 + ses|schid)"
+mod <- lmer(fmla, data = hsb)
+modList <- lmerModList(fmla, data = impute.out$imputations)
 ```
 
 
-The resulting object is a list of `merMod` objects the same length as the number 
+The resulting object `modList` is a list of `merMod` objects the same length as the number 
 of imputation datasets. This object is assigned the class of `merModList` and 
 `merTools` provides some convenience functions for reporting the results of 
 this object. 
 
-```{r}
-print(mod)
+Using this, we can directly compare the model fit with missing data excluded to 
+the aggregate from the imputed models:
 
-modelFixedEff(mod)
-modelRandEffStats(mod)
-VarCorr(mod)
+```{r}
+fixef(mod) # model with dropped missing
+fixef(modList)
+```
+
+```{r}
+VarCorr(mod) # model with dropped missing
+VarCorr(modList) # aggregate of imputed models
+```
+
+If you want to inspect the individual models, or you do not like taking the 
+mean across the imputation replications, you can take the `merModList` apart 
+easily:
+
+```{r}
+lapply(modList, fixef)
+```
+
+And, you can always operate on any single element of the list:
+
+```{r}
+fixef(modList[[1]])
+fixef(modList[[2]])
+```
+
+## Output of a Model List
+
+```{r}
+print(modList)
+```
+
+```{r}
+summary(modList)
+```
+
+```{r}
+fastdisp(modList)
+```
+
+
+
+## Specific Model Information Summaries
+
+```{r}
+modelRandEffStats(modList)
+modelFixedEff(modList)
+VarCorr(modList)
+```
+
+### Diagnostics of List Components
+
+```{r}
+modelInfo(mod)
+```
+
+
+Let's apply this to our model list. 
+
+```{r}
+lapply(modList, modelInfo)
 ```
 
 

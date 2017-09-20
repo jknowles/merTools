@@ -95,6 +95,7 @@ fastdisp.merMod <- function (x, ...)
 fastdisp.merModList <- function(x, ...){
   .local <- function (x, digits = 2, detail = FALSE)
   {
+  out <- NULL
   useScale <- getME(x[[1]], "devcomp")$dims["useSc"]
   #useScale <- TRUE
   out$call <- x[[1]]@call
@@ -121,6 +122,12 @@ fastdisp.merModList <- function(x, ...){
   cat("\nError terms:\n")
   vc <- easyVarCorr(VarCorr(x[[1]]), useScale = useScale,
                     digits)
+  # Resort the output of the random effect summary
+  listRE <- listRE[grep("cor_", listRE$term, invert=TRUE), ]
+  resid <- listRE[listRE$group == "Residual", ]
+  listRE <- listRE[listRE$group != "Residual", ]
+  listRE <- rbind(listRE, resid)
+  #
   vc[, 3] <- as.character(round(listRE$estimate^2, digits = digits))
   vc[, 4] <- as.character(round(listRE$estimate, digits = digits))
   print(vc[, c(1:2, 4:ncol(vc))], quote = FALSE)
