@@ -60,7 +60,7 @@ NULL
 #' Hierarchical Linear Models by Raudenbush and Bryk. It consists of 7,185 students
 #' nested in 160 schools.
 #' @source Data made available by UCLA Institute for Digital Research and Education
-#' (IDRE) online: \url{http://www.ats.ucla.edu/stat/hlm/seminars/hlm6/mlm_hlm6_seminar.htm}
+#' (IDRE) online: \url{https://stats.idre.ucla.edu/other/hlm/hlm-mlm/introduction-to-multilevel-modeling-using-hlm}
 #' @references Stephen W. Raudenbush and Anthony S. Bryk (2002). Hierarchical
 #' Linear Models: Applications and Data Analysis Methods (2nd ed.). SAGE.
 #' @examples
