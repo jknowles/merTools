@@ -94,7 +94,6 @@ Shiny application which launches a number of the metrics here to aide in explori
 the model. To do this:
 
 ```{r, echo = TRUE, eval=FALSE}
-devtools::install_github("jknowles/merTools")
 library(merTools)
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 shinyMer(m1, simData = InstEval[1:100, ]) # just try the first 100 rows of data
@@ -102,7 +101,6 @@ shinyMer(m1, simData = InstEval[1:100, ]) # just try the first 100 rows of data
 
 ```{r, include=FALSE}
 library(merTools)
-library(ggplot2)
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 ```
 
@@ -175,6 +173,7 @@ predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9,
 This can lead to some useful plotting:
 
 ```{r}
+library(ggplot2)
 plotdf <- predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 2000, 
                           level = 0.9, stat = 'median', which = "all", 
                           include.resid.var = FALSE)
@@ -316,9 +315,12 @@ and `Anger` subsequently.
 ```{r substImpactPrepData}
 # Select the average case
 newData <- draw(fmVA, type = "average")
-newData <- wiggle(newData, var = "btype", values = unique(VerbAgg$btype))
-newData <- wiggle(newData, var = "situ", values = unique(VerbAgg$situ))
-newData <- wiggle(newData, var = "Anger", values = unique(VerbAgg$Anger))
+newData <- wiggle(newData, varlist = "btype", 
+                  valueslist = list(unique(VerbAgg$btype)))
+newData <- wiggle(newData, var = "situ", 
+                  valueslist = list(unique(VerbAgg$situ)))
+newData <- wiggle(newData, var = "Anger", 
+                  valueslist = list(unique(VerbAgg$Anger)))
 head(newData, 10)
 ```
 

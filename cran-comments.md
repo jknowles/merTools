@@ -1,6 +1,6 @@
 ## Test environments
-* local Windows 7 install, R 3.3.2
-* ubuntu 12.04 (on travis-ci), R devel, R-Release
+* local Windows 10 install, R 3.5.0
+* ubuntu 14.05 (on travis-ci), R devel, R-Release
 * win-builder (devel and release)
 
 ## R CMD check results
@@ -10,8 +10,10 @@ link from the documentation page to the expected target.
 
 * Used utils::globalVariables(c(".shinyMerPar", "sig", "sigma")) to fix notes
 about unexported objects.
-* Used utils::globalVariables(c("term", "estimate", "std.error")) to fix notes 
-about unexported objects in `modelFixedEff` function
+* Used utils::globalVariables(c("Lind", "group", "est", "mean_est", "est_ss", 
+                                "within_var", "between_var", "statistic")) 
+to fix notes about unexported objects in `modelFixedEff` and `fastdisp.merList` 
+functions
 
 ## Downstream dependencies
 There are currently no downstream dependencies. 

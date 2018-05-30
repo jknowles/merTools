@@ -1,6 +1,7 @@
 # Global variables
 utils::globalVariables(c(".shinyMerPar", "sig", "sigma", "Lind", "group",
-                         "est"))
+                         "est", "mean_est", "est_ss", "within_var", "between_var",
+                         "statistic"))
 
 #' @importFrom methods as is
 #' @importFrom stats AIC as.formula formula logLik median model.matrix na.omit
@@ -105,4 +106,26 @@ fetch.merMod.msgs <- function(x) {
     Xwmsgs[has.msg]
   else
     character()
+}
+
+
+##' Extract all warning msgs from a merMod object
+##' @param type check a fixed or random effect
+##' @inheritParams plotREsim
+plot_sim_error_chks <- function(type= c("FE", "RE"), level = 0.95,
+                                stat = c("mean", "median"),
+                                sd = TRUE, sigmaScale = NULL,
+                                oddsRatio = FALSE, labs = FALSE, facet= TRUE) {
+
+  if (level <= 0 | level >= 1) stop("level must be specified as a numeric in (0,1).")
+  stat <- match.arg(stat, several.ok= FALSE)
+  if (!is.logical(sd)) stop("sd must be a logical expression.")
+  if (!is.null(sigmaScale) && !is.logical(sigmaScale)) stop("sigmaScale must be a logical expression.")
+  if (!is.logical(oddsRatio)) stop("oddsRatio must be a logical expression.")
+  if (!is.logical(labs)) stop("labs must be a logical expression.")
+  if (!is.logical(facet)) {
+    if(any(c(!is.list(facet), is.null(names(facet)),
+             names(facet) != c("groupFctr", "term"))))
+      stop("facet must be either a logical expression or a named list.")
+  }
 }

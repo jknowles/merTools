@@ -115,7 +115,7 @@ need
 
 ### Future changes
 - For the next release (1.0) we are considering a permanent switch to 
-C++ RMVN sampler courtesy of Giri Gopalan 's excellent [FastGP](http://www.github.com/ggopalan/FastGP) package
+C++ RMVN sampler courtesy of Giri Gopalan 's excellent FastGP
 
 
 

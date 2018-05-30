@@ -26,6 +26,7 @@ fastdisp <- function (x, ...) {
 }
 
 #' @rdname fastdisp
+#' @importFrom stats df pt
 #' @export
 fastdisp.merMod <- function (x, ...)
 {
