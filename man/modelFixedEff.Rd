@@ -17,6 +17,10 @@ a data.frame of the averaged fixed effect parameters
 \description{
 Extract averaged fixed effect parameters across a list of merMod objects
 }
+\details{
+The Rubin correction for combining estimates and standard errors from
+Rubin (1987) is applied to adjust for the within and between imputation variances.
+}
 \examples{
 sim_list <- replicate(n = 10,
         expr = sleepstudy[sample(row.names(sleepstudy), 180),],

@@ -98,6 +98,8 @@ modelRandEffStats <- function(modList){
 #' @param ... additional arguments to pass to \code{\link{tidy}}
 #'
 #' @return a data.frame of the averaged fixed effect parameters
+#' @details The Rubin correction for combining estimates and standard errors from
+#' Rubin (1987) is applied to adjust for the within and between imputation variances.
 #' @export
 #' @importFrom broom tidy
 #' @import dplyr
@@ -112,11 +114,25 @@ modelFixedEff <- function(modList, ...){
   fixEst <- lapply(modList, tidy, effects = "fixed", ...)
   fixEst <- do.call(rbind, fixEst)
   # Collapse
-  out <- fixEst %>% dplyr::group_by(term) %>%
-          dplyr::summarize(estimate = mean(estimate),
-               std.error = mean(std.error))
-  out$statistic <- out$estimate / out$std.error
-  return(as.data.frame(out))
+  # Rubin correction, get length of list
+  ml <- length(modList)
+  # Get between and within imputation variance, apply total correction
+  # Calculate degree of freedom correction
+  rubin <- fixEst %>% group_by(term) %>%
+    mutate(mean_est = mean(estimate)) %>%
+    mutate(est_ss = (estimate - mean_est)^2) %>%
+    summarize(estimate = mean(estimate),
+              within_var = mean(std.error), # compute within imputation variance
+              between_var =  mean(est_ss)) %>% # estimate the between imputation variance
+    mutate(std.error = within_var + ((1 + 1/ml)*between_var),
+           df = (ml-1)* (1 + within_var/((1 + 1/ml)*between_var))^2) # apply rubins total variance correction
+  # DEPRECATED method
+  # out <- fixEst %>% dplyr::group_by(term) %>%
+  #         dplyr::summarize(estimate = mean(estimate),
+  #              std.error = mean(std.error))
+  rubin$statistic <- rubin$estimate / rubin$std.error
+  rubin <- rubin %>% dplyr::select(term, estimate, std.error, statistic, df)
+  return(as.data.frame(rubin))
 }
 
 

@@ -112,12 +112,12 @@ fastdisp.merModList <- function(x, ...){
   out$n <- round(mean(unlist(lapply(lapply(lapply(x, getME, "devcomp"),
                                      "[[", "dims"), "[", 2))), 0) # round to nearest integer
   print(out$call)
-  pfround(listFE[, 2:3], digits = digits)
-  if (detail) {
+  if (isFALSE(detail)) {
     pfround(listFE[, 2:3], digits)
   }
   else {
-    pfround(listFE[, 2:4], digits)
+    listFE$p.value <- 2 * pt(abs(listFE$statistic), listFE$df, lower.tail = FALSE)
+    pfround(listFE[, 2:6], digits)
   }
   cat("\nError terms:\n")
   vc <- easyVarCorr(VarCorr(x[[1]]), useScale = useScale,

@@ -1,5 +1,16 @@
 # NEWS
 
+## merTools 0.4.1
+
+### New Features
+- Standard errors reported by `merModList` functions now apply the Rubin 
+correction for multiple imputation
+
+### Bug fixes
+- Contribution by Alex Whitworth (@alexWhitworth) adding error checking to plotting
+functions
+
+
 ## merTools 0.4.0
 
 ### New Features
