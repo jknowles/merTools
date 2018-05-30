@@ -383,7 +383,7 @@ wiggle <- function(data, varlist, valueslist) {
 #' @title Identify group level associated with RE quantile
 #' @name REquantile
 #' @description For a user specified quantile (or quantiles) of the random effect
-#' terms in a merMod object. This allows the user to easily identify the obsevation
+#' terms in a merMod object. This allows the user to easily identify the observation
 #' associated with the nth percentile effect.
 #' @param merMod a merMod object with one or more random effect levels
 #' @param quantile a numeric vector with values between 0 and 100 for quantiles

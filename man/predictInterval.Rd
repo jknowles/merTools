@@ -74,11 +74,11 @@ predictions from multi-level models fit with \code{lme4}. By drawing a sampling
 distribution for the random and the fixed effects and then estimating the fitted
 value across that distribution, it is possible to generate a prediction interval
 for fitted values that includes all variation in the model except for variation
-in the covariance paramters, theta. This is a much faster alternative than
+in the covariance parameters, theta. This is a much faster alternative than
 bootstrapping for models fit to medium to large datasets.
 }
 \details{
-To generate a prediction inteval, the function first computes a simulated
+To generate a prediction interval, the function first computes a simulated
 distribution of all of the parameters in the model. For the random, or grouping,
 effects, this is done by sampling from a multivariate normal distribution which
 is defined by the BLUP estimate provided by \code{ranef} and the associated

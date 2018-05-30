@@ -23,7 +23,7 @@ to each quantile
 }
 \description{
 For a user specified quantile (or quantiles) of the random effect
-terms in a merMod object. This allows the user to easily identify the obsevation
+terms in a merMod object. This allows the user to easily identify the observation
 associated with the nth percentile effect.
 }
 \examples{

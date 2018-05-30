@@ -7,14 +7,14 @@
 thetaExtract(merMod)
 }
 \arguments{
-\item{merMod}{a valide merMod object}
+\item{merMod}{a valid merMod object}
 }
 \value{
-a vector of the covrariance, theta, parameters from a \code{\link{merMod}}
+a vector of the covariance, theta, parameters from a \code{\link{merMod}}
 }
 \description{
 A convenience function that returns the theta parameters for a
-\code{\link{merMod}} obejct.
+\code{\link{merMod}} object.
 }
 \examples{
 (fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))

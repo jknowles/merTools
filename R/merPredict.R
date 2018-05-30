@@ -4,7 +4,7 @@
 #' distribution for the random and the fixed effects and then estimating the fitted
 #' value across that distribution, it is possible to generate a prediction interval
 #' for fitted values that includes all variation in the model except for variation
-#' in the covariance paramters, theta. This is a much faster alternative than
+#' in the covariance parameters, theta. This is a much faster alternative than
 #' bootstrapping for models fit to medium to large datasets.
 #' @param merMod a merMod object from lme4
 #' @param newdata a data.frame of new data to predict
@@ -47,7 +47,7 @@
 #'   }
 #' If returnSims = TRUE, then the individual simulations are attached to this
 #' data.frame in the attribute \code{sim.results} and are stored as a matrix.
-#' @details To generate a prediction inteval, the function first computes a simulated
+#' @details To generate a prediction interval, the function first computes a simulated
 #' distribution of all of the parameters in the model. For the random, or grouping,
 #' effects, this is done by sampling from a multivariate normal distribution which
 #' is defined by the BLUP estimate provided by \code{ranef} and the associated
