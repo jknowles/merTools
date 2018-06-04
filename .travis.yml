@@ -10,28 +10,6 @@ env:
     - NOT_CRAN="true"
     - NOT_CRAN="false"
 
-addons:
-  apt:
-    packages:
-    - texlive-latex-extra
-
-r_binary_packages:
-  - Rcpp
-  - lme4
-  - testthat
-  - knitr
-  - rmarkdown
-  - mvtnorm
-  - lattice
-  - shiny
-  - abind
-  - ggplot2
-  - dplyr
-  - data.table
-  - magrittr
-  - doParallel
-  - covr
-
 after_success:
   - travis_wait Rscript -e 'library(covr);coveralls()'
 
