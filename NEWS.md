@@ -10,7 +10,6 @@ correction for multiple imputation
 - Contribution by Alex Whitworth (@alexWhitworth) adding error checking to plotting
 functions
 
-
 ## merTools 0.4.0
 
 ### New Features

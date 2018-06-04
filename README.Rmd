@@ -1,7 +1,7 @@
 ---
 output:
   md_document:
-    variant: markdown_github
+    variant: gfm
 ---
 
 
@@ -49,41 +49,36 @@ install.packages("merTools")
 
 ## Recent Updates
 
-### merTools 0.3.0
+### merTools 0.4.1
 
-- Improve handling of formulas. If the original `merMod` has functions specified 
-in the formula, the `draw` and `wiggle` functions will check for this and attempt 
-to respect these variable transformations. Where this is not possible a warning 
-will be issued. Most common transformations are respected as long as the the 
-original variable is passed untransformed to the model. 
-- Change the calculations of the residual variance. Previously residual variance 
-was used to inflate both the variance around the fixed parameters and around the 
-predicted values themselves. This was incorrect and resulted in overly conservative 
-estimates. Now the residual variance is appropriately only used around the 
-final predictions
-- New option for `predictInterval` that allows the user to return the full 
-interval, the fixed component, the random component, or the fixed and each random 
-component separately for each observation
-- Fixed a bug with slope+intercept random terms that caused a miscalculation of 
-the random component
-- Add comparison to `rstanarm` to the Vignette
-- Make `expectedRank` output more `tidy` like and allow function to calculate 
-expected rank for all terms at once
-  - Note, this breaks the API by changing the names of the columns in the output 
-  of this function
-- Remove tests that test for timing to avoid issues with R-devel JIT compiler
-- Remove `plyr` and replace with `dplyr`
-- Fix issue #62 `varList` will now throw an error if `==` is used instead of `=`
-- Fix issue #54 `predictInterval` did not included random effects in calculations
-  when `newdata` had more than 1000 rows and/or user specified `parallel=TRUE`. 
-  Note: fix was to disable the `.paropts` option for `predictInterval` ... user
-  can still specify for *temporary* backward compatibility but this should be
-  either removed or fixed in the permanent solution.
-- Fix issue #53 about problems with `predictInterval` when only specific levels
-  of a grouping factor are in `newdata` with the colon specification of 
-  interactions
-- Fix issue #52 ICC wrong calculations ... we just needed to square the standard
-  deviations that we pulled
+#### New Features
+- Standard errors reported by `merModList` functions now apply the Rubin 
+correction for multiple imputation
+
+#### Bug fixes
+- Contribution by Alex Whitworth (@alexWhitworth) adding error checking to plotting
+functions
+
+### merTools 0.4.0
+
+#### New Features
+- Added vignette on using multilevel models with multiply imputed data
+- Added `fixef` and `ranef` generics for `merModList` objects
+- Added `fastdisp` generic for `merModList`
+- Added `summary` generic for `merModList`
+- Added `print` generic for `merModList`
+- Documented all generics for `merModList` including examples and a new 
+imputation vignette
+- Added `modelInfo` generic for `merMod` objects that provides simple summary 
+stats about a whole model
+
+#### Bug Fixes
+- Fix bug that returned NaN for `std.error` of a multiply imputed `merModList` 
+when calling `modelRandEffStats`
+- Fixed bug in `REimpact` where some column names in `newdata` would prevent the 
+prediction intervals from being computed correctly. Users will now be warned.
+- Fixed bug in `wiggle` where documentation incorrectly stated the arguments to 
+the function and the documentation did not describe function correctly
 
 See [NEWS.md](https://github.com/jknowles/merTools/blob/master/NEWS.md) for 
 more details. 

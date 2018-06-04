@@ -10,8 +10,8 @@ Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?sty
 [![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](https://cran.r-project.org/package=merTools)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-merTools
-========
+
+# merTools
 
 A package for getting the most of our multilevel models in R
 
@@ -24,8 +24,7 @@ within our work, we, the authors, have developed a set of tools for
 simplifying and speeding up common tasks for interacting with `merMod`
 objects from `lme4`. This package provides those tools.
 
-Installation
-------------
+## Installation
 
 ``` r
 # development version
@@ -36,55 +35,49 @@ install_github("jknowles/merTools")
 install.packages("merTools")
 ```
 
-Recent Updates
---------------
+## Recent Updates
 
-### merTools 0.3.0
+### merTools 0.4.1
 
--   Improve handling of formulas. If the original `merMod` has functions
-    specified in the formula, the `draw` and `wiggle` functions will
-    check for this and attempt to respect these variable
-    transformations. Where this is not possible a warning will be
-    issued. Most common transformations are respected as long as the the
-    original variable is passed untransformed to the model.
--   Change the calculations of the residual variance. Previously
-    residual variance was used to inflate both the variance around the
-    fixed parameters and around the predicted values themselves. This
-    was incorrect and resulted in overly conservative estimates. Now the
-    residual variance is appropriately only used around the final
-    predictions
--   New option for `predictInterval` that allows the user to return the
-    full interval, the fixed component, the random component, or the
-    fixed and each random component separately for each observation
--   Fixed a bug with slope+intercept random terms that caused a
-    miscalculation of the random component
--   Add comparison to `rstanarm` to the Vignette
--   Make `expectedRank` output more `tidy` like and allow function to
-    calculate expected rank for all terms at once
-    -   Note, this breaks the API by changing the names of the columns
-        in the output of this function
--   Remove tests that test for timing to avoid issues with R-devel JIT
-    compiler
--   Remove `plyr` and replace with `dplyr`
--   Fix issue \#62 `varList` will now throw an error if `==` is used
-    instead of `=`
--   Fix issue \#54 `predictInterval` did not included random effects in
-    calculations when `newdata` had more than 1000 rows and/or user
-    specified `parallel=TRUE`. Note: fix was to disable the `.paropts`
-    option for `predictInterval` … user can still specify for
-    *temporary* backward compatibility but this should be either removed
-    or fixed in the permanent solution.
--   Fix issue \#53 about problems with `predictInterval` when only
-    specific levels of a grouping factor are in `newdata` with the colon
-    specification of interactions
--   Fix issue \#52 ICC wrong calculations … we just needed to square the
-    standard deviations that we pulled
+#### New Features
+
+  - Standard errors reported by `merModList` functions now apply the
+    Rubin correction for multiple imputation
+
+#### Bug fixes
+
+  - Contribution by Alex Whitworth (@alexWhitworth) adding error
+    checking to plotting functions
+
+### merTools 0.4.0
+
+#### New Features
+
+  - Added vignette on using multilevel models with multiply imputed data
+  - Added `fixef` and `ranef` generics for `merModList` objects
+  - Added `fastdisp` generic for `merModList`
+  - Added `summary` generic for `merModList`
+  - Added `print` generic for `merModList`
+  - Documented all generics for `merModList` including examples and a
+    new imputation vignette
+  - Added `modelInfo` generic for `merMod` objects that provides simple
+    summary stats about a whole model
+
+#### Bug Fixes
+
+  - Fix bug that returned NaN for `std.error` of a multiply imputed
+    `merModList` when calling `modelRandEffStats`
+  - Fixed bug in `REimpact` where some column names in `newdata` would
+    prevent the prediction intervals from being computed correctly.
+    Users will now be warned.
+  - Fixed bug in `wiggle` where documentation incorrectly stated the
+    arguments to the function and the documentation did not describe
+    function correctly
 
 See [NEWS.md](https://github.com/jknowles/merTools/blob/master/NEWS.md)
 for more details.
 
-Shiny App and Demo
-------------------
+## Shiny App and Demo
 
 The easiest way to demo the features of this application is to use the
 bundled Shiny application which launches a number of the metrics here to
@@ -129,8 +122,7 @@ effect term. This is plotted on the scale of the dependent variable,
 which allows the user to compare the magnitude of effects across
 variables, and also between models on the same data.
 
-Predicting
-----------
+## Predicting
 
 Standard prediction looks like so.
 
@@ -143,23 +135,24 @@ predict(m1, newdata = InstEval[1:10, ])
 ```
 
 With `predictInterval` we obtain predictions that are more like the
-standard objects produced by `lm` and `glm`:
+standard objects produced by `lm` and
+`glm`:
 
 ``` r
 #predictInterval(m1, newdata = InstEval[1:10, ]) # all other parameters are optional
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
-#>         fit      upr      lwr
-#> 1  3.217419 5.222041 1.209191
-#> 2  3.160320 5.153260 1.077464
-#> 3  3.350286 5.334528 1.410776
-#> 4  3.167147 5.115386 1.018051
-#> 5  3.364984 5.545141 1.344050
-#> 6  3.171919 5.269084 1.270331
-#> 7  4.242407 5.990232 2.310984
-#> 8  3.823723 5.763732 1.860317
-#> 9  3.635615 5.644665 1.864689
-#> 10 3.208120 5.400739 1.291864
+#>         fit      upr       lwr
+#> 1  3.131864 5.129219 1.0945339
+#> 2  3.178221 5.148597 1.2658735
+#> 3  3.379966 5.516817 1.4895417
+#> 4  3.103167 5.081666 0.9233663
+#> 5  3.277556 5.399948 1.2272530
+#> 6  3.149349 5.333070 1.3867458
+#> 7  4.260277 6.219553 2.1694261
+#> 8  3.875295 5.814772 1.9408867
+#> 9  3.696745 5.793889 1.7367258
+#> 10 3.231097 5.418401 1.3991943
 ```
 
 Note that `predictInterval` is slower because it is computing
@@ -180,47 +173,47 @@ interval.
 ``` r
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9, 
                 stat = 'median', which = "all")
-#>      effect         fit      upr        lwr obs
-#> 1  combined  3.10838502 5.123547  0.9913693   1
-#> 2  combined  3.00832927 5.411406  1.0113278   2
-#> 3  combined  3.22682784 5.371182  1.2233180   3
-#> 4  combined  3.19987923 5.302901  1.0819426   4
-#> 5  combined  3.33376041 5.019445  1.3380125   5
-#> 6  combined  3.31108813 5.238900  1.2690864   6
-#> 7  combined  4.24593858 5.933879  2.1953436   7
-#> 8  combined  3.75983116 5.871957  1.8359312   8
-#> 9  combined  3.75325587 5.760148  2.0332515   9
-#> 10 combined  3.35497451 5.371630  1.4761959  10
-#> 11        s  0.34207622 2.567831 -1.6782520   1
-#> 12        s  0.19641638 2.360672 -1.7598827   2
-#> 13        s -0.03755823 2.236397 -1.4514586   3
-#> 14        s  0.07338433 1.931521 -2.0330254   4
-#> 15        s -0.13145826 2.035637 -2.4907082   5
-#> 16        s -0.06332697 2.058394 -1.9137445   6
-#> 17        s  0.39965259 2.207372 -1.8133160   7
-#> 18        s  0.35494937 2.363900 -1.5459471   8
-#> 19        s  0.18062186 2.171327 -1.7177457   9
-#> 20        s  0.39414930 2.437838 -1.4663560  10
-#> 21        d -0.19850572 1.868795 -2.0216443   1
-#> 22        d -0.23150868 1.927724 -2.0879271   2
-#> 23        d  0.12322658 1.973800 -1.9759552   3
-#> 24        d -0.21774838 1.878971 -2.2175861   4
-#> 25        d  0.13925047 2.121110 -1.9064912   5
-#> 26        d  0.07385768 2.105597 -1.9957663   6
-#> 27        d  0.54384220 2.373974 -0.9731128   7
-#> 28        d  0.33809540 2.342702 -1.8649070   8
-#> 29        d  0.32012926 2.260106 -1.6999460   9
-#> 30        d -0.29980274 1.521508 -2.2328740  10
-#> 31    fixed  3.23207074 5.329527  1.0150544   1
-#> 32    fixed  3.11042822 5.304020  1.2880103   2
-#> 33    fixed  3.22825199 5.200519  1.2316590   3
-#> 34    fixed  3.04045774 4.934492  1.1924062   4
-#> 35    fixed  3.20004158 4.977114  1.0328596   5
-#> 36    fixed  3.47221763 5.397403  1.3794685   6
-#> 37    fixed  3.12964189 5.018796  1.2485740   7
-#> 38    fixed  3.44092080 5.523848  1.4783921   8
-#> 39    fixed  3.33680051 5.459012  1.2086844   9
-#> 40    fixed  3.32120361 5.309080  1.5144517  10
+#>      effect         fit      upr       lwr obs
+#> 1  combined  3.27426294 5.078645  1.404931   1
+#> 2  combined  3.31181634 5.294470  1.133825   2
+#> 3  combined  3.42991423 5.726454  1.372737   3
+#> 4  combined  3.14106388 5.086958  1.139264   4
+#> 5  combined  3.21851807 5.005576  1.613092   5
+#> 6  combined  3.13385479 5.357638  1.479084   6
+#> 7  combined  4.20473915 6.038695  2.131664   7
+#> 8  combined  3.89199549 5.824092  1.742773   8
+#> 9  combined  3.73120768 5.937519  1.796547   9
+#> 10 combined  3.38347478 5.139712  1.438058  10
+#> 11        s  0.27050123 2.179032 -1.695454   1
+#> 12        s  0.24091511 2.057844 -1.849768   2
+#> 13        s  0.23153007 2.109371 -2.159917   3
+#> 14        s  0.17190688 2.268925 -1.838580   4
+#> 15        s  0.03743789 1.896608 -2.265675   5
+#> 16        s -0.18521618 1.898214 -1.942181   6
+#> 17        s  0.22645227 1.979926 -1.630725   7
+#> 18        s  0.31321219 2.488689 -1.600209   8
+#> 19        s  0.22507632 2.358639 -1.708491   9
+#> 20        s  0.24543798 1.980311 -1.901763  10
+#> 21        d -0.19334941 1.840901 -2.124230   1
+#> 22        d -0.28982541 1.955074 -2.204380   2
+#> 23        d -0.01613680 2.010074 -1.785555   3
+#> 24        d -0.15524168 1.798061 -2.164504   4
+#> 25        d  0.04642275 1.693999 -2.015113   5
+#> 26        d -0.01555388 1.691761 -1.933333   6
+#> 27        d  0.41534161 2.583055 -1.475386   7
+#> 28        d  0.08841543 1.958569 -1.505878   8
+#> 29        d  0.15627408 2.213819 -1.680117   9
+#> 30        d -0.24753404 1.628555 -2.032027  10
+#> 31    fixed  3.00038250 5.345275  1.047073   1
+#> 32    fixed  3.31010106 5.258032  1.406672   2
+#> 33    fixed  3.14307498 4.984565  1.302140   3
+#> 34    fixed  3.18420609 5.233990  1.246140   4
+#> 35    fixed  3.20555941 4.843914  1.144443   5
+#> 36    fixed  3.28471448 5.179227  1.397785   6
+#> 37    fixed  3.35935343 5.724092  1.375902   7
+#> 38    fixed  3.27071043 5.168950  1.554638   8
+#> 39    fixed  3.32543843 4.851246  1.432455   9
+#> 40    fixed  3.30121263 5.451804  1.619428  10
 ```
 
 This can lead to some useful plotting:
@@ -245,7 +238,7 @@ ggplot(plotdf, aes(x = obs, y = fit, ymin = lwr, ymax = upr)) +
   facet_grid(residVar~effect) + theme_bw()
 ```
 
-![](man/figures/README_unnamed-chunk-8-1.png)
+![](man/figures/README_unnamed-chunk-8-1.png)<!-- -->
 
 We can also investigate the makeup of the prediction for each
 observation.
@@ -258,10 +251,9 @@ ggplot(plotdf[plotdf$obs < 6,],
   facet_grid(residVar~obs) + theme_bw()
 ```
 
-![](man/figures/README_unnamed-chunk-9-1.png)
+![](man/figures/README_unnamed-chunk-9-1.png)<!-- -->
 
-Plotting
---------
+## Plotting
 
 `merTools` also provides functionality for inspecting `merMod` objects
 visually. The easiest are getting the posterior distributions of both
@@ -271,21 +263,22 @@ fixed and random effect parameters.
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22261732  3.22132431 0.01781311
-#> 2    service1 -0.07299497 -0.07143995 0.01460292
-#> 3   lectage.L -0.18689932 -0.18481094 0.01531841
-#> 4   lectage.Q  0.02464238  0.02398260 0.01141715
-#> 5   lectage.C -0.02454276 -0.02491987 0.01182860
-#> 6   lectage^4 -0.01952495 -0.02049488 0.01398923
+#> 1 (Intercept)  3.22354670  3.22486405 0.01908013
+#> 2    service1 -0.06887981 -0.07062088 0.01308958
+#> 3   lectage.L -0.18513370 -0.18833678 0.01918627
+#> 4   lectage.Q  0.02389151  0.02342562 0.01117116
+#> 5   lectage.C -0.02465144 -0.02565338 0.01389634
+#> 6   lectage^4 -0.02051981 -0.01880618 0.01178279
 ```
 
-And we can also plot this:
+And we can also plot
+this:
 
 ``` r
 plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FALSE)
 ```
 
-![](man/figures/README_FEsimPlot-1.png)
+![](man/figures/README_FEsimPlot-1.png)<!-- -->
 
 We can also quickly make caterpillar plots for the random-effect terms:
 
@@ -293,19 +286,19 @@ We can also quickly make caterpillar plots for the random-effect terms:
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 #>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.12289317  0.07537743 0.3265776
-#> 2         s       2 (Intercept) -0.06294209 -0.05879910 0.3496404
-#> 3         s       3 (Intercept)  0.30066403  0.26274916 0.2963047
-#> 4         s       4 (Intercept)  0.23317160  0.26947709 0.2900297
-#> 5         s       5 (Intercept)  0.05470018  0.06032355 0.3117877
-#> 6         s       6 (Intercept)  0.08529472  0.07354142 0.2396258
+#> 1         s       1 (Intercept)  0.13373397  0.14351276 0.3554112
+#> 2         s       2 (Intercept) -0.04046529 -0.01533224 0.3009859
+#> 3         s       3 (Intercept)  0.25991981  0.25390020 0.3045212
+#> 4         s       4 (Intercept)  0.21929110  0.15633635 0.3376836
+#> 5         s       5 (Intercept)  0.07437984  0.06909753 0.3154968
+#> 6         s       6 (Intercept)  0.09368613  0.12836103 0.2201394
 ```
 
 ``` r
 plotREsim(REsim(m1, n.sims = 100), stat = 'median', sd = TRUE)
 ```
 
-![](man/figures/README_reSimplot-1.png)
+![](man/figures/README_reSimplot-1.png)<!-- -->
 
 Note that `plotREsim` highlights group levels that have a simulated
 distribution that does not overlap 0 – these appear darker. The lighter
@@ -350,10 +343,9 @@ ggplot(ranks, aes(x = term, y = estimate)) +
   theme_bw()
 ```
 
-![](man/figures/README_unnamed-chunk-13-1.png)
+![](man/figures/README_unnamed-chunk-13-1.png)<!-- -->
 
-Effect Simulation
------------------
+## Effect Simulation
 
 It can still be difficult to interpret the results of LMM and GLMM
 models, especially the relative influence of varying parameters on the
@@ -366,18 +358,19 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
 #> Warning: executing %dopar% sequentially: no parallel backend registered
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.776054 3.007958e-04  193
-#> 2    1   2 3.247641 7.012499e-05  240
-#> 3    1   3 3.541909 5.622570e-05  254
-#> 4    1   4 3.825994 6.723618e-05  265
-#> 5    1   5 4.211194 1.849960e-04  176
+#> 1    1   1 2.796121 2.839438e-04  193
+#> 2    1   2 3.262527 7.421240e-05  240
+#> 3    1   3 3.553761 5.812397e-05  254
+#> 4    1   4 3.846521 6.754321e-05  265
+#> 5    1   5 4.226088 1.763781e-04  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we
 supplied to `newdata` is moved from the first to the fifth quintile in
 terms of the magnitude of the group factor coefficient. We can see here
 that the individual professor effect has a strong impact on the outcome
-variable. This can be shown graphically as well:
+variable. This can be shown graphically as
+well:
 
 ``` r
 ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE, 
@@ -385,15 +378,14 @@ ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE,
   geom_pointrange() + theme_bw() + labs(x = "Bin of `d` term", y = "Predicted Fit")
 ```
 
-![](man/figures/README_reImpactplot-1.png)
+![](man/figures/README_reImpactplot-1.png)<!-- -->
 
 Here the standard error is a bit different – it is the weighted standard
 error of the mean effect within the bin. It does not take into account
 the variability within the effects of each observation in the bin –
 accounting for this variation will be a future addition to `merTools`.
 
-Explore Substantive Impacts
----------------------------
+## Explore Substantive Impacts
 
 Another feature of `merTools` is the ability to easily generate
 hypothetical scenarios to explore the predicted outcomes of a `merMod`
@@ -448,7 +440,8 @@ The next step is familiar – we simply pass this new dataset to
 `predictInterval` in order to generate predictions for these
 counterfactuals. Then we plot the predicted values against the
 continuous variable, `Anger`, and facet and group on the two categorical
-variables `situ` and `btype` respectively.
+variables `situ` and `btype`
+respectively.
 
 ``` r
 plotdf <- predictInterval(fmVA, newdata = newData, type = "probability", 
@@ -461,4 +454,4 @@ ggplot(plotdf, aes(y = fit, x = Anger, color = btype, group = btype)) +
   labs(y = "Predicted Probability")
 ```
 
-![](man/figures/README_substImpactPredict-1.png)
+![](man/figures/README_substImpactPredict-1.png)<!-- -->
