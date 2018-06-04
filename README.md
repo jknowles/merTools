@@ -96,7 +96,7 @@ m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 shinyMer(m1, simData = InstEval[1:100, ]) # just try the first 100 rows of data
 ```
 
-![](tools/readmeplot/README-predPanel.png)
+![](man/figures/README-predPanel.png)
 
 On the first tab, the function presents the prediction intervals for the
 data selected by user which are calculated using the `predictInterval`
@@ -107,7 +107,7 @@ estimates to produce a distribution of predictions for each observation.
 This allows prediction intervals to be generated from very large models
 where the use of `bootMer` would not be feasible computationally.
 
-![](tools/readmeplot/README-effPanel.png)
+![](man/figures/README-effPanel.png)
 
 On the next tab the distribution of the fixed effect and group-level
 effects is depicted on confidence interval plots. These are useful for
@@ -116,7 +116,7 @@ various parameters. This tab makes use of four related functions in
 `merTools`: `FEsim`, `plotFEsim`, `REsim` and `plotREsim` which are
 available to be used on their own as well.
 
-![](tools/readmeplot/README-substPanel.png)
+![](man/figures/README-substPanel.png)
 
 On the third tab are some convenient ways to show the influence or
 magnitude of effects by leveraging the power of `predictInterval`. For
@@ -149,17 +149,17 @@ standard objects produced by `lm` and `glm`:
 #predictInterval(m1, newdata = InstEval[1:10, ]) # all other parameters are optional
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
-#>         fit      upr       lwr
-#> 1  3.149988 5.176800 0.9837983
-#> 2  3.161242 5.008245 1.2052581
-#> 3  3.409878 5.458635 1.4957948
-#> 4  3.069159 5.196250 0.9848679
-#> 5  3.314509 5.060282 1.3361372
-#> 6  3.399685 5.414914 1.4367978
-#> 7  4.221281 6.257934 2.3129247
-#> 8  3.927268 5.968896 1.7752156
-#> 9  3.840488 5.798468 1.7620856
-#> 10 3.402765 5.407191 1.4124158
+#>         fit      upr      lwr
+#> 1  3.217419 5.222041 1.209191
+#> 2  3.160320 5.153260 1.077464
+#> 3  3.350286 5.334528 1.410776
+#> 4  3.167147 5.115386 1.018051
+#> 5  3.364984 5.545141 1.344050
+#> 6  3.171919 5.269084 1.270331
+#> 7  4.242407 5.990232 2.310984
+#> 8  3.823723 5.763732 1.860317
+#> 9  3.635615 5.644665 1.864689
+#> 10 3.208120 5.400739 1.291864
 ```
 
 Note that `predictInterval` is slower because it is computing
@@ -180,47 +180,47 @@ interval.
 ``` r
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9, 
                 stat = 'median', which = "all")
-#>      effect          fit      upr        lwr obs
-#> 1  combined  2.968506094 5.144820  0.8638630   1
-#> 2  combined  3.145750796 5.444560  1.3298243   2
-#> 3  combined  3.326997389 5.273302  1.3052560   3
-#> 4  combined  3.075636809 5.359361  0.6442205   4
-#> 5  combined  3.482275562 5.253938  1.4676398   5
-#> 6  combined  3.305740325 5.485936  1.2416289   6
-#> 7  combined  4.179146326 6.241953  2.3988874   7
-#> 8  combined  3.710310834 5.572534  1.7076818   8
-#> 9  combined  3.816321205 5.823043  2.1144060   9
-#> 10 combined  3.452471822 5.170300  1.4443367  10
-#> 11        s  0.043542095 2.018652 -1.8107560   1
-#> 12        s  0.201593316 2.101075 -1.8094779   2
-#> 13        s  0.233329032 2.110561 -1.5436956   3
-#> 14        s -0.210384294 1.727182 -1.7776220   4
-#> 15        s -0.077904308 1.925693 -2.0858363   5
-#> 16        s -0.009331908 2.041472 -1.9183478   6
-#> 17        s  0.180875876 2.316064 -1.7900735   7
-#> 18        s  0.159411860 2.242709 -1.8773031   8
-#> 19        s  0.261794681 2.254401 -1.8212399   9
-#> 20        s  0.270228267 2.017954 -1.6197206  10
-#> 21        d -0.120866093 1.575997 -2.1332006   1
-#> 22        d -0.234106505 1.692971 -2.2383463   2
-#> 23        d -0.090005062 1.828385 -2.0412223   3
-#> 24        d -0.167370904 1.828077 -1.9312958   4
-#> 25        d -0.080133392 1.750525 -1.9861252   5
-#> 26        d -0.116198250 1.727074 -1.6875367   6
-#> 27        d  0.678924833 2.522626 -1.2601842   7
-#> 28        d  0.081752495 2.191175 -2.0207713   8
-#> 29        d  0.115245792 1.959687 -1.7863121   9
-#> 30        d -0.360892543 1.498615 -2.4552462  10
-#> 31    fixed  3.322525532 5.100019  1.3721128   1
-#> 32    fixed  3.154890064 5.054747  1.4961020   2
-#> 33    fixed  3.279545586 5.134452  1.3761928   3
-#> 34    fixed  3.163424504 4.924571  1.2742963   4
-#> 35    fixed  3.343009692 5.169004  1.3072092   5
-#> 36    fixed  3.334478204 4.984798  1.1138353   6
-#> 37    fixed  3.262361068 4.995714  1.3449695   7
-#> 38    fixed  3.224046820 5.139528  1.2642650   8
-#> 39    fixed  3.212544437 5.087857  1.2581900   9
-#> 40    fixed  3.221079191 4.880463  1.3834116  10
+#>      effect         fit      upr        lwr obs
+#> 1  combined  3.10838502 5.123547  0.9913693   1
+#> 2  combined  3.00832927 5.411406  1.0113278   2
+#> 3  combined  3.22682784 5.371182  1.2233180   3
+#> 4  combined  3.19987923 5.302901  1.0819426   4
+#> 5  combined  3.33376041 5.019445  1.3380125   5
+#> 6  combined  3.31108813 5.238900  1.2690864   6
+#> 7  combined  4.24593858 5.933879  2.1953436   7
+#> 8  combined  3.75983116 5.871957  1.8359312   8
+#> 9  combined  3.75325587 5.760148  2.0332515   9
+#> 10 combined  3.35497451 5.371630  1.4761959  10
+#> 11        s  0.34207622 2.567831 -1.6782520   1
+#> 12        s  0.19641638 2.360672 -1.7598827   2
+#> 13        s -0.03755823 2.236397 -1.4514586   3
+#> 14        s  0.07338433 1.931521 -2.0330254   4
+#> 15        s -0.13145826 2.035637 -2.4907082   5
+#> 16        s -0.06332697 2.058394 -1.9137445   6
+#> 17        s  0.39965259 2.207372 -1.8133160   7
+#> 18        s  0.35494937 2.363900 -1.5459471   8
+#> 19        s  0.18062186 2.171327 -1.7177457   9
+#> 20        s  0.39414930 2.437838 -1.4663560  10
+#> 21        d -0.19850572 1.868795 -2.0216443   1
+#> 22        d -0.23150868 1.927724 -2.0879271   2
+#> 23        d  0.12322658 1.973800 -1.9759552   3
+#> 24        d -0.21774838 1.878971 -2.2175861   4
+#> 25        d  0.13925047 2.121110 -1.9064912   5
+#> 26        d  0.07385768 2.105597 -1.9957663   6
+#> 27        d  0.54384220 2.373974 -0.9731128   7
+#> 28        d  0.33809540 2.342702 -1.8649070   8
+#> 29        d  0.32012926 2.260106 -1.6999460   9
+#> 30        d -0.29980274 1.521508 -2.2328740  10
+#> 31    fixed  3.23207074 5.329527  1.0150544   1
+#> 32    fixed  3.11042822 5.304020  1.2880103   2
+#> 33    fixed  3.22825199 5.200519  1.2316590   3
+#> 34    fixed  3.04045774 4.934492  1.1924062   4
+#> 35    fixed  3.20004158 4.977114  1.0328596   5
+#> 36    fixed  3.47221763 5.397403  1.3794685   6
+#> 37    fixed  3.12964189 5.018796  1.2485740   7
+#> 38    fixed  3.44092080 5.523848  1.4783921   8
+#> 39    fixed  3.33680051 5.459012  1.2086844   9
+#> 40    fixed  3.32120361 5.309080  1.5144517  10
 ```
 
 This can lead to some useful plotting:
@@ -245,7 +245,7 @@ ggplot(plotdf, aes(x = obs, y = fit, ymin = lwr, ymax = upr)) +
   facet_grid(residVar~effect) + theme_bw()
 ```
 
-![](tools/readmeplot/README-unnamed-chunk-8-1.png)
+![](man/figures/README_unnamed-chunk-8-1.png)
 
 We can also investigate the makeup of the prediction for each
 observation.
@@ -258,7 +258,7 @@ ggplot(plotdf[plotdf$obs < 6,],
   facet_grid(residVar~obs) + theme_bw()
 ```
 
-![](tools/readmeplot/README-unnamed-chunk-9-1.png)
+![](man/figures/README_unnamed-chunk-9-1.png)
 
 Plotting
 --------
@@ -270,13 +270,13 @@ fixed and random effect parameters.
 ``` r
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
-#>          term        mean      median          sd
-#> 1 (Intercept)  3.22382563  3.22529380 0.020162684
-#> 2    service1 -0.07189683 -0.07163776 0.012946492
-#> 3   lectage.L -0.18770492 -0.18813874 0.017302176
-#> 4   lectage.Q  0.02308740  0.02167472 0.009969068
-#> 5   lectage.C -0.02109340 -0.02042919 0.013125370
-#> 6   lectage^4 -0.01863192 -0.01757266 0.013344136
+#>          term        mean      median         sd
+#> 1 (Intercept)  3.22261732  3.22132431 0.01781311
+#> 2    service1 -0.07299497 -0.07143995 0.01460292
+#> 3   lectage.L -0.18689932 -0.18481094 0.01531841
+#> 4   lectage.Q  0.02464238  0.02398260 0.01141715
+#> 5   lectage.C -0.02454276 -0.02491987 0.01182860
+#> 6   lectage^4 -0.01952495 -0.02049488 0.01398923
 ```
 
 And we can also plot this:
@@ -285,7 +285,7 @@ And we can also plot this:
 plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FALSE)
 ```
 
-![](tools/readmeplot/README-FEsimPlot-1.png)
+![](man/figures/README_FEsimPlot-1.png)
 
 We can also quickly make caterpillar plots for the random-effect terms:
 
@@ -293,19 +293,19 @@ We can also quickly make caterpillar plots for the random-effect terms:
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 #>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.12616525  0.13883558 0.2939238
-#> 2         s       2 (Intercept) -0.05135644 -0.04487088 0.2973661
-#> 3         s       3 (Intercept)  0.34924299  0.33633781 0.2733792
-#> 4         s       4 (Intercept)  0.29129401  0.29846441 0.2890725
-#> 5         s       5 (Intercept)  0.06402534  0.09347509 0.2906412
-#> 6         s       6 (Intercept)  0.09686327  0.09778793 0.2493421
+#> 1         s       1 (Intercept)  0.12289317  0.07537743 0.3265776
+#> 2         s       2 (Intercept) -0.06294209 -0.05879910 0.3496404
+#> 3         s       3 (Intercept)  0.30066403  0.26274916 0.2963047
+#> 4         s       4 (Intercept)  0.23317160  0.26947709 0.2900297
+#> 5         s       5 (Intercept)  0.05470018  0.06032355 0.3117877
+#> 6         s       6 (Intercept)  0.08529472  0.07354142 0.2396258
 ```
 
 ``` r
 plotREsim(REsim(m1, n.sims = 100), stat = 'median', sd = TRUE)
 ```
 
-![](tools/readmeplot/README-reSimplot-1.png)
+![](man/figures/README_reSimplot-1.png)
 
 Note that `plotREsim` highlights group levels that have a simulated
 distribution that does not overlap 0 – these appear darker. The lighter
@@ -350,7 +350,7 @@ ggplot(ranks, aes(x = term, y = estimate)) +
   theme_bw()
 ```
 
-![](tools/readmeplot/README-unnamed-chunk-13-1.png)
+![](man/figures/README_unnamed-chunk-13-1.png)
 
 Effect Simulation
 -----------------
@@ -366,11 +366,11 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
 #> Warning: executing %dopar% sequentially: no parallel backend registered
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.792662 3.096972e-04  193
-#> 2    1   2 3.260425 5.560872e-05  240
-#> 3    1   3 3.548280 5.780934e-05  254
-#> 4    1   4 3.845533 6.469599e-05  265
-#> 5    1   5 4.228919 2.036997e-04  176
+#> 1    1   1 2.776054 3.007958e-04  193
+#> 2    1   2 3.247641 7.012499e-05  240
+#> 3    1   3 3.541909 5.622570e-05  254
+#> 4    1   4 3.825994 6.723618e-05  265
+#> 5    1   5 4.211194 1.849960e-04  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we
@@ -385,7 +385,7 @@ ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE,
   geom_pointrange() + theme_bw() + labs(x = "Bin of `d` term", y = "Predicted Fit")
 ```
 
-![](tools/readmeplot/README-reImpactplot-1.png)
+![](man/figures/README_reImpactplot-1.png)
 
 Here the standard error is a bit different – it is the weighted standard
 error of the mean effect within the bin. It does not take into account
@@ -461,4 +461,4 @@ ggplot(plotdf, aes(y = fit, x = Anger, color = btype, group = btype)) +
   labs(y = "Predicted Probability")
 ```
 
-![](tools/readmeplot/README-substImpactPredict-1.png)
+![](man/figures/README_substImpactPredict-1.png)
