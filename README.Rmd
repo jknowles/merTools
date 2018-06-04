@@ -11,7 +11,7 @@ output:
 [![Pending Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?style=flat)](https://github.com/jknowles/merTools/pulls)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/merTools)](https://cran.r-project.org/package=merTools)
 [![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](https://cran.r-project.org/package=merTools)
-[![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/merTools)](https://cranlogs.r-pkg.org/badges/grand-total/merTools)
+[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/merTools)](https://cran.r-project.org/package=merTools)
 [![Research software impact](http://depsy.org/api/package/cran/merTools/badge.svg)](http://depsy.org/package/r/merTools)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
