@@ -1,0 +1,1504 @@
+
+R version 3.4.4 (2018-03-15) -- "Someone to Lean On"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "merTools"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> library('merTools')
+Loading required package: arm
+Loading required package: MASS
+Loading required package: Matrix
+Loading required package: lme4
+
+arm (Version 1.10-1, built: 2018-4-12)
+
+Working directory is /mnt/c/Users/Jared/GitHub/merTools/merTools.Rcheck
+
+Loading required package: dplyr
+
+Attaching package: ‘dplyr’
+
+The following object is masked from ‘package:MASS’:
+
+    select
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("FEsim")
+> ### * FEsim
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: FEsim
+> ### Title: Simulate fixed effects from merMod 'FEsim' simulates fixed
+> ###   effects from merMod object posterior distributions
+> ### Aliases: FEsim
+> 
+> ### ** Examples
+> 
+> require(lme4)
+> m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+> fe2 <- FEsim(m2, 25)
+> head(fe2)
+         term      mean    median       sd
+1 (Intercept) 252.92261 251.40664 7.394950
+2        Days  10.46154  10.92994 1.479909
+> 
+> 
+> 
+> cleanEx()
+> nameEx("ICC")
+> ### * ICC
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: ICC
+> ### Title: Calculate the intraclass correlation using mixed effect models
+> ### Aliases: ICC
+> 
+> ### ** Examples
+> 
+> data(sleepstudy)
+> ICC(outcome = "Reaction", group = "Subject", data = sleepstudy)
+[1] 0.3948896
+> 
+> 
+> 
+> cleanEx()
+> nameEx("REcorrExtract")
+> ### * REcorrExtract
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: REcorrExtract
+> ### Title: Extract the correlations between the slopes and the intercepts
+> ###   from a model
+> ### Aliases: REcorrExtract
+> 
+> ### ** Examples
+> 
+> fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+> REcorrExtract(fm1)
+[1] 0.06555134
+> 
+> 
+> 
+> cleanEx()
+> nameEx("REextract")
+> ### * REextract
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: REextract
+> ### Title: Extracts random effects
+> ### Aliases: REextract
+> 
+> ### ** Examples
+> 
+> require(lme4)
+> m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+> rfx <- REextract(m2)
+> #Note the column names
+> head(rfx)
+  groupFctr groupID (Intercept)       Days (Intercept)_se  Days_se
+1   Subject     308    2.258565  9.1989719       12.07084 2.304837
+2   Subject     309  -40.398577 -8.6197032       12.07084 2.304837
+3   Subject     310  -38.960246 -5.4488799       12.07084 2.304837
+4   Subject     330   23.690498 -4.8143313       12.07084 2.304837
+5   Subject     331   22.260203 -3.0698946       12.07084 2.304837
+6   Subject     332    9.039526 -0.2721707       12.07084 2.304837
+> 
+> 
+> 
+> cleanEx()
+> nameEx("REimpact")
+> ### * REimpact
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: REimpact
+> ### Title: Calculate the weighted mean of fitted values for various levels
+> ###   of random effect terms.
+> ### Aliases: REimpact
+> 
+> ### ** Examples
+> 
+> #For a one-level random intercept model
+> require(lme4)
+> m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+> (m1.er <- REimpact(m1, newdata = sleepstudy[1, ], breaks = 2))
+  case bin   AvgFit  AvgFitSE nobs
+1    1   1 223.5320 109.81052    8
+2    1   2 274.4433  44.02665   10
+> 
+> #For a one-level random intercept model with multiple random terms
+> m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+> #ranked by the random slope on Days
+> (m2.er1 <- REimpact(m2,  newdata = sleepstudy[1, ],
++            groupFctr = "Subject", term="Days"))
+  case bin   AvgFit  AvgFitSE nobs
+1    1   1 246.5347 139.87403    6
+2    1   2 252.5980  33.61889    7
+3    1   3 254.8523 114.21114    5
+> #ranked by the random intercept
+> (m2.er2 <- REimpact(m2, newdata = sleepstudy[1, ],
++              groupFctr = "Subject", term="int"))
+  case bin   AvgFit  AvgFitSE nobs
+1    1   1 222.5410 31.064602    5
+2    1   2 252.6735  3.978484    7
+3    1   3 274.1517 10.246048    6
+> ## Not run: 
+> ##D # You can also pass additional arguments to predictInterval through REimpact
+> ##D g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
+> ##D zed <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", n.sims = 50,
+> ##D                 include.resid.var = TRUE)
+> ##D zed2 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "s", n.sims = 50,
+> ##D                  include.resid.var = TRUE)
+> ##D zed3 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", breaks = 5,
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("REquantile")
+> ### * REquantile
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: REquantile
+> ### Title: Identify group level associated with RE quantile
+> ### Aliases: REquantile
+> 
+> ### ** Examples
+> 
+> fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+> REquantile(fm1, quantile = 0.25, groupFctr = "Subject")
+Number of observations < 20, random effect quantiles may not be well-defined.
+[1] "349"
+> REquantile(fm1, quantile = 0.25, groupFctr = "Subject", term = "Days")
+Number of observations < 20, random effect quantiles may not be well-defined.
+[1] "330"
+> 
+> 
+> 
+> cleanEx()
+> nameEx("REsdExtract")
+> ### * REsdExtract
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: REsdExtract
+> ### Title: Extract the standard deviation of the random effects from a
+> ###   merMod object
+> ### Aliases: REsdExtract
+> 
+> ### ** Examples
+> 
+> fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+> REsdExtract(fm1)
+Subject.(Intercept)        Subject.Days 
+          24.740448            5.922133 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("REsim")
+> ### * REsim
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: REsim
+> ### Title: Simulate random effects from merMod 'REsim' simulates random
+> ###   effects from merMod object posterior distributions
+> ### Aliases: REsim
+> 
+> ### ** Examples
+> 
+> require(lme4)
+> m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+> re2 <- REsim(m2, 25)
+> head(re2)
+  groupFctr groupID        term       mean     median       sd
+1   Subject     308 (Intercept)   1.480057   2.927103 12.00462
+2   Subject     309 (Intercept) -42.126938 -42.185536 14.72404
+3   Subject     310 (Intercept) -37.019616 -34.919543 15.08910
+4   Subject     330 (Intercept)  22.678716  25.002762 17.79240
+5   Subject     331 (Intercept)  16.831930  16.630148 13.73126
+6   Subject     332 (Intercept)   6.260757   9.169719 13.39001
+> 
+> 
+> 
+> cleanEx()
+
+detaching ‘package:bindrcpp’
+
+> nameEx("RMSE.merMod")
+> ### * RMSE.merMod
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: RMSE.merMod
+> ### Title: Estimate the Root Mean Squared Error (RMSE) for a lmerMod
+> ### Aliases: RMSE.merMod
+> 
+> ### ** Examples
+> 
+> require(lme4)
+> m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+> RMSE.merMod(m2)
+[1] 23.43806
+> 
+> 
+> 
+> cleanEx()
+> nameEx("VarCorr.merModList")
+> ### * VarCorr.merModList
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: VarCorr.merModList
+> ### Title: Extract the variances and correlations for random effects from a
+> ###   merMod list
+> ### Aliases: VarCorr.merModList
+> 
+> ### ** Examples
+> 
+> sim_list <- replicate(n = 10,
++         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
++         simplify=FALSE)
+> fml <- "Reaction ~ Days + (Days | Subject)"
+> mod <- lmerModList(fml, data = sim_list)
+> VarCorr(mod)
+$stddev
+$stddev$Subject
+(Intercept)        Days 
+  24.740449    5.922133 
+
+
+$correlation
+$correlation$Subject
+            (Intercept)       Days
+(Intercept)  1.00000000 0.06555129
+Days         0.06555129 1.00000000
+
+
+> 
+> 
+> 
+> cleanEx()
+> nameEx("draw")
+> ### * draw
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: draw
+> ### Title: Draw a single observation out of an object matching some
+> ###   criteria
+> ### Aliases: draw draw.merMod
+> 
+> ### ** Examples
+> 
+> fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+> # Random case
+> draw(fm1, type = "random")
+   Reaction Days Subject
+48 334.8177    7     331
+> # Average
+> draw(fm1, type = "average")
+Number of observations < 20, random effect quantiles may not be well-defined.
+  Reaction Days Subject
+1 298.5079  4.5     308
+> # Subset
+> draw(fm1, type = "average", varList = list("Subject" = "308"))
+Warning in averageObs(object, varList, ...) :
+  Subset has less than 20 rows, averages may be problematic.
+  Reaction Days Subject
+1 342.1338  4.5     308
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("expectedRank")
+> ### * expectedRank
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: expectedRank
+> ### Title: Calculate the expected rank of random coefficients that account
+> ###   for uncertainty.
+> ### Aliases: expectedRank
+> 
+> ### ** Examples
+> 
+> #For a one-level random intercept model
+> require(lme4)
+> m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+> (m1.er <- expectedRank(m1))
+   groupFctr groupLevel       term   estimate std.error        ER pctER
+2    Subject        308 _Intercept  40.783710  89.78829 16.505317    89
+3    Subject        309 _Intercept -77.849554  89.78829  1.143216     4
+4    Subject        310 _Intercept -63.108568  89.78829  1.956973     8
+5    Subject        330 _Intercept   4.406442  89.78829  9.733335    51
+6    Subject        331 _Intercept  10.216189  89.78829 11.315372    60
+7    Subject        332 _Intercept   8.221238  89.78829 10.778396    57
+8    Subject        333 _Intercept  16.500494  89.78829 12.891828    69
+9    Subject        334 _Intercept  -2.996981  89.78829  7.775808    40
+10   Subject        335 _Intercept -45.282127  89.78829  2.943212    14
+11   Subject        337 _Intercept  72.182687  89.78829 17.986611    97
+12   Subject        349 _Intercept -21.196249  89.78829  4.512555    22
+13   Subject        350 _Intercept  14.111363  89.78829 12.318474    66
+14   Subject        351 _Intercept  -7.862221  89.78829  6.646553    34
+15   Subject        352 _Intercept  36.378426  89.78829 16.100752    87
+16   Subject        369 _Intercept   7.036381  89.78829 10.455114    55
+17   Subject        370 _Intercept  -6.362703  89.78829  6.976625    36
+18   Subject        371 _Intercept  -3.294273  89.78829  7.702259    40
+19   Subject        372 _Intercept  18.115747  89.78829 13.257599    71
+> 
+> #For a one-level random intercept model with multiple random terms
+> require(lme4)
+> m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+> #ranked by the random slope on Days
+> (m2.er1 <- expectedRank(m2, term="Days"))
+   groupFctr groupLevel term    estimate std.error        ER pctER
+2    Subject        308 Days   9.1989719  5.312274 17.193774    93
+3    Subject        309 Days  -8.6197032  5.312274  2.143174     9
+4    Subject        310 Days  -5.4488799  5.312274  3.955462    19
+5    Subject        330 Days  -4.8143313  5.312274  4.436373    22
+6    Subject        331 Days  -3.0698946  5.312274  5.992080    31
+7    Subject        332 Days  -0.2721707  5.312274  9.092291    48
+8    Subject        333 Days  -0.2236244  5.312274  9.149816    48
+9    Subject        334 Days   1.0745761  5.312274 10.683783    57
+10   Subject        335 Days -10.7521591  5.312274  1.363835     5
+11   Subject        337 Days   8.6282839  5.312274 16.931038    91
+12   Subject        349 Days   1.1734143  5.312274 10.798693    57
+13   Subject        350 Days   6.6142050  5.312274 15.787735    85
+14   Subject        351 Days  -3.0152572  5.312274  6.046280    31
+15   Subject        352 Days   3.5360133  5.312274 13.328157    71
+16   Subject        369 Days   0.8722166  5.312274 10.447189    55
+17   Subject        370 Days   4.8224646  5.312274 14.472351    78
+18   Subject        371 Days  -0.9881551  5.312274  8.251245    43
+19   Subject        372 Days   1.2840297  5.312274 10.926722    58
+> #ranked by the random intercept
+> (m2.er2 <- expectedRank(m2, term="int"))
+   groupFctr groupLevel       term    estimate std.error        ER pctER
+2    Subject        308 _Intercept   2.2585654  145.7051  9.634723    51
+3    Subject        309 _Intercept -40.3985770  145.7051  1.963881     8
+4    Subject        310 _Intercept -38.9602459  145.7051  2.103742     9
+5    Subject        330 _Intercept  23.6904985  145.7051 14.986400    80
+6    Subject        331 _Intercept  22.2602027  145.7051 14.686178    79
+7    Subject        332 _Intercept   9.0395259  145.7051 11.439296    61
+8    Subject        333 _Intercept  16.8404312  145.7051 13.441694    72
+9    Subject        334 _Intercept  -7.2325792  145.7051  7.263237    38
+10   Subject        335 _Intercept  -0.3336959  145.7051  8.959306    47
+11   Subject        337 _Intercept  34.8903509  145.7051 16.855601    91
+12   Subject        349 _Intercept -25.2101104  145.7051  3.826872    18
+13   Subject        350 _Intercept -13.0699567  145.7051  5.984197    30
+14   Subject        351 _Intercept   4.5778352  145.7051 10.249260    54
+15   Subject        352 _Intercept  20.8635925  145.7051 14.380941    77
+16   Subject        369 _Intercept   3.2754530  145.7051  9.903286    52
+17   Subject        370 _Intercept -25.6128694  145.7051  3.766177    18
+18   Subject        371 _Intercept   0.8070397  145.7051  9.254644    49
+19   Subject        372 _Intercept  12.3145394  145.7051 12.300566    66
+> 
+> ## Not run: 
+> ##D #For a two-level model with random intercepts
+> ##D require(lme4)
+> ##D m3 <- lmer(y ~ service * dept + (1|s) + (1|d), InstEval)
+> ##D #Ranked by the random intercept on 's'
+> ##D (m3.er1 <- expectedRank(m3, groupFctr="s", term="Intercept"))
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fastdisp")
+> ### * fastdisp
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fastdisp
+> ### Title: fastdisp: faster display of model summaries
+> ### Aliases: fastdisp fastdisp.merMod fastdisp.merModList
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D #Compare the time for displaying this modest model
+> ##D require(arm)
+> ##D m1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
+> ##D system.time(display(m1))
+> ##D system.time(fastdisp(m1))
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fixef.merModList")
+> ### * fixef.merModList
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fixef.merModList
+> ### Title: Extract fixed-effects estimates for a merModList
+> ### Aliases: fixef.merModList
+> 
+> ### ** Examples
+> 
+> sim_list <- replicate(n = 10,
++         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
++         simplify=FALSE)
+> fml <- "Reaction ~ Days + (Days | Subject)"
+> mod <- lmerModList(fml, data = sim_list)
+> fixef(mod)
+(Intercept)        Days 
+  251.40510    10.46729 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("hsb")
+> ### * hsb
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: hsb
+> ### Title: A subset of data from the 1982 High School and Beyond survey
+> ###   used as examples for HLM software
+> ### Aliases: hsb
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> data(hsb)
+> head(hsb)
+  schid minority female    ses mathach size schtype meanses
+1  1224        0      1 -1.528   5.876  842       0  -0.428
+2  1224        0      1 -0.588  19.708  842       0  -0.428
+3  1224        0      0 -0.528  20.349  842       0  -0.428
+4  1224        0      0 -0.668   8.781  842       0  -0.428
+5  1224        0      0 -0.158  17.898  842       0  -0.428
+6  1224        0      0  0.022   4.583  842       0  -0.428
+> 
+> 
+> 
+> cleanEx()
+> nameEx("merModList")
+> ### * merModList
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: lmerModList
+> ### Title: Apply a multilevel model to a list of data frames
+> ### Aliases: lmerModList blmerModList glmerModList bglmerModList
+> 
+> ### ** Examples
+> 
+> sim_list <- replicate(n = 10,
++         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
++         simplify=FALSE)
+> fml <- "Reaction ~ Days + (Days | Subject)"
+> mod <- lmerModList(fml, data = sim_list)
+> summary(mod)
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+> 
+> 
+> 
+> cleanEx()
+> nameEx("modelFixedEff")
+> ### * modelFixedEff
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: modelFixedEff
+> ### Title: Extract averaged fixed effect parameters across a list of merMod
+> ###   objects
+> ### Aliases: modelFixedEff
+> 
+> ### ** Examples
+> 
+> sim_list <- replicate(n = 10,
++         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
++         simplify=FALSE)
+> fml <- "Reaction ~ Days + (Days | Subject)"
+> mod <- lmerModList(fml, data = sim_list)
+> modelFixedEff(mod)
+         term  estimate std.error statistic           df
+1 (Intercept) 251.40510  6.824556 36.838310 4.269156e+49
+2        Days  10.46729  1.545789  6.771485 1.613373e+51
+> 
+> 
+> 
+> cleanEx()
+> nameEx("modelInfo")
+> ### * modelInfo
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: modelInfo
+> ### Title: Extract model information from a merMod
+> ### Aliases: modelInfo
+> 
+> ### ** Examples
+> 
+> sim_list <- replicate(n = 10,
++         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
++         simplify=FALSE)
+> fml <- "Reaction ~ Days + (Days | Subject)"
+> mod <- lmerModList(fml, data = sim_list)
+> modelInfo(mod[[1]])
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+> lapply(mod, modelInfo)
+[[1]]
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+
+[[2]]
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+
+[[3]]
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+
+[[4]]
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+
+[[5]]
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+
+[[6]]
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+
+[[7]]
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+
+[[8]]
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+
+[[9]]
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+
+[[10]]
+  n.obs n.lvls      AIC    sigma
+1   180      1 1755.628 25.59182
+
+> 
+> 
+> 
+> cleanEx()
+> nameEx("modelRandEffStats")
+> ### * modelRandEffStats
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: modelRandEffStats
+> ### Title: Extract data.frame of random effect statistics from merMod List
+> ### Aliases: modelRandEffStats
+> 
+> ### ** Examples
+> 
+> sim_list <- replicate(n = 10,
++         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
++         simplify=FALSE)
+> fml <- "Reaction ~ Days + (Days | Subject)"
+> mod <- lmerModList(fml, data = sim_list)
+> modelRandEffStats(mod)
+                          term    group    estimate    std.error
+1 cor_(Intercept).Days.Subject  Subject  0.06555129 6.384959e-08
+2       sd_(Intercept).Subject  Subject 24.74044856 1.353540e-06
+3              sd_Days.Subject  Subject  5.92213319 1.580984e-07
+4      sd_Observation.Residual Residual 25.59181586 3.841888e-08
+> 
+> 
+> 
+> cleanEx()
+> nameEx("plotFEsim")
+> ### * plotFEsim
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: plotFEsim
+> ### Title: Plot the results of a simulation of the fixed effects
+> ### Aliases: plotFEsim
+> 
+> ### ** Examples
+> 
+>  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+>  (p1 <- plotFEsim(FEsim(fm1)))
+> 
+> 
+> 
+> cleanEx()
+> nameEx("plotREsim")
+> ### * plotREsim
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: plotREsim
+> ### Title: Plot the results of a simulation of the random effects
+> ### Aliases: plotREsim
+> 
+> ### ** Examples
+> 
+>  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+>  (p1 <- plotREsim(REsim(fm1)))
+>  #Plot just the random effects for the Days slope
+>  (p2 <- plotREsim(REsim(fm1), facet= list(groupFctr= "Subject", term= "Days")))
+> 
+> 
+> 
+> cleanEx()
+> nameEx("predictInterval")
+> ### * predictInterval
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: predictInterval
+> ### Title: Predict from merMod objects with a prediction interval
+> ### Aliases: predictInterval
+> 
+> ### ** Examples
+> 
+> m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+> regFit <- predict(m1, newdata = sleepstudy[11, ]) # a single value is returned
+> intFit <- predictInterval(m1, newdata = sleepstudy[11, ]) # bounded values
+> # Can do glmer
+> d1 <- cbpp
+> d1$y <- d1$incidence / d1$size
+>  gm2 <- glmer(y ~ period + (1 | herd), family = binomial, data = d1,
++                nAGQ = 9, weights = d1$size)
+>  regFit <- predict(gm2, newdata = d1[1:10, ])
+>  # get probabilities
+>  regFit <- predict(gm2, newdata = d1[1:10, ], type = "response")
+>  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "probability")
+>  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "linear.prediction")
+> 
+> 
+> 
+> cleanEx()
+> nameEx("print.merModList")
+> ### * print.merModList
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: print.merModList
+> ### Title: Print the results of a merMod list
+> ### Aliases: print.merModList
+> 
+> ### ** Examples
+> 
+> sim_list <- replicate(n = 10,
++         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
++         simplify=FALSE)
+> fml <- "Reaction ~ Days + (Days | Subject)"
+> mod <- lmerModList(fml, data = sim_list)
+> print(mod)
+[1] "Linear mixed model fit by REML"
+Model family: 
+lmer(formula = Reaction ~ Days + (Days | Subject), data = d)
+
+Fixed Effects:
+            estimate std.error statistic           df
+(Intercept)  251.405     6.825    36.838 4.269156e+49
+Days          10.467     1.546     6.771 1.613373e+51
+
+Random Effects:
+
+Error Term Standard Deviations by Level:
+
+Subject
+(Intercept)        Days 
+     24.740       5.922 
+
+
+Error Term Correlations:
+
+Subject
+            (Intercept) Days 
+(Intercept) 1.000       0.066
+Days        0.066       1.000
+
+
+Residual Error = 25.592 
+
+---Groups
+number of obs: 180, groups: Subject, 18
+
+Model Fit Stats
+AIC = 1755.6
+Residual standard deviation = 25.592 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("ranef.merModList")
+> ### * ranef.merModList
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: ranef.merModList
+> ### Title: Extract random-effects estimates for a merModList
+> ### Aliases: ranef.merModList
+> 
+> ### ** Examples
+> 
+> sim_list <- replicate(n = 10,
++         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
++         simplify=FALSE)
+> fml <- "Reaction ~ Days + (Days | Subject)"
+> mod <- lmerModList(fml, data = sim_list)
+> ranef(mod)
+$Subject
+    (Intercept)        Days
+308  0.22585649  0.91989720
+309 -4.03985781 -0.86197029
+310 -3.89602472 -0.54488797
+330  2.36904998 -0.48143315
+331  2.22602039 -0.30698948
+332  0.90395263 -0.02721707
+333  1.68404319 -0.02236246
+334 -0.72325796  0.10745761
+335 -0.03336952 -1.07521592
+337  3.48903518  0.86282837
+349 -2.52101115  0.11734144
+350 -1.30699577  0.66142051
+351  0.45778355 -0.30152572
+352  2.08635932  0.35360132
+369  0.32754531  0.08722166
+370 -2.56128708  0.48224648
+371  0.08070398 -0.09881551
+372  1.23145398  0.12840297
+
+> 
+> 
+> 
+> cleanEx()
+> nameEx("subBoot")
+> ### * subBoot
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: subBoot
+> ### Title: Bootstrap a subset of an lme4 model
+> ### Aliases: subBoot
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D (fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))
+> ##D resultMatrix <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("summary.merModList")
+> ### * summary.merModList
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: summary.merModList
+> ### Title: Summarize a merMod list
+> ### Aliases: summary.merModList
+> 
+> ### ** Examples
+> 
+> sim_list <- replicate(n = 10,
++         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
++         simplify=FALSE)
+> fml <- "Reaction ~ Days + (Days | Subject)"
+> mod <- lmerModList(fml, data = sim_list)
+> summary(mod)
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: d
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.09   24.740       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+> 
+> 
+> 
+> cleanEx()
+> nameEx("superFactor")
+> ### * superFactor
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: superFactor
+> ### Title: Create a factor with unobserved levels
+> ### Aliases: superFactor
+> 
+> ### ** Examples
+> 
+> regularFactor <- c("A", "B", "C")
+> regularFactor <- factor(regularFactor)
+> levels(regularFactor)
+[1] "A" "B" "C"
+> # Now make it super
+> newLevs <- c("D", "E", "F")
+> regularFactor <- superFactor(regularFactor, fullLev = newLevs)
+> levels(regularFactor) # now super
+[1] "D" "E" "F" "A" "B" "C"
+> 
+> 
+> 
+> cleanEx()
+> nameEx("thetaExtract")
+> ### * thetaExtract
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: thetaExtract
+> ### Title: Extract theta parameters from a merMod model
+> ### Aliases: thetaExtract
+> 
+> ### ** Examples
+> 
+> (fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))
+Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: sleepstudy
+REML criterion at convergence: 1743.628
+Random effects:
+ Groups   Name        Std.Dev. Corr
+ Subject  (Intercept) 24.740       
+          Days         5.922   0.07
+ Residual             25.592       
+Number of obs: 180, groups:  Subject, 18
+Fixed Effects:
+(Intercept)         Days  
+     251.41        10.47  
+> thetaExtract(fm1) #(a numeric vector of the covariance parameters)
+[1] 0.96673279 0.01516906 0.23090960
+> 
+> 
+> 
+> cleanEx()
+> nameEx("wiggle")
+> ### * wiggle
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: wiggle
+> ### Title: Assign an observation to different values
+> ### Aliases: wiggle
+> 
+> ### ** Examples
+> 
+> data(iris)
+> wiggle(iris[3,], varlist = "Sepal.Width", valueslist = list(c(1, 2, 3, 5)))
+   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+3           4.7           1          1.3         0.2  setosa
+31          4.7           2          1.3         0.2  setosa
+32          4.7           3          1.3         0.2  setosa
+33          4.7           5          1.3         0.2  setosa
+> wiggle(iris[3:5,], "Sepal.Width", valueslist = list(c(1, 2, 3, 5)))
+   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+3           4.7           1          1.3         0.2  setosa
+4           4.6           1          1.5         0.2  setosa
+5           5.0           1          1.4         0.2  setosa
+31          4.7           2          1.3         0.2  setosa
+41          4.6           2          1.5         0.2  setosa
+51          5.0           2          1.4         0.2  setosa
+32          4.7           3          1.3         0.2  setosa
+42          4.6           3          1.5         0.2  setosa
+52          5.0           3          1.4         0.2  setosa
+33          4.7           5          1.3         0.2  setosa
+43          4.6           5          1.5         0.2  setosa
+53          5.0           5          1.4         0.2  setosa
+> wiggle(iris[3,], c("Sepal.Width", "Petal.Length"), list(c(1,2,3,5), c(3,5,6)))
+                Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+Sepal.Width.3            4.7           1            3         0.2  setosa
+Sepal.Width.31           4.7           2            3         0.2  setosa
+Sepal.Width.32           4.7           3            3         0.2  setosa
+Sepal.Width.33           4.7           5            3         0.2  setosa
+Sepal.Width.34           4.7           1            5         0.2  setosa
+Sepal.Width.311          4.7           2            5         0.2  setosa
+Sepal.Width.321          4.7           3            5         0.2  setosa
+Sepal.Width.331          4.7           5            5         0.2  setosa
+Sepal.Width.35           4.7           1            6         0.2  setosa
+Sepal.Width.312          4.7           2            6         0.2  setosa
+Sepal.Width.322          4.7           3            6         0.2  setosa
+Sepal.Width.332          4.7           5            6         0.2  setosa
+> wiggle(iris[3:5,], c("Sepal.Width", "Petal.Length"), list(c(1,2,3,5), c(3,5,6)))
+                Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+Sepal.Width.3            4.7           1            3         0.2  setosa
+Sepal.Width.4            4.6           1            3         0.2  setosa
+Sepal.Width.5            5.0           1            3         0.2  setosa
+Sepal.Width.31           4.7           2            3         0.2  setosa
+Sepal.Width.41           4.6           2            3         0.2  setosa
+Sepal.Width.51           5.0           2            3         0.2  setosa
+Sepal.Width.32           4.7           3            3         0.2  setosa
+Sepal.Width.42           4.6           3            3         0.2  setosa
+Sepal.Width.52           5.0           3            3         0.2  setosa
+Sepal.Width.33           4.7           5            3         0.2  setosa
+Sepal.Width.43           4.6           5            3         0.2  setosa
+Sepal.Width.53           5.0           5            3         0.2  setosa
+Sepal.Width.34           4.7           1            5         0.2  setosa
+Sepal.Width.44           4.6           1            5         0.2  setosa
+Sepal.Width.54           5.0           1            5         0.2  setosa
+Sepal.Width.311          4.7           2            5         0.2  setosa
+Sepal.Width.411          4.6           2            5         0.2  setosa
+Sepal.Width.511          5.0           2            5         0.2  setosa
+Sepal.Width.321          4.7           3            5         0.2  setosa
+Sepal.Width.421          4.6           3            5         0.2  setosa
+Sepal.Width.521          5.0           3            5         0.2  setosa
+Sepal.Width.331          4.7           5            5         0.2  setosa
+Sepal.Width.431          4.6           5            5         0.2  setosa
+Sepal.Width.531          5.0           5            5         0.2  setosa
+Sepal.Width.35           4.7           1            6         0.2  setosa
+Sepal.Width.45           4.6           1            6         0.2  setosa
+Sepal.Width.55           5.0           1            6         0.2  setosa
+Sepal.Width.312          4.7           2            6         0.2  setosa
+Sepal.Width.412          4.6           2            6         0.2  setosa
+Sepal.Width.512          5.0           2            6         0.2  setosa
+Sepal.Width.322          4.7           3            6         0.2  setosa
+Sepal.Width.422          4.6           3            6         0.2  setosa
+Sepal.Width.522          5.0           3            6         0.2  setosa
+Sepal.Width.332          4.7           5            6         0.2  setosa
+Sepal.Width.432          4.6           5            6         0.2  setosa
+Sepal.Width.532          5.0           5            6         0.2  setosa
+> 
+> 
+> 
+> ### * <FOOTER>
+> ###
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  8 0.344 8.348 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

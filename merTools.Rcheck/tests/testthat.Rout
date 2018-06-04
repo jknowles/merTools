@@ -1,0 +1,56 @@
+
+R version 3.4.4 (2018-03-15) -- "Someone to Lean On"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(testthat)
+> library(merTools)
+Loading required package: arm
+Loading required package: MASS
+Loading required package: Matrix
+Loading required package: lme4
+
+arm (Version 1.10-1, built: 2018-4-12)
+
+Working directory is /mnt/c/Users/Jared/GitHub/merTools/merTools.Rcheck/tests
+
+Loading required package: dplyr
+
+Attaching package: 'dplyr'
+
+The following object is masked from 'package:MASS':
+
+    select
+
+The following object is masked from 'package:testthat':
+
+    matches
+
+The following objects are masked from 'package:stats':
+
+    filter, lag
+
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+
+> 
+> test_check("merTools")
+══ testthat results  ═══════════════════════════════════════════════════════════
+OK: 394 SKIPPED: 27 FAILED: 0
+> 
+> proc.time()
+   user  system elapsed 
+ 36.281   0.515  36.832 

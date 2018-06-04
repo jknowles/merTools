@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Jared Knowles and Carl Frederick" />
+
+<meta name="date" content="2018-06-04" />
+
+<title>Prediction Intervals from merMod Objects</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Prediction Intervals from merMod Objects</h1>
+<h4 class="author"><em>Jared Knowles and Carl Frederick</em></h4>
+<h4 class="date"><em>2018-06-04</em></h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Fitting (generalized) linear mixed models, (G)LMM, to very large data sets is becoming increasingly easy, but understanding and communicating the uncertainty inherent in those models is not. As the documentation for <code>lme4::predict.merMod()</code> notes:</p>
+<blockquote>
+<p>There is no option for computing standard errors of predictions because it is difficult to define an efficient method that incorporates uncertainty in the variance parameters; we recommend <code>lme4::bootMer()</code> for this task.</p>
+</blockquote>
+<p>We agree that, short of a fully Bayesian analysis, bootstrapping is the gold-standard for deriving a prediction interval predictions from a (G)LMM, but the time required to obtain even a respectable number of replications from <code>bootMer()</code> quickly becomes prohibitive when the initial model fit is on the order of hours instead of seconds. The only other alternative we have identified for these situations is to use the <code>arm::sim()</code> function to simulate values. Unfortunately, this only takes variation of the fixed coefficients and residuals into account, and assumes the conditional modes of the random effects are fixed.</p>
+<p>We developed the <code>predictInterval()</code> function to incorporate the variation in the conditional modes of the random effects (CMRE, a.k.a. BLUPs in the LMM case) into calculating prediction intervals. Ignoring the variance in the CMRE results in overly confident estimates of predicted values and in cases where the precision of the grouping term varies across levels of grouping terms, creates the illusion of difference where none may exist. The importance of accounting for this variance comes into play sharply when comparing the predictions of different models across observations.</p>
+<p>We take the warning from <code>lme4::predict.merMod()</code> seriously, but view this method as a decent first approximation the full bootstrap analysis for (G)LMMs fit to very large data sets.</p>
+</div>
+<div id="conceptual-description" class="section level2">
+<h2>Conceptual description</h2>
+<p>In order to generate a proper prediction interval, a prediction must account for three sources of uncertainty in mixed models:</p>
+<ol style="list-style-type: decimal">
+<li>the residual (observation-level) variance,</li>
+<li>the uncertainty in the fixed coefficients, and</li>
+<li>the uncertainty in the variance parameters for the grouping factors.</li>
+</ol>
+<p>A fourth, uncertainty about the data, is beyond the scope of any prediction method.</p>
+<p>As we mentioned above, the <code>arm:sim()</code> function incorporates the first two sources of variation but not the third , while bootstrapping using <code>lme4::bootMer()</code> does incorporate all three sources of uncertainty because it re-estimates the model using random samples of the data.</p>
+<p>When inference about the values of the CMREs is of interest, it would be nice to incorporate some degree of uncertainty in those estimates when comparing observations across groups. <code>predictInterval()</code> does this by drawing values of the CMREs from the conditional variance-covariance matrix of the random affects accessible from <code>lme4::ranef(model, condVar=TRUE)</code>. Thus, <code>predictInterval()</code> incorporates all of the uncertainty from sources one and two, and part of the variance from source 3, but the variance parameters themselves are treated as fixed.</p>
+<p>To do this, <code>predictInterval()</code> takes an estimated model of class <code>merMod</code> and, like <code>predict()</code>, a data.frame upon which to make those predictions and:</p>
+<ol style="list-style-type: decimal">
+<li>extracts the fixed and random coefficients</li>
+<li>takes <code>n</code> draws from the multivariate normal distribution of the fixed and random coefficients (separately)</li>
+<li>calculates the linear predictor for each row in <code>newdata</code> based on these draws, and</li>
+<li>optionally incorporates the residual variation (per the <code>arm::sim()</code> function), and,</li>
+<li>returns newdata with the lower and upper limits of the prediction interval and the mean or median of the simulated predictions</li>
+</ol>
+<p>Currently, the supported model types are linear mixed models and mixed logistic regression models.</p>
+<p>The prediction data set <em>can</em> include levels that are not in the estimation model frame. The prediction intervals for such observations only incorporate uncertainty from fixed coefficient estimates and the residual level of variation.</p>
+</div>
+<div id="comparison-to-existing-methods" class="section level2">
+<h2>Comparison to existing methods</h2>
+<p>What do the differences between <code>predictInterval()</code> and the other methods for constructing prediction intervals mean in practice? We would expect to see <code>predictInterval()</code> to produce prediction intervals that are wider than all methods except for the <code>bootMer()</code> method. We would also hope that the prediction point estimate from other methods falls within the prediction interval produced by <code>predictInterval()</code>. Ideally, the predicted point estimate produced by <code>predictInterval()</code> would fall close to that produced by <code>bootMer()</code>.</p>
+<p>This section compares the results of <code>predictInterval()</code> with those obtained using <code>arm::sim()</code> and <code>lme4::bootMer()</code> using the sleepstudy data from <code>lme4</code>. These data contain reaction time observations for 10 days on 18 subjects.<br />
+The data are sorted such that the first 10 observations are days one through ten for subject 1, the next 10 are days one through ten for subject 2 and so on. The example model that we are estimating below estimates random intercepts and a random slope for the number of days.</p>
+<p>###Step 1: Estimating the model and using <code>predictInterval()</code></p>
+<p>First, we will load the required packages and data and estimate the model:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">271828</span>)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">data</span>(sleepstudy)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">fm1 &lt;-<span class="st"> </span><span class="kw">lmer</span>(Reaction <span class="op">~</span><span class="st"> </span>Days <span class="op">+</span><span class="st"> </span>(Days<span class="op">|</span>Subject), <span class="dt">data=</span>sleepstudy)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">display</span>(fm1)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co">#&gt; lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co">#&gt;             coef.est coef.se</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#&gt; (Intercept) 251.41     6.82 </span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="co">#&gt; Days         10.47     1.55 </span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co">#&gt; Error terms:</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co">#&gt;  Groups   Name        Std.Dev. Corr </span></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="co">#&gt;  Subject  (Intercept) 24.74         </span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="co">#&gt;           Days         5.92    0.07 </span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14"><span class="co">#&gt;  Residual             25.59         </span></a>
+<a class="sourceLine" id="cb1-15" data-line-number="15"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="co">#&gt; number of obs: 180, groups: Subject, 18</span></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="co">#&gt; AIC = 1755.6, DIC = 1760.3</span></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18"><span class="co">#&gt; deviance = 1751.9</span></a></code></pre></div>
+<p>Then, calculate prediction intervals using <code>predictInterval()</code>. The <code>predictInterval</code> function has a number of user configurable options. In this example, we use the original data <code>sleepstudy</code> as the newdata. We pass the function the <code>fm1</code> model we fit above. We also choose a 95% interval with <code>level = 0.95</code>, though we could choose a less conservative prediction interval. We make 1,000 simulations for each observation <code>n.sims = 1000</code>. We set the point estimate to be the median of the simulated values, instead of the mean. We ask for the linear predictor back, if we fit a logistic regression, we could have asked instead for our predictions on the probability scale instead. Finally, we indicate that we want the predictions to incorporate the residual variance from the model – an option only available for <code>lmerMod</code> objects.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">PI.time &lt;-<span class="st"> </span><span class="kw">system.time</span>(</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">  PI &lt;-<span class="st"> </span><span class="kw">predictInterval</span>(<span class="dt">merMod =</span> fm1, <span class="dt">newdata =</span> sleepstudy,</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">                        <span class="dt">level =</span> <span class="fl">0.95</span>, <span class="dt">n.sims =</span> <span class="dv">1000</span>,</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">                        <span class="dt">stat =</span> <span class="st">&quot;median&quot;</span>, <span class="dt">type=</span><span class="st">&quot;linear.prediction&quot;</span>,</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">                        <span class="dt">include.resid.var =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">)</a></code></pre></div>
+<p>Here is the first few rows of the object <code>PI</code>:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">fit</th>
+<th align="right">upr</th>
+<th align="right">lwr</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">251.6685</td>
+<td align="right">311.3171</td>
+<td align="right">196.4096</td>
+</tr>
+<tr class="even">
+<td align="right">271.4802</td>
+<td align="right">330.9196</td>
+<td align="right">214.2175</td>
+</tr>
+<tr class="odd">
+<td align="right">292.6809</td>
+<td align="right">350.9868</td>
+<td align="right">237.7714</td>
+</tr>
+<tr class="even">
+<td align="right">311.6967</td>
+<td align="right">369.2911</td>
+<td align="right">254.2238</td>
+</tr>
+<tr class="odd">
+<td align="right">331.8318</td>
+<td align="right">389.7439</td>
+<td align="right">278.1857</td>
+</tr>
+<tr class="even">
+<td align="right">350.7450</td>
+<td align="right">408.1386</td>
+<td align="right">294.8506</td>
+</tr>
+</tbody>
+</table>
+<p>The three columns are the median (<code>fit</code>) and limits of the 95% prediction interval (<code>upr</code> and <code>lwr</code>) because we set <code>level=0.95</code>. The following figure displays the output graphically for the first 30 observations.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">library</span>(ggplot2);</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">30</span>, <span class="dt">y=</span>fit, <span class="dt">ymin=</span>lwr, <span class="dt">ymax=</span>upr), <span class="dt">data=</span>PI[<span class="dv">1</span><span class="op">:</span><span class="dv">30</span>,]) <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_linerange</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Index&quot;</span>, <span class="dt">y=</span><span class="st">&quot;Prediction w/ 95% PI&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>()</a></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div id="step-1a-adjusting-for-correlation-between-fixed-and-random-effects" class="section level4">
+<h4>Step 1a: Adjusting for correlation between fixed and random effects</h4>
+<p>The prediction intervals above do not correct for correlations between fixed and random effects. This tends to lead to predictive intervals that are too conservative, especially for existing groups when there is a lot of data on relatively few groups. In that case, a significant portion of the uncertainty in the prediction can be due to variance in the fixed intercept which is anti-correlated with variance in the random intercept effects. For instance, it does not actually matter if the fixed intercept is 5 and the random intercept effects are -2, 1, and 1, versus a fixed intercept of 6 and random intercept effects of -3, 0, and 0. (The latter situation will never be the MLE, but it can occur in this package’s simulations.)</p>
+<p>To show this issue, we’ll use the following model, predicting the body fat percentage of student athletes using fixed effects for their height and sex and a random effect for their sport:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">ais &lt;-<span class="st"> </span>DAAG<span class="op">::</span>ais</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">fatmodel =<span class="st"> </span><span class="kw">lmer</span>(pcBfat<span class="op">~</span><span class="st"> </span>ht <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>sport),<span class="dt">data=</span>ais)</a></code></pre></div>
+<p>Let’s use the model to give an interval for the true average body fat of a large group of students like the first one in the study — a 196cm female baseball player:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">ais[<span class="dv">1</span>,]</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co">#&gt;    rcc wcc   hc   hg ferr   bmi   ssf pcBfat   lbm    ht   wt sex  sport</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="co">#&gt; 1 3.96 7.5 37.5 12.3   60 20.56 109.1  19.75 63.32 195.9 78.9   f B_Ball</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">predictInterval</span>(fatmodel, ais[<span class="dv">1</span>,], <span class="dt">include.resid.var=</span><span class="dv">0</span>) <span class="co">#predict the average body fat for a group of 196cm female baseball players</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt;       fit      upr      lwr</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co">#&gt; 1 19.1439 21.08575 17.33927</span></a></code></pre></div>
+<p>There are two ways to get predictInterval to create less-conservative intervals to deal with this. The first is just to tell it to consider certain fixed effects as fully-known (that is, with an effectively 0 variance.) This is done using the <code>ignore.fixed.effects</code> argument.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">predictInterval</span>(fatmodel, ais[<span class="dv">1</span>,], <span class="dt">include.resid.var=</span><span class="dv">0</span>, <span class="dt">ignore.fixed.terms =</span> <span class="dv">1</span>) <span class="co">#predict the average body fat for a group of 196cm female baseball players, taking the global intercept (mean body fat) as fully known</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">#&gt;        fit      upr      lwr</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co">#&gt; 1 19.24791 20.85464 17.61473</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="kw">predictInterval</span>(fatmodel, ais[<span class="dv">1</span>,], <span class="dt">include.resid.var=</span><span class="dv">0</span>, <span class="dt">ignore.fixed.terms =</span> <span class="st">&quot;(Intercept)&quot;</span>) <span class="co">#Same as above</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt;        fit      upr      lwr</span></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co">#&gt; 1 19.30995 20.88076 17.71242</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="kw">predictInterval</span>(fatmodel, ais[<span class="dv">1</span>,], <span class="dt">include.resid.var=</span><span class="dv">0</span>, <span class="dt">ignore.fixed.terms =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) <span class="co">#as above, taking the first two fixed effects (intercept and height effect) as fully known</span></a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="co">#&gt;        fit      upr      lwr</span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="co">#&gt; 1 19.26367 20.22789 18.35936</span></a></code></pre></div>
+<p>The second way is to use an ad-hoc variance adjustment, with the <code>fix.intercept.variance</code> argument. This takes the model’s intercept variance <span class="math inline">\(\hat\sigma^2_\mu\)</span> and adjusts it to: <span class="math display">\[\hat\sigma^2_\mu'=\hat\sigma^2_\mu-\Sigma_{levels}\frac{1}{\Sigma_{groups(level)}1/(\hat\sigma^2_{level}+sigma^2_{group})}\]</span></p>
+<p>In other words, it assumes the given intercept variance incorporates spurious variance for each level, where each of the spurious variance terms has a precision equal to the of the precisions due to the individual groups at that level.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">predictInterval</span>(fatmodel, ais[<span class="dv">1</span>,], <span class="dt">include.resid.var=</span><span class="dv">0</span>, <span class="dt">fix.intercept.variance =</span> T) <span class="co">#predict the average body fat for a group of 196cm female baseball players, using an ad-hoc correction for the covariance of the intercept with the random intercept effects.</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">#&gt;        fit      upr      lwr</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">#&gt; 1 19.25823 21.03925 17.42492</span></a></code></pre></div>
+<p>A few notes about these two arguments:</p>
+<ul>
+<li><code>fix.intercept.variance=T</code> is redundant with <code>ignore.fixed.effects=1</code>, but not vice versa.</li>
+<li>These corrections should NOT be used when predicting outcomes for groups not present in the original data.</li>
+</ul>
+</div>
+<div id="step-2-comparison-with-armsim" class="section level3">
+<h3>Step 2: Comparison with <code>arm::sim()</code></h3>
+<p>How does the output above compare to what we could get from <code>arm::sim()</code>?</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">PI.arm.time &lt;-<span class="st"> </span><span class="kw">system.time</span>(</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">  PI.arm.sims &lt;-<span class="st"> </span>arm<span class="op">::</span><span class="kw">sim</span>(fm1, <span class="dv">1000</span>)</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">)</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">PI.arm &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">  <span class="dt">fit=</span><span class="kw">apply</span>(<span class="kw">fitted</span>(PI.arm.sims, fm1), <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="kw">quantile</span>(x, <span class="fl">0.500</span>)),</a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">  <span class="dt">upr=</span><span class="kw">apply</span>(<span class="kw">fitted</span>(PI.arm.sims, fm1), <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="kw">quantile</span>(x, <span class="fl">0.975</span>)),</a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">  <span class="dt">lwr=</span><span class="kw">apply</span>(<span class="kw">fitted</span>(PI.arm.sims, fm1), <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="kw">quantile</span>(x, <span class="fl">0.025</span>))</a>
+<a class="sourceLine" id="cb8-9" data-line-number="9">)</a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11">comp.data &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">data.frame</span>(<span class="dt">Predict.Method=</span><span class="st">&quot;predictInterval()&quot;</span>, <span class="dt">x=</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(PI))<span class="op">-</span><span class="fl">0.1</span>, PI),</a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">                   <span class="kw">data.frame</span>(<span class="dt">Predict.Method=</span><span class="st">&quot;arm::sim()&quot;</span>, <span class="dt">x=</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(PI.arm))<span class="op">+</span><span class="fl">0.1</span>, PI.arm))</a>
+<a class="sourceLine" id="cb8-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>fit, <span class="dt">ymin=</span>lwr, <span class="dt">ymax=</span>upr, <span class="dt">color=</span>Predict.Method), <span class="dt">data=</span>comp.data[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">30</span>,<span class="dv">181</span><span class="op">:</span><span class="dv">210</span>),]) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-15" data-line-number="15"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-16" data-line-number="16"><span class="st">  </span><span class="kw">geom_linerange</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-17" data-line-number="17"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Index&quot;</span>, <span class="dt">y=</span><span class="st">&quot;Prediction w/ 95% PI&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-18" data-line-number="18"><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;bottom&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-19" data-line-number="19"><span class="st">  </span><span class="kw">scale_color_brewer</span>(<span class="dt">type =</span> <span class="st">&quot;qual&quot;</span>, <span class="dt">palette =</span> <span class="dv">2</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>The prediction intervals from <code>arm:sim()</code> are much smaller and the random slope for days vary more than they do for <code>predictInterval</code>. Both results are as expected, given the small number of subjects and observations per subject in these data. Because <code>predictInterval()</code> is incorporating uncertainty in the CMFEs (but not the variance parameters of the random coefficients themselves), the Days slopes are closer to the overall or pooled regression slope.</p>
+<p>###Step 3: Comparison with <code>lme4::bootMer()</code></p>
+<p>As quoted above, the developers of lme4 suggest that users interested in uncertainty estimates around their predictions use <code>lme4::bootmer()</code> to calculate them. The documentation for <code>lme4::bootMer()</code> goes on to describe three implemented flavors of bootstrapped estimates:</p>
+<ol style="list-style-type: decimal">
+<li>parametrically resampling both the <em>“spherical”</em> random effects <em>u</em> and the i.i.d. errors <span class="math inline">\(\epsilon\)</span></li>
+<li>treating the random effects as fixed and parametrically resampling the i.i.d. errors</li>
+<li>treating the random effects as fixed and semi-parametrically resampling the i.i.d. errors from the distribution of residuals.</li>
+</ol>
+<p>We will compare the results from <code>predictInterval()</code> with each method, in turn.</p>
+<div id="step-3a-lme4bootmer-method-1" class="section level4">
+<h4>Step 3a: <code>lme4::bootMer()</code> method 1</h4>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">##Functions for bootMer() and objects</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">####Return predicted values from bootstrap</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">mySumm &lt;-<span class="st"> </span><span class="cf">function</span>(.) {</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">  <span class="kw">predict</span>(., <span class="dt">newdata=</span>sleepstudy, <span class="dt">re.form=</span><span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">}</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6">####Collapse bootstrap into median, 95% PI</a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">sumBoot &lt;-<span class="st"> </span><span class="cf">function</span>(merBoot) {</a>
+<a class="sourceLine" id="cb9-8" data-line-number="8">  <span class="kw">return</span>(</a>
+<a class="sourceLine" id="cb9-9" data-line-number="9">    <span class="kw">data.frame</span>(<span class="dt">fit =</span> <span class="kw">apply</span>(merBoot<span class="op">$</span>t, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="kw">as.numeric</span>(<span class="kw">quantile</span>(x, <span class="dt">probs=</span>.<span class="dv">5</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>))),</a>
+<a class="sourceLine" id="cb9-10" data-line-number="10">               <span class="dt">lwr =</span> <span class="kw">apply</span>(merBoot<span class="op">$</span>t, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="kw">as.numeric</span>(<span class="kw">quantile</span>(x, <span class="dt">probs=</span>.<span class="dv">025</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>))),</a>
+<a class="sourceLine" id="cb9-11" data-line-number="11">               <span class="dt">upr =</span> <span class="kw">apply</span>(merBoot<span class="op">$</span>t, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="kw">as.numeric</span>(<span class="kw">quantile</span>(x, <span class="dt">probs=</span>.<span class="dv">975</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>)))</a>
+<a class="sourceLine" id="cb9-12" data-line-number="12">    )</a>
+<a class="sourceLine" id="cb9-13" data-line-number="13">  )</a>
+<a class="sourceLine" id="cb9-14" data-line-number="14">}</a>
+<a class="sourceLine" id="cb9-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb9-16" data-line-number="16">##lme4::bootMer() method 1</a>
+<a class="sourceLine" id="cb9-17" data-line-number="17">PI.boot1.time &lt;-<span class="st"> </span><span class="kw">system.time</span>(</a>
+<a class="sourceLine" id="cb9-18" data-line-number="18">  boot1 &lt;-<span class="st"> </span>lme4<span class="op">::</span><span class="kw">bootMer</span>(fm1, mySumm, <span class="dt">nsim=</span><span class="dv">1000</span>, <span class="dt">use.u=</span><span class="ot">FALSE</span>, <span class="dt">type=</span><span class="st">&quot;parametric&quot;</span>)</a>
+<a class="sourceLine" id="cb9-19" data-line-number="19">)</a>
+<a class="sourceLine" id="cb9-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb9-21" data-line-number="21">PI.boot1 &lt;-<span class="st"> </span><span class="kw">sumBoot</span>(boot1)</a>
+<a class="sourceLine" id="cb9-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb9-23" data-line-number="23">comp.data &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">data.frame</span>(<span class="dt">Predict.Method=</span><span class="st">&quot;predictInterval()&quot;</span>, <span class="dt">x=</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(PI))<span class="op">-</span><span class="fl">0.1</span>, PI),</a>
+<a class="sourceLine" id="cb9-24" data-line-number="24">                   <span class="kw">data.frame</span>(<span class="dt">Predict.Method=</span><span class="st">&quot;lme4::bootMer() - Method 1&quot;</span>, <span class="dt">x=</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(PI.boot1))<span class="op">+</span><span class="fl">0.1</span>, PI.boot1))</a>
+<a class="sourceLine" id="cb9-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb9-26" data-line-number="26"><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>fit, <span class="dt">ymin=</span>lwr, <span class="dt">ymax=</span>upr, <span class="dt">color=</span>Predict.Method), <span class="dt">data=</span>comp.data[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">30</span>,<span class="dv">181</span><span class="op">:</span><span class="dv">210</span>),]) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-27" data-line-number="27"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-28" data-line-number="28"><span class="st">  </span><span class="kw">geom_linerange</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-29" data-line-number="29"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Index&quot;</span>, <span class="dt">y=</span><span class="st">&quot;Prediction w/ 95% PI&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-30" data-line-number="30"><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;bottom&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-31" data-line-number="31"><span class="st">  </span><span class="kw">scale_color_brewer</span>(<span class="dt">type =</span> <span class="st">&quot;qual&quot;</span>, <span class="dt">palette =</span> <span class="dv">2</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>The intervals produced by <code>predictInterval</code>, represented in green, cover the point estimates produced by <code>bootMer</code> in every case for these 30 observations. Additionally, in almost every case, the <code>predictInterval</code> encompasses the entire interval presented by <code>bootMer</code>. Here, the estimates produced by <code>bootMer</code> are re-estimating the group terms, but by refitting the model, they are also taking into account the conditional variance of these terms, or <code>theta</code>, and provide tighter prediction intervals than the <code>predictInterval</code> method.</p>
+<p>####Step 3b: <code>lme4::bootMer()</code> method 2</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">##lme4::bootMer() method 2</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">PI.boot2.time &lt;-<span class="st"> </span><span class="kw">system.time</span>(</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">  boot2 &lt;-<span class="st"> </span>lme4<span class="op">::</span><span class="kw">bootMer</span>(fm1, mySumm, <span class="dt">nsim=</span><span class="dv">1000</span>, <span class="dt">use.u=</span><span class="ot">TRUE</span>, <span class="dt">type=</span><span class="st">&quot;parametric&quot;</span>)</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">)</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">PI.boot2 &lt;-<span class="st"> </span><span class="kw">sumBoot</span>(boot2)</a>
+<a class="sourceLine" id="cb10-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">comp.data &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">data.frame</span>(<span class="dt">Predict.Method=</span><span class="st">&quot;predictInterval()&quot;</span>, <span class="dt">x=</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(PI))<span class="op">-</span><span class="fl">0.1</span>, PI),</a>
+<a class="sourceLine" id="cb10-9" data-line-number="9">                   <span class="kw">data.frame</span>(<span class="dt">Predict.Method=</span><span class="st">&quot;lme4::bootMer() - Method 2&quot;</span>, <span class="dt">x=</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(PI.boot2))<span class="op">+</span><span class="fl">0.1</span>, PI.boot2))</a>
+<a class="sourceLine" id="cb10-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb10-11" data-line-number="11"><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>fit, <span class="dt">ymin=</span>lwr, <span class="dt">ymax=</span>upr, <span class="dt">color=</span>Predict.Method), <span class="dt">data=</span>comp.data[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">30</span>,<span class="dv">181</span><span class="op">:</span><span class="dv">210</span>),]) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-12" data-line-number="12"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-13" data-line-number="13"><span class="st">  </span><span class="kw">geom_linerange</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-14" data-line-number="14"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Index&quot;</span>, <span class="dt">y=</span><span class="st">&quot;Prediction w/ 95% PI&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-15" data-line-number="15"><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;bottom&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-16" data-line-number="16"><span class="st">  </span><span class="kw">scale_color_brewer</span>(<span class="dt">type =</span> <span class="st">&quot;qual&quot;</span>, <span class="dt">palette =</span> <span class="dv">2</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>Here, the results for <code>predictInterval</code> in green again encompass the results from <code>bootMer</code>, but are much wider. The <code>bootMer</code> estimates are ignoring the variance in the group effects, and as such, are only incorporating the residual variance and the variance in the fixed effects – similar to the <code>arm::sim()</code> function.</p>
+</div>
+<div id="step-3c-lme4bootmer-method-3" class="section level4">
+<h4>Step 3c: <code>lme4::bootMer()</code> method 3</h4>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">##lme4::bootMer() method 3</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">PI.boot3.time &lt;-<span class="st"> </span><span class="kw">system.time</span>(</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">  boot3 &lt;-<span class="st"> </span>lme4<span class="op">::</span><span class="kw">bootMer</span>(fm1, mySumm, <span class="dt">nsim=</span><span class="dv">1000</span>, <span class="dt">use.u=</span><span class="ot">TRUE</span>, <span class="dt">type=</span><span class="st">&quot;semiparametric&quot;</span>)</a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">)</a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">PI.boot3 &lt;-<span class="st"> </span><span class="kw">sumBoot</span>(boot3)</a>
+<a class="sourceLine" id="cb11-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb11-8" data-line-number="8">comp.data &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">data.frame</span>(<span class="dt">Predict.Method=</span><span class="st">&quot;predictInterval()&quot;</span>, <span class="dt">x=</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(PI))<span class="op">-</span><span class="fl">0.1</span>, PI),</a>
+<a class="sourceLine" id="cb11-9" data-line-number="9">                   <span class="kw">data.frame</span>(<span class="dt">Predict.Method=</span><span class="st">&quot;lme4::bootMer() - Method 3&quot;</span>, <span class="dt">x=</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(PI.boot3))<span class="op">+</span><span class="fl">0.1</span>, PI.boot3))</a>
+<a class="sourceLine" id="cb11-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb11-11" data-line-number="11"><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>fit, <span class="dt">ymin=</span>lwr, <span class="dt">ymax=</span>upr, <span class="dt">color=</span>Predict.Method), <span class="dt">data=</span>comp.data[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">30</span>,<span class="dv">181</span><span class="op">:</span><span class="dv">210</span>),]) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-12" data-line-number="12"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-13" data-line-number="13"><span class="st">  </span><span class="kw">geom_linerange</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-14" data-line-number="14"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Index&quot;</span>, <span class="dt">y=</span><span class="st">&quot;Prediction w/ 95% PI&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-15" data-line-number="15"><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;bottom&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-16" data-line-number="16"><span class="st">  </span><span class="kw">scale_color_brewer</span>(<span class="dt">type =</span> <span class="st">&quot;qual&quot;</span>, <span class="dt">palette =</span> <span class="dv">2</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>These results are virtually identical to those above.</p>
+</div>
+<div id="step-3c-comparison-to-rstanarm" class="section level4">
+<h4>Step 3c: Comparison to rstanarm</h4>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">PI.time.stan &lt;-<span class="st"> </span><span class="kw">system.time</span>({</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">  fm_stan &lt;-<span class="st"> </span><span class="kw">stan_lmer</span>(Reaction <span class="op">~</span><span class="st"> </span>Days <span class="op">+</span><span class="st"> </span>(Days<span class="op">|</span>Subject), <span class="dt">data =</span> sleepstudy,</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">                       <span class="dt">verbose =</span> <span class="ot">FALSE</span>, <span class="dt">open_progress =</span> <span class="ot">FALSE</span>, <span class="dt">refresh =</span> <span class="dv">-1</span>,</a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">                       <span class="dt">show_messages=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb12-5" data-line-number="5">  zed &lt;-<span class="st"> </span><span class="kw">posterior_predict</span>(fm_stan)</a>
+<a class="sourceLine" id="cb12-6" data-line-number="6">  PI.stan &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">apply</span>(zed, <span class="dv">2</span>, median), <span class="kw">central_intervals</span>(zed, <span class="dt">prob=</span><span class="fl">0.95</span>))</a>
+<a class="sourceLine" id="cb12-7" data-line-number="7">})</a>
+<a class="sourceLine" id="cb12-8" data-line-number="8"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-9" data-line-number="9"><span class="co">#&gt; Gradient evaluation took 0 seconds</span></a>
+<a class="sourceLine" id="cb12-10" data-line-number="10"><span class="co">#&gt; 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.</span></a>
+<a class="sourceLine" id="cb12-11" data-line-number="11"><span class="co">#&gt; Adjust your expectations accordingly!</span></a>
+<a class="sourceLine" id="cb12-12" data-line-number="12"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-13" data-line-number="13"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-14" data-line-number="14"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-15" data-line-number="15"><span class="co">#&gt;  Elapsed Time: 7.845 seconds (Warm-up)</span></a>
+<a class="sourceLine" id="cb12-16" data-line-number="16"><span class="co">#&gt;                2.213 seconds (Sampling)</span></a>
+<a class="sourceLine" id="cb12-17" data-line-number="17"><span class="co">#&gt;                10.058 seconds (Total)</span></a>
+<a class="sourceLine" id="cb12-18" data-line-number="18"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-19" data-line-number="19"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-20" data-line-number="20"><span class="co">#&gt; Gradient evaluation took 0 seconds</span></a>
+<a class="sourceLine" id="cb12-21" data-line-number="21"><span class="co">#&gt; 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.</span></a>
+<a class="sourceLine" id="cb12-22" data-line-number="22"><span class="co">#&gt; Adjust your expectations accordingly!</span></a>
+<a class="sourceLine" id="cb12-23" data-line-number="23"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-24" data-line-number="24"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-25" data-line-number="25"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-26" data-line-number="26"><span class="co">#&gt;  Elapsed Time: 5.756 seconds (Warm-up)</span></a>
+<a class="sourceLine" id="cb12-27" data-line-number="27"><span class="co">#&gt;                3.048 seconds (Sampling)</span></a>
+<a class="sourceLine" id="cb12-28" data-line-number="28"><span class="co">#&gt;                8.804 seconds (Total)</span></a>
+<a class="sourceLine" id="cb12-29" data-line-number="29"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-30" data-line-number="30"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-31" data-line-number="31"><span class="co">#&gt; Gradient evaluation took 0 seconds</span></a>
+<a class="sourceLine" id="cb12-32" data-line-number="32"><span class="co">#&gt; 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.</span></a>
+<a class="sourceLine" id="cb12-33" data-line-number="33"><span class="co">#&gt; Adjust your expectations accordingly!</span></a>
+<a class="sourceLine" id="cb12-34" data-line-number="34"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-35" data-line-number="35"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-36" data-line-number="36"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-37" data-line-number="37"><span class="co">#&gt;  Elapsed Time: 6.353 seconds (Warm-up)</span></a>
+<a class="sourceLine" id="cb12-38" data-line-number="38"><span class="co">#&gt;                2.775 seconds (Sampling)</span></a>
+<a class="sourceLine" id="cb12-39" data-line-number="39"><span class="co">#&gt;                9.128 seconds (Total)</span></a>
+<a class="sourceLine" id="cb12-40" data-line-number="40"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-41" data-line-number="41"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-42" data-line-number="42"><span class="co">#&gt; Gradient evaluation took 0 seconds</span></a>
+<a class="sourceLine" id="cb12-43" data-line-number="43"><span class="co">#&gt; 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.</span></a>
+<a class="sourceLine" id="cb12-44" data-line-number="44"><span class="co">#&gt; Adjust your expectations accordingly!</span></a>
+<a class="sourceLine" id="cb12-45" data-line-number="45"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-46" data-line-number="46"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-47" data-line-number="47"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-48" data-line-number="48"><span class="co">#&gt;  Elapsed Time: 6.274 seconds (Warm-up)</span></a>
+<a class="sourceLine" id="cb12-49" data-line-number="49"><span class="co">#&gt;                2.464 seconds (Sampling)</span></a>
+<a class="sourceLine" id="cb12-50" data-line-number="50"><span class="co">#&gt;                8.738 seconds (Total)</span></a>
+<a class="sourceLine" id="cb12-51" data-line-number="51"></a>
+<a class="sourceLine" id="cb12-52" data-line-number="52"></a>
+<a class="sourceLine" id="cb12-53" data-line-number="53"><span class="kw">print</span>(fm_stan)</a>
+<a class="sourceLine" id="cb12-54" data-line-number="54"><span class="co">#&gt; stan_lmer</span></a>
+<a class="sourceLine" id="cb12-55" data-line-number="55"><span class="co">#&gt;  family:       gaussian [identity]</span></a>
+<a class="sourceLine" id="cb12-56" data-line-number="56"><span class="co">#&gt;  formula:      Reaction ~ Days + (Days | Subject)</span></a>
+<a class="sourceLine" id="cb12-57" data-line-number="57"><span class="co">#&gt;  observations: 180</span></a>
+<a class="sourceLine" id="cb12-58" data-line-number="58"><span class="co">#&gt; ------</span></a>
+<a class="sourceLine" id="cb12-59" data-line-number="59"><span class="co">#&gt;             Median MAD_SD</span></a>
+<a class="sourceLine" id="cb12-60" data-line-number="60"><span class="co">#&gt; (Intercept) 251.2    6.4 </span></a>
+<a class="sourceLine" id="cb12-61" data-line-number="61"><span class="co">#&gt; Days         10.5    1.7 </span></a>
+<a class="sourceLine" id="cb12-62" data-line-number="62"><span class="co">#&gt; sigma        25.9    1.5 </span></a>
+<a class="sourceLine" id="cb12-63" data-line-number="63"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-64" data-line-number="64"><span class="co">#&gt; Error terms:</span></a>
+<a class="sourceLine" id="cb12-65" data-line-number="65"><span class="co">#&gt;  Groups   Name        Std.Dev. Corr</span></a>
+<a class="sourceLine" id="cb12-66" data-line-number="66"><span class="co">#&gt;  Subject  (Intercept) 24           </span></a>
+<a class="sourceLine" id="cb12-67" data-line-number="67"><span class="co">#&gt;           Days         7       0.08</span></a>
+<a class="sourceLine" id="cb12-68" data-line-number="68"><span class="co">#&gt;  Residual             26           </span></a>
+<a class="sourceLine" id="cb12-69" data-line-number="69"><span class="co">#&gt; Num. levels: Subject 18 </span></a>
+<a class="sourceLine" id="cb12-70" data-line-number="70"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-71" data-line-number="71"><span class="co">#&gt; Sample avg. posterior predictive distribution of y:</span></a>
+<a class="sourceLine" id="cb12-72" data-line-number="72"><span class="co">#&gt;          Median MAD_SD</span></a>
+<a class="sourceLine" id="cb12-73" data-line-number="73"><span class="co">#&gt; mean_PPD 298.6    2.7 </span></a>
+<a class="sourceLine" id="cb12-74" data-line-number="74"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb12-75" data-line-number="75"><span class="co">#&gt; ------</span></a>
+<a class="sourceLine" id="cb12-76" data-line-number="76"><span class="co">#&gt; For info on the priors used see help('prior_summary.stanreg').</span></a>
+<a class="sourceLine" id="cb12-77" data-line-number="77"></a>
+<a class="sourceLine" id="cb12-78" data-line-number="78">PI.stan &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(PI.stan)</a>
+<a class="sourceLine" id="cb12-79" data-line-number="79"><span class="kw">names</span>(PI.stan) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;fit&quot;</span>, <span class="st">&quot;lwr&quot;</span>, <span class="st">&quot;upr&quot;</span>)</a>
+<a class="sourceLine" id="cb12-80" data-line-number="80">PI.stan &lt;-<span class="st"> </span>PI.stan[, <span class="kw">c</span>(<span class="st">&quot;fit&quot;</span>, <span class="st">&quot;upr&quot;</span>, <span class="st">&quot;lwr&quot;</span>)]</a>
+<a class="sourceLine" id="cb12-81" data-line-number="81">comp.data &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">data.frame</span>(<span class="dt">Predict.Method=</span><span class="st">&quot;predictInterval()&quot;</span>, <span class="dt">x=</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(PI))<span class="op">-</span><span class="fl">0.1</span>, PI),</a>
+<a class="sourceLine" id="cb12-82" data-line-number="82">                   <span class="kw">data.frame</span>(<span class="dt">Predict.Method=</span><span class="st">&quot;rstanArm&quot;</span>, <span class="dt">x=</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(PI.stan))<span class="op">+</span><span class="fl">0.1</span>, PI.stan))</a>
+<a class="sourceLine" id="cb12-83" data-line-number="83"></a>
+<a class="sourceLine" id="cb12-84" data-line-number="84"><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>fit, <span class="dt">ymin=</span>lwr, <span class="dt">ymax=</span>upr, <span class="dt">color=</span>Predict.Method), <span class="dt">data=</span>comp.data[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">30</span>,<span class="dv">181</span><span class="op">:</span><span class="dv">210</span>),]) <span class="op">+</span></a>
+<a class="sourceLine" id="cb12-85" data-line-number="85"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb12-86" data-line-number="86"><span class="st">  </span><span class="kw">geom_linerange</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb12-87" data-line-number="87"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x=</span><span class="st">&quot;Index&quot;</span>, <span class="dt">y=</span><span class="st">&quot;Prediction w/ 95% PI&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb12-88" data-line-number="88"><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position=</span><span class="st">&quot;bottom&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb12-89" data-line-number="89"><span class="st">  </span><span class="kw">scale_color_brewer</span>(<span class="dt">type =</span> <span class="st">&quot;qual&quot;</span>, <span class="dt">palette =</span> <span class="dv">2</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="computation-time" class="section level3">
+<h3>Computation time</h3>
+<p>Our initial motivation for writing this function was to develop a method for incorporating uncertainty in the CMFEs for mixed models estimated on very large samples. Even for models with only modest degrees of complexity, using <code>lme4::bootMer()</code> quickly becomes time prohibitive because it involves re-estimating the model for each simulation. We have seen how each alternative compares to <code>predictInterval()</code> substantively, but how do they compare in terms of computational time? The table below lists the output of <code>system.time()</code> for all five methods for calculating prediction intervals for <code>merMod</code> objects.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">user.self</th>
+<th align="right">sys.self</th>
+<th align="right">elapsed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>predictInterval()</td>
+<td align="right">0.32</td>
+<td align="right">0.00</td>
+<td align="right">0.33</td>
+</tr>
+<tr class="even">
+<td>arm::sim()</td>
+<td align="right">0.61</td>
+<td align="right">0.00</td>
+<td align="right">0.61</td>
+</tr>
+<tr class="odd">
+<td>lme4::bootMer()-Method 1</td>
+<td align="right">22.74</td>
+<td align="right">0.00</td>
+<td align="right">22.74</td>
+</tr>
+<tr class="even">
+<td>lme4::bootMer()-Method 2</td>
+<td align="right">23.03</td>
+<td align="right">0.00</td>
+<td align="right">23.03</td>
+</tr>
+<tr class="odd">
+<td>lme4::bootMer()-Method 3</td>
+<td align="right">22.54</td>
+<td align="right">0.00</td>
+<td align="right">22.56</td>
+</tr>
+<tr class="even">
+<td>rstanarm:predict</td>
+<td align="right">37.73</td>
+<td align="right">0.02</td>
+<td align="right">37.80</td>
+</tr>
+</tbody>
+</table>
+<p>For this simple example, we see that <code>arm::sim()</code> is the fastest–nearly five times faster than <code>predictInterval()</code>. However, <code>predictInterval()</code> is nearly six times faster than any of the bootstrapping options via <code>lme4::bootMer</code>. This may not seem like a lot, but consider that the computational time for required for bootstrapping is roughly proportional to the number of bootstrapped simulations requested … <code>predictInterval()</code> is not because it is just a series of draws from various multivariate normal distributions, so the time ratios in the table below represents the lowest bound of the computation time ratio of bootstrapping to <code>predictInterval()</code>.</p>
+</div>
+</div>
+<div id="simulation" class="section level2">
+<h2>Simulation</h2>
+<p>TBC.</p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

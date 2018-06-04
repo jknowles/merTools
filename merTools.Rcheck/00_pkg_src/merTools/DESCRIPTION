@@ -1,0 +1,25 @@
+Package: merTools
+Title: Tools for Analyzing Mixed Effect Regression Models
+Version: 0.4.1
+Authors@R: c(
+    person(c("Jared", "E."), "Knowles", email = "jknowles@gmail.com", role = c("aut", "cre")), 
+    person("Carl", "Frederick", email="carlbfrederick@gmail.com", role = c("aut")),
+    person("Alex", "Whitworth", email="whitworth.alex@gmail.com", role = c("ctb")))
+Description: Provides methods for extracting results from mixed-effect model
+    objects fit with the 'lme4' package. Allows construction of prediction intervals
+    efficiently from large scale linear and generalized linear mixed-effects models.
+Depends: R (>= 3.0.2), arm, lme4 (>= 1.1-11), methods, dplyr
+Suggests: testthat, knitr, rmarkdown, parallel, rstanarm, Amelia, DAAG,
+        nlme
+Imports: mvtnorm, DT, shiny, abind, ggplot2, blme, broom, foreach
+License: GPL (>=2)
+LazyData: true
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
+BugReports: https://www.github.com/jknowles/merTools
+NeedsCompilation: no
+Packaged: 2018-06-04 15:43:13 UTC; Jared
+Author: Jared E. Knowles [aut, cre],
+  Carl Frederick [aut],
+  Alex Whitworth [ctb]
+Maintainer: Jared E. Knowles <jknowles@gmail.com>
