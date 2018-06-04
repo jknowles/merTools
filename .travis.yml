@@ -10,7 +10,6 @@ env:
     - NOT_CRAN="true"
     - NOT_CRAN="false"
 
-
 addons:
   apt:
     packages:
@@ -33,15 +32,8 @@ r_binary_packages:
   - doParallel
   - covr
 
-script :
- - travis_wait 30 R CMD build --no-build-vignettes --no-manual
- - travis_wait 30 R CMD check merTools_0.4.1.tar.gz --no-build-vignettes --no-manual
-
 after_success:
   - travis_wait Rscript -e 'library(covr);coveralls()'
-
-after_failure:
-  - cat merTools.Rcheck/00*
 
 notifications:
   email:
