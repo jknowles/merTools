@@ -9,6 +9,8 @@ correction for multiple imputation
 ### Bug fixes
 - Contribution by Alex Whitworth (@alexWhitworth) adding error checking to plotting
 functions
+- The vignettes have been shortened and unit tests reorganized to facilitate 
+Travis-CI builds and reduce CRAN build burden
 
 ## merTools 0.4.0
 
