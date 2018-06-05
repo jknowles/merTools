@@ -210,7 +210,8 @@ predictInterval(fatmodel, ais[1,], include.resid.var=0, ignore.fixed.terms = 1:2
 The second way is to use an ad-hoc variance adjustment, with the
 `fix.intercept.variance` argument. This takes the model's intercept variance
 $\hat\sigma^2_\mu$ and adjusts it to:
-$$\hat\sigma^2_\mu'=\hat\sigma^2_\mu-\Sigma_{levels}\frac{1}{\Sigma_{groups(level)}1/(\hat\sigma^2_{level}+sigma^2_{group})}$$
+
+$$\hat\sigma\prime^2_\mu = \hat\sigma^2_\mu-\Sigma_{levels}\frac{1}{\Sigma_{groups(level)}1/(\hat\sigma^2_{level}+sigma^2_{group})}$$
 
 In other words, it assumes the given intercept variance incorporates spurious
 variance for each level, where each of the spurious variance terms has a
@@ -299,7 +300,7 @@ sumBoot <- function(merBoot) {
 
 ##lme4::bootMer() method 1
 PI.boot1.time <- system.time(
-  boot1 <- lme4::bootMer(fm1, mySumm, nsim=1000, use.u=FALSE, type="parametric")
+  boot1 <- lme4::bootMer(fm1, mySumm, nsim=250, use.u=FALSE, type="parametric")
 )
 
 PI.boot1 <- sumBoot(boot1)
@@ -329,7 +330,7 @@ tighter prediction intervals than the `predictInterval` method.
 ```{r bootMer.2, fig.width=7, fig.height=4, fig.align="center"}
 ##lme4::bootMer() method 2
 PI.boot2.time <- system.time(
-  boot2 <- lme4::bootMer(fm1, mySumm, nsim=1000, use.u=TRUE, type="parametric")
+  boot2 <- lme4::bootMer(fm1, mySumm, nsim=250, use.u=TRUE, type="parametric")
 )
 
 PI.boot2 <- sumBoot(boot2)
@@ -357,7 +358,7 @@ and the variance in the fixed effects -- similar to the `arm::sim()` function.
 ```{r bootMer.3, fig.width=7, fig.height=4, fig.align="center"}
 ##lme4::bootMer() method 3
 PI.boot3.time <- system.time(
-  boot3 <- lme4::bootMer(fm1, mySumm, nsim=1000, use.u=TRUE, type="semiparametric")
+  boot3 <- lme4::bootMer(fm1, mySumm, nsim=250, use.u=TRUE, type="semiparametric")
 )
 
 PI.boot3 <- sumBoot(boot3)
@@ -400,7 +401,7 @@ central_intervals <- function(x, prob) {
 PI.time.stan <- system.time({
   fm_stan <- stan_lmer(Reaction ~ Days + (Days|Subject), data = sleepstudy,
                        verbose = FALSE, open_progress = FALSE, refresh = -1,
-                       show_messages=FALSE)
+                       show_messages=FALSE, chains = 1)
   zed <- posterior_predict(fm_stan)
   PI.stan <- cbind(apply(zed, 2, median), central_intervals(zed, prob=0.95))
 })
