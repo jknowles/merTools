@@ -32,7 +32,8 @@ problem at hand, disciplinary norms, and prior research.
 One of the most common cases is to use multiple imputation. Multiple imputation 
 involves fitting a model to the data and estimating the missing values for 
 observations. For details on multiple imputation, and a discussion of some of 
-the main implementations in R, see here. # TODO: CITATION
+the main implementations in R, look at the documentation and vignettes for the 
+`mice` and `Amelia` packages. 
 
 The key difficulty multiple imputation creates for users of multilevel models 
 is that the result of multiple imputation is K replicated datasets corresponding 
@@ -53,7 +54,7 @@ some missing data.
 ```{r}
 data(hsb)
 
-# Create a function to randomly assign NA
+# Create a function to randomly assign NA values
 
 add_NA <- function(x, prob){
   z <- rbinom(length(x), 1, prob = prob)
@@ -148,7 +149,9 @@ summary(modList)
 fastdisp(modList)
 ```
 
-
+The standard errors reported for the model list include a correction, Rubin's 
+correction (see documentation), which adjusts for the within and between imputation 
+set variance as well. 
 
 ## Specific Model Information Summaries
 

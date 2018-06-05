@@ -178,22 +178,21 @@ intercept effects are -2, 1, and 1, versus a fixed intercept of 6 and
 random intercept effects of -3, 0, and 0. (The latter situation will never be
 the MLE, but it can occur in this package's simulations.)
 
-To show this issue, we'll use the following model, predicting the body fat
-percentage of student athletes using fixed effects for their height and sex and
-a random effect for their sport:
+To show this issue, we'll use the sleep study model, predicting the reaction times 
+of subjects after experiencing sleep deprivation:
 
-```{r PrepFat, message=FALSE, warning=FALSE}
-ais <- DAAG::ais
-fatmodel = lmer(pcBfat~ ht + sex + (1 | sport),data=ais)
+```{r prepSleep, message=FALSE, warning=FALSE}
+fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
+display(fm1)
 ```
 
 Let's use the model to give an interval for the true average body fat of a
 large group of students like the first one in the study — a 196cm female
 baseball player:
 
-```{r ShowFat, message=FALSE, warning=FALSE}
-ais[1,]
-predictInterval(fatmodel, ais[1,], include.resid.var=0) #predict the average body fat for a group of 196cm female baseball players
+```{r showSleep, message=FALSE, warning=FALSE}
+sleepstudy[1,]
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0) #predict the average body fat for a group of 196cm female baseball players
 ```
 
 There are two ways to get predictInterval to create less-conservative intervals
@@ -202,9 +201,13 @@ effects as fully-known (that is, with an effectively 0 variance.) This is done
 using the `ignore.fixed.effects` argument.
 
 ```{r ShowFat2, message=FALSE, warning=FALSE}
-predictInterval(fatmodel, ais[1,], include.resid.var=0, ignore.fixed.terms = 1) #predict the average body fat for a group of 196cm female baseball players, taking the global intercept (mean body fat) as fully known
-predictInterval(fatmodel, ais[1,], include.resid.var=0, ignore.fixed.terms = "(Intercept)") #Same as above
-predictInterval(fatmodel, ais[1,], include.resid.var=0, ignore.fixed.terms = 1:2) #as above, taking the first two fixed effects (intercept and height effect) as fully known
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1) 
+# predict the average reaction time for a subject at day 0, taking the global intercept 
+# (mean reaction time) as fully known
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = "(Intercept)") 
+#Same as above
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1:2) 
+# as above, taking the first two fixed effects (intercept and days effect) as fully known
 ```
 
 The second way is to use an ad-hoc variance adjustment, with the
@@ -219,7 +222,10 @@ precision equal to the of the precisions due to the individual groups at that
 level.
 
 ```{r ShowFat3, message=FALSE, warning=FALSE}
-predictInterval(fatmodel, ais[1,], include.resid.var=0, fix.intercept.variance = T) #predict the average body fat for a group of 196cm female baseball players, using an ad-hoc correction for the covariance of the intercept with the random intercept effects.
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0, 
+                fix.intercept.variance = TRUE) 
+# predict the average reaction time for a subject at day 0,, using an ad-hoc 
+# correction for the covariance of the intercept with the random intercept effects.
 ```
 
 A few notes about these two arguments:

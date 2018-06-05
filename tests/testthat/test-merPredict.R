@@ -753,7 +753,6 @@ test_that("Nested effects can work", {
 
 test_that("Corrections reduce predicted intervals", {
   skip_on_cran()
-  #fatmodel <- lmer(pcBfat ~ ht + sex + (1 | sport),data=ais)
   fatmodel <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   bigInterval <- suppressWarnings(predictInterval(fatmodel, sleepstudy[1,], include.resid.var=0))
   medInterval <- suppressWarnings(predictInterval(fatmodel, sleepstudy[1,], include.resid.var=0, fix.intercept.variance = T))

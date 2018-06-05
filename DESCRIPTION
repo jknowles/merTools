@@ -21,7 +21,6 @@ Suggests:
     parallel,
     rstanarm,
     Amelia, 
-    DAAG, 
     nlme
 Imports:
     mvtnorm,
