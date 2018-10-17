@@ -4,9 +4,9 @@
 \alias{plot_sim_error_chks}
 \title{Extract all warning msgs from a merMod object}
 \usage{
-plot_sim_error_chks(type = c("FE", "RE"), level = 0.95, stat = c("mean",
-  "median"), sd = TRUE, sigmaScale = NULL, oddsRatio = FALSE,
-  labs = FALSE, facet = TRUE)
+plot_sim_error_chks(type = c("FE", "RE"), level = 0.95,
+  stat = c("mean", "median"), sd = TRUE, sigmaScale = NULL,
+  oddsRatio = FALSE, labs = FALSE, facet = TRUE)
 }
 \arguments{
 \item{type}{check a fixed or random effect}
