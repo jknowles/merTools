@@ -381,7 +381,12 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                            na.rm=TRUE))
   }
   if (predict.type == "probability") {
-    outs <- apply(outs, 2, merMod@resp$family$linkinv)
+    if(nrow(outs) == 1) {
+      outs <- t(apply(outs, 2, merMod@resp$family$linkinv))
+    } else {
+      outs <- apply(outs, 2, merMod@resp$family$linkinv)
+    }
+
   }
 
   ##############################

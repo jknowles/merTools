@@ -762,3 +762,18 @@ test_that("Corrections reduce predicted intervals", {
   expect_true(medInterval[1,c(2)] - medInterval[1,c(3)] > smInterval[1,c(2)] - smInterval[1,c(3)])
   expect_true(smInterval[1,c(2)] - smInterval[1,c(3)] > 0)
 })
+
+context("Test for bugs and edge cases")
+
+test_that("Dimensions are correctly returned for glms predicting 1 row", {
+  d1 <- cbpp
+  d1$y <- d1$incidence / d1$size
+  gm2 <- glmer(y ~ period + (1 | herd), family = binomial, data = d1,
+               nAGQ = 9, weights = d1$size)
+  intFit <- predictInterval(gm2, newdata = d1[10, ], type = "probability",
+                            include.resid.var = FALSE)
+  intFit2 <- predictInterval(gm2, newdata = d1[9:10, ], type = "probability",
+                            include.resid.var = FALSE)
+  expect_identical(names(intFit), names(intFit2))
+})
+
