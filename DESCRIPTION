@@ -21,7 +21,8 @@ Suggests:
     parallel,
     rstanarm,
     Amelia, 
-    nlme
+    nlme,
+    future.apply
 Imports:
     mvtnorm,
     DT,
@@ -35,4 +36,5 @@ License: GPL (>=2)
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 6.1.0
+Encoding: UTF-8
 BugReports: https://www.github.com/jknowles/merTools

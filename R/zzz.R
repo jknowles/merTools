@@ -4,6 +4,7 @@ utils::globalVariables(c(".shinyMerPar", "sig", "sigma", "Lind", "group",
                          "statistic"))
 
 #' @importFrom methods as is
+#' @importFrom foreach %dopar%
 #' @importFrom stats AIC as.formula formula logLik median model.matrix na.omit
 #' pnorm qnorm quantile residuals rgamma rnorm sd vcov weighted.mean delete.response
 #' model.frame na.pass reformulate runif terms getCall

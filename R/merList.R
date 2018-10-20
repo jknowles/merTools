@@ -346,9 +346,17 @@ print.summary.merModList <- function(x, ...){
 #'
 #' @param formula a formula to pass through compatible with merMod
 #' @param data a list object with each element being a data.frame
-#' @param parallel logical, should the models be run in parallel?
+#' @param parallel logical, should the models be run in parallel? Default FALSE. If so,
+#' the `future_lapply` function from the `future.apply` package is used. See
+#' details.
 #' @param ... additional arguments to pass to the estimating function
 #' @rdname merModList
+#'
+#' @details Parallel computing is provided by the `futures` package, and its
+#' extension the `future.apply` package to provide the `future_lapply` function
+#' for easy parallel computations on lists. To use this package, simply register
+#' a parallel backend using the `plan()` function from `futures` - an example
+#' is to use `plan(multisession)`
 #'
 #' @return a list of fitted merMod objects of class merModList
 #' @export
@@ -359,8 +367,17 @@ print.summary.merModList <- function(x, ...){
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' summary(mod)
-lmerModList <- function(formula, data, parallel = NULL, ...){
-  ml <- lapply(data, function(d) lmer(formula, data = d, ...))
+lmerModList <- function(formula, data, parallel = FALSE, ...){
+  if(parallel) {
+    if (requireNamespace("future.apply", quietly=TRUE)) {
+      ml <- future.apply::future_lapply(data, function(d) lmer(formula, data = d, ...))
+    }
+    warning("Parallel set but future.apply not available. Running sequentially.")
+    ml <- lapply(data, function(d) lmer(formula, data = d, ...))
+  } else {
+    ml <- lapply(data, function(d) lmer(formula, data = d, ...))
+  }
+
   class(ml) <- "merModList"
   return(ml)
 }
@@ -372,8 +389,16 @@ lmerModList <- function(formula, data, parallel = NULL, ...){
 #' @return a merModList
 #' @importFrom blme blmer
 #' @export
-blmerModList <- function(formula, data, parallel = NULL, ...){
-  ml <- lapply(data, function(d) blmer(formula, data = d, ...))
+blmerModList <- function(formula, data, parallel = FALSE, ...){
+  if(parallel) {
+    if (requireNamespace("future.apply", quietly=TRUE)) {
+      ml <- future.apply::future_lapply(data, function(d) blmer(formula, data = d, ...))
+    }
+    warning("Parallel set but future.apply not available. Running sequentially.")
+    ml <- lapply(data, function(d) blmer(formula, data = d, ...))
+  } else {
+    ml <- lapply(data, function(d) blmer(formula, data = d, ...))
+  }
   class(ml) <- "merModList"
   return(ml)
 }
@@ -384,8 +409,16 @@ blmerModList <- function(formula, data, parallel = NULL, ...){
 #' @rdname merModList
 #' @return a merModList
 #' @export
-glmerModList <- function(formula, data, parallel = NULL, ...){
-  ml <- lapply(data, function(d) glmer(formula, data = d, ...))
+glmerModList <- function(formula, data, parallel = FALSE, ...){
+  if(parallel) {
+    if (requireNamespace("future.apply", quietly=TRUE)) {
+      ml <- future.apply::future_lapply(data, function(d) glmer(formula, data = d, ...))
+    }
+    warning("Parallel set but future.apply not available. Running sequentially.")
+    ml <- lapply(data, function(d) glmer(formula, data = d, ...))
+  } else {
+    ml <- lapply(data, function(d) glmer(formula, data = d, ...))
+  }
   class(ml) <- "merModList"
   return(ml)
 }
@@ -397,8 +430,16 @@ glmerModList <- function(formula, data, parallel = NULL, ...){
 #' @return a merModList
 #' @importFrom blme bglmer
 #' @export
-bglmerModList <- function(formula, data, parallel = NULL, ...){
-  ml <- lapply(data, function(d) bglmer(formula, data = d, ...))
+bglmerModList <- function(formula, data, parallel = FALSE, ...){
+  if(parallel) {
+    if (requireNamespace("future.apply", quietly=TRUE)) {
+      ml <- future.apply::future_lapply(data, function(d) bglmer(formula, data = d, ...))
+    }
+    warning("Parallel set but future.apply not available. Running sequentially.")
+    ml <- lapply(data, function(d) bglmer(formula, data = d, ...))
+  } else {
+    ml <- lapply(data, function(d) bglmer(formula, data = d, ...))
+  }
   class(ml) <- "merModList"
   return(ml)
 }

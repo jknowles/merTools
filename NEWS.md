@@ -1,8 +1,19 @@
 # NEWS
 
+## merTools 0.4.2
+
+### Bug fixes
+
+- Fixed a bug (#94) where `predictInterval()` would return a data.frame of the 
+wrong dimensions when predicting a single row of observations for a `glm`
+- Fixed a bug (#96) related to `rstanarm` dependencies in the package vignette
+
+### New Features
+
 ## merTools 0.4.1
 
 ### New Features
+
 - Standard errors reported by `merModList` functions now apply the Rubin 
 correction for multiple imputation
 

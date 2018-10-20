@@ -7,20 +7,22 @@
 \alias{bglmerModList}
 \title{Apply a multilevel model to a list of data frames}
 \usage{
-lmerModList(formula, data, parallel = NULL, ...)
+lmerModList(formula, data, parallel = FALSE, ...)
 
-blmerModList(formula, data, parallel = NULL, ...)
+blmerModList(formula, data, parallel = FALSE, ...)
 
-glmerModList(formula, data, parallel = NULL, ...)
+glmerModList(formula, data, parallel = FALSE, ...)
 
-bglmerModList(formula, data, parallel = NULL, ...)
+bglmerModList(formula, data, parallel = FALSE, ...)
 }
 \arguments{
 \item{formula}{a formula to pass through compatible with merMod}
 
 \item{data}{a list object with each element being a data.frame}
 
-\item{parallel}{logical, should the models be run in parallel?}
+\item{parallel}{logical, should the models be run in parallel? Default FALSE. If so,
+the `future_lapply` function from the `future.apply` package is used. See
+details.}
 
 \item{...}{additional arguments to pass to the estimating function}
 }
@@ -41,6 +43,13 @@ Apply a Bayesian multilevel model to a list of data frames
 Apply a generalized linear multilevel model to a list of data frames
 
 Apply a Bayesian generalized linear multilevel model to a list of data frames
+}
+\details{
+Parallel computing is provided by the `futures` package, and its
+extension the `future.apply` package to provide the `future_lapply` function
+for easy parallel computations on lists. To use this package, simply register
+a parallel backend using the `plan()` function from `futures` - an example
+is to use `plan(multisession)`
 }
 \examples{
 sim_list <- replicate(n = 10,

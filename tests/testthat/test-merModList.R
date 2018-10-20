@@ -30,6 +30,58 @@ test_that("simple cases work", {
 
 })
 
+future_eval <- "future.apply" %in% rownames(installed.packages())
+
+if(future_eval) {
+  test_that("parallelism works", {
+    library(blme)
+    d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
+                     obs=1:100)
+    split <- sample(x = LETTERS[9:15], size = nrow(d), replace=TRUE)
+    d$y <- simulate(~fac1+(1|grp),family = gaussian,
+                    newdata=d,
+                    newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
+                                   sigma = c(.23)))[[1]]
+    out <- split(d, split)
+    rm(split)
+    g1 <- lmerModList(formula = y~fac1+(1|grp), data=out, parallel = TRUE)
+    expect_is(g1, "merModList")
+    g2 <- blmerModList(formula = y~fac1+(1|grp), data=out, parallel = TRUE)
+    expect_is(g2, "merModList")
+    expect_false(class(g1[[1]]) == class(g2[[1]]))
+
+    split <- sample(x = LETTERS[1:20], size = nrow(InstEval), replace=TRUE)
+    out <- split(InstEval, split)
+    rm(split)
+    g1 <- lmerModList(formula = y ~ lectage + studage + (1|d) + (1|dept),
+                      data=out, parallel = TRUE)
+    expect_is(g1, "merModList")
+
+    data(grouseticks)
+    grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
+    grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
+    grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
+    form <- TICKS_BIN ~ HEIGHT +(1 + HEIGHT|BROOD) + (1|YEAR)
+    modDat <- vector(5, mode="list")
+    for(i in 1:length(modDat)){
+      modDat[[i]] <- grouseticks[sample(x=1:nrow(grouseticks), size = nrow(grouseticks),
+                                        replace=FALSE),]
+    }
+
+    g1 <- glmerModList(formula = form,
+                       data = modDat, family = "binomial", parallel = TRUE,
+                       control = glmerControl(optimizer="bobyqa",
+                                              optCtrl=list(maxfun = 1e6)))
+    expect_is(g1, "merModList")
+    g1 <- bglmerModList(formula = form,
+                       data = modDat, family = "binomial", parallel = TRUE,
+                       control = glmerControl(optimizer="bobyqa",
+                                              optCtrl=list(maxfun = 1e6)))
+    expect_is(g1, "merModList")
+  })
+}
+
+
 test_that("print methods work for merModList", {
   # skip_on_cran()
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
