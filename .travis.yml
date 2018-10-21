@@ -2,13 +2,29 @@ language: r
 r:
     - devel
     - release
-sudo: false
-cache: packages
+sudo: true
+cache:
+  apt: true
+  ccache: true
+  packages: true
 
 env:
   matrix:
     - NOT_CRAN="true"
     - NOT_CRAN="false"
+  - CC=clang
+  - CXX=clang++
+
+before_script:
+  - echo "CXX = $CXX" >> ./rstan/R_Makevars
+  - echo "CXX14 = $CXX" >> ./rstan/R_Makevars
+  - echo "CXX14FLAGS = `R CMD config CXXFLAGS` -pedantic -g0 -fPIC" >> ./rstan/R_Makevars
+  - export CLANG_EXTRA_ARG=""
+  - if [[ $CXX =~ clang.* ]] ;  then export CLANG_EXTRA_ARG=" -Qunused-arguments -fcolor-diagnostics " ; fi
+  - echo ${CXX} --version
+  - echo ${CLANG_EXTRA_ARG}
+  # - more ./rstan/R_Makevars
+  - mkdir -p ~/.R/; cat ./rstan/R_Makevars > ~/.R/Makevars
 
 after_success:
   - travis_wait Rscript -e 'library(covr);coveralls()'
