@@ -55,7 +55,10 @@ shinyUI(fluidPage(
                                          shiny::h3("Prediction Intervals:"),
                                          plotOutput("predPlot"),
                                          shiny::h3("All Predictions"),
-                                         dataTableOutput("dt"),
+                                         if ("DT" %in% rownames(installed.packages())) {
+                                            dataTableOutput("dt") } else {
+                                            tableOutput("shiny")
+                                            },
                                          shiny::downloadButton("downloadData", "Download predict interval data")
                                          ,value = 1
                          ),

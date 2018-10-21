@@ -21,12 +21,12 @@ Suggests:
     nlme,
     future.apply,
     rstanarm,
-    Amelia
+    Amelia,
+    DT
 Imports:
     dplyr,
     mvtnorm,
     foreach,
-    DT,
     shiny,
     abind,
     ggplot2,

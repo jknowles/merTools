@@ -16,9 +16,15 @@ server = function(input, output){
                           n.sims = input$n.sims, stat = input$stat), data)
   })
 
-  output$dt <- renderDataTable({
-    predInput()
-  })
+  if ("DT" %in% rownames(installed.packages())) {
+    output$dt <- renderDataTable({
+      predInput()
+    })
+  } else {
+    output$dt <- renderTable({
+      predInput()
+    })
+  }
 
   output$downloadData <- shiny::downloadHandler(
     filename = "predictIntervalResults.csv",
