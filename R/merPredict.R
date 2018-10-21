@@ -74,6 +74,8 @@
 #' @import lme4
 #' @importFrom abind abind
 #' @importFrom mvtnorm rmvnorm
+#' @importFrom foreach %dopar%
+#' @importFrom foreach foreach
 #' @examples
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 #' regFit <- predict(m1, newdata = sleepstudy[11, ]) # a single value is returned
@@ -233,7 +235,8 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
        return(yhatTmp)
      }
      if(nrow(tmp) > 1000 | .parallel){
-       if(.parallel){
+       if (requireNamespace("foreach", quietly=TRUE)) {
+         if(.parallel){
          setup_parallel()
        }
        tmp2 <- split(tmp, (1:nrow(tmp) %/% 500)) #TODO: Find optimum splitting factor
@@ -245,6 +248,11 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                                                  coefs = REcoefs[, keep, , drop = FALSE],
                                                  group = j))
        rm(tmp2)
+       } else {
+         warning("foreach package is unavailable, parallel computing not available")
+         re.xb[[j]] <- tmp.pred(data = tmp, coefs = REcoefs[, keep, , drop = FALSE],
+                                group = j)
+       }
      } else{
        re.xb[[j]] <- tmp.pred(data = tmp, coefs = REcoefs[, keep, , drop = FALSE],
                               group = j)

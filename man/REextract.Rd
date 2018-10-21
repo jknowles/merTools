@@ -22,7 +22,6 @@ a data frame with the following columns
 Extracts random effect terms from an lme4 model
 }
 \examples{
-require(lme4)
 m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 rfx <- REextract(m2)
 #Note the column names

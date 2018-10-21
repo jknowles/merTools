@@ -10,7 +10,6 @@
 #'   \item{'term'_se}{One column per random effect, the name is derived from the merMod}
 #' }
 #' @examples
-#' require(lme4)
 #' m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #' rfx <- REextract(m2)
 #' #Note the column names

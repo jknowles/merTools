@@ -1,5 +1,5 @@
 ## Test environments
-* local Windows 10 install, R 3.5.0
+* local Windows 10 install, R 3.5.1
 * ubuntu 14.05 (on travis-ci), R devel, R-Release
 * win-builder (devel and release)
 
@@ -10,7 +10,11 @@ about unexported objects.
                                 "within_var", "between_var", "statistic")) 
 to fix notes about unexported objects in `modelFixedEff` and `fastdisp.merList` 
 functions
-* The Vignettes have been shortened in an attempt to reduce build times
+* Warning: parse error in file 'merTools-Ex.R':
+1: unexpected symbol
+119: cleanEx()
+120: nameEx appears to be a false positive
+
 
 ## Downstream dependencies
 There are currently two downstream dependencies. No issues with either were found.

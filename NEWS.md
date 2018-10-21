@@ -1,12 +1,21 @@
 # NEWS
 
-## merTools 0.4.2
+## merTools 0.5.0
+
+### New Features
+
+- Parallel fitting of `merModLists` is now supported using the `future.apply` 
+package and the `future_lapply` functions, optionally
+- Reduced package installation surface by eliminating unnecessary packages 
+in the `Suggests` field
 
 ### Bug fixes
 
 - Fixed a bug (#94) where `predictInterval()` would return a data.frame of the 
 wrong dimensions when predicting a single row of observations for a `glm`
 - Fixed a bug (#96) related to `rstanarm` dependencies in the package vignette
+- Switched from `dontrun` to `donttest` for long-running examples (CRAN compliance)
+
 
 ### New Features
 

@@ -532,11 +532,20 @@ test_that("Warnings issued", {
 })
 
 # Test Parallel----
+
+skip_if_no_fe <- function() {
+  foreach_eval <- "foreach" %in% rownames(installed.packages())
+  if (foreach_eval) {
+   testthat::skip("Foreach not available to register and test parallel")
+  }
+}
+
 context("Test Parallel")
 
 test_that("parallelization does not throw errors and generates good results", {
   skip_on_cran()
   skip_on_travis()
+  skip_if_no_fe()
   library(foreach)
   set.seed(1241)
   #TODO reign in memory usage and cpu time here

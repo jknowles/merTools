@@ -30,7 +30,7 @@ This function allows users to estimate parameters of a
 large merMod object using bootstraps on a subset of the data.
 }
 \examples{
-\dontrun{
+\donttest{
 (fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))
 resultMatrix <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20)
 }

@@ -11,7 +11,7 @@
 #' @import arm
 #' @return A printed summary of a x object
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' #Compare the time for displaying this modest model
 #' require(arm)
 #' m1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
