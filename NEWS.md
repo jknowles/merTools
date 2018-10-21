@@ -1,6 +1,6 @@
 # NEWS
 
-## merTools 0.5.0
+## merTools 0.4.2
 
 ### New Features
 
