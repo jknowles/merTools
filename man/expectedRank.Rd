@@ -91,7 +91,7 @@ m3 <- lmer(y ~ service * dept + (1|s) + (1|d), InstEval)
 \references{
 Laird NM and Louis TA. Empirical Bayes Ranking Methods. \emph{Journal of
 Education Statistics}. 1989;14(1)29-46. Available at
-\url{http://www.jstor.org/stable/1164724}.
+\url{https://www.jstor.org/stable/1164724}.
 
 
 Lingsma HF, Steyerberg EW, Eijkemans MJC, et al. Comparing and
