@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 )
 library(knitr); library(merTools)
 amelia_eval <- "Amelia" %in% rownames(installed.packages())
+amelia_uneval <- !amelia_eval
 ```
 
 ## Introduction
@@ -91,7 +92,7 @@ impute.out <- amelia(hsb[, varIndex], idvars = IDS,
 summary(impute.out)
 ```
 
-```{r boot, message=FALSE, eval = !amelia_eval}
+```{r boot, message=FALSE, eval = amelia_uneval}
 # Amelia is not available so let's just boostrap resample our data
 
 impute.out <- vector(mode = "list", 5)

@@ -35,6 +35,6 @@ Imports:
 License: GPL (>=2)
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Encoding: UTF-8
 BugReports: https://www.github.com/jknowles/merTools

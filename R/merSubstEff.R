@@ -84,7 +84,7 @@
 #' zed2 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "s", n.sims = 50,
 #'                  include.resid.var = TRUE)
 #' zed3 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", breaks = 5,
-#                 n.sims = 50, include.resid.var = TRUE)
+#'                 n.sims = 50, include.resid.var = TRUE)
 #' }
 #' @export
 REimpact <- function(merMod, newdata, groupFctr=NULL, term = NULL, breaks = 3, ...){

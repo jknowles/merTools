@@ -5,7 +5,8 @@
 \title{Calculate the weighted mean of fitted values for various levels of
 random effect terms.}
 \usage{
-REimpact(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3, ...)
+REimpact(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3,
+  ...)
 }
 \arguments{
 \item{merMod}{An object of class merMod}
@@ -84,6 +85,7 @@ zed <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", n.sims = 50,
 zed2 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "s", n.sims = 50,
                  include.resid.var = TRUE)
 zed3 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", breaks = 5,
+                n.sims = 50, include.resid.var = TRUE)
 }
 }
 \references{
