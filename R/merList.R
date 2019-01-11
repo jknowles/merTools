@@ -126,6 +126,10 @@ modelFixedEff <- function(modList, ...){
               between_var =  mean(est_ss)) %>% # estimate the between imputation variance
     mutate(std.error = within_var + ((1 + 1/ml)*between_var),
            df = (ml-1)* (1 + within_var/((1 + 1/ml)*between_var))^2) # apply rubins total variance correction
+  # add fallback
+  if (any((((1 + 1/ml)*rubin$between_var)^2) < 0.000000001)) {
+    warning("Between imputation variance is very small, are imputation sets too similar?")
+  }
   # DEPRECATED method
   # out <- fixEst %>% dplyr::group_by(term) %>%
   #         dplyr::summarize(estimate = mean(estimate),

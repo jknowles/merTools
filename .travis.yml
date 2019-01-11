@@ -9,7 +9,11 @@ before_install:
   - ./run.sh bootstrap
 
 install:
-  - ./run.sh install_aptget r-cran-knitr r-cran-rmarkdown
+  - ./run.sh install_aptget r-cran-knitr r-cran-rmarkdown r-cran-lme4 r-cran-arm
+  - ./run.sh install_aptget r-cran-testthat r-cran-parallel r-cran-future.apply
+  - ./run.sh install_aptget r-cran-rstanarm r-cran-Amelia r-cran-DT
+  - ./run.sh install_aptget r-cran-dplyr r-cran-mvtnorm r-cran-foreach r-cran-blme
+  - ./run.sh install_aptget r-cran-shiny r-cran-abind r-cran-ggplot2 r-cran-blme
 
 script:
   - ./run.sh run_tests
@@ -27,3 +31,4 @@ notifications:
 
 branches:
   only: master
+
