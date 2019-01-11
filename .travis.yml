@@ -14,7 +14,7 @@ install:
   - ./run.sh install_aptget r-cran-rstanarm r-cran-amelia r-cran-dt
   - ./run.sh install_aptget r-cran-dplyr r-cran-mvtnorm r-cran-foreach
   - ./run.sh install_aptget r-cran-shiny r-cran-abind r-cran-ggplot2
-  - ./travis-tool.sh install_r blme
+  - ./run.sh install_r blme
 
 script:
   - ./run.sh run_tests
