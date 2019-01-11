@@ -9,7 +9,7 @@ predictInterval(merMod, newdata, which = c("full", "fixed", "random",
   type = c("linear.prediction", "probability"),
   include.resid.var = TRUE, returnSims = FALSE, seed = NULL,
   .parallel = FALSE, .paropts = NULL, fix.intercept.variance = FALSE,
-  ignore.fixed.terms = c())
+  ignore.fixed.terms = NULL)
 }
 \arguments{
 \item{merMod}{a merMod object from lme4}

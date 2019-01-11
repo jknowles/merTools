@@ -97,7 +97,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                             include.resid.var=TRUE, returnSims = FALSE,
                             seed=NULL, .parallel = FALSE, .paropts = NULL,
                             fix.intercept.variance = FALSE, #This does NOT work with random slope models
-                            ignore.fixed.terms=c())
+                            ignore.fixed.terms = NULL)
                             {
   if(missing(newdata)){
     newdata <- merMod@frame
@@ -306,7 +306,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     vcov.tmp[1,] <- vcov.tmp[1,] * ratio
     vcov.tmp <- solve(prec.tmp, tol=1e-50)
   }
-  if (length(ignore.fixed.terms) > 0) {
+  if (!is.null(ignore.fixed.terms)) {
       prec.tmp <- solve(vcov.tmp)
       for (term in ignore.fixed.terms) {
             prec.tmp[term,term] <- prec.tmp[term,term] * 1e15
