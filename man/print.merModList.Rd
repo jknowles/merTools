@@ -2,7 +2,7 @@
 % Please edit documentation in R/merList.R
 \name{print.merModList}
 \alias{print.merModList}
-\title{Print the results of a merMod list}
+\title{Summarize a merMod list}
 \usage{
 \method{print}{merModList}(x, ...)
 }
@@ -12,10 +12,10 @@
 \item{...}{additional arguments}
 }
 \value{
-summary content printed to console
+a summary object of model information
 }
 \description{
-Print the results of a merMod list
+Summarize a merMod list
 }
 \examples{
 sim_list <- replicate(n = 10,
@@ -23,5 +23,5 @@ sim_list <- replicate(n = 10,
         simplify=FALSE)
 fml <- "Reaction ~ Days + (Days | Subject)"
 mod <- lmerModList(fml, data = sim_list)
-print(mod)
+summary(mod)
 }

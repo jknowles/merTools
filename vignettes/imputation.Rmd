@@ -195,6 +195,22 @@ Let's apply this to our model list.
 lapply(modList, modelInfo)
 ```
 
+### Model List Generics
+
+```{r}
+summary(modList)
+```
+
+```{r}
+modelFixedEff(modList)
+```
+
+```{r}
+ranef(modList)
+```
+
+
+
 
 ## Cautions and Notes
 

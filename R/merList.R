@@ -224,7 +224,7 @@ VarCorr.merModList <- function(x, sigma = 1, rdig = 3L){
 utils::globalVariables(c("term", "estimate","std.error"))
 #' Print the results of a merMod list
 #'
-#' @param x a modList of class merModList
+#' @param object a modList of class merModList
 #' @param ... additional arguments
 #'
 #' @return summary content printed to console
@@ -236,8 +236,8 @@ utils::globalVariables(c("term", "estimate","std.error"))
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' print(mod)
-summary.merModList <- function(x, ...){
-  modList <- x
+summary.merModList <- function(object, ...){
+  modList <- object
   args <- eval(substitute(alist(...)))
   if("digits" %in% names(args)){
     digits <- args$digits
@@ -268,7 +268,7 @@ summary.merModList <- function(x, ...){
 
 #' Summarize a merMod list
 #'
-#' @param object a modList of class merModList
+#' @param x a modList of class merModList
 #' @param ... additional arguments
 #'
 #' @return a summary object of model information
@@ -280,8 +280,8 @@ summary.merModList <- function(x, ...){
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' summary(mod)
-print.merModList <- function(object, ...){
-  out <- lapply(object, sum.mm)
+print.merModList <- function(x, ...){
+  out <- lapply(x, sum.mm)
   # class(out) <- "summary.merModList"
   return(out)
 }
