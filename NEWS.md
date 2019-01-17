@@ -15,9 +15,7 @@ in the `Suggests` field
 wrong dimensions when predicting a single row of observations for a `glm`
 - Fixed a bug (#96) related to `rstanarm` dependencies in the package vignette
 - Switched from `dontrun` to `donttest` for long-running examples (CRAN compliance)
-
-
-### New Features
+- Fixed and made more clear the generics applying to `merModList` objects
 
 ## merTools 0.4.1
 

@@ -21,21 +21,7 @@ modelInfo <- function(object){
                     "AIC" = AIC(object),
                     "sigma" = sigma(object))
   row.names(out) <- NULL
-  # cat("\n---Groups\n")
-  # ngrps <- lapply(modList[[1]]@flist, function(x) length(levels(x)))
-  # modn <- getME(modList[[1]], "devcomp")$dims["n"]
-  # cat(sprintf("number of obs: %d, groups: ", modn))
-  # cat(paste(paste(names(ngrps), ngrps, sep = ", "),
-  #           collapse = "; "))
-  # cat("\n")
-  # cat("\nModel Fit Stats")
-  # mAIC <- mean(unlist(lapply(modList, AIC)))
-  # cat(sprintf("\nAIC = %g", round(mAIC, 1)))
-  # moDsigma.hat <- mean(unlist(lapply(modList, sigma)))
-  # cat("\nResidual standard deviation =", fround(moDsigma.hat,
-  #                                               digits), "\n")
   return(out)
-
 }
 
 # Functions to extract standard deviation of random effects from model
@@ -250,7 +236,7 @@ utils::globalVariables(c("term", "estimate","std.error"))
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' print(mod)
-print.merModList <- function(x, ...){
+summary.merModList <- function(x, ...){
   modList <- x
   args <- eval(substitute(alist(...)))
   if("digits" %in% names(args)){
@@ -258,61 +244,26 @@ print.merModList <- function(x, ...){
   } else{
     digits <- 3
   }
-  len <- length(modList)
-  form <- modList[[1]]@call
-  print(summary(modList[[1]])$methTitle)
-  cat("Model family: ", summary(modList[[1]])$family)
-  cat("\n")
-  print(form)
-  cat("\nFixed Effects:\n")
-  fedat <- modelFixedEff(modList)
-  dimnames(fedat)[[1]] <- fedat$term
-  pfround(fedat[, -1], digits)
-  cat("\nRandom Effects:\n")
-  ngrps <- length(VarCorr(modList[[1]]))
-  errorList <- VarCorr(modList)$stddev
-  corrList <- VarCorr(modList)$correlation
+  summ.ml <- list()
+  summ.ml$len <- length(modList)
+  summ.ml$form <- modList[[1]]@call
+  summ.ml$method <- summary(modList[[1]])$methTitle
+  summ.ml$family <- summary(modList[[1]])$family
+  summ.ml$fe <- modelFixedEff(modList)
+  dimnames(summ.ml$fe)[[1]] <- summ.ml$fe$term
+  # pfround(summ.ml$fe[, -1], digits)
+  summ.ml$ngrps <- length(VarCorr(modList[[1]]))
+  summ.ml$errorList <- VarCorr(modList)$stddev
+  summ.ml$corrList <- VarCorr(modList)$correlation
 
-  cat("\nError Term Standard Deviations by Level:\n")
-  for(i in 1:length(errorList)){
-    cat("\n")
-    cat(names(errorList[i]))
-    cat("\n")
-    if(is.null(names(errorList[[i]]))){
-      names(errorList[[i]]) <- "(Intercept)"
-    }
-    pfround(errorList[[i]], digits = digits)
-    cat("\n")
-  }
   # lapply(errorList, pfround, digits)
-  cat("\nError Term Correlations:\n")
-  for(i in 1:length(corrList)){
-    cat("\n")
-    cat(names(corrList[i]))
-    cat("\n")
-    if(is.null(names(corrList[[i]]))){
-      names(corrList[[i]]) <- "(Intercept)"
-    }
-    pfround(corrList[[i]], digits = digits)
-    cat("\n")
-  }
-  # lapply(corrList, pfround, digits)
-  residError <- mean(unlist(lapply(modList, function(x) attr(VarCorr(x), "sc"))))
-  cat("\nResidual Error =", fround(residError,
-                                   digits), "\n")
-  cat("\n---Groups\n")
-  ngrps <- lapply(modList[[1]]@flist, function(x) length(levels(x)))
-  modn <- getME(modList[[1]], "devcomp")$dims["n"]
-  cat(sprintf("number of obs: %d, groups: ", modn))
-  cat(paste(paste(names(ngrps), ngrps, sep = ", "),
-            collapse = "; "))
-  cat("\n")
-  cat("\nModel Fit Stats")
-  mAIC <- mean(unlist(lapply(modList, AIC)))
-  cat(sprintf("\nAIC = %g", round(mAIC, 1)))
-  moDsigma.hat <- mean(unlist(lapply(modList, sigma)))
-  cat("\nResidual standard deviation =", fround(moDsigma.hat,
-                                                digits), "\n")
+  summ.ml$residError <- mean(unlist(lapply(modList, function(x) attr(VarCorr(x), "sc"))))
+  summ.ml$ngrps <- lapply(modList[[1]]@flist, function(x) length(levels(x)))
+  summ.ml$modn <- getME(modList[[1]], "devcomp")$dims["n"]
+  summ.ml$mAIC <- mean(unlist(lapply(modList, AIC)))
+  summ.ml$moDsigma.hat <- mean(unlist(lapply(modList, sigma)))
+  class(summ.ml) <- "summary.merModList"
+  return(summ.ml)
 }
 
 #' Summarize a merMod list
@@ -329,9 +280,9 @@ print.merModList <- function(x, ...){
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' summary(mod)
-summary.merModList <- function(object, ...){
+print.merModList <- function(object, ...){
   out <- lapply(object, sum.mm)
-  class(out) <- "summary.merModList"
+  # class(out) <- "summary.merModList"
   return(out)
 }
 
@@ -343,7 +294,55 @@ summary.merModList <- function(object, ...){
 #' @return summary content printed to console
 #' @export
 print.summary.merModList <- function(x, ...){
-  lapply(x, print)
+  summ.ml <- x
+  args <- eval(substitute(alist(...)))
+  if("digits" %in% names(args)){
+    digits <- args$digits
+  } else{
+    digits <- 3
+  }
+  print(summ.ml$method)
+  cat("Model family: ", summ.ml$family)
+  cat("\n")
+  print(summ.ml$form)
+  cat("\nFixed Effects:\n")
+  pfround(summ.ml$fe[, -1], digits)
+  cat("\nRandom Effects:\n")
+  cat("\nError Term Standard Deviations by Level:\n")
+  for(i in 1:length(summ.ml$errorList)){
+    cat("\n")
+    cat(names(summ.ml$errorList[i]))
+    cat("\n")
+    if(is.null(names(summ.ml$errorList[[i]]))){
+      names(summ.ml$errorList[[i]]) <- "(Intercept)"
+    }
+    pfround(summ.ml$errorList[[i]], digits = digits)
+    cat("\n")
+  }
+  # lapply(errorList, pfround, digits)
+  cat("\nError Term Correlations:\n")
+  for(i in 1:length(summ.ml$corrList)){
+    cat("\n")
+    cat(names(summ.ml$corrList[i]))
+    cat("\n")
+    if(is.null(names(summ.ml$corrList[[i]]))){
+      names(summ.ml$corrList[[i]]) <- "(Intercept)"
+    }
+    pfround(summ.ml$corrList[[i]], digits = digits)
+    cat("\n")
+  }
+  # lapply(corrList, pfround, digits)
+  cat("\nResidual Error =", fround(summ.ml$residError,
+                                   digits), "\n")
+  cat("\n---Groups\n")
+  cat(sprintf("number of obs: %d, groups: ", summ.ml$modn))
+  cat(paste(paste(names(summ.ml$ngrps), summ.ml$ngrps, sep = ", "),
+            collapse = "; "))
+  cat("\n")
+  cat("\nModel Fit Stats")
+  cat(sprintf("\nAIC = %g", round(summ.ml$mAIC, 1)))
+  cat("\nResidual standard deviation =", fround(summ.ml$moDsigma.hat,
+                                                digits), "\n")
 }
 
 #' Apply a multilevel model to a list of data frames
