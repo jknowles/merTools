@@ -95,8 +95,11 @@ test_that("print methods work for merModList", {
   rm(split);
   g1 <- lmerModList(formula = y~fac1+(1|grp), data=out);
   {sink("NUL"); zz <- print(g1);
-    sink()}
-  expect_null(zz)
+  sink()}
+  expect_is(zz, "list")
+  zz <- summary(g1)
+  expect_is(zz, "summary.merModList")
+
 
 })
 
