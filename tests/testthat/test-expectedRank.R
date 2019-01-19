@@ -40,8 +40,8 @@ m5  <- glmer(form, family="poisson",data=grouseticks,
     ER <- expectedRank(merMod, groupFctr, term)
     expect_true(nrow(ER)==n.levels &&
                 ncol(ER)== 7 &&
-                colnames(ER)[6:7]==c("ER", "pctER") &&
-                class(ER)=="data.frame")
+                all(colnames(ER)[6:7] == c("ER", "pctER")) &&
+                class(ER) == "data.frame")
   }
 
 

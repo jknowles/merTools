@@ -94,8 +94,6 @@ expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
   n.rfx <- lme4::getME(merMod, "k")
   n.rfac <- lme4::getME(merMod, "n_rfac")
   rfx <- lme4::ranef(merMod, condVar=TRUE)
-  out <- data.frame(groupFctr = NA, term = NA, estimate = NA,
-                      std.error = NA, ER = NA, pctER = NA)
 
   if(!is.null(groupFctr)){
     groupFctr <- groupFctr
@@ -116,7 +114,7 @@ expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
         termIdx <- names(rfx[[i]])
       }
       for(j in termIdx){
-        if (grepl("[iI]nt[a-z]*", j) && is.na(match(j, names(rfx[[i]])))) {
+        if (all(grepl("[iI]nt[a-z]*", j)) && is.na(match(j, names(rfx[[i]])))) {
            j <- "(Intercept)"
         }
 
