@@ -33,14 +33,16 @@ m5  <- glmer(form, family="poisson",data=grouseticks,
 
 #Custom Expectation Functions
   expect_correct_dim <- function(merMod, groupFctr=NULL, term=NULL) {
-    if (is.null(groupFctr))
+    if (is.null(groupFctr)){
       n.levels <- nrow(ranef(merMod)[[1]])
-    else
+    }
+    else {
       n.levels <- nrow(ranef(merMod)[[groupFctr]])
+    }
     ER <- expectedRank(merMod, groupFctr, term)
-    expect_true(nrow(ER)==n.levels &&
-                ncol(ER)== 7 &&
-                all(colnames(ER)[6:7] == c("ER", "pctER")) &&
+    expect_true(nrow(ER) == n.levels &
+                ncol(ER) == 7 &
+                all(colnames(ER)[6:7] == c("ER", "pctER")) &
                 class(ER) == "data.frame")
   }
 
@@ -53,7 +55,7 @@ test_that("expectedRank parameters work and dont work as intended", {
   expect_correct_dim(m1)
   expect_correct_dim(m1, groupFctr="Subject")
   expect_correct_dim(m1, term="(Intercept)")
-  expect_correct_dim(m1, groupFctr="Subject", term="(Intercept)")
+  expect_correct_dim(m1, groupFctr="Subject", term = "(Intercept)")
 
   expect_correct_dim(m2, term="(Intercept)")
   expect_correct_dim(m2, term="Days")

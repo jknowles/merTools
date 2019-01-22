@@ -114,7 +114,7 @@ expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
         termIdx <- names(rfx[[i]])
       }
       for(j in termIdx){
-        if (all(grepl("[iI]nt[a-z]*", j)) && is.na(match(j, names(rfx[[i]])))) {
+        if (all(grepl("[iI]nt[a-z]*", j)) & is.na(match(j, names(rfx[[i]])))) {
            j <- "(Intercept)"
         }
 
