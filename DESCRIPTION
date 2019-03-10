@@ -1,8 +1,8 @@
 Package: merTools
 Title: Tools for Analyzing Mixed Effect Regression Models
-Version: 0.4.2
+Version: 0.4.3
 Authors@R: c(
-    person(c("Jared", "E."), "Knowles", email = "jknowles@gmail.com", role = c("aut", "cre")), 
+    person(c("Jared", "E."), "Knowles", email = "jknowles@gmail.com", role = c("aut", "cre")),
     person("Carl", "Frederick", email="carlbfrederick@gmail.com", role = c("aut")),
     person("Alex", "Whitworth", email="whitworth.alex@gmail.com", role = c("ctb")))
 Description: Provides methods for extracting results from mixed-effect model
@@ -31,7 +31,7 @@ Imports:
     abind,
     ggplot2,
     blme,
-    broom
+    broom,
 License: GPL (>=2)
 LazyData: true
 VignetteBuilder: knitr

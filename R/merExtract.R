@@ -16,8 +16,8 @@
 #' head(rfx)
 #' @export
 REextract <- function(merMod){
-  stopifnot(class(merMod) %in% c("lmerMod", "glmerMod", "blmerMod",
-                                 "bglmerMod"))
+  stopifnot(inherits(merMod, "merMod"))
+  
   out <- lme4::ranef(merMod, condVar = TRUE)
   lvlNames <- names(out)
   reDims <- length(out)
@@ -72,8 +72,7 @@ REextract <- function(merMod){
 #' head(re2)
 #' @export
 REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE, seed=NULL){
-  stopifnot(class(merMod) %in% c("lmerMod", "glmerMod", "blmerMod",
-                                 "bglmerMod"))
+  stopifnot(inherits(merMod, "merMod"))
   if (!is.null(seed))
     set.seed(seed)
   else if (!exists(".Random.seed", envir = .GlobalEnv))
@@ -133,8 +132,7 @@ REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE, seed=NULL){
 #' head(fe2)
 #' @export
 FEsim <- function(merMod, n.sims = 200, oddsRatio=FALSE, seed=NULL){
-  stopifnot(class(merMod) %in% c("lmerMod", "glmerMod", "blmerMod",
-                                 "bglmerMod"))
+  stopifnot(inherits(merMod, "merMod"))
   if (!is.null(seed))
     set.seed(seed)
   else if (!exists(".Random.seed", envir = .GlobalEnv))
@@ -171,7 +169,7 @@ FEsim <- function(merMod, n.sims = 200, oddsRatio=FALSE, seed=NULL){
 #' RMSE.merMod(m2)
 #' @export
 RMSE.merMod <- function(merMod, scale = FALSE){
-  stopifnot(class(merMod) %in% c("lmerMod", "blmerMod"))
+  stopifnot(inherits(merMod, "lmerMod") ||  inherits(merMod, "blmerMod"))
   # Express RMSE as percentage of dependent variable standard deviation
   dvSD <- sd(merMod@frame[, 1])
   RMSE <- sqrt(mean(residuals(merMod)^2))
