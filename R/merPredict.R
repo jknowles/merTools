@@ -181,6 +181,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     tmpList <- vector(length = nrow(reMeans), mode = "list")
     for(k in 1:nrow(reMeans)){
       meanTmp <- reMeans[k, ]
+      # TODO - Check here how this object is created and strip names
       matrixTmp <- as.matrix(reMatrix[, , k])
       tmpList[[k]] <- as.matrix(mvtnorm::rmvnorm(n= n.sims,
                                                 mean=meanTmp,

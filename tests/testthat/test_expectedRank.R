@@ -11,8 +11,8 @@ m1  <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 
 # Wackier example
-data(Orthodont,package="nlme")
-Orthodont$nsex <- as.numeric(Orthodont$Sex=="Male")
+data(Orthodont,package = "nlme")
+Orthodont$nsex <- as.numeric(Orthodont$Sex == "Male")
 Orthodont$nsexage <- with(Orthodont, nsex*age)
 m3 <- lmer(distance ~ age + (0 + age + nsex|Subject), data=Orthodont)
 
@@ -38,10 +38,10 @@ m5  <- glmer(form, family="poisson",data=grouseticks,
     else
       n.levels <- nrow(ranef(merMod)[[groupFctr]])
     ER <- expectedRank(merMod, groupFctr, term)
-    expect_true(nrow(ER)==n.levels &
-                ncol(ER)== 7 &
-                colnames(ER)[6:7]==c("ER", "pctER") &
-                class(ER)=="data.frame")
+    testthat::expect_true(nrow(ER) == n.levels &
+                ncol(ER) == 7 &&
+                colnames(ER)[6:7] == c("ER", "pctER") &
+                class(ER) == "data.frame")
   }
 
 
