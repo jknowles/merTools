@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Test expected rank
 
 #Using 2 of sample models from test_merExtract.R
