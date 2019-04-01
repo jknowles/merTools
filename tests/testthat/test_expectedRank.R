@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Test expected rank
 
 #Using 2 of sample models from test_merExtract.R
@@ -84,6 +85,3 @@ test_that("Percentile ranks have the correct range", {
    expect_true(max(expectedRank(m1)$pctER) <= 100)
    expect_true(min(expectedRank(m1)$pctER) >= 0)
 })
-
-
-
