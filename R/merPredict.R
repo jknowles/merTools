@@ -181,6 +181,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     tmpList <- vector(length = nrow(reMeans), mode = "list")
     for(k in 1:nrow(reMeans)){
       meanTmp <- reMeans[k, ]
+      names(meanTmp) <- NULL
       # TODO - Check here how this object is created and strip names
       matrixTmp <- as.matrix(reMatrix[, , k])
       tmpList[[k]] <- as.matrix(mvtnorm::rmvnorm(n= n.sims,
@@ -189,7 +190,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     }
 
     REcoefs <- sapply(tmpList, identity, simplify="array"); rm(tmpList)
-    dimnames(REcoefs) <- list(NULL,
+    dimnames(REcoefs) <- list(1:n.sims,
                             attr(reMeans, "dimnames")[[2]],
                             attr(reMeans, "dimnames")[[1]])
     if(j %in% names(newdata)){ # get around if names do not line up because of nesting
@@ -223,6 +224,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
        yhatTmp <- array(data = NA, dim = c(nrow(data), dim(coefs)[1]))
        colIdx <- ncol(data) - 1
       for(i in 1:nrow(data)){
+        # TODO - Fix issue 101 which trips up here
          lvl <- as.character(data[, group][i])
          if(!lvl %in% new.levels){
            yhatTmp[i, ] <- as.numeric(data[i, 1:colIdx]) %*% t(coefs[, 1:colIdx, lvl])
@@ -334,6 +336,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   }
   # Pad betaSim
   colnames(betaSim) <- names(fe.tmp)
+  rownames(betaSim) <- 1:n.sims
   newdata.modelMatrix <- buildModelMatrix(merMod, newdata = newdata, which = "fixed")
   if(ncol(newdata.modelMatrix) > ncol(betaSim)){
     pad <- matrix(rep(0), nrow = nrow(betaSim),
