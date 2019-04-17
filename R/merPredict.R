@@ -233,7 +233,6 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
        colIdx <- ncol(data) - 1
 
       colLL <- length(1:colIdx)
-      dim(coefs)[2]
       if(colLL > dim(coefs)[2]) {
         # copy over
         coefs_new <- array(NA, dim = c(dim(coefs)[1], colLL,
