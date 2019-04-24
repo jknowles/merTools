@@ -753,8 +753,14 @@ test_that("Nested effects can work", {
 
 context("Interactions without intercepts")
 
-sleepstudy$Test <- rep(sample(c(TRUE, FALSE), length(unique(sleepstudy$Subject)), replace = TRUE), each = 10)
+sleepstudy$Test <- rep(sample(c(TRUE, FALSE), length(unique(sleepstudy$Subject)),
+                              replace = TRUE), each = 10)
 m1 <- lmer(Reaction ~ Days:Test + (0 + Days | Subject), data = sleepstudy)
+
+sleepstudy$cars <- sleepstudy$Days*3
+m2 <- lmer(Reaction ~ cars:Test + (0 + Days | Subject), data = sleepstudy)
+m3 <- lmer(Reaction ~ cars:Test + (1 | Subject), data = sleepstudy)
+m4 <- lmer(Reaction ~ cars:Test + (0 + cars | Subject), data = sleepstudy)
 
 test_that("Models with cross-level interaction and no random intercept work", {
   preds1 <- predictInterval(m1)
@@ -778,5 +784,17 @@ test_that("Models with cross-level interaction and no random intercept work", {
   expect_equal(nrow(preds2), 10)
   expect_equal(ncol(preds2), 3)
   expect_false(any(preds1$fit == preds2$fit))
+  rm(preds1, preds2)
+  preds1 <- predictInterval(m2)
+  expect_equal(nrow(preds1), 180)
+  expect_equal(ncol(preds1), 3)
+  #
+  preds1 <- predictInterval(m3)
+  expect_equal(nrow(preds1), 180)
+  expect_equal(ncol(preds1), 3)
+  #
+  preds1 <- predictInterval(m4)
+  expect_equal(nrow(preds1), 180)
+  expect_equal(ncol(preds1), 3)
 })
 

@@ -578,6 +578,8 @@ test_that("parallelization does not throw errors and generates good results", {
 context("Test returning predict interval components")
 
 # Test the option to return different predictInterval components
+data(sleepstudy)
+sleepstudy$Subject <- factor(sleepstudy$Subject)
 m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 form <- TICKS_BIN ~ YEAR + HEIGHT +(1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)

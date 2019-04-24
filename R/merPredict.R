@@ -147,15 +147,16 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     warning("   Prediction for NLMMs or GLMMs that are not mixed binomial regressions is not tested. Sigma set at 1.")
     sigmahat <- rep(1,n.sims)
   }
+
   newdata.modelMatrix <- buildModelMatrix(model= merMod, newdata = newdata)
 
   re.xb <- vector(getME(merMod, "n_rfacs"), mode = "list")
   names(re.xb) <- names(ngrps(merMod))
-  for(j in names(re.xb)){
+  for (j in names(re.xb)){
     reMeans <- as.matrix(ranef(merMod)[[j]])
     reMatrix <- attr(ranef(merMod, condVar = TRUE)[[j]], which = "postVar")
     # OK, let's knock out all the random effects we don't need
-    if(j %in% names(newdata)){ # get around if names do not line up because of nesting
+    if (j %in% names(newdata)){ # get around if names do not line up because of nesting
       obslvl <- unique(as.character(newdata[, j]))
       alllvl <- rownames(reMeans)
       keep <- intersect(obslvl, alllvl)
@@ -167,11 +168,11 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     # Add switch if no random groups are observed to avoid indexing errors,
     # we burn 1 sample of 1 group of all coefficients that will eventually
     # be multiplied by zero later on
-    if(length(keep) > 0 & !identical(keep, alllvl)){
+    if(length(keep) > 0 & !identical(keep, alllvl)) {
       reMeans <- reMeans[keep, , drop=FALSE]
       dimnames(reMatrix)[[3]] <- alllvl
       reMatrix <- reMatrix[, , keep, drop = FALSE]
-    } else if(length(keep) > 0 & identical(keep, alllvl)){
+    } else if (length(keep) > 0 & identical(keep, alllvl)){
       dimnames(reMatrix)[[3]] <- alllvl
     } else{
       reMeans <- reMeans[1, , drop=FALSE]
@@ -179,7 +180,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     }
 
     tmpList <- vector(length = nrow(reMeans), mode = "list")
-    for(k in 1:nrow(reMeans)){
+    for (k in 1:nrow(reMeans)){
       meanTmp <- reMeans[k, ]
       names(meanTmp) <- NULL
       matrixTmp <- as.matrix(reMatrix[, , k])
@@ -192,12 +193,17 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     dimnames(REcoefs) <- list(1:n.sims,
                             attr(reMeans, "dimnames")[[2]],
                             attr(reMeans, "dimnames")[[1]])
-    if(j %in% names(newdata)){ # get around if names do not line up because of nesting
+    if (j %in% names(newdata)) { # get around if names do not line up because of nesting
       tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
       tmp <- tmp[, !duplicated(colnames(tmp))]
       keep <- names(tmp)[names(tmp) %in% dimnames(REcoefs)[[2]]]
       if (length(keep) == 0) {
         keep <- grep(dimnames(REcoefs)[[2]], names(tmp), value = TRUE)
+        if (length(keep) == 0) {
+          tmp <- cbind(model.frame(subbars(formula(merMod)), data = newdata),
+                       var = newdata[, j])
+          keep <- grep(dimnames(REcoefs)[[2]], names(tmp), value = TRUE)
+        }
       }
       tmp <- tmp[, c(keep, "var"), drop = FALSE]
       tmp[, "var"] <- as.character(tmp[, "var"])
@@ -261,7 +267,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
      }
     #########################
     ####
-     if(nrow(tmp) > 1000 | .parallel){
+     if(nrow(tmp) > 1000 | .parallel) {
        if (requireNamespace("foreach", quietly=TRUE)) {
          if(.parallel){
          setup_parallel()
@@ -303,9 +309,9 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   fe.tmp <- fixef(merMod)
   vcov.tmp <- as.matrix(vcov(merMod))
 
-  # Detecet if an intercept is present
+  # Detect if an intercept is present
   # TODO - is this reliable
-  if(is.na(names(attr(VarCorr(merMod)[[j]],"stddev")["(Intercept)"]))) {
+  if (is.na(names(attr(VarCorr(merMod)[[j]],"stddev")["(Intercept)"]))) {
     fix.intercept.variance <- FALSE
     message("No intercept detected, setting fix.intercept.variance to FALSE")
   }
@@ -369,7 +375,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   colnames(betaSim) <- names(fe.tmp)
   rownames(betaSim) <- 1:n.sims
   newdata.modelMatrix <- buildModelMatrix(merMod, newdata = newdata, which = "fixed")
-  if(ncol(newdata.modelMatrix) > ncol(betaSim)){
+  if (ncol(newdata.modelMatrix) > ncol(betaSim)) {
     pad <- matrix(rep(0), nrow = nrow(betaSim),
                   ncol = ncol(newdata.modelMatrix) - ncol(betaSim))
     if(ncol(pad) > 0){
