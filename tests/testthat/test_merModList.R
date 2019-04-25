@@ -18,11 +18,12 @@ test_that("simple cases work", {
                                  sigma = c(.23)))[[1]]
   out <- split(d, split)
   rm(split)
-  g1 <- lmerModList(formula = y~fac1+(1|grp), data=out, 
-                    control= lmerControl(check.conv.grad = .makeCC("warning", tol= 8e-3)))
+  # TODO change tolerances
+  g1 <- lmerModList(formula = y~fac1+(1|grp), data=out,
+                    control= lmerControl(check.conv.grad = .makeCC("warning", tol= 2e-3)))
   expect_is(g1, "merModList")
   g2 <- blmerModList(formula = y~fac1+(1|grp), data=out,
-                     control= lmerControl(check.conv.grad = .makeCC("warning", tol= 8e-3)))
+                     control= lmerControl(check.conv.grad = .makeCC("warning", tol= 2e-3)))
   expect_is(g2, "merModList")
   expect_false(class(g1[[1]]) == class(g2[[1]]))
 
@@ -30,10 +31,10 @@ test_that("simple cases work", {
   out <- split(InstEval, split)
   rm(split)
   g1 <- lmerModList(formula = y ~ lectage + studage + (1|d) + (1|dept),
-                    data=out, 
-                    control= lmerControl(check.conv.grad = .makeCC("warning", tol= 8e-3)))
+                    data=out,
+                    control= lmerControl(check.conv.grad = .makeCC("warning", tol= 2e-3)))
   expect_is(g1, "merModList")
-  
+
 })
 
 test_that("print methods work for merModList", {

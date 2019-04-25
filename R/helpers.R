@@ -144,23 +144,23 @@ safeDeparse <- function(x, collapse=" ") paste(deparse(x, 500L), collapse=collap
 buildModelMatrix <- function(model, newdata, which = "full"){
   X <- getME(model, "X")
   X.col.dropped <- attr(X, "col.dropped")
-  # TODO - stop this function from being chatty about non-factors in grouping variables
-  ## modified from predict.glm ...
   if (is.null(newdata)) {
     newdata <- model@frame
   }
   RHS <- formula(substitute(~R,
                     list(R = RHSForm(formula(model, fixed.only=TRUE)))))
   Terms <- terms(model,fixed.only=TRUE)
-  # TODO - Check if this can be changed
   mf <- model.frame(model, fixed.only = FALSE)
   isFac <- vapply(mf, is.factor, FUN.VALUE = TRUE)
   isFac[attr(Terms,"response")] <- FALSE
   orig_levs <- if (length(isFac)==0) NULL else lapply(mf[isFac],levels)
-  mfnew <- model.frame(delete.response(Terms),
+  # Suppress warnings about non-factors classified as factors
+  # These are false alarms related to grouping terms
+  mfnew <- suppressWarnings(model.frame(delete.response(Terms),
                          newdata,
                          na.action="na.pass",
                          xlev=orig_levs)
+  )
   X <- model.matrix(RHS, data=mfnew,
                       contrasts.arg=attr(X,"contrasts"))
   offset <- 0 # rep(0, nrow(X))

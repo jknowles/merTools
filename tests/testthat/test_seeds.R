@@ -16,6 +16,7 @@ test_that("Equivalent seeds return equivalent results", {
   f2  <- FEsim(fm1, 25, seed=456)
   f1b <- FEsim(fm1, 25, seed=1234)
 
+  # TODO - subboot now returns warnings and needs to be checked
   p1a <- predictInterval(fm1, newdata=sleepstudy[1:10,], seed=1234)
   p2  <- predictInterval(fm1, newdata=sleepstudy[1:10,], seed=456)
   p1b <- predictInterval(fm1, newdata=sleepstudy[1:10,], seed=1234)

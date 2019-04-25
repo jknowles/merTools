@@ -1,5 +1,19 @@
 # NEWS
 
+## merTools 0.4.3
+
+### New Features
+
+- `subBoot` now works with `glmerMod` objects as well
+
+### Bug fixes
+
+- Fixed an issue where known convergence errors were issuing warnings and causing the test suite 
+to not work
+- Fixed an issue where models with a random slope, no intercept, and no fixed term were unable 
+to be predicted (#101)
+
+
 ## merTools 0.4.2
 
 ### New Features
@@ -15,7 +29,7 @@ in the `Suggests` field
 wrong dimensions when predicting a single row of observations for a `glm`
 - Fixed a bug (#96) related to `rstanarm` dependencies in the package vignette
 - Switched from `dontrun` to `donttest` for long-running examples (CRAN compliance)
-- Fixed and made more clear the generics applying to `merModList` objects
+- Fixed and made more clear the generics applying to `merModList` objects (#92)
 
 ## merTools 0.4.1
 
