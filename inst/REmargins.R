@@ -87,38 +87,49 @@ REmargins <- function(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3
     brks <- c(brks, 99)
   }
 
+
+
   # Generate the expected rank distribution
   ER_DF <- expectedRank(merMod, groupFctr = groupFctr)
-  # Keep only factor levels that have effects at the margins
-  ER_DF <- ER_DF[ER_DF$pctER %in% brks, ]
-  # Question: Should we instead prefer the most precise effect at each quantile?
-
-  # Drop duplicates
   ER_DF <- ER_DF[!duplicated(ER_DF[, c("groupFctr", "term", "pctER")]), ]
+  # Keep only factor levels that have effects at the margins
+  # Need to match closest value here
+  # Find N closest values
+  # Drop duplicates
+  zz <- abs(diff(floor(c(brks, ER_DF$pctER))))
+  ndx <- order(zz, decreasing = TRUE)[1:5]
+
+  ER_DF <- ER_DF[ndx, ]
+  # Question: Should we instead prefer the most precise effect at each quantile?
   # Find all the levels as a list
   lvls <- as.data.frame(unique(merMod@frame[, groupFctr]))
+  names(lvls) <- groupFctr
   # Set up a list to step through
   keep <- vector(mode = "list", length(names(lvls)))
+  names(keep) <- names(lvls)
   # For each factor level, step through and keep all combinations of terms where
   # that factor level matches one remaining in ER_DF
   for(i in names(lvls)) {
-    keep[i] <- lvls[lvls[, i] %in% ER_DF$groupLevel[ER_DF$groupFctr == i], ]
+    keep[i] <- lvls[lvls[, i] %in% ER_DF$groupLevel[ER_DF$groupFctr == i], , drop=FALSE]
   }
   # Keep everything that remains
   lvls <- dplyr::bind_rows(keep)
   # Clean up
   rm(keep, ER_DF, brks)
 
+  # TODO - order case by magnitude of ER
+
+
   # Get ready to expand the data
-  names(lvls) <- groupFctr
   zed <- as.data.frame(lapply(newdata, rep, nrow(lvls)))
   zed[, groupFctr] <- lvls[rep(seq_len(nrow(lvls)), nrow(newdata)), ]
   zed[, "case"] <- rep(seq(1, nrow(newdata)), times = nrow(lvls))
 
   # Maybe strongly recommend parallel here?
-  if( .parallel){
-    if (requireNamespace("foreach", quietly=TRUE)) {
-      setup_parallel()
+  if ( .parallel & requireNamespace("foreach", quietly=TRUE)) {
+    # TODO use future here
+
+      merTools:::setup_parallel()
 
       fe_call <- as.call(c(list(quote(foreach::foreach), i = unique(zed$case),
                                 .inorder = FALSE)))
@@ -135,37 +146,25 @@ REmargins <- function(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3
       )
 
       out_w <- dplyr::bind_rows(keep); rm(keep)
-    } else {
+    } else if ( .parallel & !requireNamespace("foreach", quietly=TRUE)) {
       warning("foreach package is unavailable, parallel computing not available")
-      keep <- vector(mode = "list", nrow(newdata))
-      for (i in unique(zed$case)) {
-        out <- predictInterval(merMod, newdata = zed[zed$case == i, ],
-                               which = "all")
-        out_w <- reshape(out, direction = "wide",
-                         idvar = "obs", timevar = "effect",
-                         v.names = c("fit", "upr", "lwr"), sep = "_")
-        out_w$case <- i
-        keep[i] <- out_w
-      }
-      out_w <- dplyr::bind_rows(keep); rm(keep)
-    }
-  } else {
+    } else {
     keep <- vector(mode = "list", nrow(newdata))
     for (i in unique(zed$case)) {
       out <- predictInterval(merMod, newdata = zed[zed$case == i, ],
                              which = "all")
-      out_w <- reshape(out, direction = "wide",
+      out_w <- stats::reshape(out, direction = "wide",
                        idvar = "obs", timevar = "effect",
                        v.names = c("fit", "upr", "lwr"), sep = "_")
       out_w$case <- i
-      keep[i] <- out_w
+      keep[[i]] <- out_w
     }
     out_w <- dplyr::bind_rows(keep); rm(keep)
   }
 
   # Case is the number of rows in newdata
   # obs is the variance among the selected random effects to marginalize over
-
   # So we want to collapse by case if we can
+
   return(out_w)
 }
