@@ -80,15 +80,11 @@ REmargins <- function(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3
   if(missing(groupFctr)){
     groupFctr <- names(ranef(merMod))[1]
   }
-
   # This is a rough way to break the ER distribution into quantiles
   brks <- ceiling(seq(1, 100, by = 100/breaks))
   if(! 99 %in% brks) {
     brks <- c(brks, 99)
   }
-
-
-
   # Generate the expected rank distribution
   ER_DF <- expectedRank(merMod, groupFctr = groupFctr)
   ER_DF <- ER_DF[!duplicated(ER_DF[, c("groupFctr", "term", "pctER")]), ]
@@ -96,8 +92,13 @@ REmargins <- function(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3
   # Need to match closest value here
   # Find N closest values
   # Drop duplicates
+  # TODO - fix this loop so it finds unique differences
+  for (i in seq_along(brks)){
+    zz <- abs(ER_DF$pctER - brks[i])
+    print(order(zz, decreasing = TRUE)[1:5])
+  }
   zz <- abs(diff(floor(c(brks, ER_DF$pctER))))
-  ndx <- order(zz, decreasing = TRUE)[1:5]
+  ndx <- order(zz, decreasing = TRUE)[1:breaks]
 
   ER_DF <- ER_DF[ndx, ]
   # Question: Should we instead prefer the most precise effect at each quantile?
