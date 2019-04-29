@@ -33,14 +33,15 @@ m5  <- glmer(form, family="poisson",data=grouseticks,
 
 #Custom Expectation Functions
   expect_correct_dim <- function(merMod, groupFctr=NULL, term=NULL) {
-    if (is.null(groupFctr))
+    if (is.null(groupFctr)) {
       n.levels <- nrow(ranef(merMod)[[1]])
-    else
+    } else {
       n.levels <- nrow(ranef(merMod)[[groupFctr]])
+    }
     ER <- expectedRank(merMod, groupFctr, term)
     testthat::expect_true(nrow(ER) == n.levels &
                 ncol(ER) == 7 &
-                colnames(ER)[6:7] == c("ER", "pctER") &
+                all(colnames(ER)[6:7] == c("ER", "pctER")) &
                 class(ER) == "data.frame")
   }
 
