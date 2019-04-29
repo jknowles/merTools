@@ -75,11 +75,15 @@
 #'                          breaks = 3)
 #' }
 #' @export
-REmargins <- function(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3,
+REmargins <- function(merMod, newdata = NULL, groupFctr = NULL, term = NULL, breaks = 3,
                       .parallel = TRUE, ...){
-  if(missing(groupFctr)){
+  if(is.null(groupFctr)){
     groupFctr <- names(ranef(merMod))[1]
   }
+  if (is.null(newdata)) {
+    newdata <- merMod@frame
+  }
+
   # This is a rough way to break the ER distribution into quantiles
   brks <- ceiling(seq(1, 100, by = 100/breaks))
   if(! 99 %in% brks) {
@@ -88,17 +92,37 @@ REmargins <- function(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3
   # Generate the expected rank distribution
   ER_DF <- expectedRank(merMod, groupFctr = groupFctr)
   ER_DF <- ER_DF[!duplicated(ER_DF[, c("groupFctr", "term", "pctER")]), ]
+
+  # TODO - loop over the terms!
+  if (is.null(term)) {
+    term <- unique(ER_DF$term)
+  }
+
+
   # Keep only factor levels that have effects at the margins
   # Need to match closest value here
   # Find N closest values
   # Drop duplicates
   # TODO - fix this loop so it finds unique differences
-  for (i in seq_along(brks)){
-    zz <- abs(ER_DF$pctER - brks[i])
-    print(order(zz, decreasing = TRUE)[1:5])
+  # TODO - build a dataframe for each combination of term and break
+  # For each combination build an index of candidate rows/effect levels
+  # Then choose the level that has the most precise estimate within a
+  # tolerance of the effect size
+
+  ndx <- NA
+  for (trm in term) {
+    for (i in seq_along(brks)) {
+      # TODO - fix this
+      zz <- abs(ER_DF$pctER[ER_DF$term == trm] - brks[i])
+      tmp <- which(zz %in% zz[order(zz)][1])
+      ndx <- c(ndx, tmp)
+    }
   }
-  zz <- abs(diff(floor(c(brks, ER_DF$pctER))))
-  ndx <- order(zz, decreasing = TRUE)[1:breaks]
+  # Need to repeat
+  ndx <- na.omit(ndx)
+
+  # TODO - Figure out how to keep the effects seperate from each term
+  # TODO - order case by magnitude of ER
 
   ER_DF <- ER_DF[ndx, ]
   # Question: Should we instead prefer the most precise effect at each quantile?
@@ -117,8 +141,6 @@ REmargins <- function(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3
   lvls <- dplyr::bind_rows(keep)
   # Clean up
   rm(keep, ER_DF, brks)
-
-  # TODO - order case by magnitude of ER
 
 
   # Get ready to expand the data
@@ -163,9 +185,11 @@ REmargins <- function(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3
     out_w <- dplyr::bind_rows(keep); rm(keep)
   }
 
-  # Case is the number of rows in newdata
+  # Case is the number of the row in newdata
   # obs is the variance among the selected random effects to marginalize over
   # So we want to collapse by case if we can
+
+  out_w <- out_w
 
   return(out_w)
 }

@@ -35,6 +35,6 @@ context("Test random effect marginalization works")
 #
 #
 #
-# ggplot(mfx) + aes(x = case, y = fit_Subject) +
-#   geom_line() +
-#   facet_wrap(~obs)
+ggplot(out_w) + aes(x = obs, y = fit_Subject) +
+  geom_line() +
+  facet_wrap(~case)
