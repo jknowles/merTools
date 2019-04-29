@@ -1,9 +1,9 @@
 # Test REmargins
-set.seed(51315)
-fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-
-context("Test random effect marginalization works")
-
+# set.seed(51315)
+# fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#
+# context("Test random effect marginalization works")
+#
 # mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
 #
 # test_that("Random effect marginals work for simple linear example", {
@@ -35,6 +35,10 @@ context("Test random effect marginalization works")
 #
 #
 #
-ggplot(out_w) + aes(x = obs, y = fit_Subject) +
-  geom_line() +
-  facet_wrap(~case)
+# ggplot(out_w) + aes(x = obs, y = fit_Subject) +
+#   geom_line() +
+#   facet_wrap(~case)
+
+# ggplot(mfx) + aes(x = breaks, y = fit_Subject, group = case) +
+#   geom_line() +
+#   facet_wrap(~term)
