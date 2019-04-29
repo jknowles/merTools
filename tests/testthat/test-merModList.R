@@ -6,6 +6,8 @@ context("Do merModList objects get built and work")
 old_warn <- getOption("warn")
 options(warn = -1)
 
+set.seed(432422)
+
 test_that("simple cases work", {
   # skip_on_cran()
   library(blme)
@@ -32,7 +34,7 @@ test_that("simple cases work", {
   rm(split)
   g1 <- lmerModList(formula = y ~ lectage + studage + (1|d) + (1|dept),
                     data=out,
-                    control= lmerControl(check.conv.grad = .makeCC("warning", tol = 2e-4)))
+                    control= lmerControl(check.conv.grad = .makeCC("warning", tol = 1e-2)))
   expect_is(g1, "merModList")
 
 })

@@ -1,4 +1,5 @@
 # Test helper functions
+set.seed(51315)
 # Trimming data frame----
 context("Trimming data frame")
 test_that("Trimming results in correct size", {
