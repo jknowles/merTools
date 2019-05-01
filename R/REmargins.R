@@ -136,12 +136,13 @@ REmargins <- function(merMod, newdata = NULL, groupFctr = NULL, term = NULL, bre
   # Maybe strongly recommend parallel here?
   if ( .parallel & requireNamespace("foreach", quietly=TRUE)) {
     # TODO use future here
-      merTools:::setup_parallel()
+      setup_parallel()
         out <- predictInterval(merMod, newdata = zed,
                                which = "all")
         out_w <- stats::reshape(out, direction = "wide",
                                 idvar = "obs", timevar = "effect",
                                 v.names = c("fit", "upr", "lwr"), sep = "_")
+        out_w$obs <- NULL
         zed <- cbind(zed, out_w)
     } else if ( .parallel & !requireNamespace("foreach", quietly=TRUE)) {
       warning("foreach package is unavailable, parallel computing not available")
@@ -151,6 +152,7 @@ REmargins <- function(merMod, newdata = NULL, groupFctr = NULL, term = NULL, bre
       out_w <- stats::reshape(out, direction = "wide",
                        idvar = "obs", timevar = "effect",
                        v.names = c("fit", "upr", "lwr"), sep = "_")
+      out_w$obs <- NULL
       zed <- cbind(zed, out_w)
     }
   # Case is the number of the row in newdata

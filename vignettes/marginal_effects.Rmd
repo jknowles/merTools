@@ -1,0 +1,48 @@
+---
+title: "Using merTools to Marginalize Over Random Effect Levels"
+author: "Jared Knowles and Carl Frederick"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Marginalizing Random Effect Levels}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide', cache=FALSE}
+library(ggplot2); library(knitr); library(merTools)
+knitr::opts_chunk$set(
+  cache=FALSE,
+  comment="#>",
+  collapse=TRUE,
+  echo = TRUE
+)
+```
+
+# Marginalizing Random Effects
+
+One of the most common questions about multilevel models is how much influence grouping terms have 
+on the outcome. One way to explore this is to simulate the predicted values of an observation 
+across the distribution of random effects for a specific grouping variable and term. 
+
+```{r}
+fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
+```
+
+
+# Summarizing
+
+
+# Plotting
+
+```{r}
+fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
+
+ggplot(mfx) + aes(x = breaks, y = fit_Subject, group = case) +
+  geom_line() +
+  facet_wrap(~term)
+
+```
+
