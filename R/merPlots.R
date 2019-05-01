@@ -17,18 +17,29 @@
 #' @param oddsRatio logical, should the parameters be converted to odds ratios
 #' before plotting
 #' @param labs logical, include the labels of the groups on the x-axis
+#' @param facet Accepts either logical (\code{TRUE}) or \code{list} to specify which
+#' random effects to plot. If \code{TRUE}, facets by both \code{groupFctr} and \code{term}.
+#' If \code{list} selects the panel specified by the named elements of the list
 #' @return a ggplot2 plot of the coefficient effects
 #' @examples
-#'  require(ggplot2); require(lme4);
 #'  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #'  (p1 <- plotREsim(REsim(fm1)))
 #'  #Plot just the random effects for the Days slope
-#'  (p2 <- plotREsim(REsim(fm1)[REsim(fm1)$term=="Days",]))
+#'  (p2 <- plotREsim(REsim(fm1), facet= list(groupFctr= "Subject", term= "Days")))
 #' @export
 #' @import ggplot2
-
 plotREsim <- function(data, level = 0.95, stat = "median", sd = TRUE,
-                      sigmaScale = NULL, oddsRatio = FALSE, labs = FALSE){
+                      sigmaScale = NULL, oddsRatio = FALSE, labs = FALSE,
+                      facet= TRUE){
+  # error checking
+  plot_sim_error_chks(type= "RE", level= level, stat= stat, sd= sd, sigmaScale= sigmaScale,
+                      oddsRatio= oddsRatio, labs= labs, facet= facet)
+  # check for faceting
+  facet_logical <- is.logical(facet)
+  if (!facet_logical) {
+    data <- data[data$groupFctr == facet[[1]] & data$term == facet[[2]], ]
+  }
+
   if(!missing(sigmaScale)){
     data[, "sd"] <- data[, "sd"] / sigmaScale
     data[, stat] <- data[, stat] / sigmaScale
@@ -71,7 +82,12 @@ plotREsim <- function(data, level = 0.95, stat = "median", sd = TRUE,
       geom_pointrange(alpha = 1/(nrow(data)^.33)) +
       geom_pointrange(data=subset(data, sig==TRUE), alpha = 0.25)
   }
-  p + facet_grid(term ~ groupFctr, scales = "free_x")
+  # check facet
+  if (facet_logical) {
+    return(p + facet_grid(term ~ groupFctr, scales = "free_x"))
+  } else {
+    return(p)
+  }
 }
 
 #' @title Plot the results of a simulation of the fixed effects
@@ -92,13 +108,16 @@ plotREsim <- function(data, level = 0.95, stat = "median", sd = TRUE,
 #' before plotting
 #' @return a ggplot2 plot of the coefficient effects
 #' @examples
-#'  require(ggplot2); require(lme4);
 #'  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #'  (p1 <- plotFEsim(FEsim(fm1)))
 #' @export
 #' @import ggplot2
 plotFEsim <- function(data, level=0.95, stat = "median", sd = TRUE,
                       intercept = FALSE, sigmaScale = NULL, oddsRatio = FALSE){
+  # error checking
+  plot_sim_error_chks(type= "FE", level= level, stat= stat, sd= sd, sigmaScale= sigmaScale,
+                      oddsRatio= oddsRatio, labs= TRUE, facet= TRUE)
+
   if(!missing(sigmaScale)){
     data[, "sd"] <- data[, "sd"] / sigmaScale
     data[, stat] <- data[, stat] / sigmaScale

@@ -4,7 +4,7 @@
 #' distribution for the random and the fixed effects and then estimating the fitted
 #' value across that distribution, it is possible to generate a prediction interval
 #' for fitted values that includes all variation in the model except for variation
-#' in the covariance paramters, theta. This is a much faster alternative than
+#' in the covariance parameters, theta. This is a much faster alternative than
 #' bootstrapping for models fit to medium to large datasets.
 #' @param merMod a merMod object from lme4
 #' @param newdata a data.frame of new data to predict
@@ -20,6 +20,16 @@
 #' linear models
 #' @param returnSims logical, should all n.sims simulations be returned?
 #' @param seed numeric, optional argument to set seed for simulations
+#' @param fix.intercept.variance logical; should the variance of the intercept
+#' term be adjusted downwards to roughly correct for its covariance with the
+#' random effects, as if all the random effects are intercept effects?
+#' @param ignore.fixed.terms a numeric or string vector of indexes or names of
+#' fixed effects which should be considered as fully known (zero variance). This
+#' can result in under-conservative intervals, but for models with random effects
+#' nested inside fixed effects, holding the fixed effects constant intervals may
+#' give intervals with closer to nominal coverage than the over-conservative
+#' intervals without this option, which ignore negative correlation between the
+#' outer (fixed) and inner (random) coefficients.
 #' @param .parallel, logical should parallel computation be used, default is FALSE
 #' @param .paropts, -NOT USED: Caused issue #54- a list of additional options passed into the foreach function
 #' when parallel computation is enabled. This is important if (for example) your
@@ -30,14 +40,14 @@
 #' \describe{
 #'     \item{\code{fit}}{The center of the distribution of predicted values as defined by
 #'     the \code{stat} parameter.}
-#'     \item{\code{lwr}}{The lower confidence interval bound corresponding to the quantile cut
+#'     \item{\code{lwr}}{The lower prediction interval bound corresponding to the quantile cut
 #'     defined in \code{level}.}
-#'     \item{\code{upr}}{The upper confidence interval bound corresponding to the quantile cut
+#'     \item{\code{upr}}{The upper prediction interval bound corresponding to the quantile cut
 #'     defined in \code{level}.}
 #'   }
 #' If returnSims = TRUE, then the individual simulations are attached to this
 #' data.frame in the attribute \code{sim.results} and are stored as a matrix.
-#' @details To generate a prediction inteval, the function first computes a simulated
+#' @details To generate a prediction interval, the function first computes a simulated
 #' distribution of all of the parameters in the model. For the random, or grouping,
 #' effects, this is done by sampling from a multivariate normal distribution which
 #' is defined by the BLUP estimate provided by \code{ranef} and the associated
@@ -64,6 +74,8 @@
 #' @import lme4
 #' @importFrom abind abind
 #' @importFrom mvtnorm rmvnorm
+#' @importFrom foreach %dopar%
+#' @importFrom foreach foreach
 #' @examples
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 #' regFit <- predict(m1, newdata = sleepstudy[11, ]) # a single value is returned
@@ -83,7 +95,10 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                             n.sims = 1000, stat=c("median","mean"),
                             type=c("linear.prediction", "probability"),
                             include.resid.var=TRUE, returnSims = FALSE,
-                            seed=NULL, .parallel = FALSE, .paropts = NULL){
+                            seed=NULL, .parallel = FALSE, .paropts = NULL,
+                            fix.intercept.variance = FALSE, #This does NOT work with random slope models
+                            ignore.fixed.terms = NULL)
+                            {
   if(missing(newdata)){
     newdata <- merMod@frame
   }
@@ -132,15 +147,16 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     warning("   Prediction for NLMMs or GLMMs that are not mixed binomial regressions is not tested. Sigma set at 1.")
     sigmahat <- rep(1,n.sims)
   }
+
   newdata.modelMatrix <- buildModelMatrix(model= merMod, newdata = newdata)
 
   re.xb <- vector(getME(merMod, "n_rfacs"), mode = "list")
   names(re.xb) <- names(ngrps(merMod))
-    for(j in names(re.xb)){
+  for (j in names(re.xb)){
     reMeans <- as.matrix(ranef(merMod)[[j]])
     reMatrix <- attr(ranef(merMod, condVar = TRUE)[[j]], which = "postVar")
     # OK, let's knock out all the random effects we don't need
-    if(j %in% names(newdata)){ # get around if names do not line up because of nesting
+    if (j %in% names(newdata)){ # get around if names do not line up because of nesting
       obslvl <- unique(as.character(newdata[, j]))
       alllvl <- rownames(reMeans)
       keep <- intersect(obslvl, alllvl)
@@ -152,11 +168,11 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     # Add switch if no random groups are observed to avoid indexing errors,
     # we burn 1 sample of 1 group of all coefficients that will eventually
     # be multiplied by zero later on
-    if(length(keep) > 0 & !identical(keep, alllvl)){
+    if(length(keep) > 0 & !identical(keep, alllvl)) {
       reMeans <- reMeans[keep, , drop=FALSE]
       dimnames(reMatrix)[[3]] <- alllvl
       reMatrix <- reMatrix[, , keep, drop = FALSE]
-    } else if(length(keep) > 0 & identical(keep, alllvl)){
+    } else if (length(keep) > 0 & identical(keep, alllvl)){
       dimnames(reMatrix)[[3]] <- alllvl
     } else{
       reMeans <- reMeans[1, , drop=FALSE]
@@ -164,8 +180,9 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     }
 
     tmpList <- vector(length = nrow(reMeans), mode = "list")
-    for(k in 1:nrow(reMeans)){
+    for (k in 1:nrow(reMeans)){
       meanTmp <- reMeans[k, ]
+      names(meanTmp) <- NULL
       matrixTmp <- as.matrix(reMatrix[, , k])
       tmpList[[k]] <- as.matrix(mvtnorm::rmvnorm(n= n.sims,
                                                 mean=meanTmp,
@@ -173,16 +190,28 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     }
 
     REcoefs <- sapply(tmpList, identity, simplify="array"); rm(tmpList)
-    dimnames(REcoefs) <- list(NULL,
+    dimnames(REcoefs) <- list(1:n.sims,
                             attr(reMeans, "dimnames")[[2]],
                             attr(reMeans, "dimnames")[[1]])
-    if(j %in% names(newdata)){ # get around if names do not line up because of nesting
+    if (j %in% names(newdata)) { # get around if names do not line up because of nesting
       tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
       tmp <- tmp[, !duplicated(colnames(tmp))]
       keep <- names(tmp)[names(tmp) %in% dimnames(REcoefs)[[2]]]
+      if (length(keep) == 0) {
+        keep <- grep(dimnames(REcoefs)[[2]], names(tmp), value = TRUE)
+        if (length(keep) == 0) {
+          tmp <- cbind(model.frame(subbars(formula(merMod)), data = newdata),
+                       var = newdata[, j])
+          keep <- grep(dimnames(REcoefs)[[2]], names(tmp), value = TRUE)
+        }
+      }
       tmp <- tmp[, c(keep, "var"), drop = FALSE]
       tmp[, "var"] <- as.character(tmp[, "var"])
-      colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop=FALSE])
+      colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop = FALSE])
+      if (all(grepl(":", keep))) {
+        # Strip out the interaction after
+        keep <- unique(gsub("(.*):.*", "\\1", keep))
+      }
     } else {
       tmp <- as.data.frame(newdata.modelMatrix)
       tmp <- tmp[, !duplicated(colnames(tmp))] # deduplicate columns because
@@ -197,6 +226,8 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
       tmp[, "var"] <- as.character(tmp[, "var"])
       colnames(tmp)[which(names(tmp) == "var")] <- j
     }
+    #######################
+    ################
      tmp.pred <- function(data, coefs, group){
       new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[3]]])
        msg <- paste("     The following levels of ", group, " from newdata \n -- ", paste0(new.levels, collapse=", "),
@@ -206,7 +237,22 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
        }
        yhatTmp <- array(data = NA, dim = c(nrow(data), dim(coefs)[1]))
        colIdx <- ncol(data) - 1
+
+      colLL <- length(1:colIdx)
+      if(colLL > dim(coefs)[2]) {
+        # copy over
+        coefs_new <- array(NA, dim = c(dim(coefs)[1], colLL,
+                                       dim(coefs)[3]))
+        dimnames(coefs_new)[c(1, 3)] <- dimnames(coefs)[c(1, 3)]
+        dimnames(coefs_new)[[2]] <- rep(dimnames(coefs)[[2]], colLL)
+        for (k in 1:colLL) {
+          coefs_new[, k, 1:dim(coefs)[3]] <- coefs[, 1, 1:dim(coefs)[3]]
+        }
+        coefs <- coefs_new
+      }
+
       for(i in 1:nrow(data)){
+        # TODO - Fix issue 101 which trips up here
          lvl <- as.character(data[, group][i])
          if(!lvl %in% new.levels){
            yhatTmp[i, ] <- as.numeric(data[i, 1:colIdx]) %*% t(coefs[, 1:colIdx, lvl])
@@ -219,8 +265,11 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
        rm(data)
        return(yhatTmp)
      }
-     if(nrow(tmp) > 1000 | .parallel){
-       if(.parallel){
+    #########################
+    ####
+     if(nrow(tmp) > 1000 | .parallel) {
+       if (requireNamespace("foreach", quietly=TRUE)) {
+         if(.parallel){
          setup_parallel()
        }
        tmp2 <- split(tmp, (1:nrow(tmp) %/% 500)) #TODO: Find optimum splitting factor
@@ -232,6 +281,11 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                                                  coefs = REcoefs[, keep, , drop = FALSE],
                                                  group = j))
        rm(tmp2)
+       } else {
+         warning("foreach package is unavailable, parallel computing not available")
+         re.xb[[j]] <- tmp.pred(data = tmp, coefs = REcoefs[, keep, , drop = FALSE],
+                                group = j)
+       }
      } else{
        re.xb[[j]] <- tmp.pred(data = tmp, coefs = REcoefs[, keep, , drop = FALSE],
                               group = j)
@@ -254,6 +308,51 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   ##Calculate yhat as sum of the components (fixed plus all groupling factors)
   fe.tmp <- fixef(merMod)
   vcov.tmp <- as.matrix(vcov(merMod))
+
+  # Detect if an intercept is present
+  # TODO - is this reliable
+  if (is.na(names(attr(VarCorr(merMod)[[j]],"stddev")["(Intercept)"]))) {
+    fix.intercept.variance <- FALSE
+    message("No intercept detected, setting fix.intercept.variance to FALSE")
+  }
+  if (fix.intercept.variance) {
+    #Assuming all random effects include intercepts.
+    intercept.variance <- vcov.tmp[1,1]
+
+    groupsizes <- ngrps(merMod)
+    for(j in names(groupsizes)){ #for every group of random e
+
+      groupExtraPrecision <- 0
+      groupVar <- (attr(VarCorr(merMod)[[j]],"stddev")["(Intercept)"])^2
+      reMatrix <- attr(ranef(merMod, condVar = TRUE)[[j]], which = "postVar")
+      for (eff in 1:dim(reMatrix)[3]) {
+        term <- 1/(reMatrix[1,1,eff] + groupVar)
+        if (term > 0) {
+            groupExtraPrecision <- groupExtraPrecision + term
+        } else {
+            warning("fix.intercept.variance got negative precision; better turn it off.")
+        }
+      }
+      intercept.variance <- intercept.variance - 1/groupExtraPrecision
+    }
+
+
+    if (intercept.variance < 0) {
+        warning("fix.intercept.variance got negative variance; better turn it off.")
+    }
+    ratio <- intercept.variance/vcov.tmp[1,1]
+    prec.tmp <- solve(vcov.tmp)
+    prec.tmp[1,1] <- prec.tmp[1,1] / ratio
+    vcov.tmp[1,] <- vcov.tmp[1,] * ratio
+    vcov.tmp <- solve(prec.tmp, tol=1e-50)
+  }
+  if (!is.null(ignore.fixed.terms)) {
+      prec.tmp <- solve(vcov.tmp)
+      for (term in ignore.fixed.terms) {
+            prec.tmp[term,term] <- prec.tmp[term,term] * 1e15
+      }
+      vcov.tmp <- solve(prec.tmp, tol=1e-50)
+  }
   if(n.sims > 2000 | .parallel){
     if(.parallel){
       setup_parallel()
@@ -274,8 +373,9 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   }
   # Pad betaSim
   colnames(betaSim) <- names(fe.tmp)
+  rownames(betaSim) <- 1:n.sims
   newdata.modelMatrix <- buildModelMatrix(merMod, newdata = newdata, which = "fixed")
-  if(ncol(newdata.modelMatrix) > ncol(betaSim)){
+  if (ncol(newdata.modelMatrix) > ncol(betaSim)) {
     pad <- matrix(rep(0), nrow = nrow(betaSim),
                   ncol = ncol(newdata.modelMatrix) - ncol(betaSim))
     if(ncol(pad) > 0){
@@ -330,7 +430,12 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                            na.rm=TRUE))
   }
   if (predict.type == "probability") {
-    outs <- apply(outs, 2, merMod@resp$family$linkinv)
+    if(nrow(outs) == 1) {
+      outs <- t(apply(outs, 2, merMod@resp$family$linkinv))
+    } else {
+      outs <- apply(outs, 2, merMod@resp$family$linkinv)
+    }
+
   }
 
   ##############################

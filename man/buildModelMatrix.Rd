@@ -22,4 +22,3 @@ a function to create a model matrix with all predictor terms in
 both the group level and fixed effect level
 }
 \keyword{internal}
-

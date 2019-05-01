@@ -5,7 +5,8 @@
 \title{Calculate the weighted mean of fitted values for various levels of
 random effect terms.}
 \usage{
-REimpact(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3, ...)
+REimpact(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3,
+  ...)
 }
 \arguments{
 \item{merMod}{An object of class merMod}
@@ -66,19 +67,17 @@ recommended by Cochran (1977).
 }
 \examples{
 #For a one-level random intercept model
-require(lme4)
 m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-(m1.er <- REimpact(m1, newdata = sleepstudy[1, ], breaks = 2))
-
+m1.er <- REimpact(m1, newdata = sleepstudy[1, ], breaks = 2)
 #For a one-level random intercept model with multiple random terms
 m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #ranked by the random slope on Days
-(m2.er1 <- REimpact(m2,  newdata = sleepstudy[1, ],
-           groupFctr = "Subject", term="Days"))
+m2.er1 <- REimpact(m2,  newdata = sleepstudy[1, ],
+           groupFctr = "Subject", term="Days")
 #ranked by the random intercept
-(m2.er2 <- REimpact(m2, newdata = sleepstudy[1, ],
-             groupFctr = "Subject", term="int"))
-\dontrun{
+m2.er2 <- REimpact(m2, newdata = sleepstudy[1, ],
+             groupFctr = "Subject", term="int")
+\donttest{
 # You can also pass additional arguments to predictInterval through REimpact
 g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
 zed <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", n.sims = 50,
@@ -86,8 +85,8 @@ zed <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", n.sims = 50,
 zed2 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "s", n.sims = 50,
                  include.resid.var = TRUE)
 zed3 <- REimpact(g1, newdata = InstEval[9:12, ], groupFctr = "d", breaks = 5,
+                n.sims = 50, include.resid.var = TRUE)
 }
-
 }
 \references{
 Gatz, DF and Smith, L. The Standard Error of a Weighted Mean Concentration.
@@ -100,4 +99,3 @@ Cochran, WG. 1977. Sampling Techniques (3rd Edition). Wiley, New York.
 \seealso{
 \code{\link{expectedRank}}, \code{\link{predictInterval}}
 }
-

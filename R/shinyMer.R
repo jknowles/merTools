@@ -43,7 +43,6 @@
 #' @importFrom shiny downloadHandler
 #' @importFrom shiny strong
 #' @importFrom shiny runApp
-#' @importFrom DT dataTableOutput
 #' @export
 
 shinyMer <- function(merMod, simData = NULL, pos = 1) {

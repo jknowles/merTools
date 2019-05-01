@@ -4,7 +4,7 @@
 \alias{subBoot}
 \title{Bootstrap a subset of an lme4 model}
 \usage{
-subBoot(merMod, n = NULL, FUN, R = 100, seed = NULL)
+subBoot(merMod, n = NULL, FUN, R = 100, seed = NULL, warn = FALSE)
 }
 \arguments{
 \item{merMod}{a valid merMod object}
@@ -17,6 +17,9 @@ in the merMod object, by default will resample the entire model frame}
 \item{R}{the number of bootstrap replicates, default is 100}
 
 \item{seed}{numeric, optional argument to set seed for simulations}
+
+\item{warn}{logical, if TRUE, warnings from lmer will be issued, otherwise they will be suppressed
+default is FALSE}
 }
 \value{
 a data.frame of parameters extracted from each of the R replications.
@@ -30,9 +33,8 @@ This function allows users to estimate parameters of a
 large merMod object using bootstraps on a subset of the data.
 }
 \examples{
-\dontrun{
+\donttest{
 (fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))
 resultMatrix <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20)
 }
 }
-

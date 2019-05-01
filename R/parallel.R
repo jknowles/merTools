@@ -6,7 +6,7 @@
 setup_parallel <- function() {
   if (!requireNamespace("foreach", quietly = TRUE)) {
     # EXCLUDE COVERAGE START
-    stop("foreach package required for parallel plyr operation",
+    stop("foreach package required for parallel future operation",
          call. = FALSE)
     # EXCLUDE COVERAGE END
   }

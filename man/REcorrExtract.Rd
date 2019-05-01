@@ -15,4 +15,7 @@ a numeric vector of the correlations among the effects
 \description{
 Extract the correlations between the slopes and the intercepts from a model
 }
-
+\examples{
+fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+REcorrExtract(fm1)
+}

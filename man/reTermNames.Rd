@@ -17,4 +17,3 @@ term and the effect type
 Get names of random effect terms in a model object
 }
 \keyword{internal}
-

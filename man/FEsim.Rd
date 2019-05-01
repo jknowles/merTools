@@ -39,4 +39,3 @@ m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 fe2 <- FEsim(m2, 25)
 head(fe2)
 }
-

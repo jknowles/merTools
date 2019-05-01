@@ -16,9 +16,15 @@ server = function(input, output){
                           n.sims = input$n.sims, stat = input$stat), data)
   })
 
-  output$dt <- renderDataTable({
-    predInput()
-  })
+  if ("DT" %in% rownames(installed.packages())) {
+    output$dt <- renderDataTable({
+      predInput()
+    })
+  } else {
+    output$dt <- renderTable({
+      predInput()
+    })
+  }
 
   output$downloadData <- shiny::downloadHandler(
     filename = "predictIntervalResults.csv",
@@ -110,12 +116,12 @@ server = function(input, output){
       newvals <- seq(min(valLookup), max(valLookup), length.out = 20)
     } else{
       if(length(valLookup) < 50){
-        newvals <- valLookup
+        newvals <- newvals
       } else{
-        newvals <- sample(valLookup, 50)
+        newvals <- sample(newvals, 50)
       }
     }
-    plotdf <- wiggle(reEffInput(), input$fixef, values = newvals)
+    plotdf <- wiggle(reEffInput(), input$fixef, values = list(newvals))
     plotdf <- cbind(plotdf, predictInterval(merMod, newdata=plotdf,
                                             type = input$predMetric,
                                             level = input$alpha/100,

@@ -33,4 +33,3 @@ Each character and factor variable in the data.frame is assigned to the
 modal category and each numeric variable is collapsed to the mean. Currently if
 mode is a tie, returns a "." Uses the collapseFrame function.
 }
-

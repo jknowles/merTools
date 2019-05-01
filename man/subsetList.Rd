@@ -17,4 +17,3 @@ a data frame with values that match the conditions in the list
 \description{
 Split a data.frame by elements in a list
 }
-

@@ -1,8 +1,18 @@
 ---
 output:
   md_document:
-    variant: markdown_github
+    variant: gfm
 ---
+
+
+[![Travis-CI Build Status](https://travis-ci.org/jknowles/merTools.png?branch=master)](https://travis-ci.org/jknowles/merTools)
+[![Coverage Status](https://coveralls.io/repos/jknowles/merTools/badge.svg?branch=master)](https://coveralls.io/r/jknowles/merTools?branch=master)
+[![Github Issues](http://githubbadges.herokuapp.com/jknowles/merTools/issues.svg)](https://github.com/jknowles/merTools/issues)
+[![Pending Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?style=flat)](https://github.com/jknowles/merTools/pulls)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/merTools)](https://cran.r-project.org/package=merTools)
+[![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](https://cran.r-project.org/package=merTools)
+[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/merTools)](https://cran.r-project.org/package=merTools)
+[![Research software impact](http://depsy.org/api/package/cran/merTools/badge.svg)](http://depsy.org/package/r/merTools)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -10,7 +20,7 @@ output:
 knitr::opts_chunk$set(
   collapse = TRUE, echo = TRUE,
   comment = "#>",
-  fig.path = "tools/readmeplot/README-"
+  fig.path = "man/figures/README_"
 )
 ```
 
@@ -19,13 +29,6 @@ knitr::opts_chunk$set(
 A package for getting the most of our multilevel models in R
 
 by Jared E. Knowles and Carl Frederick
-
-[![Travis-CI Build Status](https://travis-ci.org/jknowles/merTools.png?branch=master)](https://travis-ci.org/jknowles/merTools)
-[![Coverage Status](https://coveralls.io/repos/jknowles/merTools/badge.svg?branch=master)](https://coveralls.io/r/jknowles/merTools?branch=master)
-[![Github Issues](http://githubbadges.herokuapp.com/jknowles/merTools/issues.svg)](https://github.com/jknowles/merTools/issues)
-[![Pending Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?style=flat)](https://github.com/jknowles/merTools/pulls)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/merTools)](https://cran.r-project.org/package=merTools)
-[![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](https://cran.r-project.org/package=merTools)
 
 Working with generalized linear mixed models (GLMM) and linear mixed models (LMM) 
 has become increasingly easy with advances in the `lme4` package. 
@@ -48,41 +51,36 @@ install.packages("merTools")
 
 ## Recent Updates
 
-### merTools 0.3.0
+### merTools 0.4.1
 
-- Improve handling of formulas. If the original `merMod` has functions specified 
-in the formula, the `draw` and `wiggle` functions will check for this and attempt 
-to respect these variable transformations. Where this is not possible a warning 
-will be issued. Most common transformations are respected as long as the the 
-original variable is passed untransformed to the model. 
-- Change the calculations of the residual variance. Previously residual variance 
-was used to inflate both the variance around the fixed parameters and around the 
-predicted values themselves. This was incorrect and resulted in overly conservative 
-estimates. Now the residual variance is appropriately only used around the 
-final predictions
-- New option for `predictInterval` that allows the user to return the full 
-interval, the fixed component, the random component, or the fixed and each random 
-component separately for each observation
-- Fixed a bug with slope+intercept random terms that caused a miscalculation of 
-the random component
-- Add comparison to `rstanarm` to the Vignette
-- Make `expectedRank` output more `tidy` like and allow function to calculate 
-expected rank for all terms at once
-  - Note, this breaks the API by changing the names of the columns in the output 
-  of this function
-- Remove tests that test for timing to avoid issues with R-devel JIT compiler
-- Remove `plyr` and replace with `dplyr`
-- Fix issue #62 `varList` will now throw an error if `==` is used instead of `=`
-- Fix issue #54 `predictInterval` did not included random effects in calculations
-  when `newdata` had more than 1000 rows and/or user specified `parallel=TRUE`. 
-  Note: fix was to disable the `.paropts` option for `predictInterval` ... user
-  can still specify for *temporary* backward compatibility but this should be
-  either removed or fixed in the permanent solution.
-- Fix issue #53 about problems with `predictInterval` when only specific levels
-  of a grouping factor are in `newdata` with the colon specification of 
-  interactions
-- Fix issue #52 ICC wrong calculations ... we just needed to square the standard
-  deviations that we pulled
+#### New Features
+- Standard errors reported by `merModList` functions now apply the Rubin 
+correction for multiple imputation
+
+#### Bug fixes
+- Contribution by Alex Whitworth (@alexWhitworth) adding error checking to plotting
+functions
+
+### merTools 0.4.0
+
+#### New Features
+- Added vignette on using multilevel models with multiply imputed data
+- Added `fixef` and `ranef` generics for `merModList` objects
+- Added `fastdisp` generic for `merModList`
+- Added `summary` generic for `merModList`
+- Added `print` generic for `merModList`
+- Documented all generics for `merModList` including examples and a new 
+imputation vignette
+- Added `modelInfo` generic for `merMod` objects that provides simple summary 
+stats about a whole model
+
+#### Bug Fixes
+- Fix bug that returned NaN for `std.error` of a multiply imputed `merModList` 
+when calling `modelRandEffStats`
+- Fixed bug in `REimpact` where some column names in `newdata` would prevent the 
+prediction intervals from being computed correctly. Users will now be warned.
+- Fixed bug in `wiggle` where documentation incorrectly stated the arguments to 
+the function and the documentation did not describe function correctly
 
 See [NEWS.md](https://github.com/jknowles/merTools/blob/master/NEWS.md) for 
 more details. 
@@ -94,7 +92,6 @@ Shiny application which launches a number of the metrics here to aide in explori
 the model. To do this:
 
 ```{r, echo = TRUE, eval=FALSE}
-devtools::install_github("jknowles/merTools")
 library(merTools)
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 shinyMer(m1, simData = InstEval[1:100, ]) # just try the first 100 rows of data
@@ -102,11 +99,10 @@ shinyMer(m1, simData = InstEval[1:100, ]) # just try the first 100 rows of data
 
 ```{r, include=FALSE}
 library(merTools)
-library(ggplot2)
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 ```
 
-![](tools/readmeplot/README-predPanel.png)
+![](man/figures/README-predPanel.png)
 
 On the first tab, the function presents the prediction intervals for the data 
 selected by user which are calculated using the `predictInterval` function 
@@ -117,7 +113,7 @@ predictions for each observation. This allows prediction intervals to be generat
 from very large models where the use of `bootMer` would not be feasible 
 computationally. 
 
-![](tools/readmeplot/README-effPanel.png)
+![](man/figures/README-effPanel.png)
 
 On the next tab the distribution of the fixed effect and group-level effects 
 is depicted on confidence interval plots. These are useful for diagnostics and 
@@ -125,7 +121,7 @@ provide a way to inspect the relative magnitudes of various parameters. This
 tab makes use of four related functions in `merTools`: `FEsim`, `plotFEsim`, 
 `REsim` and `plotREsim` which are available to be used on their own as well. 
 
-![](tools/readmeplot/README-substPanel.png)
+![](man/figures/README-substPanel.png)
 
 On the third tab are some convenient ways to show the influence or magnitude of 
 effects by leveraging the power of `predictInterval`. For each case, up to 12, 
@@ -175,6 +171,7 @@ predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9,
 This can lead to some useful plotting:
 
 ```{r}
+library(ggplot2)
 plotdf <- predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 2000, 
                           level = 0.9, stat = 'median', which = "all", 
                           include.resid.var = FALSE)
@@ -316,9 +313,12 @@ and `Anger` subsequently.
 ```{r substImpactPrepData}
 # Select the average case
 newData <- draw(fmVA, type = "average")
-newData <- wiggle(newData, var = "btype", values = unique(VerbAgg$btype))
-newData <- wiggle(newData, var = "situ", values = unique(VerbAgg$situ))
-newData <- wiggle(newData, var = "Anger", values = unique(VerbAgg$Anger))
+newData <- wiggle(newData, varlist = "btype", 
+                  valueslist = list(unique(VerbAgg$btype)))
+newData <- wiggle(newData, var = "situ", 
+                  valueslist = list(unique(VerbAgg$situ)))
+newData <- wiggle(newData, var = "Anger", 
+                  valueslist = list(unique(VerbAgg$Anger)))
 head(newData, 10)
 ```
 

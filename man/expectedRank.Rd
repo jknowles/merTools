@@ -71,21 +71,18 @@ coefficients for the same term, e.g.
 }
 \examples{
 #For a one-level random intercept model
-require(lme4)
 m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 (m1.er <- expectedRank(m1))
 
 #For a one-level random intercept model with multiple random terms
-require(lme4)
 m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #ranked by the random slope on Days
 (m2.er1 <- expectedRank(m2, term="Days"))
 #ranked by the random intercept
 (m2.er2 <- expectedRank(m2, term="int"))
 
-\dontrun{
+\donttest{
 #For a two-level model with random intercepts
-require(lme4)
 m3 <- lmer(y ~ service * dept + (1|s) + (1|d), InstEval)
 #Ranked by the random intercept on 's'
 (m3.er1 <- expectedRank(m3, groupFctr="s", term="Intercept"))
@@ -102,4 +99,3 @@ ranking hospitals based on outcome: results from The Netherlands Stroke Survey.
 \emph{QJM: An International Journal of Medicine}. 2010;103(2):99-108.
 doi:10.1093/qjmed/hcp169
 }
-

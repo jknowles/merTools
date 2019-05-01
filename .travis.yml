@@ -1,47 +1,29 @@
-language: r
-r:
-    - devel
-    - release
-sudo: false
-cache: packages
+# Run Travis CI for R using https://eddelbuettel.github.io/r-travis/
 
-env:
-  matrix:
-    - NOT_CRAN="true"
-    - NOT_CRAN="false"
+language: c
+sudo: required
+dist: trusty
 
+before_install:
+  - curl -OLs https://eddelbuettel.github.io/r-travis/run.sh && chmod 0755 run.sh
+  - ./run.sh bootstrap
 
-addons:
-  apt:
-    packages:
-    - texlive-latex-extra
+install:
+  - ./run.sh install_aptget r-cran-knitr r-cran-rmarkdown r-cran-lme4 r-cran-arm
+  - ./run.sh install_aptget r-cran-testthat r-cran-future.apply r-cran-broom
+  - ./run.sh install_aptget r-cran-rstanarm r-cran-amelia r-cran-dt
+  - ./run.sh install_aptget r-cran-dplyr r-cran-mvtnorm r-cran-foreach
+  - ./run.sh install_aptget r-cran-shiny r-cran-abind r-cran-ggplot2
+  - ./run.sh install_r blme
 
-r_binary_packages:
-  - Rcpp
-  - lme4
-  - testthat
-  - knitr
-  - rmarkdown
-  - mvtnorm
-  - lattice
-  - shiny
-  - abind
-  - ggplot2
-  - dplyr
-  - data.table
-  - magrittr
-  - doParallel
-  - covr
+script:
+  - ./run.sh run_tests
 
-script :
- - travis_wait 30 R CMD build --no-build-vignettes --no-manual
- - travis_wait 30 R CMD check merTools_0.2.2.tar.gz --no-build-vignettes --no-manual
+after_failure:
+  - ./run.sh dump_logs
 
 after_success:
   - travis_wait Rscript -e 'library(covr);coveralls()'
-
-after_failure:
-  - cat merTools.Rcheck/00*
 
 notifications:
   email:
@@ -50,3 +32,4 @@ notifications:
 
 branches:
   only: master
+

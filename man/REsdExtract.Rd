@@ -15,4 +15,7 @@ a numeric vector for standard deviations of the random effects
 \description{
 Extract the standard deviation of the random effects from a merMod object
 }
-
+\examples{
+fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+REsdExtract(fm1)
+}

@@ -13,4 +13,3 @@ reTermCount(model)
 Count the number of random effect terms
 }
 \keyword{internal}
-

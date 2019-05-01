@@ -72,21 +72,18 @@
 #'
 #' @examples
 #' #For a one-level random intercept model
-#' require(lme4)
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 #' (m1.er <- expectedRank(m1))
 #'
 #' #For a one-level random intercept model with multiple random terms
-#' require(lme4)
 #' m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #' #ranked by the random slope on Days
 #' (m2.er1 <- expectedRank(m2, term="Days"))
 #' #ranked by the random intercept
 #' (m2.er2 <- expectedRank(m2, term="int"))
 #'
-#' \dontrun{
+#' \donttest{
 #' #For a two-level model with random intercepts
-#' require(lme4)
 #' m3 <- lmer(y ~ service * dept + (1|s) + (1|d), InstEval)
 #' #Ranked by the random intercept on 's'
 #' (m3.er1 <- expectedRank(m3, groupFctr="s", term="Intercept"))
@@ -97,8 +94,6 @@ expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
   n.rfx <- lme4::getME(merMod, "k")
   n.rfac <- lme4::getME(merMod, "n_rfac")
   rfx <- lme4::ranef(merMod, condVar=TRUE)
-  out <- data.frame(groupFctr = NA, term = NA, estimate = NA,
-                      std.error = NA, ER = NA, pctER = NA)
 
   if(!is.null(groupFctr)){
     groupFctr <- groupFctr
@@ -119,7 +114,7 @@ expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
         termIdx <- names(rfx[[i]])
       }
       for(j in termIdx){
-        if (grepl("[iI]nt[a-z]*", j) && is.na(match(j, names(rfx[[i]])))) {
+        if (all(grepl("[iI]nt[a-z]*", j)) & is.na(match(j, names(rfx[[i]])))) {
            j <- "(Intercept)"
         }
 
@@ -146,6 +141,6 @@ expectedRank <- function(merMod, groupFctr=NULL, term=NULL) {
 
   out <- out[-1, ]
   # Avoid parentheses in parameter names
-  out$term <- gsub("(Intercept)", "_Intercept", out$term, fixed = TRUE)
+  out$term <- gsub("(Intercept)", "Intercept", out$term, fixed = TRUE)
   return(out)
 }

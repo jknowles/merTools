@@ -5,11 +5,11 @@
 \alias{draw.merMod}
 \title{Draw a single observation out of an object matching some criteria}
 \usage{
-draw(object, type = c("random", "average"), varList = NULL, seed = NULL,
-  ...)
-
-\method{draw}{merMod}(object, type = c("random", "average"), varList = NULL,
+draw(object, type = c("random", "average"), varList = NULL,
   seed = NULL, ...)
+
+\method{draw}{merMod}(object, type = c("random", "average"),
+  varList = NULL, seed = NULL, ...)
 }
 \arguments{
 \item{object}{the object to draw from}
@@ -45,4 +45,3 @@ draw(fm1, type = "average")
 draw(fm1, type = "average", varList = list("Subject" = "308"))
 
 }
-

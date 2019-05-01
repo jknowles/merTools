@@ -18,4 +18,3 @@ a formula
 Random Effects formula only
 }
 \keyword{internal}
-

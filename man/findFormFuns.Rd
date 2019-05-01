@@ -26,4 +26,3 @@ calls. For example, in the old behavior, if the formula contained a square
 term specified as \code{I(x^2)}, we were returning the mean of x{^2} not the
 square of mean(x).
 }
-

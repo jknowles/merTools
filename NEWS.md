@@ -1,5 +1,73 @@
 # NEWS
 
+## merTools 0.5.0
+
+### New Features
+
+- `subBoot` now works with `glmerMod` objects as well
+- `reMargins` a new function that allows the user to marginalize the prediction over breaks in the 
+distribution of random effect distributions, see `?reMargins` and the new `reMargins` vignette (closes #73)
+
+### Bug fixes
+
+- Fixed an issue where known convergence errors were issuing warnings and causing the test suite 
+to not work
+- Fixed an issue where models with a random slope, no intercept, and no fixed term were unable 
+to be predicted (#101)
+- Fixed an issue with shinyMer not working with substantive fixed effects (#93)
+
+
+## merTools 0.4.2
+
+### New Features
+
+- Parallel fitting of `merModLists` is now supported using the `future.apply` 
+package and the `future_lapply` functions, optionally
+- Reduced package installation surface by eliminating unnecessary packages 
+in the `Suggests` field
+
+### Bug fixes
+
+- Fixed a bug (#94) where `predictInterval()` would return a data.frame of the 
+wrong dimensions when predicting a single row of observations for a `glm`
+- Fixed a bug (#96) related to `rstanarm` dependencies in the package vignette
+- Switched from `dontrun` to `donttest` for long-running examples (CRAN compliance)
+- Fixed and made more clear the generics applying to `merModList` objects (#92)
+
+## merTools 0.4.1
+
+### New Features
+
+- Standard errors reported by `merModList` functions now apply the Rubin 
+correction for multiple imputation
+
+### Bug fixes
+- Contribution by Alex Whitworth (@alexWhitworth) adding error checking to plotting
+functions
+- The vignettes have been shortened and unit tests reorganized to facilitate 
+Travis-CI builds and reduce CRAN build burden
+
+## merTools 0.4.0
+
+### New Features
+- Added vignette on using multilevel models with multiply imputed data
+- Added `fixef` and `ranef` generics for `merModList` objects
+- Added `fastdisp` generic for `merModList`
+- Added `summary` generic for `merModList`
+- Added `print` generic for `merModList`
+- Documented all generics for `merModList` including examples and a new 
+imputation vignette
+- Added `modelInfo` generic for `merMod` objects that provides simple summary 
+stats about a whole model
+
+### Bug Fixes
+- Fix bug that returned NaN for `std.error` of a multiply imputed `merModList` 
+when calling `modelRandEffStats`
+- Fixed bug in `REimpact` where some column names in `newdata` would prevent the 
+prediction intervals from being computed correctly. Users will now be warned.
+- Fixed bug in `wiggle` where documentation incorrectly stated the arguments to 
+the function and the documentation did not describe function correctly
+
 ## merTools 0.3.1
 
 - Update the `readme.rmd` to package graphics with the R package, per CRAN
@@ -83,7 +151,7 @@ need
 
 ### Future changes
 - For the next release (1.0) we are considering a permanent switch to 
-C++ RMVN sampler courtesy of Giri Gopalan 's excellent [FastGP](http://www.github.com/ggopalan/FastGP) package
+C++ RMVN sampler courtesy of Giri Gopalan 's excellent FastGP
 
 
 

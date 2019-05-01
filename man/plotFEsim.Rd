@@ -35,8 +35,6 @@ a ggplot2 plot of the coefficient effects
 Plot the simulated fixed effects on a ggplot2 chart
 }
 \examples{
- require(ggplot2); require(lme4);
  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
  (p1 <- plotFEsim(FEsim(fm1)))
 }
-

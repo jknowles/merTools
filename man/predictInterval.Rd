@@ -4,10 +4,12 @@
 \alias{predictInterval}
 \title{Predict from merMod objects with a prediction interval}
 \usage{
-predictInterval(merMod, newdata, which = c("full", "fixed", "random", "all"),
-  level = 0.8, n.sims = 1000, stat = c("median", "mean"),
-  type = c("linear.prediction", "probability"), include.resid.var = TRUE,
-  returnSims = FALSE, seed = NULL, .parallel = FALSE, .paropts = NULL)
+predictInterval(merMod, newdata, which = c("full", "fixed", "random",
+  "all"), level = 0.8, n.sims = 1000, stat = c("median", "mean"),
+  type = c("linear.prediction", "probability"),
+  include.resid.var = TRUE, returnSims = FALSE, seed = NULL,
+  .parallel = FALSE, .paropts = NULL, fix.intercept.variance = FALSE,
+  ignore.fixed.terms = NULL)
 }
 \arguments{
 \item{merMod}{a merMod object from lme4}
@@ -41,15 +43,27 @@ when parallel computation is enabled. This is important if (for example) your
 code relies on external data or packages: use the .export and .packages arguments
  to supply them so that all cluster nodes have the correct environment set up
  for computing.}
+
+\item{fix.intercept.variance}{logical; should the variance of the intercept
+term be adjusted downwards to roughly correct for its covariance with the
+random effects, as if all the random effects are intercept effects?}
+
+\item{ignore.fixed.terms}{a numeric or string vector of indexes or names of
+fixed effects which should be considered as fully known (zero variance). This
+can result in under-conservative intervals, but for models with random effects
+nested inside fixed effects, holding the fixed effects constant intervals may
+give intervals with closer to nominal coverage than the over-conservative
+intervals without this option, which ignore negative correlation between the
+outer (fixed) and inner (random) coefficients.}
 }
 \value{
 a data.frame with three columns:
 \describe{
     \item{\code{fit}}{The center of the distribution of predicted values as defined by
     the \code{stat} parameter.}
-    \item{\code{lwr}}{The lower confidence interval bound corresponding to the quantile cut
+    \item{\code{lwr}}{The lower prediction interval bound corresponding to the quantile cut
     defined in \code{level}.}
-    \item{\code{upr}}{The upper confidence interval bound corresponding to the quantile cut
+    \item{\code{upr}}{The upper prediction interval bound corresponding to the quantile cut
     defined in \code{level}.}
   }
 If returnSims = TRUE, then the individual simulations are attached to this
@@ -61,11 +75,11 @@ predictions from multi-level models fit with \code{lme4}. By drawing a sampling
 distribution for the random and the fixed effects and then estimating the fitted
 value across that distribution, it is possible to generate a prediction interval
 for fitted values that includes all variation in the model except for variation
-in the covariance paramters, theta. This is a much faster alternative than
+in the covariance parameters, theta. This is a much faster alternative than
 bootstrapping for models fit to medium to large datasets.
 }
 \details{
-To generate a prediction inteval, the function first computes a simulated
+To generate a prediction interval, the function first computes a simulated
 distribution of all of the parameters in the model. For the random, or grouping,
 effects, this is done by sampling from a multivariate normal distribution which
 is defined by the BLUP estimate provided by \code{ranef} and the associated
@@ -106,4 +120,3 @@ d1$y <- d1$incidence / d1$size
  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "probability")
  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "linear.prediction")
 }
-
