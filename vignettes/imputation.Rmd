@@ -94,7 +94,6 @@ summary(impute.out)
 
 ```{r boot, message=FALSE, eval = amelia_uneval}
 # Amelia is not available so let's just boostrap resample our data
-
 impute.out <- vector(mode = "list", 5)
 
 for (i in 1:5) {
@@ -208,8 +207,6 @@ modelFixedEff(modList)
 ```{r}
 ranef(modList)
 ```
-
-
 
 
 ## Cautions and Notes

@@ -116,12 +116,12 @@ server = function(input, output){
       newvals <- seq(min(valLookup), max(valLookup), length.out = 20)
     } else{
       if(length(valLookup) < 50){
-        newvals <- valLookup
+        newvals <- newvals
       } else{
-        newvals <- sample(valLookup, 50)
+        newvals <- sample(newvals, 50)
       }
     }
-    plotdf <- wiggle(reEffInput(), input$fixef, values = newvals)
+    plotdf <- wiggle(reEffInput(), input$fixef, values = list(newvals))
     plotdf <- cbind(plotdf, predictInterval(merMod, newdata=plotdf,
                                             type = input$predMetric,
                                             level = input$alpha/100,

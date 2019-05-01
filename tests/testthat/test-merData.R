@@ -41,7 +41,8 @@ context("Sanitize Names")
 
 test_that("Sanitize names renames variables in data.frame", {
   badMod <- lmer(distance ~ factor(Sex) + (0 + age + nsex|Subject),
-                 data=Orthodont)
+                 data=Orthodont, control =
+                   lmerControl(check.conv.grad = .makeCC("warning", tol= 8e-3)))
   expect_false(identical(names(badMod@frame),
                          names(merTools:::sanitizeNames(badMod@frame))))
   expect_is(merTools:::sanitizeNames(badMod@frame), "data.frame")
@@ -321,13 +322,13 @@ test_that("Values are placed correctly -- single_wiggle", {
 
 test_that("we can use wiggle for multiple variables", {
   data1 <- grouseticks[5:9, ]
-  data1a <- wiggle(data1, var = c("BROOD", "YEAR"), 
+  data1a <- wiggle(data1, var = c("BROOD", "YEAR"),
                    list(c("606", "602", "537"), c("96", "97")))
   data3 <- grouseticks[12:14, ]
   data3a <- wiggle(data3, var = c("BROOD", "YEAR"), list(c("606"), c("96", "97")))
   data4 <- Orthodont[15, ]
   data4a <- wiggle(data4, var = c("age", "Sex"), list(c(10, 11, 12), c("Male", "Female")))
-  
+
   # tests 1 -- row and columns
   expect_equal(nrow(data1a), nrow(data1) * 3  * 2)
   expect_equal(nrow(data3a), nrow(data3) * 1  * 2)
@@ -335,18 +336,18 @@ test_that("we can use wiggle for multiple variables", {
   expect_equal(ncol(data1a), ncol(data1))
   expect_equal(ncol(data3a), ncol(data3))
   expect_equal(ncol(data4a), ncol(data4))
-  
+
   # tests 2 -- values
   expect_false(any(unique(data1$BROOD) %in% unique(data1a$BROOD)))
   expect_false(any(unique(data1$YEAR) %in% unique(data1a$YEAR)))
   expect_true(all.equal(sort(as.character(unique(data1a$BROOD))), c("537", "602", "606")))
   expect_true(all.equal(sort(as.character(unique(data1a$YEAR))), c("96", "97")))
-  
+
   expect_false(any(unique(data3$BROOD) %in% unique(data3a$BROOD)))
   expect_false(any(unique(data3$YEAR) %in% unique(data3a$YEAR)))
   expect_true(all.equal(sort(as.character(unique(data3a$BROOD))), "606"))
   expect_true(all.equal(sort(as.character(unique(data3a$YEAR))), c("96", "97")))
-  
+
   expect_true(all(unique(data4a$age) %in% 10:12))
   expect_true(all(unique(data4a$Sex) %in% (c("Female", "Male"))))
   expect_true(all.equal(sort(unique(data4a$age)), 10:12))

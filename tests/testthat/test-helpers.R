@@ -1,4 +1,5 @@
 # Test helper functions
+set.seed(51315)
 # Trimming data frame----
 context("Trimming data frame")
 test_that("Trimming results in correct size", {
@@ -95,3 +96,24 @@ test_that("Formula works for interactions", {
   expect_identical(merTools:::formulaBuild(fm), as.formula("z ~ a * b * c + x + I(x^2)"))
 })
 
+
+test_that("Build model matrix produces matrices of the right size", {
+  d <- expand.grid(fac1 = LETTERS[1:5],
+                   grp = letters[11:20],
+                   obs = 1:50)
+  d$y <- simulate(~fac1 + (1 | grp), family = binomial,
+                  newdata = d,
+                  newparams = list( beta = c(2,-1,3,-2,1.2),
+                                    theta = c(.33)),
+                  seed =634)[[1]]
+  subD <- d[sample(row.names(d), 1200), ]
+
+  g1 <- glmer(y~fac1+(1|grp), data=subD, family = 'binomial')
+  d$fitted <- predict(g1, d)
+
+  mm <- merTools:::buildModelMatrix(g1, newdata = d, which = "full")
+  expect_is(mm, "matrix")
+  expect_equal(dim(mm), c(2500, 15))
+
+}
+)

@@ -1,5 +1,5 @@
 
-set.seed(101)
+set.seed(51315)
 
 #Prediction intervals cover for simulated problems----
 context("Prediction intervals cover for simulated problems")
@@ -751,4 +751,50 @@ test_that("Nested effects can work", {
   expect_equal(mean(predInt1[,3] - predInt2[,3]), 0, tol = sd(predInt1[,3])/20)
 })
 
+context("Interactions without intercepts")
+
+sleepstudy$Test <- rep(sample(c(TRUE, FALSE), length(unique(sleepstudy$Subject)),
+                              replace = TRUE), each = 10)
+m1 <- lmer(Reaction ~ Days:Test + (0 + Days | Subject), data = sleepstudy)
+
+sleepstudy$cars <- sleepstudy$Days*3
+m2 <- lmer(Reaction ~ cars:Test + (0 + Days | Subject), data = sleepstudy)
+m3 <- lmer(Reaction ~ cars:Test + (1 | Subject), data = sleepstudy)
+m4 <- lmer(Reaction ~ cars:Test + (0 + cars | Subject), data = sleepstudy)
+
+test_that("Models with cross-level interaction and no random intercept work", {
+  preds1 <- predictInterval(m1)
+  expect_equal(nrow(preds1), 180)
+  expect_equal(ncol(preds1), 3)
+  expect_message(predictInterval(m1))
+  preds1 <- predictInterval(m1, newdata = sleepstudy[1:10, ],
+                            level = 0.9, n.sims = 500, include.resid.var = FALSE,
+                            fix.intercept.variance = TRUE)
+  expect_equal(nrow(preds1), 10)
+  expect_equal(ncol(preds1), 3)
+  preds1 <- predictInterval(m1, newdata = sleepstudy[1:10, ],
+                            level = 0.9, n.sims = 500, include.resid.var = FALSE,
+                            ignore.fixed.terms = TRUE)
+  expect_equal(nrow(preds1), 10)
+  expect_equal(ncol(preds1), 3)
+
+  preds2 <- predictInterval(m1, newdata = sleepstudy[1:10, ],
+                            level = 0.9, n.sims = 500, include.resid.var = FALSE,
+                            ignore.fixed.terms = FALSE)
+  expect_equal(nrow(preds2), 10)
+  expect_equal(ncol(preds2), 3)
+  expect_false(any(preds1$fit == preds2$fit))
+  rm(preds1, preds2)
+  preds1 <- predictInterval(m2)
+  expect_equal(nrow(preds1), 180)
+  expect_equal(ncol(preds1), 3)
+  #
+  preds1 <- predictInterval(m3)
+  expect_equal(nrow(preds1), 180)
+  expect_equal(ncol(preds1), 3)
+  #
+  preds1 <- predictInterval(m4)
+  expect_equal(nrow(preds1), 180)
+  expect_equal(ncol(preds1), 3)
+})
 

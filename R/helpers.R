@@ -144,21 +144,23 @@ safeDeparse <- function(x, collapse=" ") paste(deparse(x, 500L), collapse=collap
 buildModelMatrix <- function(model, newdata, which = "full"){
   X <- getME(model, "X")
   X.col.dropped <- attr(X, "col.dropped")
-  ## modified from predict.glm ...
   if (is.null(newdata)) {
     newdata <- model@frame
   }
   RHS <- formula(substitute(~R,
-                    list(R= RHSForm(formula(model,fixed.only=TRUE)))))
+                    list(R = RHSForm(formula(model, fixed.only=TRUE)))))
   Terms <- terms(model,fixed.only=TRUE)
-  mf <- model.frame(model, fixed.only=TRUE)
-  isFac <- vapply(mf, is.factor, FUN.VALUE=TRUE)
+  mf <- model.frame(model, fixed.only = FALSE)
+  isFac <- vapply(mf, is.factor, FUN.VALUE = TRUE)
   isFac[attr(Terms,"response")] <- FALSE
   orig_levs <- if (length(isFac)==0) NULL else lapply(mf[isFac],levels)
-  mfnew <- model.frame(delete.response(Terms),
+  # Suppress warnings about non-factors classified as factors
+  # These are false alarms related to grouping terms
+  mfnew <- suppressWarnings(model.frame(delete.response(Terms),
                          newdata,
                          na.action="na.pass",
                          xlev=orig_levs)
+  )
   X <- model.matrix(RHS, data=mfnew,
                       contrasts.arg=attr(X,"contrasts"))
   offset <- 0 # rep(0, nrow(X))
@@ -168,12 +170,14 @@ buildModelMatrix <- function(model, newdata, which = "full"){
       offset <- offset + eval(attr(tt,"variables")[[i + 1]], newdata)
   }
   fit.na.action <- attr(mfnew,"na.action")
-  if(is.numeric(X.col.dropped) && length(X.col.dropped) > 0)
+  if(is.numeric(X.col.dropped) && length(X.col.dropped) > 0) {
     X <- X[, -X.col.dropped, drop=FALSE]
+  }
+
   re.form <- reOnly(formula(model)) # RE formula only
   newRE <- mkNewReTrms(object = model,
                          newdata = newdata, re.form, na.action="na.pass",
-                         allow.new.levels=TRUE)
+                         allow.new.levels = TRUE)
   reMat <- t(as.matrix(newRE$Zt))
   reMat <- as.matrix(reMat)
   colnames(reMat) <- rownames(newRE$Zt)
@@ -261,9 +265,11 @@ mkNewReTrms <- function(object, newdata, re.form=NULL, na.action=na.pass,
       newdata <- newdata[-fit.na.action,]
     }
     ## note: mkReTrms automatically *drops* unused levels
+    # rfd = model frame
     ReTrms <- mkReTrms(findbars(re.form[[2]]), rfd)
     ## update Lambdat (ugh, better way to do this?)
-    ReTrms <- within(ReTrms,Lambdat@x <- unname(getME(object,"theta")[Lind]))
+    ReTrms <- within(ReTrms, Lambdat@x <- unname(getME(object,"theta")[Lind]))
+    #
     if (!allow.new.levels && any(vapply(ReTrms$flist, anyNA, NA)))
       stop("NAs are not allowed in prediction data",
            " for grouping variables unless allow.new.levels is TRUE")
