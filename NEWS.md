@@ -1,10 +1,12 @@
 # NEWS
 
-## merTools 0.4.3
+## merTools 0.5.0
 
 ### New Features
 
 - `subBoot` now works with `glmerMod` objects as well
+- `reMargins` a new function that allows the user to marginalize the prediction over breaks in the 
+distribution of random effect distributions, see `?reMargins` and the new `reMargins` vignette (closes #73)
 
 ### Bug fixes
 
@@ -12,6 +14,7 @@
 to not work
 - Fixed an issue where models with a random slope, no intercept, and no fixed term were unable 
 to be predicted (#101)
+- Fixed an issue with shinyMer not working with substantive fixed effects (#93)
 
 
 ## merTools 0.4.2
