@@ -23,23 +23,40 @@ knitr::opts_chunk$set(
 
 One of the most common questions about multilevel models is how much influence grouping terms have 
 on the outcome. One way to explore this is to simulate the predicted values of an observation 
-across the distribution of random effects for a specific grouping variable and term. 
+across the distribution of random effects for a specific grouping variable and term. This can 
+be described as "marginalizing" predictions over the distribution of random effects. This allows 
+you to explore the influence of the grouping term and grouping levels on the outcome scale by 
+simulating predictions for simulated values of each observation across the distribution of 
+effect sizes. 
+
+The `REmargins()` function allows you to do this. Here, we take the example `sleepstudy` model and 
+marginalize predictions for all of the random effect terms (Subject:Intercept, Subject:Days). By 
+default, the function will marginalize over the *quartiles* of the expected rank (see expected 
+rank vignette) of the effect distribution for each term. 
 
 ```{r}
 fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
+head(mfx)
 ```
+
+The new data frame output from `REmargins` contains a lot of information. The first few columns 
+contain the original data passed to `newdata`. Each observation in `newdata` is identified by a 
+`case` number, because the function repeats each observation by the number of random effect terms 
+and number of breaks to simulate each term over. Then the `grouping_var` 
 
 
 # Summarizing
 
 
+
+
 # Plotting
 
-```{r}
-fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
+Finally - you can plot the results marginalization to evaluate the effect of the random effect terms 
+graphically. 
 
+```{r}
 ggplot(mfx) + aes(x = breaks, y = fit_Subject, group = case) +
   geom_line() +
   facet_wrap(~term)

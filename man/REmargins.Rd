@@ -2,11 +2,11 @@
 % Please edit documentation in R/REmargins.R
 \name{REmargins}
 \alias{REmargins}
-\title{Calculate the weighted mean of fitted values for various combinations of
-random effect terms.}
+\title{Calculate the predicted value for each observation across the distribution
+of the random effect terms.}
 \usage{
 REmargins(merMod, newdata = NULL, groupFctr = NULL, term = NULL,
-  breaks = 3, .parallel = FALSE, ...)
+  breaks = 4, .parallel = FALSE, ...)
 }
 \arguments{
 \item{merMod}{An object of class merMod}
@@ -38,15 +38,26 @@ effects into, the default is 3.}
 }
 \value{
 A data.frame with all unique combinations of the number of cases, rows
-in the newdata element, and number of bins:
+in the newdata element:
   \describe{
-    \item{case}{The row number of the observation from newdata.}
-    \item{bin}{The ranking bin for the expected rank, the higher the bin number,
-    the greater the expected rank of the groups in that bin.}
-    \item{AvgFitWght}{The weighted mean of the fitted values for case i in bin k}
-    \item{AvgFitWghtSE}{The standard deviation of the mean of the fitted values
-    for case i in bin k.}
-    \item{nobs}{The number of group effects contained in that bin.}
+    \item{...}{The columns of the original data taken from \code{newdata}}
+    \item{case}{The row number of the observation from newdata. Each row in newdata will be
+    repeated for all unique levels of the grouping_var, term, and breaks.}
+    \item{grouping_var}{The grouping variable the random effect is being marginalized over.}
+    \item{term}{The term for the grouping variable the random effect is being marginalized over.}
+    \item{breaks}{The ntile of the effect size for \code{grouping_var} and \code{term}}
+    \item{original_group_level}{The original grouping value for this \code{case}}
+    \item{fit_combined}{The predicted value from \code{predictInterval} for this case simulated
+    at the Nth ntile of the expected rank distribution of \code{grouping_var} and \code{term}}
+    \item{upr_combined}{The upper bound of the predicted value.}
+    \item{lwr_combined}{The lower bound of the predicted value.}
+    \item{fit_XX}{For each grouping term in newdata the predicted value is decomposed into its
+    fit components via predictInterval and these are all returned here}
+    \item{upr_XX}{The upper bound for the effect of each grouping term}
+    \item{lwr_XX}{The lower bound for the effect of each grouping term}
+    \item{fit_fixed}{The predicted fit with all the grouping terms set to 0 (average)}
+    \item{upr_fixed}{The upper bound fit with all the grouping terms set to 0 (average)}
+    \item{lwr_fixed}{The lower bound fit with all the grouping terms set to 0 (average)}
   }
 }
 \description{
@@ -57,6 +68,8 @@ influence of random effect terms on the scale of the response variable,
 for user-defined inputs, and accounting for the variability in grouping terms.
 }
 \details{
+The function simulates the
+
 The function predicts the response at every level in the random effect term
 specified by the user. Then, the expected rank of each group level is binned
 to the number of bins specified by the user. Finally, a weighted mean of the
@@ -66,7 +79,8 @@ precise estimates are downweighted in the calculation of the mean for the bin.
 Finally, a standard error for the bin mean is calculated.
 }
 \examples{
-#For a one-level random intercept model
+fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
 \donttest{
 # You can also pass additional arguments to predictInterval through REimpact
  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)

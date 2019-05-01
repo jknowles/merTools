@@ -40,6 +40,25 @@ install.packages("merTools")
 
 ## Recent Updates
 
+### merTools 0.5.0
+
+#### New Features
+
+  - `subBoot` now works with `glmerMod` objects as well
+  - `reMargins` a new function that allows the user to marginalize the
+    prediction over breaks in the distribution of random effect
+    distributions, see `?reMargins` and the new `reMargins` vignette
+    (closes \#73)
+
+#### Bug fixes
+
+  - Fixed an issue where known convergence errors were issuing warnings
+    and causing the test suite to not work
+  - Fixed an issue where models with a random slope, no intercept, and
+    no fixed term were unable to be predicted (\#101)
+  - Fixed an issue with shinyMer not working with substantive fixed
+    effects (\#93)
+
 ### merTools 0.4.1
 
 #### New Features
@@ -132,30 +151,29 @@ Standard prediction looks like so.
 ``` r
 predict(m1, newdata = InstEval[1:10, ])
 #>        1        2        3        4        5        6        7        8 
-#> 3.146336 3.165211 3.398499 3.114248 3.320686 3.252670 4.180896 3.845218 
+#> 3.146337 3.165212 3.398499 3.114249 3.320686 3.252670 4.180897 3.845219 
 #>        9       10 
-#> 3.779336 3.331012
+#> 3.779337 3.331013
 ```
 
 With `predictInterval` we obtain predictions that are more like the
-standard objects produced by `lm` and
-`glm`:
+standard objects produced by `lm` and `glm`:
 
 ``` r
 #predictInterval(m1, newdata = InstEval[1:10, ]) # all other parameters are optional
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
 #>         fit      upr       lwr
-#> 1  3.125394 4.979246 1.1166373
-#> 2  3.304650 5.192903 1.2958078
-#> 3  3.421564 5.513007 1.3941391
-#> 4  3.098004 5.018878 0.8932288
-#> 5  3.253312 5.338664 1.1236043
-#> 6  3.199142 5.166880 1.1563780
-#> 7  4.067185 6.313856 1.9312797
-#> 8  3.766062 5.746171 1.7210402
-#> 9  3.744515 5.681148 1.7479590
-#> 10 3.325182 5.357726 1.1783253
+#> 1  3.062403 4.875299 1.0976325
+#> 2  3.122269 5.220372 1.1362041
+#> 3  3.399609 5.277484 1.3125614
+#> 4  3.089576 4.981890 0.9704067
+#> 5  3.289961 5.431288 1.2092377
+#> 6  3.223154 5.146182 1.1536405
+#> 7  4.251286 6.242942 2.1694248
+#> 8  3.857138 5.595392 2.0689368
+#> 9  3.814014 5.633757 1.6666908
+#> 10 3.313968 5.240684 1.4102597
 ```
 
 Note that `predictInterval` is slower because it is computing
@@ -176,47 +194,47 @@ interval.
 ``` r
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9, 
                 stat = 'median', which = "all")
-#>      effect         fit      upr        lwr obs
-#> 1  combined  3.05142664 4.893535  1.1453327   1
-#> 2  combined  3.26515473 5.228517  0.9245461   2
-#> 3  combined  3.39424116 5.445855  1.3459129   3
-#> 4  combined  2.95792564 5.151298  1.2972070   4
-#> 5  combined  3.28378686 5.334808  1.1797896   5
-#> 6  combined  3.33398777 5.467897  1.3173296   6
-#> 7  combined  4.31607723 6.236707  2.3684152   7
-#> 8  combined  3.78177816 5.915230  1.9452920   8
-#> 9  combined  3.78801812 6.137100  1.8042376   9
-#> 10 combined  3.40311223 5.472319  1.3328570  10
-#> 11        s  0.33120450 2.635771 -1.8232921   1
-#> 12        s  0.07722743 2.135277 -1.7939259   2
-#> 13        s  0.17659021 2.199019 -1.9514854   3
-#> 14        s  0.18544864 1.866820 -1.6960335   4
-#> 15        s -0.25029379 1.753376 -2.0009388   5
-#> 16        s  0.07575502 1.821340 -1.8900120   6
-#> 17        s  0.37605480 2.665245 -1.5634669   7
-#> 18        s  0.19175873 2.250059 -1.6432148   8
-#> 19        s  0.27428472 2.377856 -1.4729972   9
-#> 20        s  0.30033064 1.989653 -1.7652454  10
-#> 21        d -0.13550930 1.893747 -2.2727313   1
-#> 22        d -0.21943931 2.122796 -2.1435895   2
-#> 23        d  0.02686489 1.896004 -1.9601462   3
-#> 24        d -0.30799468 1.730694 -2.0044624   4
-#> 25        d  0.02167456 1.907354 -1.9105378   5
-#> 26        d -0.03063146 2.006059 -1.8768102   6
-#> 27        d  0.76043305 2.710346 -1.3152748   7
-#> 28        d -0.02853018 2.228498 -1.8649234   8
-#> 29        d  0.03933386 1.955542 -1.7880232   9
-#> 30        d -0.41025679 2.022148 -1.9079259  10
-#> 31    fixed  3.21823828 5.004409  0.9239508   1
-#> 32    fixed  3.17739019 5.092532  1.6046582   2
-#> 33    fixed  3.30796530 5.251162  1.2900951   3
-#> 34    fixed  3.06731437 4.756057  1.2541274   4
-#> 35    fixed  3.33175950 5.231223  1.1547966   5
-#> 36    fixed  3.45077676 5.089393  1.1347821   6
-#> 37    fixed  3.06641488 4.910878  1.2608331   7
-#> 38    fixed  3.24223202 5.085719  1.6450764   8
-#> 39    fixed  3.47941329 5.623999  1.4291720   9
-#> 40    fixed  3.14623403 4.992673  1.2811486  10
+#>      effect         fit      upr       lwr obs
+#> 1  combined  3.10588146 5.074320  1.115744   1
+#> 2  combined  3.12590159 5.229144  1.234737   2
+#> 3  combined  3.50221080 5.558903  1.725983   3
+#> 4  combined  3.18401922 5.180478  1.202701   4
+#> 5  combined  3.43516669 5.479951  1.687226   5
+#> 6  combined  3.28702761 5.076120  1.696698   6
+#> 7  combined  4.11620436 6.242719  2.218440   7
+#> 8  combined  3.83946756 5.806928  1.734871   8
+#> 9  combined  3.65520277 5.733005  1.734383   9
+#> 10 combined  3.38291712 5.126766  1.305704  10
+#> 11        s  0.39530734 2.314564 -1.580480   1
+#> 12        s  0.05768790 2.145727 -1.734261   2
+#> 13        s  0.25144648 2.161022 -1.835595   3
+#> 14        s  0.11230706 2.048973 -1.717377   4
+#> 15        s  0.15938325 2.245457 -1.688314   5
+#> 16        s -0.03997122 1.713787 -1.946526   6
+#> 17        s  0.30717886 2.146772 -1.879950   7
+#> 18        s  0.35245963 2.126182 -1.567672   8
+#> 19        s  0.28048955 1.870139 -1.916605   9
+#> 20        s  0.15098774 2.075590 -1.676578  10
+#> 21        d -0.04506101 1.626325 -2.167031   1
+#> 22        d -0.35762750 1.367847 -2.086245   2
+#> 23        d -0.01284133 1.983798 -1.611674   3
+#> 24        d -0.09276199 1.753796 -1.927223   4
+#> 25        d  0.27178929 1.855894 -1.768267   5
+#> 26        d  0.20473020 2.107927 -1.804207   6
+#> 27        d  0.63579228 2.787336 -1.110867   7
+#> 28        d  0.25870148 2.161567 -1.591056   8
+#> 29        d  0.09847088 2.445938 -1.720187   9
+#> 30        d -0.26284078 1.821286 -2.264619  10
+#> 31    fixed  3.47902439 5.125702  1.440427   1
+#> 32    fixed  3.18552734 5.002860  1.395992   2
+#> 33    fixed  3.18264885 5.135351  1.327085   3
+#> 34    fixed  3.24551389 5.327702  1.376886   4
+#> 35    fixed  3.40134173 5.468416  1.283102   5
+#> 36    fixed  3.27690088 5.102528  1.176106   6
+#> 37    fixed  3.26605454 5.071742  1.369039   7
+#> 38    fixed  3.36780245 4.854022  1.495831   8
+#> 39    fixed  3.44550641 5.317501  1.397862   9
+#> 40    fixed  3.50671455 5.241567  1.684289  10
 ```
 
 This can lead to some useful plotting:
@@ -230,7 +248,7 @@ plotdfb <- predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 2000,
                           level = 0.9, stat = 'median', which = "all", 
                           include.resid.var = TRUE)
 
-plotdf <- bind_rows(plotdf, plotdfb, .id = "residVar")
+plotdf <- dplyr::bind_rows(plotdf, plotdfb, .id = "residVar")
 plotdf$residVar <- ifelse(plotdf$residVar == 1, "No Model Variance", 
                           "Model Variance")
 
@@ -266,16 +284,15 @@ fixed and random effect parameters.
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22306436  3.22345526 0.01995396
-#> 2    service1 -0.06979601 -0.07113286 0.01297003
-#> 3   lectage.L -0.18769609 -0.18658318 0.01621428
-#> 4   lectage.Q  0.02251329  0.02154975 0.01222164
-#> 5   lectage.C -0.02182935 -0.02134305 0.01183856
-#> 6   lectage^4 -0.01800829 -0.01789510 0.01300245
+#> 1 (Intercept)  3.22260943  3.22167083 0.01975290
+#> 2    service1 -0.07125476 -0.07202959 0.01445489
+#> 3   lectage.L -0.18509515 -0.18621076 0.01685905
+#> 4   lectage.Q  0.02385849  0.02279335 0.01234334
+#> 5   lectage.C -0.02464019 -0.02453241 0.01404294
+#> 6   lectage^4 -0.02184410 -0.02122708 0.01393632
 ```
 
-And we can also plot
-this:
+And we can also plot this:
 
 ``` r
 plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FALSE)
@@ -289,12 +306,12 @@ We can also quickly make caterpillar plots for the random-effect terms:
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
 #>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.17849937  0.19083849 0.2789109
-#> 2         s       2 (Intercept) -0.04530464 -0.03605309 0.3276079
-#> 3         s       3 (Intercept)  0.31172494  0.30584665 0.2902461
-#> 4         s       4 (Intercept)  0.23045733  0.21928685 0.2728494
-#> 5         s       5 (Intercept)  0.03069242  0.04029338 0.3251431
-#> 6         s       6 (Intercept)  0.08975814  0.06813835 0.2409531
+#> 1         s       1 (Intercept)  0.20231155  0.17902672 0.3297829
+#> 2         s       2 (Intercept) -0.05894260 -0.04706429 0.3219184
+#> 3         s       3 (Intercept)  0.34258614  0.32157928 0.3008581
+#> 4         s       4 (Intercept)  0.24350220  0.25955173 0.3051320
+#> 5         s       5 (Intercept)  0.03924003  0.03009568 0.3188415
+#> 6         s       6 (Intercept)  0.08439409  0.08361151 0.2249616
 ```
 
 ``` r
@@ -318,13 +335,13 @@ for each group.
 ``` r
 ranks <- expectedRank(m1, groupFctr = "d")
 head(ranks)
-#>   groupFctr groupLevel       term   estimate  std.error       ER pctER
-#> 2         d          1 _Intercept  0.3944916 0.08665149 835.3004    74
-#> 3         d          6 _Intercept -0.4428947 0.03901987 239.5364    21
-#> 4         d          7 _Intercept  0.6562683 0.03717200 997.3570    88
-#> 5         d          8 _Intercept -0.6430679 0.02210017 138.3445    12
-#> 6         d         12 _Intercept  0.1902942 0.04024063 702.3412    62
-#> 7         d         13 _Intercept  0.2497467 0.03216254 750.0176    66
+#>   groupFctr groupLevel      term   estimate  std.error       ER pctER
+#> 2         d          1 Intercept  0.3944919 0.08665152 835.3005    74
+#> 3         d          6 Intercept -0.4428949 0.03901988 239.5363    21
+#> 4         d          7 Intercept  0.6562681 0.03717200 997.3569    88
+#> 5         d          8 Intercept -0.6430680 0.02210017 138.3445    12
+#> 6         d         12 Intercept  0.1902940 0.04024063 702.3410    62
+#> 7         d         13 Intercept  0.2497464 0.03216255 750.0174    66
 ```
 
 A nice features `expectedRank` is that you can return the expected rank
@@ -333,13 +350,13 @@ for all factors simultaneously and use them:
 ``` r
 ranks <- expectedRank(m1)
 head(ranks)
-#>   groupFctr groupLevel       term    estimate  std.error       ER pctER
-#> 2         s          1 _Intercept  0.16732725 0.08165631 1931.569    65
-#> 3         s          2 _Intercept -0.04409515 0.09234206 1368.161    46
-#> 4         s          3 _Intercept  0.30382125 0.05204068 2309.940    78
-#> 5         s          4 _Intercept  0.24756083 0.06641676 2151.827    72
-#> 6         s          5 _Intercept  0.05232309 0.08174095 1627.693    55
-#> 7         s          6 _Intercept  0.10191622 0.06648371 1772.548    60
+#>   groupFctr groupLevel      term    estimate  std.error       ER pctER
+#> 2         s          1 Intercept  0.16732800 0.08165665 1931.570    65
+#> 3         s          2 Intercept -0.04409538 0.09234250 1368.160    46
+#> 4         s          3 Intercept  0.30382219 0.05204082 2309.941    78
+#> 5         s          4 Intercept  0.24756175 0.06641699 2151.828    72
+#> 6         s          5 Intercept  0.05232329 0.08174130 1627.693    55
+#> 7         s          6 Intercept  0.10191653 0.06648394 1772.548    60
 
 ggplot(ranks, aes(x = term, y = estimate)) + 
   geom_violin(fill = "gray50") + facet_wrap(~groupFctr) +
@@ -361,19 +378,18 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
 #> Warning: executing %dopar% sequentially: no parallel backend registered
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.792772 2.842321e-04  193
-#> 2    1   2 3.263785 6.273483e-05  240
-#> 3    1   3 3.557189 5.018429e-05  254
-#> 4    1   4 3.845991 6.175618e-05  265
-#> 5    1   5 4.224282 1.855857e-04  176
+#> 1    1   1 2.790659 2.997445e-04  193
+#> 2    1   2 3.266613 6.586502e-05  240
+#> 3    1   3 3.560015 5.408651e-05  254
+#> 4    1   4 3.845779 5.684319e-05  265
+#> 5    1   5 4.230333 1.929049e-04  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we
 supplied to `newdata` is moved from the first to the fifth quintile in
 terms of the magnitude of the group factor coefficient. We can see here
 that the individual professor effect has a strong impact on the outcome
-variable. This can be shown graphically as
-well:
+variable. This can be shown graphically as well:
 
 ``` r
 ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE, 
@@ -404,9 +420,9 @@ data(VerbAgg)
 fmVA <- glmer(r2 ~ (Anger + Gender + btype + situ)^2 +
            (1|id) + (1|item), family = binomial, 
            data = VerbAgg)
-#> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control
-#> $checkConv, : Model failed to converge with max|grad| = 0.0505464 (tol =
-#> 0.001, component 1)
+#> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl =
+#> control$checkConv, : Model failed to converge with max|grad| = 0.0505464
+#> (tol = 0.001, component 1)
 ```
 
 Now we prep the data using the `draw` function in `merTools`. Here we
@@ -443,8 +459,7 @@ The next step is familiar – we simply pass this new dataset to
 `predictInterval` in order to generate predictions for these
 counterfactuals. Then we plot the predicted values against the
 continuous variable, `Anger`, and facet and group on the two categorical
-variables `situ` and `btype`
-respectively.
+variables `situ` and `btype` respectively.
 
 ``` r
 plotdf <- predictInterval(fmVA, newdata = newData, type = "probability", 
@@ -458,3 +473,23 @@ ggplot(plotdf, aes(y = fit, x = Anger, color = btype, group = btype)) +
 ```
 
 ![](man/figures/README_substImpactPredict-1.png)<!-- -->
+
+## Marginalizing Random Effects
+
+``` r
+# get cases
+case_idx <- sample(1:nrow(VerbAgg), 10)
+mfx <- REmargins(fmVA, newdata = VerbAgg[case_idx,], breaks = 4, groupFctr = "item", 
+                 type = "probability")
+
+ggplot(mfx, aes(y = fit_combined, x = breaks, group = case)) + 
+  geom_point() + geom_line() + 
+  theme_bw() + 
+  scale_y_continuous(breaks = 1:10/10, limits = c(0, 1)) +
+  coord_cartesian(expand = FALSE) +
+  labs(x = "Quartile of item random effect Intercept for term 'item'", 
+       y = "Predicted Probability", 
+       title = "Simulated Effect of Item Intercept on Predicted Probability for 10 Random Cases")
+```
+
+![](man/figures/README_unnamed-chunk-15-1.png)<!-- -->
