@@ -137,12 +137,14 @@ fastdisp.merModList <- function(x, ...){
   cat(paste(paste(names(out$ngrps), out$ngrps, sep = ", "),
             collapse = "; "))
   cat(sprintf("\nAIC = %g", round(out$AIC, 1)))
+  cat("---\n")
   # cat(round(out$DIC, 1))
   # cat("\ndeviance =", fround(out$deviance, 1), "\n")
   if (useScale < 0) {
     out$sigma.hat <- sigma(x)
     cat("overdispersion parameter =", fround(out$sigma.hat,
                                              1), "\n")
+    cat("---\n")
   }
   return(invisible(out))
   }
