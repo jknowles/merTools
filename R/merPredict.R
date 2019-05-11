@@ -149,6 +149,8 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   }
 
   newdata.modelMatrix <- buildModelMatrix(model= merMod, newdata = newdata)
+  # When there is no fixed effect intercept but there is a group level intercept
+  # We need to do something!
 
   re.xb <- vector(getME(merMod, "n_rfacs"), mode = "list")
   names(re.xb) <- names(ngrps(merMod))
@@ -168,12 +170,14 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     # Add switch if no random groups are observed to avoid indexing errors,
     # we burn 1 sample of 1 group of all coefficients that will eventually
     # be multiplied by zero later on
-    if(length(keep) > 0 & !identical(keep, alllvl)) {
+    if (length(keep) > 0 & !identical(keep, alllvl)) {
       reMeans <- reMeans[keep, , drop=FALSE]
       dimnames(reMatrix)[[3]] <- alllvl
       reMatrix <- reMatrix[, , keep, drop = FALSE]
     } else if (length(keep) > 0 & identical(keep, alllvl)){
       dimnames(reMatrix)[[3]] <- alllvl
+      # dimnames(reMeans)[[2]] <- j  # we need to get the variable name into this ojbect
+      reMatrix <- reMatrix[, , keep, drop = FALSE]
     } else{
       reMeans <- reMeans[1, , drop=FALSE]
       reMatrix <- reMatrix[, , 1, drop = FALSE]
@@ -189,22 +193,32 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                                                 sigma=matrixTmp, method = "chol"))
     }
 
-    REcoefs <- sapply(tmpList, identity, simplify="array"); rm(tmpList)
+    REcoefs <- sapply(tmpList, identity, simplify="array")
+    # rm(tmpList)
     dimnames(REcoefs) <- list(1:n.sims,
                             attr(reMeans, "dimnames")[[2]],
-                            attr(reMeans, "dimnames")[[1]])
+                            attr(reMeans, "dimnames")[[1]]
+                            )
     if (j %in% names(newdata)) { # get around if names do not line up because of nesting
       tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
       tmp <- tmp[, !duplicated(colnames(tmp))]
       keep <- names(tmp)[names(tmp) %in% dimnames(REcoefs)[[2]]]
       if (length(keep) == 0) {
         keep <- grep(dimnames(REcoefs)[[2]], names(tmp), value = TRUE)
+      }
         if (length(keep) == 0) {
           tmp <- cbind(model.frame(subbars(formula(merMod)), data = newdata),
                        var = newdata[, j])
           keep <- grep(dimnames(REcoefs)[[2]], names(tmp), value = TRUE)
         }
-      }
+          if ( length(keep) == 0) {
+            # Add in an intercept for RE purposes
+            tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
+            tmp <- tmp[, !duplicated(colnames(tmp))]
+            tmp <- cbind(data.frame(1), tmp)
+            names(tmp)[1] <- "(Intercept)"
+            keep <- "(Intercept)"
+          }
       tmp <- tmp[, c(keep, "var"), drop = FALSE]
       tmp[, "var"] <- as.character(tmp[, "var"])
       colnames(tmp)[which(names(tmp) == "var")] <- names(newdata[, j,  drop = FALSE])
@@ -244,7 +258,8 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
         coefs_new <- array(NA, dim = c(dim(coefs)[1], colLL,
                                        dim(coefs)[3]))
         dimnames(coefs_new)[c(1, 3)] <- dimnames(coefs)[c(1, 3)]
-        dimnames(coefs_new)[[2]] <- rep(dimnames(coefs)[[2]], colLL)
+
+        dimnames(coefs_new)[[2]] <- rep(dimnames(coefs)[[2]], dim(coefs_new)[2])
         for (k in 1:colLL) {
           coefs_new[, k, 1:dim(coefs)[3]] <- coefs[, 1, 1:dim(coefs)[3]]
         }
@@ -252,8 +267,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
       }
 
       for(i in 1:nrow(data)){
-        # TODO - Fix issue 101 which trips up here
-         lvl <- as.character(data[, group][i])
+        lvl <- as.character(data[, group][i])
          if(!lvl %in% new.levels){
            yhatTmp[i, ] <- as.numeric(data[i, 1:colIdx]) %*% t(coefs[, 1:colIdx, lvl])
          } else{
@@ -297,7 +311,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   # for now, ignore this check
   if (include.resid.var==FALSE) {
 #     if (length(new.levels)==0)
-      sigmahat <- rep(1,n.sims)
+      sigmahat <- rep(1, n.sims)
 #     else {
 #       include.resid.var=TRUE
 #       warning("    \n  Since new levels were detected resetting include.resid.var to TRUE.")
@@ -315,6 +329,12 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     fix.intercept.variance <- FALSE
     message("No intercept detected, setting fix.intercept.variance to FALSE")
   }
+  # If intercept is not in fixed terms
+  if (!"(Intercept)" %in% names(fixef(merMod)) && fix.intercept.variance) {
+    # TODO - decide if this is an error or if we should allow it to continue with warning
+    warning("No fixed-effect intercept detected. Variance adjustment may be unreliable.")
+  }
+
   if (fix.intercept.variance) {
     #Assuming all random effects include intercepts.
     intercept.variance <- vcov.tmp[1,1]

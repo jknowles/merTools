@@ -788,13 +788,56 @@ test_that("Models with cross-level interaction and no random intercept work", {
   preds1 <- predictInterval(m2)
   expect_equal(nrow(preds1), 180)
   expect_equal(ncol(preds1), 3)
+  truPred <- predict(m2)
+  expect_equal(mean(preds1$fit - truPred), 0, tolerance = sd(truPred)/100)
+
   #
   preds1 <- predictInterval(m3)
   expect_equal(nrow(preds1), 180)
   expect_equal(ncol(preds1), 3)
+  truPred <- predict(m3)
+  expect_equal(mean(preds1$fit - truPred), 0, tolerance = sd(truPred)/100)
   #
   preds1 <- predictInterval(m4)
   expect_equal(nrow(preds1), 180)
   expect_equal(ncol(preds1), 3)
+  truPred <- predict(m4)
+  expect_equal(mean(preds1$fit - truPred), 0, tolerance = sd(truPred)/100)
 })
 
+
+m1 <- lmer(Reaction ~ 0 + Days + Days:Subject + (1 | Days), data = sleepstudy)
+test_that("Models with cross-level interaction and no random intercept work", {
+  preds1 <- predictInterval(m1)
+  expect_equal(nrow(preds1), 180)
+  expect_equal(ncol(preds1), 3)
+  expect_warning(predictInterval(m1, fix.intercept.variance = TRUE))
+
+  preds1 <- predictInterval(m1, newdata = sleepstudy[1:10, ],
+                            level = 0.9, n.sims = 500, include.resid.var = FALSE,
+                            ignore.fixed.terms = TRUE)
+  expect_equal(nrow(preds1), 10)
+  expect_equal(ncol(preds1), 3)
+  truPred <- predict(m1, newdata = sleepstudy[1:10,])
+  expect_equal(mean(preds1$fit - truPred), 0, tolerance = sd(truPred)/100)
+
+  # This is less close
+  preds1 <- predictInterval(m1, newdata = sleepstudy[1:50, ],
+                            level = 0.9, n.sims = 500, include.resid.var = FALSE,
+                            ignore.fixed.terms = FALSE)
+  expect_equal(nrow(preds1), 50)
+  expect_equal(ncol(preds1), 3)
+  truPred <- predict(m1, newdata = sleepstudy[1:50,])
+  expect_equal(mean(preds1$fit - truPred), 0, tolerance = sd(truPred)/25)
+
+  expect_warning({
+    preds1 <- predictInterval(m1, newdata = sleepstudy[1:50, ],
+                            level = 0.9, n.sims = 500, include.resid.var = FALSE,
+                            fix.intercept.variance = TRUE)
+  })
+  expect_failure({
+    expect_equal(mean(preds1$fit - truPred), 0, tolerance = sd(truPred)/100)
+  })
+
+
+})
