@@ -1,11 +1,13 @@
-#' Calculate the weighted mean of fitted values for various combinations of
-#' random effect terms.
+#' Calculate the predicted value for each observation across the distribution
+#' of the random effect terms.
 #'
 #' \code{REmargins} calculates the average predicted value for each row of a
 #' new data frame across the distribution of \code{\link{expectedRank}} for a
 #' merMod object. This allows the user to make meaningful comparisons about the
 #' influence of random effect terms on the scale of the response variable,
 #' for user-defined inputs, and accounting for the variability in grouping terms.
+#'
+#' The function simulates the
 #'
 #' The function predicts the response at every level in the random effect term
 #' specified by the user. Then, the expected rank of each group level is binned
@@ -42,15 +44,26 @@
 #' @param ... additional arguments to pass to \code{\link{predictInterval}}
 #'
 #' @return A data.frame with all unique combinations of the number of cases, rows
-#' in the newdata element, and number of bins:
+#' in the newdata element:
 #'   \describe{
-#'     \item{case}{The row number of the observation from newdata.}
-#'     \item{bin}{The ranking bin for the expected rank, the higher the bin number,
-#'     the greater the expected rank of the groups in that bin.}
-#'     \item{AvgFitWght}{The weighted mean of the fitted values for case i in bin k}
-#'     \item{AvgFitWghtSE}{The standard deviation of the mean of the fitted values
-#'     for case i in bin k.}
-#'     \item{nobs}{The number of group effects contained in that bin.}
+#'     \item{...}{The columns of the original data taken from \code{newdata}}
+#'     \item{case}{The row number of the observation from newdata. Each row in newdata will be
+#'     repeated for all unique levels of the grouping_var, term, and breaks.}
+#'     \item{grouping_var}{The grouping variable the random effect is being marginalized over.}
+#'     \item{term}{The term for the grouping variable the random effect is being marginalized over.}
+#'     \item{breaks}{The ntile of the effect size for \code{grouping_var} and \code{term}}
+#'     \item{original_group_level}{The original grouping value for this \code{case}}
+#'     \item{fit_combined}{The predicted value from \code{predictInterval} for this case simulated
+#'     at the Nth ntile of the expected rank distribution of \code{grouping_var} and \code{term}}
+#'     \item{upr_combined}{The upper bound of the predicted value.}
+#'     \item{lwr_combined}{The lower bound of the predicted value.}
+#'     \item{fit_XX}{For each grouping term in newdata the predicted value is decomposed into its
+#'     fit components via predictInterval and these are all returned here}
+#'     \item{upr_XX}{The upper bound for the effect of each grouping term}
+#'     \item{lwr_XX}{The lower bound for the effect of each grouping term}
+#'     \item{fit_fixed}{The predicted fit with all the grouping terms set to 0 (average)}
+#'     \item{upr_fixed}{The upper bound fit with all the grouping terms set to 0 (average)}
+#'     \item{lwr_fixed}{The lower bound fit with all the grouping terms set to 0 (average)}
 #'   }
 #'
 #'
@@ -65,7 +78,8 @@
 #' @seealso \code{\link{expectedRank}}, \code{\link{predictInterval}}
 #' @importFrom stats reshape
 #' @examples
-#' #For a one-level random intercept model
+#' fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+#' mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
 #' \donttest{
 #' # You can also pass additional arguments to predictInterval through REimpact
 #'  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
@@ -75,32 +89,42 @@
 #'                          breaks = 3)
 #' }
 #' @export
-REmargins <- function(merMod, newdata = NULL, groupFctr = NULL, term = NULL, breaks = 3,
+REmargins <- function(merMod, newdata = NULL, groupFctr = NULL, term = NULL, breaks = 4,
                       .parallel = FALSE, ...){
-  if(is.null(groupFctr)){
+  # Validate inputs
+  if (is.null(groupFctr)) {
+    # If the user doesn't tell us which term to use, we take the first term
     groupFctr <- names(ranef(merMod))[1]
   }
   if (is.null(newdata)) {
+    # If the user doesn't give us data, we take the whole dataset
+    # TODO - how does performance scale to a large number of observations?
     newdata <- merMod@frame
+  }
+
+  # If the user doesn't tell us what term to use, we take all the terms
+  if (is.null(term)) {
+    term <- names(ranef(merMod)[[groupFctr]])
+    # Sub out intercept
+    term[term == "(Intercept)"] <- "Intercept"
   }
 
   # This is a rough way to break the ER distribution into quantiles
   brks <- ceiling(seq(1, 100, by = 100/breaks))
-  if(! 99 %in% brks) {
+  # Fallback so we always take a 99th percentile effect (for the maximum)
+  if (!99 %in% brks) {
     brks <- c(brks, 99)
   }
+  # Inputs are validated - now we get the effect distribution
   # Generate the expected rank distribution
-  ER_DF <- expectedRank(merMod, groupFctr = groupFctr)
+  ER_DF <- expectedRank(merMod, groupFctr = groupFctr, term = term)
+  # With many effects there is a lot of duplication - drop duplicated pctER
   ER_DF <- ER_DF[!duplicated(ER_DF[, c("groupFctr", "term", "pctER")]), ]
 
-
-  if (is.null(term)) {
-    term <- unique(ER_DF$term)
-  }
-
-  out_df <- expand.grid("grouping_var" = groupFctr, "term" = term, "breaks" = 1:breaks)
-  out_df$groupLevel <- NA
-
+  # Now we create a data frame to capture the factor levels of each groupFctr that
+  # correspond to the right break in the expectedRank distribution of the random
+  # effect grouping factor and term
+  par_df <- expand.grid("grouping_var" = groupFctr, "term" = term, "breaks" = 1:breaks)
 
   # Keep only factor levels that have effects at the margins
   # Need to match closest value here
@@ -109,53 +133,53 @@ REmargins <- function(merMod, newdata = NULL, groupFctr = NULL, term = NULL, bre
     # For each combination build an index of candidate rows/effect levels
   # Then choose the level that has the most precise estimate within a
   # tolerance of the effect size
-
-
   for (trm in term) {
     for (i in seq_along(brks)) {
-
-      zz <- abs(ER_DF$pctER[ER_DF$term == trm] - brks[i])
-      tmp <- which(zz %in% zz[order(zz)][1])
-      out_df$groupLevel[out_df$breaks == i & out_df$term == trm] <- ER_DF$groupLevel[tmp]
+      # Compute each terms distance from the break
+      rank_dist <- abs(ER_DF$pctER[ER_DF$term == trm] - brks[i])
+      # Get the index for the rank that minimizes the distance
+      # TODO - how to break ties here?
+      tmp <- which(rank_dist %in% rank_dist[order(rank_dist)][1])
+      # Store the result in the par_df object
+      par_df$groupLevel[par_df$breaks == i & par_df$term == trm] <- ER_DF$groupLevel[tmp]
     }
   }
-  # Need to repeat
-  # TODO - Figure out how to keep the effects seperate from each term
-  # TODO - order case by magnitude of ER
-
   # Get ready to expand the data
-  zed <- as.data.frame(lapply(newdata, rep, each = nrow(out_df)))
-  zed$case <- rep(1:nrow(newdata), each = nrow(out_df))
-  zed <- cbind(zed, out_df)
-  zed$original_group_level <- zed[, groupFctr]
-  zed[, groupFctr] <- zed$groupLevel
-  zed$groupLevel <- NULL
+  sim_data <- as.data.frame(lapply(newdata, rep, each = nrow(par_df)))
+  # sim_data now repeats each row of newdata by the number of rows in par_df
+  # case labels the rows with an integer for later mapping
+  sim_data$case <- rep(1:nrow(newdata), each = nrow(par_df))
+  sim_data <- cbind(sim_data, par_df)
+  sim_data$original_group_level <- sim_data[, groupFctr]
+  sim_data[, groupFctr] <- sim_data$groupLevel
+  sim_data$groupLevel <- NULL
   #
-  # zed[, "case"] <- rep(seq(1, nrow(newdata)), times = nrow(lvls))
 
   # Maybe strongly recommend parallel here?
-  if ( .parallel & requireNamespace("foreach", quietly=TRUE)) {
+  if (.parallel & requireNamespace("foreach", quietly = TRUE)) {
     # TODO use future here
-      merTools:::setup_parallel()
-        out <- predictInterval(merMod, newdata = zed,
-                               which = "all")
+      setup_parallel()
+        out <- predictInterval(merMod, newdata = sim_data,
+                               which = "all", ...)
         out_w <- stats::reshape(out, direction = "wide",
                                 idvar = "obs", timevar = "effect",
                                 v.names = c("fit", "upr", "lwr"), sep = "_")
-        zed <- cbind(zed, out_w)
-    } else if ( .parallel & !requireNamespace("foreach", quietly=TRUE)) {
+        out_w$obs <- NULL
+        sim_data <- cbind(sim_data, out_w)
+    } else if ( .parallel & !requireNamespace("foreach", quietly = TRUE)) {
       warning("foreach package is unavailable, parallel computing not available")
     } else {
-      out <- predictInterval(merMod, newdata = zed,
-                             which = "all")
+      out <- predictInterval(merMod, newdata = sim_data,
+                             which = "all", ...)
       out_w <- stats::reshape(out, direction = "wide",
                        idvar = "obs", timevar = "effect",
                        v.names = c("fit", "upr", "lwr"), sep = "_")
-      zed <- cbind(zed, out_w)
+      out_w$obs <- NULL
+      sim_data <- cbind(sim_data, out_w)
     }
   # Case is the number of the row in newdata
   # obs is the variance among the selected random effects to marginalize over
   # So we want to collapse by case if we can
 
-  return(zed)
+  return(sim_data)
 }
