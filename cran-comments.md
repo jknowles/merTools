@@ -1,6 +1,8 @@
 ## Test environments
-* local Windows 10 install, R 3.5.1
-* win-builder (devel and release)
+* local Windows 10 install, R 3.5.3
+* r-hub (R-release macOS 10.11)
+* r-hub (R-release Windows Server 2008 R2 SP1)
+* 
 
 ## R CMD check results
 
