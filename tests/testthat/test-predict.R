@@ -841,3 +841,21 @@ test_that("Models with cross-level interaction and no random intercept work", {
 
 
 })
+
+
+context("Test Nested Specications")
+
+data(sleepstudy)
+sleepstudy$city <- c(rep(1, 90), rep(2, 90))
+sleepstudy$hospital <- paste(sleepstudy$city, rep(seq(1, 2), 90), sep = ':')
+
+nest_mod <- lmer(Reaction ~ 0 + Days:Subject +
+                (1|Days) + (1|city/hospital),
+              data = sleepstudy)
+
+test_that("Nested specifications predict intervals correctly", {
+  pred <- predictInterval(nest_mod, newdata = sleepstudy)
+
+})
+
+
