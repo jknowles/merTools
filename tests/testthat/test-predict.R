@@ -552,7 +552,7 @@ test_that("parallelization does not throw errors and generates good results", {
                            include.resid.var = FALSE)
   expect_equal(mean(predA$fit - predB$fit), 0 , tolerance = .01)
   moddf <- InstEval[sample(rownames(InstEval), 5000),]
-  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=moddf)
+  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data = moddf)
   predA <- predictInterval(g1, newdata = g1@frame, n.sims = 2500, seed = 2141,
                            include.resid.var = FALSE)
   predB <- predictInterval(g1, newdata = g1@frame, n.sims = 1500, seed = 2141,
@@ -562,7 +562,7 @@ test_that("parallelization does not throw errors and generates good results", {
                            include.resid.var = TRUE)
   predB <- predictInterval(g1, newdata = g1@frame[1:501,], n.sims = 2500, seed = 2141,
                            include.resid.var = TRUE)
-  expect_equal(mean(predA$fit[1:499] - predB$fit[1:499]), 0 , tolerance = .002)
+  expect_equal(mean(predA$fit[1:499] - predB$fit[1:499]), 0 , tolerance = .0025)
   detach("package:foreach", character.only=TRUE)
 })
 

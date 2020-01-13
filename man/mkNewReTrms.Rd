@@ -4,8 +4,13 @@
 \alias{mkNewReTrms}
 \title{Utility function to make RE terms objects}
 \usage{
-mkNewReTrms(object, newdata, re.form = NULL, na.action = na.pass,
-  allow.new.levels = FALSE)
+mkNewReTrms(
+  object,
+  newdata,
+  re.form = NULL,
+  na.action = na.pass,
+  allow.new.levels = FALSE
+)
 }
 \arguments{
 \item{object}{a model object}

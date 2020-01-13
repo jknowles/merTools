@@ -5,8 +5,7 @@
 \title{Calculate the weighted mean of fitted values for various levels of
 random effect terms.}
 \usage{
-REimpact(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3,
-  ...)
+REimpact(merMod, newdata, groupFctr = NULL, term = NULL, breaks = 3, ...)
 }
 \arguments{
 \item{merMod}{An object of class merMod}

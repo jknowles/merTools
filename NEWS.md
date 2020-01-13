@@ -1,5 +1,12 @@
 # NEWS
 
+## merTools 0.5.1
+
+### Bug fixes
+
+- Fixed an issue where `averageObs` could not be calculated when model weights were specified in the 
+original model (closes #110)
+
 ## merTools 0.5.0
 
 ### New Features
