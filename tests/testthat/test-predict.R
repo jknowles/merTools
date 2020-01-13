@@ -834,7 +834,7 @@ test_that("Models with cross-level interaction and no random intercept work", {
     preds1 <- predictInterval(m1, newdata = sleepstudy[1:50, ],
                             level = 0.9, n.sims = 500, include.resid.var = FALSE,
                             fix.intercept.variance = TRUE)
-  })
+})
   expect_failure({
     expect_equal(mean(preds1$fit - truPred), 0, tolerance = sd(truPred)/100)
   })
@@ -847,6 +847,7 @@ context("Test Nested Specications")
 
 data(sleepstudy)
 sleepstudy$city <- c(rep(1, 90), rep(2, 90))
+# Colon is a weird separator because of how R represents the nesting in the model frame
 sleepstudy$hospital <- paste(sleepstudy$city, rep(seq(1, 2), 90), sep = ':')
 
 nest_mod <- lmer(Reaction ~ 0 + Days:Subject +

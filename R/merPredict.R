@@ -149,11 +149,10 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   }
 
   newdata.modelMatrix <- buildModelMatrix(model= merMod, newdata = newdata)
-  # When there is no fixed effect intercept but there is a group level intercept
-  # We need to do something!
 
   re.xb <- vector(getME(merMod, "n_rfacs"), mode = "list")
   names(re.xb) <- names(ngrps(merMod))
+  # j <- hospital:city is the problem
   for (j in names(re.xb)){
     reMeans <- as.matrix(ranef(merMod)[[j]])
     reMatrix <- attr(ranef(merMod, condVar = TRUE)[[j]], which = "postVar")
@@ -242,11 +241,14 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     }
     #######################
     ################
+    # coefs object has rows = n.sims
+    # columns = ncol(newdata)
+    #
      tmp.pred <- function(data, coefs, group){
       new.levels <- unique(as.character(data[, group])[!as.character(data[, group]) %in% dimnames(coefs)[[3]]])
        msg <- paste("     The following levels of ", group, " from newdata \n -- ", paste0(new.levels, collapse=", "),
                     " -- are not in the model data. \n     Currently, predictions for these values are based only on the \n fixed coefficients and the observation-level error.", sep="")
-       if(length(new.levels > 0)){
+       if (length(new.levels > 0)){
          warning(msg, call.=FALSE)
        }
        yhatTmp <- array(data = NA, dim = c(nrow(data), dim(coefs)[1]))
