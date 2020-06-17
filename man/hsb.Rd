@@ -4,7 +4,8 @@
 \name{hsb}
 \alias{hsb}
 \title{A subset of data from the 1982 High School and Beyond survey used as examples for HLM software}
-\format{A data frame with 7,185 observations on the following 8 variables.
+\format{
+A data frame with 7,185 observations on the following 8 variables.
 \describe{
  \item{\code{schid}}{a numeric vector, 160 unique values}
  \item{\code{mathach}}{a numeric vector for the performance on a standardized math assessment}
@@ -14,7 +15,8 @@
  \item{\code{schtype}}{a numeric vector coded 0 for public and 1 for private schools}
  \item{\code{meanses}}{a numeric, the average SES for each school in the data set}
  \item{\code{size}}{a numeric for the number of students in the school}
-}}
+}
+}
 \source{
 Data made available by UCLA Institute for Digital Research and Education
 (IDRE) online: \url{https://stats.idre.ucla.edu/other/hlm/hlm-mlm/introduction-to-multilevel-modeling-using-hlm}

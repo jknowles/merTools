@@ -31,10 +31,10 @@ Imports:
     abind,
     ggplot2,
     blme,
-    broom,
+    broom.mixed,
 License: GPL (>=2)
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Encoding: UTF-8
 BugReports: https://www.github.com/jknowles/merTools
