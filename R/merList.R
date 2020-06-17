@@ -60,6 +60,7 @@ REcorrExtract <- function(model){
 #'
 #' @return a data.frame
 #' @import dplyr
+#' @importFrom broom.mixed tidy
 #' @export
 #' @examples
 #' sim_list <- replicate(n = 10,
@@ -87,7 +88,7 @@ modelRandEffStats <- function(modList){
 #' @details The Rubin correction for combining estimates and standard errors from
 #' Rubin (1987) is applied to adjust for the within and between imputation variances.
 #' @export
-#' @importFrom broom tidy
+#' @importFrom broom.mixed tidy
 #' @import dplyr
 #' @examples
 #' sim_list <- replicate(n = 10,

@@ -1,5 +1,9 @@
 # NEWS
 
+## merTools 0.5.2
+
+- Switch dependency from `broom` to `broom.mixed` because of upstream package reorganization
+
 ## merTools 0.5.1
 
 ### Bug fixes
