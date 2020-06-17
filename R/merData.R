@@ -242,7 +242,7 @@ findFormFuns <- function(merMod, origData = NULL) {
 #'
 #' @param merMod the merMod object to test for weights
 #'
-#' @return
+#' @return TRUE or FALSE for whether the model has weights
 hasWeights <- function(merMod) {
   if (all(merMod@resp$weights == 1)) {
     FALSE

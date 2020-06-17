@@ -10,7 +10,7 @@ hasWeights(merMod)
 \item{merMod}{the merMod object to test for weights}
 }
 \value{
-
+TRUE or FALSE for whether the model has weights
 }
 \description{
 Identify if a merMod has weights

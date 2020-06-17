@@ -1,5 +1,5 @@
 ## Test environments
-* local Windows 10 install, R 3.5.3
+* local Windows 10 install, R 4.0.0
 * r-hub (R-release macOS 10.11)
 * win-builder (R-release, R-devel)
 
@@ -13,9 +13,6 @@
     to fix notes about unexported objects in `modelFixedEff` and 
     `fastdisp.merList` functions
     
-* Note about possible invalid URL is a false positive: http://www.jstor.org/stable/1164724
-    is a valid URL
-
 ## Downstream dependencies
 There are currently two downstream dependencies. No issues with either were 
 found.
