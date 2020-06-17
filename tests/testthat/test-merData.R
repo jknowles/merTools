@@ -496,3 +496,19 @@ test_that("findFormFuns works", {
   expect_silent(merTools:::draw.merMod(s10, origData = play, type = "average"))
   expect_silent(merTools:::draw.merMod(s10, type = "random"))
 })
+
+
+test_that("weights work for averageObs", {
+  m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy, weights = Days)
+  m2 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+
+  out1 <- averageObs(m1)
+  out2 <- averageObs(m2)
+
+  expect_equal(nrow(out1), 1)
+  expect_equal(nrow(out2), 1)
+  expect_equal(ncol(out1), 4)
+  expect_equal(ncol(out2), 3)
+
+
+})

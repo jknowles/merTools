@@ -185,9 +185,17 @@ findFormFuns <- function(merMod, origData = NULL) {
   modFrame.labels <- unique(unlist(strsplit(attr(modFrame.tt, "term.labels"), split = ":", fixed = TRUE)))
   modFrame.resp <- setdiff(rownames(attr(modFrame.tt, "factors")),
                            unique(unlist(strsplit(colnames(attr(modFrame.tt, "factors")), split = ":", fixed = TRUE))))
-  modFrame <- modFrame[, c(modFrame.resp, modFrame.labels)]
+
+  merMod.weights <- hasWeights(merMod)
+  if (merMod.weights) {
+    modFrame <- modFrame[, c(modFrame.resp, modFrame.labels, "(weights)")]
+  } else {
+    modFrame <- modFrame[, c(modFrame.resp, modFrame.labels)]
+  }
+
   #Scan RHS of formula labels for parens -> exit if clean
   paren_terms <- grepl("[()]", c(modFrame.resp, modFrame.labels))
+
   if (!any(paren_terms)) {
     if(is.null(origData)){
       out <- collapseFrame(modFrame)
@@ -197,6 +205,9 @@ findFormFuns <- function(merMod, origData = NULL) {
     return(out)
   } else {
     rhs.vars <- all.vars(form.rhs)
+    # if (merMod.weights) {
+    #   rhs.vars <- c(rhs.vars, c("(weights)"))
+    # }
     #Warning if functions are detected but neither MAIN EFFECTS NOR DATA are supplied
     if (is.null(origData))  {
       if (!all(rhs.vars %in% modFrame.labels)) {
@@ -224,6 +235,19 @@ findFormFuns <- function(merMod, origData = NULL) {
       }
       return(out)
     }
+  }
+}
+
+#' Identify if a merMod has weights
+#'
+#' @param merMod the merMod object to test for weights
+#'
+#' @return
+hasWeights <- function(merMod) {
+  if (all(merMod@resp$weights == 1)) {
+    FALSE
+  } else {
+    TRUE
   }
 }
 
@@ -285,7 +309,7 @@ averageObs <- function(merMod, varList = NULL, origData = NULL, ...){
     }
   }
   chars <- !sapply(out, is.numeric)
-  for(i in names(out[, chars])){
+  for(i in names(out[, chars, drop = FALSE])){ # drop = FALSE
     out[, i] <- try(superFactor(out[, i], fullLev = unique(merMod@frame[, i])), silent = TRUE)
   }
   out <- stripAttributes(out)
