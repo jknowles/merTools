@@ -4,8 +4,12 @@
 \alias{sum.mm}
 \title{Title}
 \usage{
-\method{sum}{mm}(object, correlation = (p <=
-  getOption("lme4.summary.cor.max")), use.hessian = NULL, ...)
+\method{sum}{mm}(
+  object,
+  correlation = (p <= getOption("lme4.summary.cor.max")),
+  use.hessian = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{a merMod object}

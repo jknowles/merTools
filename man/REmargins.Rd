@@ -5,8 +5,15 @@
 \title{Calculate the predicted value for each observation across the distribution
 of the random effect terms.}
 \usage{
-REmargins(merMod, newdata = NULL, groupFctr = NULL, term = NULL,
-  breaks = 4, .parallel = FALSE, ...)
+REmargins(
+  merMod,
+  newdata = NULL,
+  groupFctr = NULL,
+  term = NULL,
+  breaks = 4,
+  .parallel = FALSE,
+  ...
+)
 }
 \arguments{
 \item{merMod}{An object of class merMod}
