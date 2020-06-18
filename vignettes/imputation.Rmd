@@ -1,7 +1,7 @@
 ---
 title: "Analyzing Imputed Data with Multilevel Models and merTools"
 author: "Jared Knowles"
-date: "`r Sys.Date()`"
+date: "2020-06-18"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Imputation}
@@ -10,18 +10,7 @@ vignette: >
 ---
 
 
-```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide'}
-knitr::opts_chunk$set(
-  cache=FALSE,
-  comment="#>",
-  collapse=TRUE, 
-  echo=TRUE, 
-  fig.width = 7
-)
-library(knitr); library(merTools)
-amelia_eval <- "Amelia" %in% rownames(installed.packages())
-amelia_uneval <- !amelia_eval
-```
+
 
 ## Introduction
 
@@ -53,7 +42,8 @@ package which includes data on the math achievement of a wide sample of students
 nested within schools. The data has no missingness, so first we will simulate 
 some missing data. 
 
-```{r}
+
+```r
 data(hsb)
 
 # Create a function to randomly assign NA values
@@ -66,19 +56,31 @@ add_NA <- function(x, prob){
 
 hsb$minority <- add_NA(hsb$minority, prob = 0.05)
 table(is.na(hsb$minority))
+#> 
+#> FALSE  TRUE 
+#>  6868   317
 
 hsb$female <- add_NA(hsb$female, prob = 0.05)
 table(is.na(hsb$female))
+#> 
+#> FALSE  TRUE 
+#>  6802   383
 
 hsb$ses <- add_NA(hsb$ses, prob = 0.05)
 table(is.na(hsb$ses))
+#> 
+#> FALSE  TRUE 
+#>  6803   382
 
 hsb$size <- add_NA(hsb$size, prob = 0.05)
 table(is.na(hsb$size))
-
+#> 
+#> FALSE  TRUE 
+#>  6825   360
 ```
 
-```{r impute, message=FALSE, eval = amelia_eval}
+
+```r
 # Load imputation library
 library(Amelia)
 # Declare the variables to include in the imputation data
@@ -89,10 +91,59 @@ IDS <- c("schid", "meanses")
 impute.out <- amelia(hsb[, varIndex], idvars = IDS, 
                          noms = c("minority", "female"), 
                          m = 5)
+#> -- Imputation 1 --
+#> 
+#>   1  2  3  4
+#> 
+#> -- Imputation 2 --
+#> 
+#>   1  2  3
+#> 
+#> -- Imputation 3 --
+#> 
+#>   1  2  3
+#> 
+#> -- Imputation 4 --
+#> 
+#>   1  2  3
+#> 
+#> -- Imputation 5 --
+#> 
+#>   1  2  3
 summary(impute.out)
+#> 
+#> Amelia output with 5 imputed datasets.
+#> Return code:  1 
+#> Message:  Normal EM convergence. 
+#> 
+#> Chain Lengths:
+#> --------------
+#> Imputation 1:  4
+#> Imputation 2:  3
+#> Imputation 3:  3
+#> Imputation 4:  3
+#> Imputation 5:  3
+#> 
+#> Rows after Listwise Deletion:  5853 
+#> Rows after Imputation:  7185 
+#> Patterns of missingness in the data:  14 
+#> 
+#> Fraction Missing for original variables: 
+#> -----------------------------------------
+#> 
+#>          Fraction Missing
+#> schid          0.00000000
+#> minority       0.04411969
+#> female         0.05330550
+#> ses            0.05316632
+#> mathach        0.00000000
+#> size           0.05010438
+#> schtype        0.00000000
+#> meanses        0.00000000
 ```
 
-```{r boot, message=FALSE, eval = amelia_uneval}
+
+```r
 # Amelia is not available so let's just boostrap resample our data
 impute.out <- vector(mode = "list", 5)
 
@@ -109,7 +160,8 @@ summary(impute.out)
 
 Fitting a model is very similar 
 
-```{r}
+
+```r
 fmla <- "mathach ~ minority + female + ses + meanses + (1 + ses|schid)"
 mod <- lmer(fmla, data = hsb)
 if(amelia_eval) {
@@ -118,7 +170,6 @@ if(amelia_eval) {
   # Use bootstrapped data instead
   modList <- lmerModList(fmla, data = impute.out)
 }
-
 ```
 
 
@@ -130,43 +181,340 @@ this object.
 Using this, we can directly compare the model fit with missing data excluded to 
 the aggregate from the imputed models:
 
-```{r}
+
+```r
 fixef(mod) # model with dropped missing
+#> (Intercept)    minority      female         ses 
+#>   14.149102   -2.868687   -1.318437    2.067309 
+#>     meanses 
+#>    2.833490
 fixef(modList)
+#> (Intercept)    minority      female         ses 
+#>   14.028792   -2.680352   -1.213086    1.966725 
+#>     meanses 
+#>    3.141636
 ```
 
-```{r}
+
+```r
 VarCorr(mod) # model with dropped missing
+#>  Groups   Name        Std.Dev. Corr  
+#>  schid    (Intercept) 1.54204        
+#>           ses         0.52515  -0.765
+#>  Residual             5.98842
 VarCorr(modList) # aggregate of imputed models
+#> $stddev
+#> $stddev$schid
+#> (Intercept)         ses 
+#>   1.5183804   0.6468874 
+#> 
+#> 
+#> $correlation
+#> $correlation$schid
+#>             (Intercept)        ses
+#> (Intercept)   1.0000000 -0.5247666
+#> ses          -0.5247666  1.0000000
 ```
 
 If you want to inspect the individual models, or you do not like taking the 
 mean across the imputation replications, you can take the `merModList` apart 
 easily:
 
-```{r}
+
+```r
 lapply(modList, fixef)
+#> $imp1
+#> (Intercept)    minority      female         ses 
+#>   13.976636   -2.587948   -1.170291    1.984663 
+#>     meanses 
+#>    3.170845 
+#> 
+#> $imp2
+#> (Intercept)    minority      female         ses 
+#>   14.070484   -2.673140   -1.294932    1.959564 
+#>     meanses 
+#>    3.143996 
+#> 
+#> $imp3
+#> (Intercept)    minority      female         ses 
+#>   14.040516   -2.728450   -1.215497    1.958265 
+#>     meanses 
+#>    3.134720 
+#> 
+#> $imp4
+#> (Intercept)    minority      female         ses 
+#>   14.030150   -2.698588   -1.214679    1.997264 
+#>     meanses 
+#>    3.081103 
+#> 
+#> $imp5
+#> (Intercept)    minority      female         ses 
+#>   14.026175   -2.713636   -1.170030    1.933870 
+#>     meanses 
+#>    3.177518
 ```
 
 And, you can always operate on any single element of the list:
 
-```{r}
+
+```r
 fixef(modList[[1]])
+#> (Intercept)    minority      female         ses 
+#>   13.976636   -2.587948   -1.170291    1.984663 
+#>     meanses 
+#>    3.170845
 fixef(modList[[2]])
+#> (Intercept)    minority      female         ses 
+#>   14.070484   -2.673140   -1.294932    1.959564 
+#>     meanses 
+#>    3.143996
 ```
 
 ## Output of a Model List
 
-```{r}
+
+```r
 print(modList)
+#> $imp1
+#> Linear mixed model fit by REML ['lmerMod']
+#> Formula: 
+#> mathach ~ minority + female + ses + meanses + (1 + ses | schid)
+#>    Data: d
+#> 
+#> REML criterion at convergence: 46328.3
+#> 
+#> Scaled residuals: 
+#>     Min      1Q  Median      3Q     Max 
+#> -3.2652 -0.7199  0.0371  0.7614  2.9108 
+#> 
+#> Random effects:
+#>  Groups   Name        Variance Std.Dev. Corr 
+#>  schid    (Intercept)  2.2763  1.5087        
+#>           ses          0.3676  0.6063   -0.61
+#>  Residual             35.7568  5.9797        
+#> Number of obs: 7185, groups:  schid, 160
+#> 
+#> Fixed effects:
+#>             Estimate Std. Error t value
+#> (Intercept)  13.9766     0.1724  81.089
+#> minority     -2.5879     0.1994 -12.978
+#> female       -1.1703     0.1576  -7.425
+#> ses           1.9847     0.1182  16.787
+#> meanses       3.1708     0.3537   8.966
+#> 
+#> Correlation of Fixed Effects:
+#>          (Intr) minrty female ses   
+#> minority -0.324                     
+#> female   -0.482  0.012              
+#> ses      -0.234  0.140  0.036       
+#> meanses  -0.102  0.126  0.023 -0.237
+#> 
+#> $imp2
+#> Linear mixed model fit by REML ['lmerMod']
+#> Formula: 
+#> mathach ~ minority + female + ses + meanses + (1 + ses | schid)
+#>    Data: d
+#> 
+#> REML criterion at convergence: 46308.7
+#> 
+#> Scaled residuals: 
+#>     Min      1Q  Median      3Q     Max 
+#> -3.2162 -0.7183  0.0385  0.7576  2.9117 
+#> 
+#> Random effects:
+#>  Groups   Name        Variance Std.Dev. Corr 
+#>  schid    (Intercept)  2.286   1.5118        
+#>           ses          0.443   0.6656   -0.47
+#>  Residual             35.611   5.9675        
+#> Number of obs: 7185, groups:  schid, 160
+#> 
+#> Fixed effects:
+#>             Estimate Std. Error t value
+#> (Intercept)  14.0705     0.1727  81.485
+#> minority     -2.6731     0.1985 -13.467
+#> female       -1.2949     0.1578  -8.205
+#> ses           1.9596     0.1202  16.299
+#> meanses       3.1440     0.3574   8.797
+#> 
+#> Correlation of Fixed Effects:
+#>          (Intr) minrty female ses   
+#> minority -0.326                     
+#> female   -0.482  0.019              
+#> ses      -0.204  0.140  0.038       
+#> meanses  -0.094  0.127  0.023 -0.231
+#> 
+#> $imp3
+#> Linear mixed model fit by REML ['lmerMod']
+#> Formula: 
+#> mathach ~ minority + female + ses + meanses + (1 + ses | schid)
+#>    Data: d
+#> 
+#> REML criterion at convergence: 46302.4
+#> 
+#> Scaled residuals: 
+#>     Min      1Q  Median      3Q     Max 
+#> -3.2651 -0.7164  0.0325  0.7615  2.9216 
+#> 
+#> Random effects:
+#>  Groups   Name        Variance Std.Dev. Corr 
+#>  schid    (Intercept)  2.3422  1.5304        
+#>           ses          0.4413  0.6643   -0.46
+#>  Residual             35.5652  5.9637        
+#> Number of obs: 7185, groups:  schid, 160
+#> 
+#> Fixed effects:
+#>             Estimate Std. Error t value
+#> (Intercept)  14.0405     0.1738  80.763
+#> minority     -2.7284     0.1990 -13.709
+#> female       -1.2155     0.1578  -7.702
+#> ses           1.9583     0.1198  16.345
+#> meanses       3.1347     0.3595   8.719
+#> 
+#> Correlation of Fixed Effects:
+#>          (Intr) minrty female ses   
+#> minority -0.325                     
+#> female   -0.481  0.022              
+#> ses      -0.209  0.143  0.044       
+#> meanses  -0.092  0.126  0.021 -0.226
+#> 
+#> $imp4
+#> Linear mixed model fit by REML ['lmerMod']
+#> Formula: 
+#> mathach ~ minority + female + ses + meanses + (1 + ses | schid)
+#>    Data: d
+#> 
+#> REML criterion at convergence: 46302
+#> 
+#> Scaled residuals: 
+#>     Min      1Q  Median      3Q     Max 
+#> -3.2610 -0.7229  0.0305  0.7612  2.9166 
+#> 
+#> Random effects:
+#>  Groups   Name        Variance Std.Dev. Corr 
+#>  schid    (Intercept)  2.3036  1.5178        
+#>           ses          0.3951  0.6286   -0.62
+#>  Residual             35.6111  5.9675        
+#> Number of obs: 7185, groups:  schid, 160
+#> 
+#> Fixed effects:
+#>             Estimate Std. Error t value
+#> (Intercept)  14.0302     0.1728  81.179
+#> minority     -2.6986     0.1985 -13.592
+#> female       -1.2147     0.1573  -7.721
+#> ses           1.9973     0.1190  16.784
+#> meanses       3.0811     0.3544   8.693
+#> 
+#> Correlation of Fixed Effects:
+#>          (Intr) minrty female ses   
+#> minority -0.326                     
+#> female   -0.481  0.021              
+#> ses      -0.246  0.140  0.040       
+#> meanses  -0.104  0.126  0.023 -0.235
+#> 
+#> $imp5
+#> Linear mixed model fit by REML ['lmerMod']
+#> Formula: 
+#> mathach ~ minority + female + ses + meanses + (1 + ses | schid)
+#>    Data: d
+#> 
+#> REML criterion at convergence: 46324.3
+#> 
+#> Scaled residuals: 
+#>     Min      1Q  Median      3Q     Max 
+#> -3.2703 -0.7181  0.0316  0.7649  2.9098 
+#> 
+#> Random effects:
+#>  Groups   Name        Variance Std.Dev. Corr 
+#>  schid    (Intercept)  2.3200  1.5231        
+#>           ses          0.4484  0.6696   -0.46
+#>  Residual             35.6782  5.9731        
+#> Number of obs: 7185, groups:  schid, 160
+#> 
+#> Fixed effects:
+#>             Estimate Std. Error t value
+#> (Intercept)  14.0262     0.1734  80.890
+#> minority     -2.7136     0.1982 -13.689
+#> female       -1.1700     0.1577  -7.417
+#> ses           1.9339     0.1204  16.060
+#> meanses       3.1775     0.3594   8.842
+#> 
+#> Correlation of Fixed Effects:
+#>          (Intr) minrty female ses   
+#> minority -0.329                     
+#> female   -0.480  0.026              
+#> ses      -0.200  0.141  0.036       
+#> meanses  -0.095  0.126  0.026 -0.228
 ```
 
-```{r}
+
+```r
 summary(modList)
+#> [1] "Linear mixed model fit by REML"
+#> Model family: 
+#> lmer(formula = mathach ~ minority + female + ses + meanses + 
+#>     (1 + ses | schid), data = d)
+#> 
+#> Fixed Effects:
+#>             estimate std.error statistic
+#> (Intercept)   14.029     0.174    80.566
+#> female        -1.213     0.160    -7.574
+#> meanses        3.142     0.358     8.769
+#> minority      -2.680     0.202   -13.289
+#> ses            1.967     0.120    16.372
+#>                     df
+#> (Intercept)  99310.593
+#> female       16493.051
+#> meanses     259740.570
+#> minority     18540.839
+#> ses         166028.049
+#> 
+#> Random Effects:
+#> 
+#> Error Term Standard Deviations by Level:
+#> 
+#> schid
+#> (Intercept)         ses 
+#>       1.518       0.647 
+#> 
+#> 
+#> Error Term Correlations:
+#> 
+#> schid
+#>             (Intercept) ses   
+#> (Intercept)  1.000      -0.525
+#> ses         -0.525       1.000
+#> 
+#> 
+#> Residual Error = 5.970 
+#> 
+#> ---Groups
+#> number of obs: 7185, groups: schid, 160
+#> 
+#> Model Fit Stats
+#> AIC = 46331.1
+#> Residual standard deviation = 5.970
 ```
 
-```{r}
+
+```r
 fastdisp(modList)
+#> lmer(formula = mathach ~ minority + female + ses + meanses + 
+#>     (1 + ses | schid), data = d)
+#>             estimate std.error
+#> (Intercept)    14.03      0.17
+#> female         -1.21      0.16
+#> meanses         3.14      0.36
+#> minority       -2.68      0.20
+#> ses             1.97      0.12
+#> 
+#> Error terms:
+#>  Groups   Name        Std.Dev. Corr  
+#>  schid    (Intercept) 1.52           
+#>           ses         0.65     -0.61 
+#>  Residual             5.97           
+#> ---
+#> number of obs: 7185, groups: schid, 160
+#> AIC = 46331.1---
 ```
 
 The standard errors reported for the model list include a correction, Rubin's 
@@ -175,37 +523,315 @@ set variance as well.
 
 ## Specific Model Information Summaries
 
-```{r}
+
+```r
 modelRandEffStats(modList)
+#>                        term    group   estimate
+#> 1 cor_(Intercept).ses.schid    schid -0.5247666
+#> 2      sd_(Intercept).schid    schid  1.5183804
+#> 3   sd_Observation.Residual Residual  5.9703034
+#> 4              sd_ses.schid    schid  0.6468874
+#>     std.error
+#> 1 0.084101895
+#> 2 0.008713530
+#> 3 0.006244066
+#> 4 0.028062351
 modelFixedEff(modList)
+#>          term  estimate std.error  statistic
+#> 1 (Intercept) 14.028792 0.1741275  80.566201
+#> 2      female -1.213086 0.1601572  -7.574345
+#> 3     meanses  3.141636 0.3582833   8.768580
+#> 4    minority -2.680352 0.2017037 -13.288566
+#> 5         ses  1.966725 0.1201239  16.372467
+#>          df
+#> 1  99310.59
+#> 2  16493.05
+#> 3 259740.57
+#> 4  18540.84
+#> 5 166028.05
 VarCorr(modList)
+#> $stddev
+#> $stddev$schid
+#> (Intercept)         ses 
+#>   1.5183804   0.6468874 
+#> 
+#> 
+#> $correlation
+#> $correlation$schid
+#>             (Intercept)        ses
+#> (Intercept)   1.0000000 -0.5247666
+#> ses          -0.5247666  1.0000000
 ```
 
 ### Diagnostics of List Components
 
-```{r}
+
+```r
 modelInfo(mod)
+#>   n.obs n.lvls      AIC   sigma
+#> 1  6160      1 39764.15 5.98842
 ```
 
 
 Let's apply this to our model list. 
 
-```{r}
+
+```r
 lapply(modList, modelInfo)
+#> $imp1
+#>   n.obs n.lvls      AIC    sigma
+#> 1  7185      1 46346.34 5.979699
+#> 
+#> $imp2
+#>   n.obs n.lvls      AIC    sigma
+#> 1  7185      1 46326.72 5.967532
+#> 
+#> $imp3
+#>   n.obs n.lvls      AIC    sigma
+#> 1  7185      1 46320.43 5.963655
+#> 
+#> $imp4
+#>   n.obs n.lvls      AIC    sigma
+#> 1  7185      1 46319.96 5.967506
+#> 
+#> $imp5
+#>   n.obs n.lvls      AIC    sigma
+#> 1  7185      1 46342.27 5.973125
 ```
 
 ### Model List Generics
 
-```{r}
+
+```r
 summary(modList)
+#> [1] "Linear mixed model fit by REML"
+#> Model family: 
+#> lmer(formula = mathach ~ minority + female + ses + meanses + 
+#>     (1 + ses | schid), data = d)
+#> 
+#> Fixed Effects:
+#>             estimate std.error statistic
+#> (Intercept)   14.029     0.174    80.566
+#> female        -1.213     0.160    -7.574
+#> meanses        3.142     0.358     8.769
+#> minority      -2.680     0.202   -13.289
+#> ses            1.967     0.120    16.372
+#>                     df
+#> (Intercept)  99310.593
+#> female       16493.051
+#> meanses     259740.570
+#> minority     18540.839
+#> ses         166028.049
+#> 
+#> Random Effects:
+#> 
+#> Error Term Standard Deviations by Level:
+#> 
+#> schid
+#> (Intercept)         ses 
+#>       1.518       0.647 
+#> 
+#> 
+#> Error Term Correlations:
+#> 
+#> schid
+#>             (Intercept) ses   
+#> (Intercept)  1.000      -0.525
+#> ses         -0.525       1.000
+#> 
+#> 
+#> Residual Error = 5.970 
+#> 
+#> ---Groups
+#> number of obs: 7185, groups: schid, 160
+#> 
+#> Model Fit Stats
+#> AIC = 46331.1
+#> Residual standard deviation = 5.970
 ```
 
-```{r}
+
+```r
 modelFixedEff(modList)
+#>          term  estimate std.error  statistic
+#> 1 (Intercept) 14.028792 0.1741275  80.566201
+#> 2      female -1.213086 0.1601572  -7.574345
+#> 3     meanses  3.141636 0.3582833   8.768580
+#> 4    minority -2.680352 0.2017037 -13.288566
+#> 5         ses  1.966725 0.1201239  16.372467
+#>          df
+#> 1  99310.59
+#> 2  16493.05
+#> 3 259740.57
+#> 4  18540.84
+#> 5 166028.05
 ```
 
-```{r}
+
+```r
 ranef(modList)
+#> $schid
+#>       (Intercept)           ses
+#> 1224 -0.157795533  0.0451127840
+#> 1288 -0.044476754  0.0191957958
+#> 1296 -0.126472259  0.0218757135
+#> 1308  0.064357632 -0.0167977336
+#> 1317  0.088861755 -0.0350837887
+#> 1358 -0.301385760  0.1053888143
+#> 1374 -0.350736225  0.1064976917
+#> 1433  0.307310844 -0.0444663946
+#> 1436  0.284513686 -0.0602282100
+#> 1461 -0.045882842  0.0719067703
+#> 1462  0.348424677 -0.1562366964
+#> 1477  0.042686687 -0.0406549686
+#> 1499 -0.293156885  0.0838236409
+#> 1637 -0.097080749  0.0324268391
+#> 1906  0.048446937 -0.0150064112
+#> 1909 -0.052969237  0.0205894104
+#> 1942  0.209581012 -0.0525053879
+#> 1946 -0.042287233  0.0350616964
+#> 2030 -0.429112816  0.0588461805
+#> 2208 -0.024593477  0.0228554436
+#> 2277  0.309800057 -0.1834173408
+#> 2305  0.550610497 -0.2049548526
+#> 2336  0.142313348 -0.0290535691
+#> 2458  0.245993091 -0.0255602587
+#> 2467 -0.222494935  0.0640753511
+#> 2526  0.449997476 -0.1312121315
+#> 2626  0.027751982  0.0238061610
+#> 2629  0.335613322 -0.0942540137
+#> 2639  0.094386542 -0.0820201077
+#> 2651 -0.393517983  0.1350175898
+#> 2655  0.640384122 -0.1435806679
+#> 2658 -0.243275105  0.0607205634
+#> 2755  0.135787228 -0.0631922841
+#> 2768 -0.268666958  0.0917130815
+#> 2771  0.033436716  0.0272030521
+#> 2818 -0.018785461  0.0214043728
+#> 2917  0.152738008 -0.0762445189
+#> 2990  0.448844959 -0.0935887501
+#> 2995 -0.235287167  0.0148768819
+#> 3013 -0.106680710  0.0516779815
+#> 3020  0.090727137 -0.0308716386
+#> 3039  0.243996619 -0.0435977108
+#> 3088 -0.042231336 -0.0122411932
+#> 3152 -0.034103349  0.0356155581
+#> 3332 -0.259777846  0.0305681683
+#> 3351 -0.461248418  0.0996270996
+#> 3377  0.142496875 -0.1211102758
+#> 3427  0.841386693 -0.2339682964
+#> 3498  0.024887322 -0.0537205006
+#> 3499 -0.119817169  0.0080680143
+#> 3533 -0.149220939  0.0010719643
+#> 3610  0.297746069 -0.0014053243
+#> 3657 -0.069261452  0.0633533767
+#> 3688 -0.061555723  0.0315302117
+#> 3705 -0.427141188  0.0523408834
+#> 3716  0.061285137  0.0757199239
+#> 3838  0.485386271 -0.1598435378
+#> 3881 -0.309537022  0.0860578519
+#> 3967 -0.056525049  0.0445060296
+#> 3992  0.075297122 -0.0637600889
+#> 3999 -0.055817277  0.0457642823
+#> 4042 -0.197812746  0.0313570583
+#> 4173 -0.082777595  0.0432272733
+#> 4223  0.266360906 -0.0698408106
+#> 4253 -0.002838943 -0.0732012994
+#> 4292  0.495110532 -0.1764400335
+#> 4325  0.021047068  0.0103006817
+#> 4350 -0.262817422  0.1005502052
+#> 4383 -0.234756733  0.0855789496
+#> 4410 -0.063023118  0.0284242048
+#> 4420  0.205737288 -0.0273245989
+#> 4458 -0.043787877 -0.0105867355
+#> 4511  0.216198981 -0.0590666506
+#> 4523 -0.253392354  0.0623924215
+#> 4530  0.061007622 -0.0141412262
+#> 4642  0.120939515 -0.0012115746
+#> 4868 -0.225562808  0.0092349324
+#> 4931 -0.151489897 -0.0105474646
+#> 5192 -0.244884720  0.0662313861
+#> 5404 -0.267282666  0.0289963481
+#> 5619 -0.088591305  0.1050668069
+#> 5640  0.066352031  0.0263435429
+#> 5650  0.496007374 -0.1520751279
+#> 5667 -0.291090712  0.0849233773
+#> 5720  0.091591369 -0.0101163734
+#> 5761  0.134959735  0.0032009015
+#> 5762 -0.090505308  0.0088358929
+#> 5783 -0.093105251  0.0419784658
+#> 5815 -0.180032189  0.0567256485
+#> 5819 -0.324949316  0.0664861258
+#> 5838 -0.038168235  0.0005292275
+#> 5937  0.040928181 -0.0176469977
+#> 6074  0.361576085 -0.1098990853
+#> 6089  0.230329688 -0.0455594013
+#> 6144 -0.272422991  0.0809874046
+#> 6170  0.279563058 -0.0545497420
+#> 6291  0.181117957 -0.0356960554
+#> 6366  0.193708113 -0.0594649551
+#> 6397  0.183418370 -0.0437084542
+#> 6415 -0.082399227  0.0577125726
+#> 6443 -0.098586726 -0.0413265591
+#> 6464 -0.006930839 -0.0110530398
+#> 6469  0.342855296 -0.0923368634
+#> 6484  0.099185197 -0.0332806845
+#> 6578  0.317864661 -0.0765973348
+#> 6600 -0.226249834  0.1266724638
+#> 6808 -0.331443100  0.0659644663
+#> 6816  0.197569880 -0.0620211170
+#> 6897  0.032147952  0.0304756664
+#> 6990 -0.298601140  0.0257587587
+#> 7011  0.061065847  0.0284790004
+#> 7101 -0.108095935  0.0111424320
+#> 7172 -0.200642122  0.0236336161
+#> 7232 -0.031354643  0.0561977605
+#> 7276 -0.071317368  0.0498968187
+#> 7332  0.036955530  0.0115037701
+#> 7341 -0.284857609  0.0196994369
+#> 7342  0.071738535 -0.0234087825
+#> 7345 -0.246456373  0.0990572950
+#> 7364  0.281626879 -0.0887844808
+#> 7635  0.067695672 -0.0045773702
+#> 7688  0.594207877 -0.1591233000
+#> 7697  0.094743826 -0.0012484228
+#> 7734  0.033326916  0.0503135537
+#> 7890 -0.289921123  0.0298758440
+#> 7919 -0.149007142  0.0495897913
+#> 8009 -0.244371368  0.0271887171
+#> 8150  0.064657992 -0.0398760061
+#> 8165  0.175619037 -0.0474879689
+#> 8175  0.106248119 -0.0365013872
+#> 8188 -0.114131805  0.0573622366
+#> 8193  0.542176501 -0.1395995719
+#> 8202 -0.224686594  0.0855379047
+#> 8357  0.189677518 -0.0218034980
+#> 8367 -0.753895035  0.1525305352
+#> 8477  0.074297200  0.0168614134
+#> 8531 -0.205339027  0.0413324032
+#> 8627 -0.378034984  0.0380125197
+#> 8628  0.607613395 -0.1688034840
+#> 8707 -0.085939080  0.0478432971
+#> 8775 -0.201067311  0.0092501597
+#> 8800 -0.001740915  0.0111088913
+#> 8854 -0.559785941  0.1509853643
+#> 8857  0.264207656 -0.0929013046
+#> 8874  0.185982681 -0.0115522511
+#> 8946 -0.167392474  0.0227325069
+#> 8983 -0.141209027  0.0250288618
+#> 9021 -0.240450945  0.0425264700
+#> 9104 -0.041255449  0.0031660145
+#> 9158 -0.281158323  0.1121016974
+#> 9198  0.321737680 -0.0485854075
+#> 9225  0.003967024  0.0297600149
+#> 9292  0.236024371 -0.0736002233
+#> 9340 -0.017193371  0.0168080235
+#> 9347 -0.055089446  0.0615863493
+#> 9359 -0.048633702 -0.0193351608
+#> 9397 -0.475984110  0.1004098564
+#> 9508  0.106191420 -0.0031993549
+#> 9550 -0.265395980  0.0857421977
+#> 9586 -0.141583246  0.0331380964
 ```
 
 

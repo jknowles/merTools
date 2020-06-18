@@ -1,7 +1,7 @@
 ---
 title: "An Introduction to merTools"
 author: "Jared Knowles and Carl Frederick"
-date: "`r Sys.Date()`"
+date: "2020-06-18"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
@@ -9,16 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide'}
-knitr::opts_chunk$set(
-  cache=FALSE,
-  comment="#>",
-  collapse=TRUE, 
-  echo=TRUE, 
-  fig.width = 7
-)
-library(knitr); library(merTools)
-```
+
 
 ## Introduction
 
@@ -42,15 +33,32 @@ is enrolled, `lectage` is how many semesters back the lecture with the
 rating took place, `dept` is the department of the lecture, and `y` is an integer 
 1:5 representing the ratings of the lecture from "poor" to "very good":
 
-```{r}
+
+```r
 library(lme4)
 head(InstEval)
+#>   s    d studage lectage service dept y
+#> 1 1 1002       2       2       0    2 5
+#> 2 1 1050       2       1       1    6 2
+#> 3 1 1582       2       2       0    2 5
+#> 4 1 2050       2       2       1    3 3
+#> 5 2  115       2       1       0    5 2
+#> 6 2  756       2       1       0    5 4
 str(InstEval)
+#> 'data.frame':	73421 obs. of  7 variables:
+#>  $ s      : Factor w/ 2972 levels "1","2","3","4",..: 1 1 1 1 2 2 3 3 3 3 ...
+#>  $ d      : Factor w/ 1128 levels "1","6","7","8",..: 525 560 832 1068 62 406 3 6 19 75 ...
+#>  $ studage: Ord.factor w/ 4 levels "2"<"4"<"6"<"8": 1 1 1 1 1 1 1 1 1 1 ...
+#>  $ lectage: Ord.factor w/ 6 levels "1"<"2"<"3"<"4"<..: 2 1 2 2 1 1 1 1 1 1 ...
+#>  $ service: Factor w/ 2 levels "0","1": 1 2 1 2 1 1 2 1 1 1 ...
+#>  $ dept   : Factor w/ 14 levels "15","5","10",..: 14 5 14 12 2 2 13 3 3 3 ...
+#>  $ y      : int  5 2 5 3 2 4 4 5 5 4 ...
 ```
 
 Starting with a simple model: 
 
-```{r}
+
+```r
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 ```
 
@@ -58,9 +66,32 @@ After fitting the model we can make use of the first function provided by
 `merTools`, `fastdisp` which modifies the function `arm:::display` to more 
 quickly display a summary of the model without calculating the model sigma:
 
-```{r}
+
+```r
 library(merTools)
 fastdisp(m1)
+#> lmer(formula = y ~ service + lectage + studage + (1 | d) + (1 | 
+#>     s), data = InstEval)
+#>             coef.est coef.se
+#> (Intercept)  3.22     0.02  
+#> service1    -0.07     0.01  
+#> lectage.L   -0.19     0.02  
+#> lectage.Q    0.02     0.01  
+#> lectage.C   -0.02     0.01  
+#> lectage^4   -0.02     0.01  
+#> lectage^5   -0.04     0.02  
+#> studage.L    0.10     0.02  
+#> studage.Q    0.01     0.02  
+#> studage.C    0.02     0.02  
+#> 
+#> Error terms:
+#>  Groups   Name        Std.Dev.
+#>  s        (Intercept) 0.33    
+#>  d        (Intercept) 0.52    
+#>  Residual             1.18    
+#> ---
+#> number of obs: 73421, groups: s, 2972; d, 1128
+#> AIC = 237655
 ```
 
 We see some interesting effects. First, our decision to include student and 
@@ -77,14 +108,27 @@ An alternative is to simulate values of the fixed effects from the posterior
 using the function `arm::sim`. Our next tool, `FEsim`, is a convenience wrapper 
 to do this and provide an informative data frame of the results. 
 
-```{r}
+
+```r
 feEx <- FEsim(m1, 1000)
 cbind(feEx[,1] , round(feEx[, 2:4], 3))
+#>      feEx[, 1]   mean median    sd
+#> 1  (Intercept)  3.225  3.225 0.020
+#> 2     service1 -0.070 -0.070 0.013
+#> 3    lectage.L -0.186 -0.186 0.017
+#> 4    lectage.Q  0.024  0.024 0.012
+#> 5    lectage.C -0.025 -0.025 0.013
+#> 6    lectage^4 -0.020 -0.019 0.014
+#> 7    lectage^5 -0.039 -0.039 0.015
+#> 8    studage.L  0.096  0.096 0.018
+#> 9    studage.Q  0.005  0.005 0.017
+#> 10   studage.C  0.017  0.017 0.016
 ```
 
 We can present these results graphically, using `ggplot2`: 
 
-```{r}
+
+```r
 library(ggplot2)
 ggplot(feEx[feEx$term!= "(Intercept)", ]) + 
   aes(x = term, ymin = median - 1.96 * sd, 
@@ -96,14 +140,18 @@ ggplot(feEx[feEx$term!= "(Intercept)", ]) +
                     x = "Median Effect Estimate", y = "Evaluation Rating")
 ```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+
 However, an easier option is:
 
-```{r}
+
+```r
 plotFEsim(feEx) + 
   theme_bw() + labs(title = "Coefficient Plot of InstEval Model", 
                     x = "Median Effect Estimate", y = "Evaluation Rating")
-
 ```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
 
 ## Random Effects
 
@@ -111,9 +159,24 @@ Next, we might be interested in exploring the random effects. Again, we create a
 dataframe of the values of the simulation of these effects for the individual 
 levels. 
 
-```{r}
+
+```r
 reEx <- REsim(m1)
 head(reEx)
+#>   groupFctr groupID        term        mean
+#> 1         s       1 (Intercept)  0.18042888
+#> 2         s       2 (Intercept) -0.07034954
+#> 3         s       3 (Intercept)  0.32105622
+#> 4         s       4 (Intercept)  0.23713963
+#> 5         s       5 (Intercept)  0.02613185
+#> 6         s       6 (Intercept)  0.10806580
+#>        median        sd
+#> 1  0.21906223 0.3145710
+#> 2 -0.06339508 0.2972897
+#> 3  0.33625741 0.3187445
+#> 4  0.23271723 0.2761635
+#> 5  0.02878794 0.3054642
+#> 6  0.11082677 0.2429651
 ```
 
 The result is a dataframe with estimates of the values of each of the random 
@@ -124,15 +187,23 @@ which of the `(1|x)` terms the values represent. To make unique identifiers
 for each term, we need to use both the `groupID` and the `groupFctr` term in case 
 these two variables use overlapping label names for their groups. In this case:
 
-```{r}
+
+```r
 table(reEx$term)
+#> 
+#> (Intercept) 
+#>        4100
 table(reEx$groupFctr)
+#> 
+#>    d    s 
+#> 1128 2972
 ```
 
 Most important is producing caterpillar or dotplots of these terms to explore 
 their variation. This is easily accomplished with the `dotplot` function:
 
-```{r, eval=FALSE, echo = TRUE}
+
+```r
 lattice::dotplot(ranef(m1, condVar=TRUE))
 ```
 
@@ -140,10 +211,13 @@ However, these graphics do not provide much control over the results. Instead,
 we can use the `plotREsim` function in `merTools` to gain more control over 
 plotting of the random effect simulations. 
 
-```{r}
+
+```r
 p1 <- plotREsim(reEx)
 p1
 ```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
 
 The result is a ggplot2 object which can be modified however the user sees 
 fit. Here, we've established that most student and professor effects are 
@@ -163,31 +237,47 @@ The simplest option is to pick an observation at random and then modify its
 values deliberately to see how the prediction changes in response. `merTools` 
 makes this task very simple:
 
-```{r}
+
+```r
 example1 <- draw(m1, type = 'random')
 head(example1)
+#>       y service lectage studage   d    s
+#> 29762 1       0       1       4 403 1208
 ```
 
 The `draw` function takes a random observation from the data in the model 
 and extracts it as a dataframe. We can now do a number of operations to this 
 observation:
 
-```{r}
+
+```r
 # predict it
 predict(m1, newdata = example1)
+#>    29762 
+#> 3.742122
 # change values
 example1$service <- "1"
 predict(m1, newdata = example1)
+#>    29762 
+#> 3.671278
 ```
 
 More interesting, let's programatically modify this observation to see how the 
 predicted value changes if we hold everything but one variable constant. 
 
-```{r}
+
+```r
 example2 <- wiggle(example1, varlist = "lectage", 
           valueslist = list(c("1", "2", "3", "4", "5", "6")))
 
 example2
+#>        y service lectage studage   d    s
+#> 29762  1       1       1       4 403 1208
+#> 297621 1       1       2       4 403 1208
+#> 297622 1       1       3       4 403 1208
+#> 297623 1       1       4       4 403 1208
+#> 297624 1       1       5       4 403 1208
+#> 297625 1       1       6       4 403 1208
 ```
 
 The function `wiggle` allows us to create a new dataframe with copies of the 
@@ -195,7 +285,8 @@ variable that modify just one value. Chaining together `wiggle` calls, we
 can see how the variable behaves under a number of different scenarios 
 simultaneously. 
 
-```{r}
+
+```r
 example2$yhat <- predict(m1, newdata = example2)
 
 ggplot(example2, aes(x = lectage, y = yhat)) + geom_line(aes(group = 1)) + 
@@ -203,8 +294,9 @@ ggplot(example2, aes(x = lectage, y = yhat)) + geom_line(aes(group = 1)) +
   geom_hline(yintercept = mean(InstEval$y), linetype = 2) + 
   geom_hline(yintercept = mean(InstEval$y) + sd(InstEval$y), linetype = 3) + 
   geom_hline(yintercept = mean(InstEval$y) - sd(InstEval$y), linetype = 3)
-
 ```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
 
 The result allows us to graphically display the effect of each level of `lectage` 
 on an observation that is otherwise identical. This is plotted here against a 
@@ -215,9 +307,12 @@ This is nice, but selecting a random observation is not very satisfying as it
 may not be very meaningful. To address this, we can instead take the average 
 observation: 
 
-```{r}
+
+```r
 example3 <- draw(m1, type = 'average')
 example3
+#>          y service lectage studage    d    s
+#> 1 3.205745       0       1       6 1510 2237
 ```
 
 Here, the average observation is identified based on either the modal observation 
@@ -225,7 +320,8 @@ for factors or on the mean for numeric variables. Then, the random effect
 terms are set to the level equivalent to the median effect -- very close 
 to 0. 
 
-```{r}
+
+```r
 example3 <- wiggle(example1, varlist = "service", 
           valueslist = list(c("0", "1")))
 example3$yhat <- predict(m1, newdata = example3)
@@ -235,8 +331,9 @@ ggplot(example3, aes(x = service, y = yhat)) + geom_line(aes(group = 1)) +
   geom_hline(yintercept = mean(InstEval$y), linetype = 2) + 
   geom_hline(yintercept = mean(InstEval$y) + sd(InstEval$y), linetype = 3) + 
   geom_hline(yintercept = mean(InstEval$y) - sd(InstEval$y), linetype = 3)
-
 ```
+
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
 
 Here we can see that for the average observation, whether the lecture is outside 
 of the home department has a very slight negative effect on the overall rating. 
@@ -248,19 +345,23 @@ How do we identify this range? `merTools` provides the `REquantile` function
 which helps to identify which levels of the grouping terms correspond to which 
 quantile of the magnitude of the random effects:
 
-```{r}
+
+```r
 REquantile(m1, quantile = 0.25, groupFctr = "s")
+#> [1] "446"
 REquantile(m1, quantile = 0.25, groupFctr = "d")
+#> [1] "18"
 ```
 
-Here we can see that group level `r REquantile(m1, quantile = 0.25, groupFctr = "s")` 
+Here we can see that group level 446 
 corresponds to the 25th percentile of the effect for the student groups, and level 
 `REquantile(m1, quantile = 0.25, groupFctr = "d")` corresponds to the 25th 
 percentile for the instructor group. Using this information we can reassign 
 a specific observation to varying magnitudes of grouping term effects to see 
 how much they might influence our final prediction. 
 
-```{r}
+
+```r
 example4 <- draw(m1, type = 'average')
 example4 <- wiggle(example4, varlist = "s", 
                       list(REquantile(m1, quantile = seq(0.1, 0.9, .1), 
@@ -276,6 +377,8 @@ ggplot(example4, aes(x = reorder(s, -yhat), y = yhat)) +
   geom_hline(yintercept = mean(InstEval$y) - sd(InstEval$y), linetype = 3)
 ```
 
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18-1.png)
+
 This figure is very interesting because it shows that moving across the range 
 of student effects can have a larger impact on the score than the fixed effects 
 we observed above. That is, getting a "generous" or a "stingy" rater can have 
@@ -285,10 +388,13 @@ But, we can do even better. First, we can move beyond the average observation
 by taking advantage of the `varList` option to the function which allows us to 
 specify a subset of the data to compute an average for. 
 
-```{r}
+
+```r
 subExample <- list(studage = "2", lectage = "4")
 example5 <- draw(m1, type = 'average', varList = subExample)
 example5
+#>          y service lectage studage    d    s
+#> 1 3.087193       0       4       2 1510 2237
 ```
 
 Now we have the average observation with a student age of 2 and a lecture age 
@@ -296,11 +402,16 @@ of 4. We can then follow the same procedure as before to explore the effects
 on our subsamples. Before we do that, let's fit a slightly more complex model 
 that includes a random slope. 
 
-```{r}
+
+```r
 data(VerbAgg)
 m2 <- glmer(r2 ~ Anger + Gender + btype + situ +
                 (1|id) + (1 + Gender|item), family = binomial, 
               data = VerbAgg)
+#> Warning in checkConv(attr(opt, "derivs"),
+#> opt$par, ctrl = control$checkConv, : Model
+#> failed to converge with max|grad| = 0.0071146
+#> (tol = 0.002, component 1)
 
 example6 <- draw(m2, type = 'average', varList = list("id" = "149"))
 example6$btype <- "scold"
@@ -318,8 +429,9 @@ ggplot(tempdf, aes(x = item, y = yhat, group = Gender)) +
   theme_bw() + ylim(c(0, 1)) + 
   theme(axis.text.x = element_text(angle = 20, hjust=1), 
         legend.position = "bottom") + labs(x = "Item", y = "Probability")
-
 ```
+
+![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)
 
 Here we've shown that the effect of both the intercept and the gender slope on 
 item simultaneously affect our predicted value. This results in the two lines 
@@ -353,7 +465,8 @@ fast. By leveraging the power of the `arm::sim()` function, we are able to
 generate prediction intervals for individual observations from very large models 
 very quickly. And, it works a lot like `predict`: 
 
-```{r}
+
+```r
 exampPreds <- predictInterval(m2, newdata = tempdf, 
                               type = "probability", level = 0.8)
 
@@ -367,12 +480,15 @@ ggplot(tempdf, aes(x = item, y = fit, ymin = lwr, ymax = upr,
         legend.position = "bottom")+ labs(x = "Item", y = "Probability")
 ```
 
+![plot of chunk unnamed-chunk-21](figure/unnamed-chunk-21-1.png)
+
 Here we can see there is barely any gender difference in terms of area of 
 potential prediction intervals. However, by default, this approach includes the 
 residual variance of the model. If we instead focus just on the uncertainty of 
 the random and fixed effects, we get:
 
-```{r}
+
+```r
 exampPreds <- predictInterval(m2, newdata = tempdf, 
                               type = "probability", 
                               include.resid.var = FALSE, level = 0.8)
@@ -385,8 +501,9 @@ ggplot(tempdf, aes(x = item, y = fit, ymin = lwr, ymax = upr,
   theme_bw() + ylim(c(0, 1)) + 
   theme(axis.text.x = element_text(angle = 20), 
         legend.position = "bottom") + labs(x = "Item", y = "Probability")
-
 ```
+
+![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
 
 Here, more difference emerges, but we see that the differences are not very 
 precise. 
