@@ -5,11 +5,10 @@ context("Do merModList objects get built and work")
 
 old_warn <- getOption("warn")
 options(warn = -1)
-
 set.seed(432422)
 
 test_that("simple cases work", {
-  # skip_on_cran()
+  skip_on_cran()
   library(blme)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:100)
@@ -40,7 +39,7 @@ test_that("simple cases work", {
 })
 
 test_that("print methods work for merModList", {
-  # skip_on_cran()
+  skip_on_cran()
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:100)
   split <- sample(x = LETTERS[9:15], size = nrow(d), replace=TRUE)
@@ -64,7 +63,7 @@ test_that("print methods work for merModList", {
 context("Numerical accuracy of merModList print method")
 
 test_that("print method for merModList works in general case", {
-  # skip_on_cran()
+  skip_on_cran()
   data(grouseticks)
   grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
   grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
@@ -121,6 +120,7 @@ test_that("print method for merModList works in general case", {
 context("ICC function")
 
 test_that("ICC function works", {
+  skip_on_cran()
   ICC1 <- ICC(outcome = "Reaction", group = "Subject", data = sleepstudy)
   expect_is(ICC1, "numeric")
   expect_equal(ICC1, 0.3948896, tol = .001)

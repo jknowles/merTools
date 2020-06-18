@@ -248,6 +248,7 @@ context("Numeric accuracy")
 # new factor level for group term
 
 test_that("Median of prediction interval is close to predict.lmer for single group models", {
+  skip_on_cran()
   set.seed(2311)
   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
   truPred <- predict(fm1, newdata = sleepstudy)
@@ -568,17 +569,21 @@ test_that("parallelization does not throw errors and generates good results", {
 
 context("Test returning predict interval components")
 
-# Test the option to return different predictInterval components
-m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-form <- TICKS_BIN ~ YEAR + HEIGHT +(1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)
-data(grouseticks)
-grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
-grouseticks$YEAR  <- as.numeric(grouseticks$YEAR)
-grouseticks$HEIGHT  <- grouseticks$HEIGHT - 462.2
-glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks)
 
 test_that("Output is correct dimensions", {
+  skip_on_cran()
+  ###########################################
+  # Test the option to return different predictInterval components
+  m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+  m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+  form <- TICKS_BIN ~ YEAR + HEIGHT +(1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)
+  data(grouseticks)
+  grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
+  grouseticks$YEAR  <- as.numeric(grouseticks$YEAR)
+  grouseticks$HEIGHT  <- grouseticks$HEIGHT - 462.2
+  glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks)
+
+  #############################################
   pred1 <- predictInterval(m1, which = "random")
   pred2 <- predictInterval(m2, which = "fixed")
   pred3 <- predictInterval(m2, which = "all")
@@ -629,6 +634,18 @@ test_that("Output is correct dimensions", {
 
 
 test_that("Compare random, fixed, include-resid", {
+  skip_on_cran()
+  ######################################
+  # Test the option to return different predictInterval components
+  m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+  m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+  form <- TICKS_BIN ~ YEAR + HEIGHT +(1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)
+  data(grouseticks)
+  grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
+  grouseticks$YEAR  <- as.numeric(grouseticks$YEAR)
+  grouseticks$HEIGHT  <- grouseticks$HEIGHT - 462.2
+  glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks)
+  ################################################
   predInt1 <- predictInterval(m1)
   predInt1$width <- predInt1[, 2] - predInt1[, 3]
   predInt2 <- predictInterval(m1, which = "random")
@@ -709,6 +726,18 @@ test_that("Compare random, fixed, include-resid", {
 })
 
 test_that("Default is set to all effects", {
+  skip_on_cran()
+  ######################################
+  # Test the option to return different predictInterval components
+  m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+  m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+  form <- TICKS_BIN ~ YEAR + HEIGHT +(1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)
+  data(grouseticks)
+  grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
+  grouseticks$YEAR  <- as.numeric(grouseticks$YEAR)
+  grouseticks$HEIGHT  <- grouseticks$HEIGHT - 462.2
+  glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks)
+  ################################################
   predInt1 <- predictInterval(m1, seed = 8231)
   predInt2 <- predictInterval(m1, which = "full", seed = 8231)
   expect_identical(predInt1, predInt2)
@@ -753,16 +782,20 @@ test_that("Nested effects can work", {
 
 context("Interactions without intercepts")
 
-sleepstudy$Test <- rep(sample(c(TRUE, FALSE), length(unique(sleepstudy$Subject)),
-                              replace = TRUE), each = 10)
-m1 <- lmer(Reaction ~ Days:Test + (0 + Days | Subject), data = sleepstudy)
-
-sleepstudy$cars <- sleepstudy$Days*3
-m2 <- lmer(Reaction ~ cars:Test + (0 + Days | Subject), data = sleepstudy)
-m3 <- lmer(Reaction ~ cars:Test + (1 | Subject), data = sleepstudy)
-m4 <- lmer(Reaction ~ cars:Test + (0 + cars | Subject), data = sleepstudy)
 
 test_that("Models with cross-level interaction and no random intercept work", {
+  skip_on_cran()
+  #################################
+  sleepstudy$Test <- rep(sample(c(TRUE, FALSE), length(unique(sleepstudy$Subject)),
+                                replace = TRUE), each = 10)
+  m1 <- lmer(Reaction ~ Days:Test + (0 + Days | Subject), data = sleepstudy)
+
+  sleepstudy$cars <- sleepstudy$Days*3
+  m2 <- lmer(Reaction ~ cars:Test + (0 + Days | Subject), data = sleepstudy)
+  m3 <- lmer(Reaction ~ cars:Test + (1 | Subject), data = sleepstudy)
+  m4 <- lmer(Reaction ~ cars:Test + (0 + cars | Subject), data = sleepstudy)
+
+  ###################################
   preds1 <- predictInterval(m1)
   expect_equal(nrow(preds1), 180)
   expect_equal(ncol(preds1), 3)
@@ -806,8 +839,10 @@ test_that("Models with cross-level interaction and no random intercept work", {
 })
 
 
-m1 <- lmer(Reaction ~ 0 + Days + Days:Subject + (1 | Days), data = sleepstudy)
+
 test_that("Models with cross-level interaction and no random intercept work", {
+  skip_on_cran()
+  m1 <- lmer(Reaction ~ 0 + Days + Days:Subject + (1 | Days), data = sleepstudy)
   preds1 <- predictInterval(m1)
   expect_equal(nrow(preds1), 180)
   expect_equal(ncol(preds1), 3)

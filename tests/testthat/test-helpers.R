@@ -3,6 +3,7 @@ set.seed(51315)
 # Trimming data frame----
 context("Trimming data frame")
 test_that("Trimming results in correct size", {
+  skip_on_cran()
   data(InstEval)
   trimDat <- merTools:::trimModelFrame(InstEval)
   expect_gt(nrow(InstEval), nrow( merTools:::trimModelFrame(InstEval)))
@@ -19,6 +20,7 @@ test_that("Trimming results in correct size", {
 })
 
 test_that("Trimming does not corrupt order", {
+  skip_on_cran()
   tmp <- InstEval[1:10, ]
   trimDat <- merTools:::trimModelFrame(InstEval)
   trimDat <- rbind(tmp, trimDat)
@@ -32,6 +34,7 @@ test_that("Trimming does not corrupt order", {
 context("subBoot and Theta")
 
 test_that("Can extract theta from a fit model", {
+  skip_on_cran()
   set.seed(404)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:100)
@@ -57,6 +60,7 @@ test_that("Can extract theta from a fit model", {
 context("Test formula build")
 
 test_that("Formula works for additive functions", {
+  skip_on_cran()
   n <- 20
   x <- y <- rnorm(n)
   z <- rnorm(n)
@@ -74,6 +78,7 @@ test_that("Formula works for additive functions", {
 
 
 test_that("Formula works for interactions", {
+  skip_on_cran()
   n <- 200
   x <- y <- rnorm(n)
   z <- rnorm(n)
@@ -98,6 +103,7 @@ test_that("Formula works for interactions", {
 
 
 test_that("Build model matrix produces matrices of the right size", {
+  skip_on_cran()
   d <- expand.grid(fac1 = LETTERS[1:5],
                    grp = letters[11:20],
                    obs = 1:50)
