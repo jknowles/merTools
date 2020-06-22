@@ -1,7 +1,7 @@
 ---
 title: "Prediction Intervals from merMod Objects"
 author: "Jared Knowles and Carl Frederick"
-date: "2020-06-18"
+date: "2020-06-22"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
@@ -83,7 +83,7 @@ and,
 and the mean or median of the simulated predictions
 
 Currently, the supported model types are linear mixed models and mixed logistic
-regression models.  
+regression models.
 
 The prediction data set *can* include levels that are not in the estimation model
 frame. The prediction intervals for such observations only incorporate
@@ -101,7 +101,7 @@ estimate from other methods falls within the prediction interval produced by
 
 This section compares the results of `predictInterval()` with those obtained
 using `arm::sim()` and `lme4::bootMer()` using the sleepstudy data from
-`lme4`.  These data contain reaction time observations for 10 days on 18 subjects.  
+`lme4`.  These data contain reaction time observations for 10 days on 18 subjects.
 The data are sorted such that the first 10 observations are days one through
 ten for subject 1, the next 10 are days one through ten for subject 2 and so on.
 The example model that we are estimating below estimates random intercepts and a
@@ -180,7 +180,7 @@ ggplot(aes(x=1:30, y=fit, ymin=lwr, ymax=upr), data=PI[1:30,]) +
   labs(x="Index", y="Prediction w/ 95% PI") + theme_bw()
 ```
 
-<img src="figure/Inspect predInt 2-1.png" title="plot of chunk Inspect predInt 2" alt="plot of chunk Inspect predInt 2" style="display: block; margin: auto;" />
+<img src="usage-Inspect_predInt_2-1.png" title="plot of chunk Inspect_predInt_2" alt="plot of chunk Inspect_predInt_2" style="display: block; margin: auto;" />
 
 #### Step 1a: Adjusting for correlation between fixed and random effects
 
@@ -195,7 +195,7 @@ intercept effects are -2, 1, and 1, versus a fixed intercept of 6 and
 random intercept effects of -3, 0, and 0. (The latter situation will never be
 the MLE, but it can occur in this package's simulations.)
 
-To show this issue, we'll use the sleep study model, predicting the reaction times 
+To show this issue, we'll use the sleep study model, predicting the reaction times
 of subjects after experiencing sleep deprivation:
 
 
@@ -239,16 +239,16 @@ using the `ignore.fixed.effects` argument.
 
 
 ```r
-predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1) 
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1)
 #>        fit      upr      lwr
 #> 1 253.8537 268.5299 239.6275
-# predict the average reaction time for a subject at day 0, taking the global intercept 
+# predict the average reaction time for a subject at day 0, taking the global intercept
 # (mean reaction time) as fully known
-predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = "(Intercept)") 
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = "(Intercept)")
 #>        fit      upr      lwr
 #> 1 254.2354 269.3875 239.3116
 #Same as above
-predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1:2) 
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1:2)
 #>        fit      upr     lwr
 #> 1 253.6743 269.8776 237.984
 # as above, taking the first two fixed effects (intercept and days effect) as fully known
@@ -267,11 +267,11 @@ level.
 
 
 ```r
-predictInterval(fm1, sleepstudy[1,], include.resid.var=0, 
-                fix.intercept.variance = TRUE) 
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0,
+                fix.intercept.variance = TRUE)
 #>        fit      upr      lwr
 #> 1 253.5872 268.8683 236.6639
-# predict the average reaction time for a subject at day 0,, using an ad-hoc 
+# predict the average reaction time for a subject at day 0,, using an ad-hoc
 # correction for the covariance of the intercept with the random intercept effects.
 ```
 
@@ -309,14 +309,14 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-<img src="figure/arm.Sim-1.png" title="plot of chunk arm.Sim" alt="plot of chunk arm.Sim" style="display: block; margin: auto;" />
+<img src="usage-arm.Sim-1.png" title="plot of chunk arm.Sim" alt="plot of chunk arm.Sim" style="display: block; margin: auto;" />
 
 The prediction intervals from `arm:sim()` are much smaller and the random slope
 for days vary more than they do for `predictInterval`. Both results are as
 expected, given the small number of subjects and observations per subject in
 these data. Because `predictInterval()` is incorporating uncertainty in the CMFEs
 (but not the variance parameters of the random coefficients themselves), the
-Days slopes are closer to the overall or pooled regression slope.  
+Days slopes are closer to the overall or pooled regression slope.
 
 ###Step 3: Comparison with `lme4::bootMer()`
 
@@ -371,7 +371,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-<img src="figure/bootMer.1-1.png" title="plot of chunk bootMer.1" alt="plot of chunk bootMer.1" style="display: block; margin: auto;" />
+<img src="usage-bootMer.1-1.png" title="plot of chunk bootMer.1" alt="plot of chunk bootMer.1" style="display: block; margin: auto;" />
 
 The intervals produced by `predictInterval`, represented in green, cover the
 point estimates produced by `bootMer` in every case for these 30 observations.
@@ -403,7 +403,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-<img src="figure/bootMer.2-1.png" title="plot of chunk bootMer.2" alt="plot of chunk bootMer.2" style="display: block; margin: auto;" />
+<img src="usage-bootMer.2-1.png" title="plot of chunk bootMer.2" alt="plot of chunk bootMer.2" style="display: block; margin: auto;" />
 
 Here, the results for `predictInterval` in green again encompass the results from
 `bootMer`, but are much wider. The `bootMer` estimates are ignoring the variance
@@ -432,7 +432,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-<img src="figure/bootMer.3-1.png" title="plot of chunk bootMer.3" alt="plot of chunk bootMer.3" style="display: block; margin: auto;" />
+<img src="usage-bootMer.3-1.png" title="plot of chunk bootMer.3" alt="plot of chunk bootMer.3" style="display: block; margin: auto;" />
 
 These results are virtually identical to those above.
 
@@ -457,9 +457,9 @@ PI.time.stan <- system.time({
 #> Chain 1: 
 #> Chain 1: 
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 10.144 seconds (Warm-up)
-#> Chain 1:                3.647 seconds (Sampling)
-#> Chain 1:                13.791 seconds (Total)
+#> Chain 1:  Elapsed Time: 9.585 seconds (Warm-up)
+#> Chain 1:                3.35 seconds (Sampling)
+#> Chain 1:                12.935 seconds (Total)
 #> Chain 1:
 
 
@@ -502,7 +502,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-<img src="figure/unnamed-chunk-2-1.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" />
+<img src="usage-stancomp-1.png" title="plot of chunk stancomp" alt="plot of chunk stancomp" style="display: block; margin: auto;" />
 
 
 ### Computation time
@@ -519,12 +519,12 @@ all five methods for calculating prediction intervals for `merMod` objects.
 
 |                         | user.self| sys.self| elapsed|
 |:------------------------|---------:|--------:|-------:|
-|predictInterval()        |      0.60|     0.00|    0.59|
-|arm::sim()               |      0.92|     0.00|    0.92|
-|lme4::bootMer()-Method 1 |      8.25|     0.08|    8.86|
-|lme4::bootMer()-Method 2 |      7.82|     0.14|    9.23|
-|lme4::bootMer()-Method 3 |      7.63|     0.08|    8.17|
-|rstanarm:predict         |     14.32|     0.09|   14.42|
+|predictInterval()        |      0.52|     0.00|    0.51|
+|arm::sim()               |      0.88|     0.00|    0.87|
+|lme4::bootMer()-Method 1 |      8.57|     0.00|    8.72|
+|lme4::bootMer()-Method 2 |      8.84|     0.03|    9.01|
+|lme4::bootMer()-Method 3 |      8.90|     0.02|    9.08|
+|rstanarm:predict         |     13.80|     0.00|   13.94|
 
 For this simple example, we see that `arm::sim()` is the fastest--nearly five
 times faster than `predictInterval()`. However, `predictInterval()` is nearly

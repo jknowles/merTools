@@ -78,9 +78,10 @@
 #' @seealso \code{\link{expectedRank}}, \code{\link{predictInterval}}
 #' @importFrom stats reshape
 #' @examples
+#' \donttest{
 #' fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #' mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
-#' \donttest{
+#'
 #' # You can also pass additional arguments to predictInterval through REimpact
 #'  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
 #'  margin_df <- REmargins(g1, newdata = InstEval[20:25, ], groupFctr = c("s"),

@@ -77,6 +77,7 @@
 #' @importFrom foreach %dopar%
 #' @importFrom foreach foreach
 #' @examples
+#' \donttest{
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 #' regFit <- predict(m1, newdata = sleepstudy[11, ]) # a single value is returned
 #' intFit <- predictInterval(m1, newdata = sleepstudy[11, ]) # bounded values
@@ -90,6 +91,7 @@
 #'  regFit <- predict(gm2, newdata = d1[1:10, ], type = "response")
 #'  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "probability")
 #'  intFit <- predictInterval(gm2, newdata = d1[1:10, ], type = "linear.prediction")
+#'  }
 predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", "all"),
                             level = 0.8,
                             n.sims = 1000, stat=c("median","mean"),

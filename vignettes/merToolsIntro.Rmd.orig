@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
   comment="#>",
   collapse=TRUE, 
   echo=TRUE, 
+  fig.path = "mertoolsIntro-",
   fig.width = 7
 )
 library(knitr); library(merTools)
@@ -84,7 +85,7 @@ cbind(feEx[,1] , round(feEx[, 2:4], 3))
 
 We can present these results graphically, using `ggplot2`: 
 
-```{r}
+```{r fixeffplot}
 library(ggplot2)
 ggplot(feEx[feEx$term!= "(Intercept)", ]) + 
   aes(x = term, ymin = median - 1.96 * sd, 
@@ -98,7 +99,7 @@ ggplot(feEx[feEx$term!= "(Intercept)", ]) +
 
 However, an easier option is:
 
-```{r}
+```{r quickFEplot}
 plotFEsim(feEx) + 
   theme_bw() + labs(title = "Coefficient Plot of InstEval Model", 
                     x = "Median Effect Estimate", y = "Evaluation Rating")
@@ -132,7 +133,7 @@ table(reEx$groupFctr)
 Most important is producing caterpillar or dotplots of these terms to explore 
 their variation. This is easily accomplished with the `dotplot` function:
 
-```{r, eval=FALSE, echo = TRUE}
+```{r dotplot, eval=FALSE, echo = TRUE}
 lattice::dotplot(ranef(m1, condVar=TRUE))
 ```
 
@@ -140,7 +141,7 @@ However, these graphics do not provide much control over the results. Instead,
 we can use the `plotREsim` function in `merTools` to gain more control over 
 plotting of the random effect simulations. 
 
-```{r}
+```{r refplot1}
 p1 <- plotREsim(reEx)
 p1
 ```
@@ -195,7 +196,7 @@ variable that modify just one value. Chaining together `wiggle` calls, we
 can see how the variable behaves under a number of different scenarios 
 simultaneously. 
 
-```{r}
+```{r predictplotwiggle}
 example2$yhat <- predict(m1, newdata = example2)
 
 ggplot(example2, aes(x = lectage, y = yhat)) + geom_line(aes(group = 1)) + 
@@ -225,7 +226,7 @@ for factors or on the mean for numeric variables. Then, the random effect
 terms are set to the level equivalent to the median effect -- very close 
 to 0. 
 
-```{r}
+```{r wiggle2}
 example3 <- wiggle(example1, varlist = "service", 
           valueslist = list(c("0", "1")))
 example3$yhat <- predict(m1, newdata = example3)
@@ -260,7 +261,7 @@ percentile for the instructor group. Using this information we can reassign
 a specific observation to varying magnitudes of grouping term effects to see 
 how much they might influence our final prediction. 
 
-```{r}
+```{r wiggleanddraw}
 example4 <- draw(m1, type = 'average')
 example4 <- wiggle(example4, varlist = "s", 
                       list(REquantile(m1, quantile = seq(0.1, 0.9, .1), 
@@ -296,7 +297,7 @@ of 4. We can then follow the same procedure as before to explore the effects
 on our subsamples. Before we do that, let's fit a slightly more complex model 
 that includes a random slope. 
 
-```{r}
+```{r wigglesubsamples}
 data(VerbAgg)
 m2 <- glmer(r2 ~ Anger + Gender + btype + situ +
                 (1|id) + (1 + Gender|item), family = binomial, 
@@ -353,7 +354,7 @@ fast. By leveraging the power of the `arm::sim()` function, we are able to
 generate prediction intervals for individual observations from very large models 
 very quickly. And, it works a lot like `predict`: 
 
-```{r}
+```{r speedexample}
 exampPreds <- predictInterval(m2, newdata = tempdf, 
                               type = "probability", level = 0.8)
 
@@ -372,7 +373,7 @@ potential prediction intervals. However, by default, this approach includes the
 residual variance of the model. If we instead focus just on the uncertainty of 
 the random and fixed effects, we get:
 
-```{r}
+```{r excluderesidvar}
 exampPreds <- predictInterval(m2, newdata = tempdf, 
                               type = "probability", 
                               include.resid.var = FALSE, level = 0.8)

@@ -27,7 +27,9 @@ terms in a merMod object. This allows the user to easily identify the observatio
 associated with the nth percentile effect.
 }
 \examples{
+\donttest{
 fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 REquantile(fm1, quantile = 0.25, groupFctr = "Subject")
 REquantile(fm1, quantile = 0.25, groupFctr = "Subject", term = "Days")
+}
 }

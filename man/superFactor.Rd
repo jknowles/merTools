@@ -20,6 +20,7 @@ Create a factor variable and include unobserved levels
 for compatibility with model prediction functions
 }
 \examples{
+\donttest{
 regularFactor <- c("A", "B", "C")
 regularFactor <- factor(regularFactor)
 levels(regularFactor)
@@ -27,4 +28,5 @@ levels(regularFactor)
 newLevs <- c("D", "E", "F")
 regularFactor <- superFactor(regularFactor, fullLev = newLevs)
 levels(regularFactor) # now super
+}
 }

@@ -14,6 +14,7 @@ library(ggplot2); library(knitr); library(merTools)
 knitr::opts_chunk$set(
   cache=FALSE,
   comment="#>",
+  fig.path = "usage-",
   collapse=TRUE,
   echo = TRUE
 )
@@ -93,7 +94,7 @@ and,
 and the mean or median of the simulated predictions
 
 Currently, the supported model types are linear mixed models and mixed logistic
-regression models.  
+regression models.
 
 The prediction data set *can* include levels that are not in the estimation model
 frame. The prediction intervals for such observations only incorporate
@@ -111,7 +112,7 @@ estimate from other methods falls within the prediction interval produced by
 
 This section compares the results of `predictInterval()` with those obtained
 using `arm::sim()` and `lme4::bootMer()` using the sleepstudy data from
-`lme4`.  These data contain reaction time observations for 10 days on 18 subjects.  
+`lme4`.  These data contain reaction time observations for 10 days on 18 subjects.
 The data are sorted such that the first 10 observations are days one through
 ten for subject 1, the next 10 are days one through ten for subject 2 and so on.
 The example model that we are estimating below estimates random intercepts and a
@@ -159,7 +160,7 @@ The three columns are the median (`fit`) and limits of the 95% prediction
 interval (`upr` and `lwr`) because we set `level=0.95`. The following figure
 displays the output graphically for the first 30 observations.
 
-```{r Inspect predInt 2, fig.width=7, fig.align="center"}
+```{r Inspect_predInt_2, fig.width=7, fig.align="center"}
 library(ggplot2);
 ggplot(aes(x=1:30, y=fit, ymin=lwr, ymax=upr), data=PI[1:30,]) +
   geom_point() +
@@ -180,7 +181,7 @@ intercept effects are -2, 1, and 1, versus a fixed intercept of 6 and
 random intercept effects of -3, 0, and 0. (The latter situation will never be
 the MLE, but it can occur in this package's simulations.)
 
-To show this issue, we'll use the sleep study model, predicting the reaction times 
+To show this issue, we'll use the sleep study model, predicting the reaction times
 of subjects after experiencing sleep deprivation:
 
 ```{r prepSleep, message=FALSE, warning=FALSE}
@@ -203,12 +204,12 @@ effects as fully-known (that is, with an effectively 0 variance.) This is done
 using the `ignore.fixed.effects` argument.
 
 ```{r ShowFat2, message=FALSE, warning=FALSE}
-predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1) 
-# predict the average reaction time for a subject at day 0, taking the global intercept 
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1)
+# predict the average reaction time for a subject at day 0, taking the global intercept
 # (mean reaction time) as fully known
-predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = "(Intercept)") 
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = "(Intercept)")
 #Same as above
-predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1:2) 
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1:2)
 # as above, taking the first two fixed effects (intercept and days effect) as fully known
 ```
 
@@ -224,9 +225,9 @@ precision equal to the of the precisions due to the individual groups at that
 level.
 
 ```{r ShowFat3, message=FALSE, warning=FALSE}
-predictInterval(fm1, sleepstudy[1,], include.resid.var=0, 
-                fix.intercept.variance = TRUE) 
-# predict the average reaction time for a subject at day 0,, using an ad-hoc 
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0,
+                fix.intercept.variance = TRUE)
+# predict the average reaction time for a subject at day 0,, using an ad-hoc
 # correction for the covariance of the intercept with the random intercept effects.
 ```
 
@@ -270,7 +271,7 @@ for days vary more than they do for `predictInterval`. Both results are as
 expected, given the small number of subjects and observations per subject in
 these data. Because `predictInterval()` is incorporating uncertainty in the CMFEs
 (but not the variance parameters of the random coefficients themselves), the
-Days slopes are closer to the overall or pooled regression slope.  
+Days slopes are closer to the overall or pooled regression slope.
 
 ###Step 3: Comparison with `lme4::bootMer()`
 
@@ -405,7 +406,7 @@ central_intervals <- function(x, prob) {
 ```
 
 
-```{r, message=FALSE, fig.width=7, fig.height=4, fig.align="center", eval = rstanarm_eval}
+```{r stancomp, message=FALSE, fig.width=7, fig.height=4, fig.align="center", eval = rstanarm_eval}
 PI.time.stan <- system.time({
   fm_stan <- stan_lmer(Reaction ~ Days + (Days|Subject), data = sleepstudy,
                        verbose = FALSE, open_progress = FALSE, refresh = -1,
@@ -463,7 +464,7 @@ if (rstanarm_eval) {
     "rstanarm:predict"
     )
     kable(times)
-} else { 
+} else {
   times <-
     rbind(PI.time,
     PI.arm.time,

@@ -71,6 +71,7 @@
 #' doi:10.1093/qjmed/hcp169
 #'
 #' @examples
+#' \donttest{
 #' #For a one-level random intercept model
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 #' (m1.er <- expectedRank(m1))
@@ -82,7 +83,6 @@
 #' #ranked by the random intercept
 #' (m2.er2 <- expectedRank(m2, term="int"))
 #'
-#' \donttest{
 #' #For a two-level model with random intercepts
 #' m3 <- lmer(y ~ service * dept + (1|s) + (1|d), InstEval)
 #' #Ranked by the random intercept on 's'

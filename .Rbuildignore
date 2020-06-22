@@ -11,3 +11,7 @@ CONTRIBUTING.md
 ^README-.*\.png$
 readmeplot
 .gitignore
+^vignettes/merToolsIntro\.Rmd\.orig$
+^vignettes/marginal_effects\.Rmd\.orig$
+^vignettes/Using_predictInterval\.Rmd\.orig$
+^vignettes/imputation\.Rmd\.orig$

@@ -1,7 +1,7 @@
 ---
 title: "An Introduction to merTools"
 author: "Jared Knowles and Carl Frederick"
-date: "2020-06-18"
+date: "2020-06-22"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
@@ -140,7 +140,7 @@ ggplot(feEx[feEx$term!= "(Intercept)", ]) +
                     x = "Median Effect Estimate", y = "Evaluation Rating")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+![plot of chunk fixeffplot](mertoolsIntro-fixeffplot-1.png)
 
 However, an easier option is:
 
@@ -151,7 +151,7 @@ plotFEsim(feEx) +
                     x = "Median Effect Estimate", y = "Evaluation Rating")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
+![plot of chunk quickFEplot](mertoolsIntro-quickFEplot-1.png)
 
 ## Random Effects
 
@@ -163,20 +163,13 @@ levels.
 ```r
 reEx <- REsim(m1)
 head(reEx)
-#>   groupFctr groupID        term        mean
-#> 1         s       1 (Intercept)  0.18042888
-#> 2         s       2 (Intercept) -0.07034954
-#> 3         s       3 (Intercept)  0.32105622
-#> 4         s       4 (Intercept)  0.23713963
-#> 5         s       5 (Intercept)  0.02613185
-#> 6         s       6 (Intercept)  0.10806580
-#>        median        sd
-#> 1  0.21906223 0.3145710
-#> 2 -0.06339508 0.2972897
-#> 3  0.33625741 0.3187445
-#> 4  0.23271723 0.2761635
-#> 5  0.02878794 0.3054642
-#> 6  0.11082677 0.2429651
+#>   groupFctr groupID        term        mean      median        sd
+#> 1         s       1 (Intercept)  0.18042888  0.21906223 0.3145710
+#> 2         s       2 (Intercept) -0.07034954 -0.06339508 0.2972897
+#> 3         s       3 (Intercept)  0.32105622  0.33625741 0.3187445
+#> 4         s       4 (Intercept)  0.23713963  0.23271723 0.2761635
+#> 5         s       5 (Intercept)  0.02613185  0.02878794 0.3054642
+#> 6         s       6 (Intercept)  0.10806580  0.11082677 0.2429651
 ```
 
 The result is a dataframe with estimates of the values of each of the random 
@@ -217,7 +210,7 @@ p1 <- plotREsim(reEx)
 p1
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
+![plot of chunk refplot1](mertoolsIntro-refplot1-1.png)
 
 The result is a ggplot2 object which can be modified however the user sees 
 fit. Here, we've established that most student and professor effects are 
@@ -296,7 +289,7 @@ ggplot(example2, aes(x = lectage, y = yhat)) + geom_line(aes(group = 1)) +
   geom_hline(yintercept = mean(InstEval$y) - sd(InstEval$y), linetype = 3)
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
+![plot of chunk predictplotwiggle](mertoolsIntro-predictplotwiggle-1.png)
 
 The result allows us to graphically display the effect of each level of `lectage` 
 on an observation that is otherwise identical. This is plotted here against a 
@@ -333,7 +326,7 @@ ggplot(example3, aes(x = service, y = yhat)) + geom_line(aes(group = 1)) +
   geom_hline(yintercept = mean(InstEval$y) - sd(InstEval$y), linetype = 3)
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
+![plot of chunk wiggle2](mertoolsIntro-wiggle2-1.png)
 
 Here we can see that for the average observation, whether the lecture is outside 
 of the home department has a very slight negative effect on the overall rating. 
@@ -377,7 +370,7 @@ ggplot(example4, aes(x = reorder(s, -yhat), y = yhat)) +
   geom_hline(yintercept = mean(InstEval$y) - sd(InstEval$y), linetype = 3)
 ```
 
-![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18-1.png)
+![plot of chunk wiggleanddraw](mertoolsIntro-wiggleanddraw-1.png)
 
 This figure is very interesting because it shows that moving across the range 
 of student effects can have a larger impact on the score than the fixed effects 
@@ -408,10 +401,8 @@ data(VerbAgg)
 m2 <- glmer(r2 ~ Anger + Gender + btype + situ +
                 (1|id) + (1 + Gender|item), family = binomial, 
               data = VerbAgg)
-#> Warning in checkConv(attr(opt, "derivs"),
-#> opt$par, ctrl = control$checkConv, : Model
-#> failed to converge with max|grad| = 0.0071146
-#> (tol = 0.002, component 1)
+#> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, : Model failed to
+#> converge with max|grad| = 0.0071146 (tol = 0.002, component 1)
 
 example6 <- draw(m2, type = 'average', varList = list("id" = "149"))
 example6$btype <- "scold"
@@ -431,7 +422,7 @@ ggplot(tempdf, aes(x = item, y = yhat, group = Gender)) +
         legend.position = "bottom") + labs(x = "Item", y = "Probability")
 ```
 
-![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)
+![plot of chunk wigglesubsamples](mertoolsIntro-wigglesubsamples-1.png)
 
 Here we've shown that the effect of both the intercept and the gender slope on 
 item simultaneously affect our predicted value. This results in the two lines 
@@ -480,7 +471,7 @@ ggplot(tempdf, aes(x = item, y = fit, ymin = lwr, ymax = upr,
         legend.position = "bottom")+ labs(x = "Item", y = "Probability")
 ```
 
-![plot of chunk unnamed-chunk-21](figure/unnamed-chunk-21-1.png)
+![plot of chunk speedexample](mertoolsIntro-speedexample-1.png)
 
 Here we can see there is barely any gender difference in terms of area of 
 potential prediction intervals. However, by default, this approach includes the 
@@ -503,7 +494,7 @@ ggplot(tempdf, aes(x = item, y = fit, ymin = lwr, ymax = upr,
         legend.position = "bottom") + labs(x = "Item", y = "Probability")
 ```
 
-![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
+![plot of chunk excluderesidvar](mertoolsIntro-excluderesidvar-1.png)
 
 Here, more difference emerges, but we see that the differences are not very 
 precise. 

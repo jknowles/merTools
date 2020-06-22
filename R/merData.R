@@ -328,6 +328,7 @@ averageObs <- function(merMod, varList = NULL, origData = NULL, ...){
 #' of x in fullLev
 #' @export
 #' @examples
+#' \donttest{
 #' regularFactor <- c("A", "B", "C")
 #' regularFactor <- factor(regularFactor)
 #' levels(regularFactor)
@@ -335,6 +336,7 @@ averageObs <- function(merMod, varList = NULL, origData = NULL, ...){
 #' newLevs <- c("D", "E", "F")
 #' regularFactor <- superFactor(regularFactor, fullLev = newLevs)
 #' levels(regularFactor) # now super
+#' }
 superFactor <- function(x, fullLev){
   x <- as.character(x)
   if("factor" %in% class(fullLev)){
@@ -419,9 +421,11 @@ wiggle <- function(data, varlist, valueslist) {
 #' to each quantile
 #' @export
 #' @examples
+#' \donttest{
 #' fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #' REquantile(fm1, quantile = 0.25, groupFctr = "Subject")
 #' REquantile(fm1, quantile = 0.25, groupFctr = "Subject", term = "Days")
+#' }
 REquantile <- function(merMod, quantile, groupFctr, term = "(Intercept)"){
   if(any(quantile > 1 | quantile < 0)){
     stop("Quantiles must be specified on the range 0-1")

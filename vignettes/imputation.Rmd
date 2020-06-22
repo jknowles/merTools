@@ -1,7 +1,7 @@
 ---
 title: "Analyzing Imputed Data with Multilevel Models and merTools"
 author: "Jared Knowles"
-date: "2020-06-18"
+date: "2020-06-22"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Imputation}
@@ -184,15 +184,11 @@ the aggregate from the imputed models:
 
 ```r
 fixef(mod) # model with dropped missing
-#> (Intercept)    minority      female         ses 
-#>   14.149102   -2.868687   -1.318437    2.067309 
-#>     meanses 
-#>    2.833490
+#> (Intercept)    minority      female         ses     meanses 
+#>   14.149102   -2.868687   -1.318437    2.067309    2.833490
 fixef(modList)
-#> (Intercept)    minority      female         ses 
-#>   14.028792   -2.680352   -1.213086    1.966725 
-#>     meanses 
-#>    3.141636
+#> (Intercept)    minority      female         ses     meanses 
+#>   14.028792   -2.680352   -1.213086    1.966725    3.141636
 ```
 
 
@@ -224,34 +220,24 @@ easily:
 ```r
 lapply(modList, fixef)
 #> $imp1
-#> (Intercept)    minority      female         ses 
-#>   13.976636   -2.587948   -1.170291    1.984663 
-#>     meanses 
-#>    3.170845 
+#> (Intercept)    minority      female         ses     meanses 
+#>   13.976636   -2.587948   -1.170291    1.984663    3.170845 
 #> 
 #> $imp2
-#> (Intercept)    minority      female         ses 
-#>   14.070484   -2.673140   -1.294932    1.959564 
-#>     meanses 
-#>    3.143996 
+#> (Intercept)    minority      female         ses     meanses 
+#>   14.070484   -2.673140   -1.294932    1.959564    3.143996 
 #> 
 #> $imp3
-#> (Intercept)    minority      female         ses 
-#>   14.040516   -2.728450   -1.215497    1.958265 
-#>     meanses 
-#>    3.134720 
+#> (Intercept)    minority      female         ses     meanses 
+#>   14.040516   -2.728450   -1.215497    1.958265    3.134720 
 #> 
 #> $imp4
-#> (Intercept)    minority      female         ses 
-#>   14.030150   -2.698588   -1.214679    1.997264 
-#>     meanses 
-#>    3.081103 
+#> (Intercept)    minority      female         ses     meanses 
+#>   14.030150   -2.698588   -1.214679    1.997264    3.081103 
 #> 
 #> $imp5
-#> (Intercept)    minority      female         ses 
-#>   14.026175   -2.713636   -1.170030    1.933870 
-#>     meanses 
-#>    3.177518
+#> (Intercept)    minority      female         ses     meanses 
+#>   14.026175   -2.713636   -1.170030    1.933870    3.177518
 ```
 
 And, you can always operate on any single element of the list:
@@ -259,15 +245,11 @@ And, you can always operate on any single element of the list:
 
 ```r
 fixef(modList[[1]])
-#> (Intercept)    minority      female         ses 
-#>   13.976636   -2.587948   -1.170291    1.984663 
-#>     meanses 
-#>    3.170845
+#> (Intercept)    minority      female         ses     meanses 
+#>   13.976636   -2.587948   -1.170291    1.984663    3.170845
 fixef(modList[[2]])
-#> (Intercept)    minority      female         ses 
-#>   14.070484   -2.673140   -1.294932    1.959564 
-#>     meanses 
-#>    3.143996
+#> (Intercept)    minority      female         ses     meanses 
+#>   14.070484   -2.673140   -1.294932    1.959564    3.143996
 ```
 
 ## Output of a Model List
@@ -277,8 +259,7 @@ fixef(modList[[2]])
 print(modList)
 #> $imp1
 #> Linear mixed model fit by REML ['lmerMod']
-#> Formula: 
-#> mathach ~ minority + female + ses + meanses + (1 + ses | schid)
+#> Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)
 #>    Data: d
 #> 
 #> REML criterion at convergence: 46328.3
@@ -311,8 +292,7 @@ print(modList)
 #> 
 #> $imp2
 #> Linear mixed model fit by REML ['lmerMod']
-#> Formula: 
-#> mathach ~ minority + female + ses + meanses + (1 + ses | schid)
+#> Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)
 #>    Data: d
 #> 
 #> REML criterion at convergence: 46308.7
@@ -345,8 +325,7 @@ print(modList)
 #> 
 #> $imp3
 #> Linear mixed model fit by REML ['lmerMod']
-#> Formula: 
-#> mathach ~ minority + female + ses + meanses + (1 + ses | schid)
+#> Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)
 #>    Data: d
 #> 
 #> REML criterion at convergence: 46302.4
@@ -379,8 +358,7 @@ print(modList)
 #> 
 #> $imp4
 #> Linear mixed model fit by REML ['lmerMod']
-#> Formula: 
-#> mathach ~ minority + female + ses + meanses + (1 + ses | schid)
+#> Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)
 #>    Data: d
 #> 
 #> REML criterion at convergence: 46302
@@ -413,8 +391,7 @@ print(modList)
 #> 
 #> $imp5
 #> Linear mixed model fit by REML ['lmerMod']
-#> Formula: 
-#> mathach ~ minority + female + ses + meanses + (1 + ses | schid)
+#> Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)
 #>    Data: d
 #> 
 #> REML criterion at convergence: 46324.3
@@ -455,18 +432,12 @@ summary(modList)
 #>     (1 + ses | schid), data = d)
 #> 
 #> Fixed Effects:
-#>             estimate std.error statistic
-#> (Intercept)   14.029     0.174    80.566
-#> female        -1.213     0.160    -7.574
-#> meanses        3.142     0.358     8.769
-#> minority      -2.680     0.202   -13.289
-#> ses            1.967     0.120    16.372
-#>                     df
-#> (Intercept)  99310.593
-#> female       16493.051
-#> meanses     259740.570
-#> minority     18540.839
-#> ses         166028.049
+#>             estimate std.error statistic         df
+#> (Intercept)   14.029     0.174    80.566  99310.593
+#> female        -1.213     0.160    -7.574  16493.051
+#> meanses        3.142     0.358     8.769 259740.570
+#> minority      -2.680     0.202   -13.289  18540.839
+#> ses            1.967     0.120    16.372 166028.049
 #> 
 #> Random Effects:
 #> 
@@ -526,29 +497,18 @@ set variance as well.
 
 ```r
 modelRandEffStats(modList)
-#>                        term    group   estimate
-#> 1 cor_(Intercept).ses.schid    schid -0.5247666
-#> 2      sd_(Intercept).schid    schid  1.5183804
-#> 3   sd_Observation.Residual Residual  5.9703034
-#> 4              sd_ses.schid    schid  0.6468874
-#>     std.error
-#> 1 0.084101895
-#> 2 0.008713530
-#> 3 0.006244066
-#> 4 0.028062351
+#>                        term    group   estimate   std.error
+#> 1 cor_(Intercept).ses.schid    schid -0.5247666 0.084101895
+#> 2      sd_(Intercept).schid    schid  1.5183804 0.008713530
+#> 3   sd_Observation.Residual Residual  5.9703034 0.006244066
+#> 4              sd_ses.schid    schid  0.6468874 0.028062351
 modelFixedEff(modList)
-#>          term  estimate std.error  statistic
-#> 1 (Intercept) 14.028792 0.1741275  80.566201
-#> 2      female -1.213086 0.1601572  -7.574345
-#> 3     meanses  3.141636 0.3582833   8.768580
-#> 4    minority -2.680352 0.2017037 -13.288566
-#> 5         ses  1.966725 0.1201239  16.372467
-#>          df
-#> 1  99310.59
-#> 2  16493.05
-#> 3 259740.57
-#> 4  18540.84
-#> 5 166028.05
+#>          term  estimate std.error  statistic        df
+#> 1 (Intercept) 14.028792 0.1741275  80.566201  99310.59
+#> 2      female -1.213086 0.1601572  -7.574345  16493.05
+#> 3     meanses  3.141636 0.3582833   8.768580 259740.57
+#> 4    minority -2.680352 0.2017037 -13.288566  18540.84
+#> 5         ses  1.966725 0.1201239  16.372467 166028.05
 VarCorr(modList)
 #> $stddev
 #> $stddev$schid
@@ -610,18 +570,12 @@ summary(modList)
 #>     (1 + ses | schid), data = d)
 #> 
 #> Fixed Effects:
-#>             estimate std.error statistic
-#> (Intercept)   14.029     0.174    80.566
-#> female        -1.213     0.160    -7.574
-#> meanses        3.142     0.358     8.769
-#> minority      -2.680     0.202   -13.289
-#> ses            1.967     0.120    16.372
-#>                     df
-#> (Intercept)  99310.593
-#> female       16493.051
-#> meanses     259740.570
-#> minority     18540.839
-#> ses         166028.049
+#>             estimate std.error statistic         df
+#> (Intercept)   14.029     0.174    80.566  99310.593
+#> female        -1.213     0.160    -7.574  16493.051
+#> meanses        3.142     0.358     8.769 259740.570
+#> minority      -2.680     0.202   -13.289  18540.839
+#> ses            1.967     0.120    16.372 166028.049
 #> 
 #> Random Effects:
 #> 
@@ -653,18 +607,12 @@ summary(modList)
 
 ```r
 modelFixedEff(modList)
-#>          term  estimate std.error  statistic
-#> 1 (Intercept) 14.028792 0.1741275  80.566201
-#> 2      female -1.213086 0.1601572  -7.574345
-#> 3     meanses  3.141636 0.3582833   8.768580
-#> 4    minority -2.680352 0.2017037 -13.288566
-#> 5         ses  1.966725 0.1201239  16.372467
-#>          df
-#> 1  99310.59
-#> 2  16493.05
-#> 3 259740.57
-#> 4  18540.84
-#> 5 166028.05
+#>          term  estimate std.error  statistic        df
+#> 1 (Intercept) 14.028792 0.1741275  80.566201  99310.59
+#> 2      female -1.213086 0.1601572  -7.574345  16493.05
+#> 3     meanses  3.141636 0.3582833   8.768580 259740.57
+#> 4    minority -2.680352 0.2017037 -13.288566  18540.84
+#> 5         ses  1.966725 0.1201239  16.372467 166028.05
 ```
 
 

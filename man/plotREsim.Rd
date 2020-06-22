@@ -50,8 +50,10 @@ does not cross the red line) are highlighted. Currently, the plots are ordered
 according to the grouping factor.
 }
 \examples{
+\donttest{
  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
  (p1 <- plotREsim(REsim(fm1)))
  #Plot just the random effects for the Days slope
  (p2 <- plotREsim(REsim(fm1), facet= list(groupFctr= "Subject", term= "Days")))
+ }
 }

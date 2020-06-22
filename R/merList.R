@@ -7,6 +7,7 @@
 #' of observations, number of grouping terms, AIC, and residual standard deviation
 #' @export
 #' @examples
+#' \donttest{
 #' sim_list <- replicate(n = 10,
 #'         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
 #'         simplify=FALSE)
@@ -14,6 +15,7 @@
 #' mod <- lmerModList(fml, data = sim_list)
 #' modelInfo(mod[[1]])
 #' lapply(mod, modelInfo)
+#' }
 modelInfo <- function(object){
   ngrps <- lapply(object@flist, function(x) length(levels(x)))
   out <- data.frame("n.obs" = getME(object, "devcomp")$dims["n"],
@@ -63,12 +65,14 @@ REcorrExtract <- function(model){
 #' @importFrom broom.mixed tidy
 #' @export
 #' @examples
+#' \donttest{
 #' sim_list <- replicate(n = 10,
 #'         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
 #'         simplify=FALSE)
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' modelRandEffStats(mod)
+#' }
 modelRandEffStats <- function(modList){
   effList <- lapply(modList, tidy, effects = "ran_pars")
   effList <- do.call(rbind, effList)
@@ -91,12 +95,14 @@ modelRandEffStats <- function(modList){
 #' @importFrom broom.mixed tidy
 #' @import dplyr
 #' @examples
+#' \donttest{
 #' sim_list <- replicate(n = 10,
 #'         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
 #'         simplify=FALSE)
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' modelFixedEff(mod)
+#' }
 modelFixedEff <- function(modList, ...){
   fixEst <- lapply(modList, tidy, effects = "fixed", ...)
   fixEst <- do.call(rbind, fixEst)
@@ -136,12 +142,14 @@ modelFixedEff <- function(modList, ...){
 #' objects for each of the component models in the \code{merModList}.
 #' @export
 #' @examples
+#' \donttest{
 #' sim_list <- replicate(n = 10,
 #'         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
 #'         simplify=FALSE)
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' fixef(mod)
+#' }
 fixef.merModList <- function(object, add.dropped = FALSE, ...){
   Reduce(`+`, lapply(object, fixef)) / length(object)
 }
@@ -155,12 +163,14 @@ fixef.merModList <- function(object, add.dropped = FALSE, ...){
 #' objects for each of the component models in the \code{merModList}.
 #' @export
 #' @examples
+#' \donttest{
 #' sim_list <- replicate(n = 10,
 #'         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
 #'         simplify=FALSE)
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' ranef(mod)
+#' }
 ranef.merModList <- function(object, ...){
   levels <- getME(object[[1]], "n_rfacs")
   re <- vector(length = levels, mode = "list")
@@ -275,12 +285,14 @@ summary.merModList <- function(object, ...){
 #' @return a summary object of model information
 #' @export
 #' @examples
+#' \donttest{
 #' sim_list <- replicate(n = 10,
 #'         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
 #'         simplify=FALSE)
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' summary(mod)
+#' }
 print.merModList <- function(x, ...){
   out <- lapply(x, sum.mm)
   # class(out) <- "summary.merModList"
@@ -365,12 +377,14 @@ print.summary.merModList <- function(x, ...){
 #' @return a list of fitted merMod objects of class merModList
 #' @export
 #' @examples
+#' \donttest{
 #' sim_list <- replicate(n = 10,
 #'         expr = sleepstudy[sample(row.names(sleepstudy), 180),],
 #'         simplify=FALSE)
 #' fml <- "Reaction ~ Days + (Days | Subject)"
 #' mod <- lmerModList(fml, data = sim_list)
 #' summary(mod)
+#' }
 lmerModList <- function(formula, data, parallel = FALSE, ...){
   if(parallel) {
     if (requireNamespace("future.apply", quietly=TRUE)) {

@@ -22,10 +22,12 @@
 #' If \code{list} selects the panel specified by the named elements of the list
 #' @return a ggplot2 plot of the coefficient effects
 #' @examples
+#' \donttest{
 #'  fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #'  (p1 <- plotREsim(REsim(fm1)))
 #'  #Plot just the random effects for the Days slope
 #'  (p2 <- plotREsim(REsim(fm1), facet= list(groupFctr= "Subject", term= "Days")))
+#'  }
 #' @export
 #' @import ggplot2
 plotREsim <- function(data, level = 0.95, stat = "median", sd = TRUE,

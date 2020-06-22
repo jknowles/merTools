@@ -86,9 +86,10 @@ precise estimates are downweighted in the calculation of the mean for the bin.
 Finally, a standard error for the bin mean is calculated.
 }
 \examples{
+\donttest{
 fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
-\donttest{
+
 # You can also pass additional arguments to predictInterval through REimpact
  g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=InstEval)
  margin_df <- REmargins(g1, newdata = InstEval[20:25, ], groupFctr = c("s"),

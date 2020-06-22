@@ -70,6 +70,7 @@ coefficients for the same term, e.g.
 \code{lmer(Reaction ~ Days + (1 | Subject) + (0 + Days | Subject), data = sleepstudy)})
 }
 \examples{
+\donttest{
 #For a one-level random intercept model
 m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
 (m1.er <- expectedRank(m1))
@@ -81,7 +82,6 @@ m2 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 #ranked by the random intercept
 (m2.er2 <- expectedRank(m2, term="int"))
 
-\donttest{
 #For a two-level model with random intercepts
 m3 <- lmer(y ~ service * dept + (1|s) + (1|d), InstEval)
 #Ranked by the random intercept on 's'
