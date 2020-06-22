@@ -4,7 +4,7 @@ author: "Jared Knowles and Carl Frederick"
 date: "2020-06-22"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteEngine{knitr::knitr}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Marginalizing Random Effect Levels}
   %\VignetteEncoding{UTF-8}
 ---

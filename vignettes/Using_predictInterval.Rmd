@@ -4,7 +4,7 @@ author: "Jared Knowles and Carl Frederick"
 date: "2020-06-22"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteEngine{knitr::knitr}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Prediction Intervals from merMod Objects}
   %\VignetteEncoding{UTF-8}
 ---
@@ -457,9 +457,9 @@ PI.time.stan <- system.time({
 #> Chain 1: 
 #> Chain 1: 
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 6.923 seconds (Warm-up)
-#> Chain 1:                2.445 seconds (Sampling)
-#> Chain 1:                9.368 seconds (Total)
+#> Chain 1:  Elapsed Time: 6.994 seconds (Warm-up)
+#> Chain 1:                2.497 seconds (Sampling)
+#> Chain 1:                9.491 seconds (Total)
 #> Chain 1:
 
 
@@ -519,12 +519,12 @@ all five methods for calculating prediction intervals for `merMod` objects.
 
 |                         | user.self| sys.self| elapsed|
 |:------------------------|---------:|--------:|-------:|
-|predictInterval()        |      0.35|     0.01|    0.36|
-|arm::sim()               |      0.58|     0.01|    0.60|
-|lme4::bootMer()-Method 1 |      5.70|     0.08|    5.83|
-|lme4::bootMer()-Method 2 |      5.69|     0.05|    5.78|
-|lme4::bootMer()-Method 3 |      5.61|     0.04|    5.72|
-|rstanarm:predict         |      9.70|     0.12|    9.84|
+|predictInterval()        |      0.30|     0.01|    0.31|
+|arm::sim()               |      0.56|     0.00|    0.56|
+|lme4::bootMer()-Method 1 |      5.79|     0.08|    5.92|
+|lme4::bootMer()-Method 2 |      6.03|     0.05|    6.13|
+|lme4::bootMer()-Method 3 |      5.93|     0.01|    6.05|
+|rstanarm:predict         |     10.09|     0.05|   10.19|
 
 For this simple example, we see that `arm::sim()` is the fastest--nearly five
 times faster than `predictInterval()`. However, `predictInterval()` is nearly
