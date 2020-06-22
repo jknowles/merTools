@@ -4,7 +4,7 @@ author: "Jared Knowles and Carl Frederick"
 date: "2020-06-22"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteIndexEntry{Prediction Intervals from merMod Objects}
   %\VignetteEncoding{UTF-8}
 ---
@@ -457,9 +457,9 @@ PI.time.stan <- system.time({
 #> Chain 1: 
 #> Chain 1: 
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 9.585 seconds (Warm-up)
-#> Chain 1:                3.35 seconds (Sampling)
-#> Chain 1:                12.935 seconds (Total)
+#> Chain 1:  Elapsed Time: 6.923 seconds (Warm-up)
+#> Chain 1:                2.445 seconds (Sampling)
+#> Chain 1:                9.368 seconds (Total)
 #> Chain 1:
 
 
@@ -470,7 +470,7 @@ print(fm_stan)
 #>  observations: 180
 #> ------
 #>             Median MAD_SD
-#> (Intercept) 251.2    6.5 
+#> (Intercept) 251.5    6.4 
 #> Days         10.5    1.7 
 #> 
 #> Auxiliary parameter(s):
@@ -479,9 +479,9 @@ print(fm_stan)
 #> 
 #> Error terms:
 #>  Groups   Name        Std.Dev. Corr
-#>  Subject  (Intercept) 24.1         
-#>           Days         6.9     0.10
-#>  Residual             26.1         
+#>  Subject  (Intercept) 23.8         
+#>           Days         6.9     0.09
+#>  Residual             26.0         
 #> Num. levels: Subject 18 
 #> 
 #> ------
@@ -519,12 +519,12 @@ all five methods for calculating prediction intervals for `merMod` objects.
 
 |                         | user.self| sys.self| elapsed|
 |:------------------------|---------:|--------:|-------:|
-|predictInterval()        |      0.52|     0.00|    0.51|
-|arm::sim()               |      0.88|     0.00|    0.87|
-|lme4::bootMer()-Method 1 |      8.57|     0.00|    8.72|
-|lme4::bootMer()-Method 2 |      8.84|     0.03|    9.01|
-|lme4::bootMer()-Method 3 |      8.90|     0.02|    9.08|
-|rstanarm:predict         |     13.80|     0.00|   13.94|
+|predictInterval()        |      0.35|     0.01|    0.36|
+|arm::sim()               |      0.58|     0.01|    0.60|
+|lme4::bootMer()-Method 1 |      5.70|     0.08|    5.83|
+|lme4::bootMer()-Method 2 |      5.69|     0.05|    5.78|
+|lme4::bootMer()-Method 3 |      5.61|     0.04|    5.72|
+|rstanarm:predict         |      9.70|     0.12|    9.84|
 
 For this simple example, we see that `arm::sim()` is the fastest--nearly five
 times faster than `predictInterval()`. However, `predictInterval()` is nearly

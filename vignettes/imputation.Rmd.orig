@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Imputation}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -14,8 +14,8 @@ vignette: >
 knitr::opts_chunk$set(
   cache=FALSE,
   comment="#>",
-  collapse=TRUE, 
-  echo=TRUE, 
+  collapse=TRUE,
+  echo=TRUE,
   fig.width = 7
 )
 library(knitr); library(merTools)
@@ -25,33 +25,33 @@ amelia_uneval <- !amelia_eval
 
 ## Introduction
 
-Multilevel models are valuable in a wide array of problem areas that involve 
-non-experimental, or observational data. In many of these cases the data on 
-individual observations may be incomplete. In these situations, the analyst may 
-turn to one of many methods for filling in missing data depending on the specific 
-problem at hand, disciplinary norms, and prior research. 
+Multilevel models are valuable in a wide array of problem areas that involve
+non-experimental, or observational data. In many of these cases the data on
+individual observations may be incomplete. In these situations, the analyst may
+turn to one of many methods for filling in missing data depending on the specific
+problem at hand, disciplinary norms, and prior research.
 
-One of the most common cases is to use multiple imputation. Multiple imputation 
-involves fitting a model to the data and estimating the missing values for 
-observations. For details on multiple imputation, and a discussion of some of 
-the main implementations in R, look at the documentation and vignettes for the 
-`mice` and `Amelia` packages. 
+One of the most common cases is to use multiple imputation. Multiple imputation
+involves fitting a model to the data and estimating the missing values for
+observations. For details on multiple imputation, and a discussion of some of
+the main implementations in R, look at the documentation and vignettes for the
+`mice` and `Amelia` packages.
 
-The key difficulty multiple imputation creates for users of multilevel models 
-is that the result of multiple imputation is K replicated datasets corresponding 
-to different estimated values for the missing data in the original dataset. 
+The key difficulty multiple imputation creates for users of multilevel models
+is that the result of multiple imputation is K replicated datasets corresponding
+to different estimated values for the missing data in the original dataset.
 
-For the purposes of this vignette, I will describe how to use one flavor of 
-multiple imputation and the function in `merTools` to obtain estimates from a 
-multilevel model in the presence of missing and multiply imputed data. 
+For the purposes of this vignette, I will describe how to use one flavor of
+multiple imputation and the function in `merTools` to obtain estimates from a
+multilevel model in the presence of missing and multiply imputed data.
 
 
 ## Missing Data and its Discontents
 
-To demonstrate this workflow, we will use the `hsb` dataset in the `merTools` 
-package which includes data on the math achievement of a wide sample of students 
-nested within schools. The data has no missingness, so first we will simulate 
-some missing data. 
+To demonstrate this workflow, we will use the `hsb` dataset in the `merTools`
+package which includes data on the math achievement of a wide sample of students
+nested within schools. The data has no missingness, so first we will simulate
+some missing data.
 
 ```{r}
 data(hsb)
@@ -86,8 +86,8 @@ varIndex <- names(hsb)
 # Declare ID variables to be excluded from imputation
 IDS <- c("schid", "meanses")
 # Imputate
-impute.out <- amelia(hsb[, varIndex], idvars = IDS, 
-                         noms = c("minority", "female"), 
+impute.out <- amelia(hsb[, varIndex], idvars = IDS,
+                         noms = c("minority", "female"),
                          m = 5)
 summary(impute.out)
 ```
@@ -107,7 +107,7 @@ summary(impute.out)
 
 ## Fitting and Summarizing a Model List
 
-Fitting a model is very similar 
+Fitting a model is very similar
 
 ```{r}
 fmla <- "mathach ~ minority + female + ses + meanses + (1 + ses|schid)"
@@ -122,12 +122,12 @@ if(amelia_eval) {
 ```
 
 
-The resulting object `modList` is a list of `merMod` objects the same length as the number 
-of imputation datasets. This object is assigned the class of `merModList` and 
-`merTools` provides some convenience functions for reporting the results of 
-this object. 
+The resulting object `modList` is a list of `merMod` objects the same length as the number
+of imputation datasets. This object is assigned the class of `merModList` and
+`merTools` provides some convenience functions for reporting the results of
+this object.
 
-Using this, we can directly compare the model fit with missing data excluded to 
+Using this, we can directly compare the model fit with missing data excluded to
 the aggregate from the imputed models:
 
 ```{r}
@@ -140,8 +140,8 @@ VarCorr(mod) # model with dropped missing
 VarCorr(modList) # aggregate of imputed models
 ```
 
-If you want to inspect the individual models, or you do not like taking the 
-mean across the imputation replications, you can take the `merModList` apart 
+If you want to inspect the individual models, or you do not like taking the
+mean across the imputation replications, you can take the `merModList` apart
 easily:
 
 ```{r}
@@ -169,9 +169,9 @@ summary(modList)
 fastdisp(modList)
 ```
 
-The standard errors reported for the model list include a correction, Rubin's 
-correction (see documentation), which adjusts for the within and between imputation 
-set variance as well. 
+The standard errors reported for the model list include a correction, Rubin's
+correction (see documentation), which adjusts for the within and between imputation
+set variance as well.
 
 ## Specific Model Information Summaries
 
@@ -188,7 +188,7 @@ modelInfo(mod)
 ```
 
 
-Let's apply this to our model list. 
+Let's apply this to our model list.
 
 ```{r}
 lapply(modList, modelInfo)
@@ -211,8 +211,8 @@ ranef(modList)
 
 ## Cautions and Notes
 
-Often it is desirable to include aggregate values in the level two or level three 
-part of the model such as level 1 SES and level 2 mean SES for the group. In 
-cases where there is missingness in either the level 1 SES values, or in the 
-level 2 mean SES values, caution and careful thought need to be given to how to 
-proceed with the imputation routine. 
+Often it is desirable to include aggregate values in the level two or level three
+part of the model such as level 1 SES and level 2 mean SES for the group. In
+cases where there is missingness in either the level 1 SES values, or in the
+level 2 mean SES values, caution and careful thought need to be given to how to
+proceed with the imputation routine.
