@@ -2,6 +2,7 @@
 
 ## merTools 0.5.2
 
+- Streamline vignette building to be precompiled and move tests to limit burden on CRAN check
 - Switch dependency from `broom` to `broom.mixed` because of upstream package reorganization
 
 ## merTools 0.5.1
