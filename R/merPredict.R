@@ -154,11 +154,12 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   # When there is no fixed effect intercept but there is a group level intercept
   # We need to do something!
 
+  rr <- ranef(merMod, condVar = TRUE)
   re.xb <- vector(getME(merMod, "n_rfacs"), mode = "list")
   names(re.xb) <- names(ngrps(merMod))
   for (j in names(re.xb)){
-    reMeans <- as.matrix(ranef(merMod)[[j]])
-    reMatrix <- attr(ranef(merMod, condVar = TRUE)[[j]], which = "postVar")
+    reMeans <- as.matrix(rr[[j]])
+    reMatrix <- attr(rr[[j]], which = "postVar")
     # OK, let's knock out all the random effects we don't need
     if (j %in% names(newdata)){ # get around if names do not line up because of nesting
       obslvl <- unique(as.character(newdata[, j]))
@@ -346,7 +347,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
 
       groupExtraPrecision <- 0
       groupVar <- (attr(VarCorr(merMod)[[j]],"stddev")["(Intercept)"])^2
-      reMatrix <- attr(ranef(merMod, condVar = TRUE)[[j]], which = "postVar")
+      reMatrix <- attr(rr[[j]], which = "postVar")
       for (eff in 1:dim(reMatrix)[3]) {
         term <- 1/(reMatrix[1,1,eff] + groupVar)
         if (term > 0) {
