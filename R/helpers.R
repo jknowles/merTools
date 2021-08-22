@@ -178,8 +178,9 @@ buildModelMatrix <- function(model, newdata, which = "full"){
   newRE <- mkNewReTrms(object = model,
                          newdata = newdata, re.form, na.action="na.pass",
                          allow.new.levels = TRUE)
-  reMat <- t(as.matrix(newRE$Zt))
-  reMat <- as.matrix(reMat)
+  ## reMat <- t(as.matrix(newRE$Zt))
+  ## reMat <- as.matrix(reMat)
+  reMat <- Matrix::t(newRE$Zt)  ## what breaks if we keep this sparse???
   colnames(reMat) <- rownames(newRE$Zt)
   mm <- cbind(X, reMat)
   if(which == "full"){

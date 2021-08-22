@@ -118,7 +118,7 @@ test_that("Build model matrix produces matrices of the right size", {
   d$fitted <- predict(g1, d)
 
   mm <- merTools:::buildModelMatrix(g1, newdata = d, which = "full")
-  expect_is(mm, "matrix")
+  expect_true(inherits(mm, "matrix") || inherits(mm, "Matrix"))
   expect_equal(dim(mm), c(2500, 15))
 
 }

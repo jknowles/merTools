@@ -32,6 +32,7 @@ Imports:
     ggplot2,
     blme,
     broom.mixed,
+    Matrix
 License: GPL (>=2)
 LazyData: true
 VignetteBuilder: knitr

@@ -203,9 +203,10 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                             attr(reMeans, "dimnames")[[1]]
                             )
     if (j %in% names(newdata)) { # get around if names do not line up because of nesting
+      newdata.modelMatrix <- as.matrix(newdata.modelMatrix)  ## give up, sparse to dense now
       tmp <- cbind(as.data.frame(newdata.modelMatrix), var = newdata[, j])
       tmp <- tmp[, !duplicated(colnames(tmp))]
-      keep <- names(tmp)[names(tmp) %in% dimnames(REcoefs)[[2]]]
+      keep <- names(tmp)[names(tmp) %in% colnames(REcoefs)]
       if (length(keep) == 0) {
         keep <- grep(dimnames(REcoefs)[[2]], names(tmp), value = TRUE)
       }
