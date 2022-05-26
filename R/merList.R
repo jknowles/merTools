@@ -402,7 +402,6 @@ lmerModList <- function(formula, data, parallel = FALSE, ...){
 
 #' Apply a Bayesian multilevel model to a list of data frames
 #'
-#' @inheritParams lmerModList
 #' @rdname merModList
 #' @return a merModList
 #' @importFrom blme blmer
@@ -423,7 +422,6 @@ blmerModList <- function(formula, data, parallel = FALSE, ...){
 
 #' Apply a generalized linear multilevel model to a list of data frames
 #'
-#' @inheritParams lmerModList
 #' @rdname merModList
 #' @return a merModList
 #' @export
@@ -443,7 +441,6 @@ glmerModList <- function(formula, data, parallel = FALSE, ...){
 
 #' Apply a Bayesian generalized linear multilevel model to a list of data frames
 #'
-#' @inheritParams lmerModList
 #' @rdname merModList
 #' @return a merModList
 #' @importFrom blme bglmer

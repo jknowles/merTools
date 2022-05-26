@@ -15,3 +15,4 @@ readmeplot
 ^vignettes/marginal_effects\.Rmd\.orig$
 ^vignettes/Using_predictInterval\.Rmd\.orig$
 ^vignettes/imputation\.Rmd\.orig$
+^CRAN-RELEASE$

@@ -7,12 +7,9 @@ output:
 
 [![Travis-CI Build Status](https://travis-ci.org/jknowles/merTools.png?branch=master)](https://travis-ci.org/jknowles/merTools)
 [![Coverage Status](https://coveralls.io/repos/jknowles/merTools/badge.svg?branch=master)](https://coveralls.io/r/jknowles/merTools?branch=master)
-[![Github Issues](http://githubbadges.herokuapp.com/jknowles/merTools/issues.svg)](https://github.com/jknowles/merTools/issues)
-[![Pending Pull-Requests](http://githubbadges.herokuapp.com/jknowles/merTools/pulls.svg?style=flat)](https://github.com/jknowles/merTools/pulls)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/merTools)](https://cran.r-project.org/package=merTools)
 [![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](https://cran.r-project.org/package=merTools)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/merTools)](https://cran.r-project.org/package=merTools)
-[![Research software impact](http://depsy.org/api/package/cran/merTools/badge.svg)](http://depsy.org/package/r/merTools)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -26,7 +23,7 @@ knitr::opts_chunk$set(
 
 # merTools
 
-A package for getting the most of our multilevel models in R
+A package for getting the most out of large multilevel models in R
 
 by Jared E. Knowles and Carl Frederick
 

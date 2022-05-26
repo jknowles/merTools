@@ -19,7 +19,7 @@ A data frame with 7,185 observations on the following 8 variables.
 }
 \source{
 Data made available by UCLA Institute for Digital Research and Education
-(IDRE) online: \url{https://stats.idre.ucla.edu/other/hlm/hlm-mlm/introduction-to-multilevel-modeling-using-hlm}
+(IDRE) online: \url{https://stats.oarc.ucla.edu/other/hlm/hlm-mlm/introduction-to-multilevel-modeling-using-hlm/}
 }
 \usage{
 hsb

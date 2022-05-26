@@ -61,17 +61,17 @@ subBoot <- function(merMod, n = NULL, FUN, R = 100, seed = NULL, warn = FALSE){
       # Only for lmerMod
       if (!warn) {
         suppressWarnings({
-          if (class(merMod) == "lmerMod") {
+          if (is(merMod, "lmerMod")) {
             tmpMod <- lmer(formula(merMod), data = newdata)
-          } else if (class(merMod) == "glmerMod") {
+          } else if (is(merMod, "glmerMod")) {
             tmpMod <- glmer(formula(merMod), data = newdata, family = merMod@call$family)
           }
 
         })
       } else {
-        if (class(merMod) == "lmerMod") {
+        if (is(merMod, "lmerMod")) {
           tmpMod <- lmer(formula(merMod), data = newdata)
-        } else if (class(merMod) == "glmerMod") {
+        } else if (is(merMod, "glmerMod")) {
           tmpMod <- glmer(formula(merMod), data = newdata, family = merMod@call$family)
         }
       }

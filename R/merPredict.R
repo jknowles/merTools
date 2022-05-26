@@ -150,6 +150,8 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
     sigmahat <- rep(1,n.sims)
   }
 
+  #TODO: Making a sparse model matrix fails with nested specification, e.g. (1|order/vore)
+  # sleep_total ~ bodywt + (1 | vore/order)
   newdata.modelMatrix <- buildModelMatrix(model= merMod, newdata = newdata)
   # When there is no fixed effect intercept but there is a group level intercept
   # We need to do something!
@@ -157,7 +159,7 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
   rr <- ranef(merMod, condVar = TRUE)
   re.xb <- vector(getME(merMod, "n_rfacs"), mode = "list")
   names(re.xb) <- names(ngrps(merMod))
-  for (j in names(re.xb)){
+  for (j in names(re.xb)) {
     reMeans <- as.matrix(rr[[j]])
     reMatrix <- attr(rr[[j]], which = "postVar")
     # OK, let's knock out all the random effects we don't need
@@ -231,7 +233,13 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
         keep <- unique(gsub("(.*):.*", "\\1", keep))
       }
     } else {
-      tmp <- as.data.frame(newdata.modelMatrix)
+      #  If newdata.modelMatrix is still sparse at this point, we need to convert it safely
+      if(is(newdata.modelMatrix, "dgCMatrix")){
+        newdata.modelMatrix <- as.matrix(newdata.modelMatrix)  ## give up, sparse to dense now
+        tmp <- as.data.frame(newdata.modelMatrix)
+      } else {
+        tmp <- as.data.frame(newdata.modelMatrix)
+      }
       tmp <- tmp[, !duplicated(colnames(tmp))] # deduplicate columns because
       # column names can be duplicated to account for multiple effects
       # but we've already reconciled all the effects
@@ -309,7 +317,8 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
                               group = j)
      }
      rm(tmp)
-    }
+  }
+
   rm(REcoefs)
   # TODO: Add a check for new.levels that is outside of the above loop
   # for now, ignore this check

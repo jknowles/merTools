@@ -235,7 +235,12 @@ test_that("Prediction works for factor as a random slope not in fixed", {
                  "Currently, predictions for these values are based only on the")
   outs1 <- suppressWarnings(predictInterval(glmer3LevSlope, newdata = zNew))
   zNew <- grouseticks[1:10,]
-  outs2 <- predictInterval(glmer3LevSlope, newdata = zNew)
+  # Expect warnings because we have 0 for our reMeans on location in this model
+  # mvtnorm now issues a warning about the indefinite/rank-deficient matrix
+  outs2 <- suppressWarnings(predictInterval(glmer3LevSlope, newdata = zNew))
+  # Add test to confirm this
+  expect_warning(predictInterval(glmer3LevSlope, newdata = zNew),
+                 "the matrix is either rank-deficient or indefinite")
   expect_is(outs1, "data.frame")
   expect_is(outs2, "data.frame")
   expect_identical(dim(outs1), dim(outs2))
@@ -540,7 +545,6 @@ test_that("parallelization does not throw errors and generates good results", {
   skip_on_travis()
   library(foreach)
   set.seed(1241)
-  #TODO reign in memory usage and cpu time here
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   predA <- predictInterval(m1, newdata = m1@frame, n.sims = 2200, seed = 54,
                            include.resid.var = FALSE, stat = "median")
@@ -759,7 +763,6 @@ test_that("Default is set to all effects", {
 
 # Test nested effect specifications----
 context("Test nested effect specifications")
-
 test_that("Nested effects can work", {
   skip_on_cran()
   library(ggplot2)
