@@ -178,8 +178,9 @@ buildModelMatrix <- function(model, newdata, which = "full"){
   newRE <- mkNewReTrms(object = model,
                          newdata = newdata, re.form, na.action="na.pass",
                          allow.new.levels = TRUE)
-  reMat <- t(as.matrix(newRE$Zt))
-  reMat <- as.matrix(reMat)
+  ## reMat <- t(as.matrix(newRE$Zt))
+  ## reMat <- as.matrix(reMat)
+  reMat <- Matrix::t(newRE$Zt)  ## what breaks if we keep this sparse???
   colnames(reMat) <- rownames(newRE$Zt)
   mm <- cbind(X, reMat)
   if(which == "full"){
@@ -273,7 +274,7 @@ mkNewReTrms <- function(object, newdata, re.form=NULL, na.action=na.pass,
     if (!allow.new.levels && any(vapply(ReTrms$flist, anyNA, NA)))
       stop("NAs are not allowed in prediction data",
            " for grouping variables unless allow.new.levels is TRUE")
-    ns.re <- names(re <- ranef(object))
+    ns.re <- names(re <- ranef(object, condVar = FALSE))
     nRnms <- names(Rcnms <- ReTrms$cnms)
     if (!all(nRnms %in% ns.re))
       stop("grouping factors specified in re.form that were not present in original model")
