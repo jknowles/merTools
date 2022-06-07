@@ -521,3 +521,78 @@ predictInterval <- function(merMod, newdata, which=c("full", "fixed", "random", 
 
 ## TODO: Finish exporting so that all returns the individual predictions for
 # each random effect separately
+
+
+#' Set up prediction for predictInterval
+#'
+#' @param merMod
+#' @param newdata
+#'
+#' @return
+#'
+#' @examples
+predict_setup <- function(merMod, newdata, which=c("full", "fixed", "random", "all"),
+                            level = 0.8,
+                            n.sims = 1000, stat=c("median","mean"),
+                            type=c("linear.prediction", "probability"),
+                            include.resid.var=TRUE, returnSims = FALSE,
+                            seed=NULL, .parallel = FALSE, .paropts = NULL,
+                            fix.intercept.variance = FALSE, #This does NOT work with random slope models
+                            ignore.fixed.terms = NULL)
+{
+
+}
+
+
+#' Sample random effects from a merMod
+#'
+#' @param merMod
+#' @param newdata
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sample_re() <- function(merMod, newdata, ...)
+{
+  # Probably should take a `predict_param` object from `predict_setup()` above
+
+}
+
+#' Sample fixed effects from a merMod
+#'
+#' @param merMod
+#' @param newdata
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sample_fe() <- function(merMod, newdata, ...)
+{
+  # Probably should take a `predict_param` object from `predict_setup()` above
+
+}
+
+
+
+#' Sample model fit variance  from a merMod
+#'
+#' @param merMod
+#' @param newdata
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sample_model() <- function(merMod, newdata, ...)
+{
+  # Probably should take a `predict_param` object from `predict_setup()` above
+
+}
+
+
+
