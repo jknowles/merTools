@@ -70,7 +70,7 @@ plotREsim <- function(data, level = 0.95, stat = "median", sd = TRUE,
   }
 
   p <- ggplot(data, aes_string(x = "xvar", y = stat, ymax = "ymax", ymin = "ymin")) +
-         geom_hline(yintercept = hlineInt, color = I("red"), size = I(1.1)) +
+         geom_hline(yintercept = hlineInt, color = I("red"), linewidth = I(1.1)) +
          geom_point(color="gray75", alpha=1/(nrow(data)^.33), size=I(0.5)) +
          geom_point(data=subset(data, sig==TRUE), size=I(3)) +
          labs(x = "Group", y = "Effect Range", title = "Effect Ranges") +
