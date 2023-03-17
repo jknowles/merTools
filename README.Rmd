@@ -5,8 +5,6 @@ output:
 ---
 
 
-[![Travis-CI Build Status](https://travis-ci.org/jknowles/merTools.png?branch=master)](https://travis-ci.org/jknowles/merTools)
-[![Coverage Status](https://coveralls.io/repos/jknowles/merTools/badge.svg?branch=master)](https://coveralls.io/r/jknowles/merTools?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/merTools)](https://cran.r-project.org/package=merTools)
 [![Downloads](http://cranlogs.r-pkg.org/badges/merTools)](https://cran.r-project.org/package=merTools)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/merTools)](https://cran.r-project.org/package=merTools)
@@ -19,6 +17,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README_"
 )
+library(merTools)
 ```
 
 # merTools
@@ -48,6 +47,15 @@ install.packages("merTools")
 
 ## Recent Updates
 
+## merTools 0.6.1 (Spring 2023)
+
+- Maintenance release to keep package listed on CRAN
+- Fix a small bug where parallel code path is run twice (#126)
+- Update plotting functions to avoid deprecated `aes_string()` calls (#127)
+- Fix (#115) in description
+- Speed up PI using @bbolker pull request (#120)
+- Updated package maintainer contact information
+
 ### merTools 0.5.0
 
 #### New Features
@@ -75,29 +83,6 @@ correction for multiple imputation
 - Contribution by Alex Whitworth (@alexWhitworth) adding error checking to plotting
 functions
 
-### merTools 0.4.0
-
-#### New Features
-- Added vignette on using multilevel models with multiply imputed data
-- Added `fixef` and `ranef` generics for `merModList` objects
-- Added `fastdisp` generic for `merModList`
-- Added `summary` generic for `merModList`
-- Added `print` generic for `merModList`
-- Documented all generics for `merModList` including examples and a new 
-imputation vignette
-- Added `modelInfo` generic for `merMod` objects that provides simple summary 
-stats about a whole model
-
-#### Bug Fixes
-- Fix bug that returned NaN for `std.error` of a multiply imputed `merModList` 
-when calling `modelRandEffStats`
-- Fixed bug in `REimpact` where some column names in `newdata` would prevent the 
-prediction intervals from being computed correctly. Users will now be warned.
-- Fixed bug in `wiggle` where documentation incorrectly stated the arguments to 
-the function and the documentation did not describe function correctly
-
-See [NEWS.md](https://github.com/jknowles/merTools/blob/master/NEWS.md) for 
-more details. 
 
 ## Shiny App and Demo
 
@@ -105,11 +90,12 @@ The easiest way to demo the features of this application is to use the bundled
 Shiny application which launches a number of the metrics here to aide in exploring 
 the model. To do this:
 
-```{r, echo = TRUE, eval=FALSE}
+```
 library(merTools)
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 shinyMer(m1, simData = InstEval[1:100, ]) # just try the first 100 rows of data
 ```
+
 
 ```{r, include=FALSE}
 library(merTools)
@@ -159,7 +145,6 @@ With `predictInterval` we obtain predictions that are more like the standard
 objects produced by `lm` and `glm`:
 
 ```{r}
-#predictInterval(m1, newdata = InstEval[1:10, ]) # all other parameters are optional
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9, 
                 stat = 'median')
 ```

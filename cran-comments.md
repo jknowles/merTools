@@ -1,10 +1,12 @@
 ## Test environments
-* local Windows 10 install, R 4.0.0
-* r-hub (R-release macOS 10.11)
+* local Windows 10 install, R 4.2.1
+* r-hub (R-release macOS 10.11, R-devel)
 * win-builder (R-release, R-devel)
 
 ## R CMD check results
 
+* Updated contact information for primary package maintainer
+* One false alarm about a missing jstor URL
 * Used `utils::globalVariables(c(".shinyMerPar", "sig", "sigma"))` to fix notes
   about unexported objects.
 
@@ -13,8 +15,7 @@
     to fix notes about unexported objects in `modelFixedEff` and 
     `fastdisp.merList` functions
     
-* One Note about possible invalid URL that is valid
-    
+
 ## Downstream dependencies
 There are currently two downstream dependencies. No issues with either were 
 found.

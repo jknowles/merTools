@@ -69,7 +69,7 @@ plotREsim <- function(data, level = 0.95, stat = "median", sd = TRUE,
     xlabs.tmp <- element_blank()
   }
 
-  p <- ggplot(data, aes_string(x = "xvar", y = stat, ymax = "ymax", ymin = "ymin")) +
+  p <- ggplot(data, aes(x = .data[["xvar"]], y = .data[[stat]], ymax = .data[["ymax"]], ymin = .data[["ymin"]])) +
          geom_hline(yintercept = hlineInt, color = I("red"), linewidth = I(1.1)) +
          geom_point(color="gray75", alpha=1/(nrow(data)^.33), size=I(0.5)) +
          geom_point(data=subset(data, sig==TRUE), size=I(3)) +
@@ -140,7 +140,7 @@ plotFEsim <- function(data, level=0.95, stat = "median", sd = TRUE,
   xvar <- "term"
   data$term <- as.character(data$term)
   data$term <- factor(data$term , levels = data[order(data[, stat]), 1])
-  p <- ggplot(aes_string(x = xvar, y = stat, ymax = "ymax", ymin = "ymin"), data = data) +
+  p <- ggplot(aes(x = .data[[xvar]], y = .data[[stat]], ymax = .data[["ymax"]], ymin = .data[["ymin"]]), data = data) +
     geom_hline(yintercept = hlineInt, color = I("red")) +
     geom_point(size=I(3)) +
     coord_flip() +

@@ -40,4 +40,4 @@ LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
 Encoding: UTF-8
-BugReports: https://www.github.com/jknowles/merTools
+BugReports: https://github.com/jknowles/merTools
