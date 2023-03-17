@@ -1,5 +1,14 @@
 # NEWS
 
+## merTools 0.6.1
+
+- Maintenance release to keep package listed on CRAN
+- Fix a small bug where parallel code path is run twice (#126)
+- Update plotting functions to avoid deprecated `aes_string()` calls (#127)
+- Fix (#115) in description
+- Speed up PI using @bbolker pull request (#120)
+- Updated package maintainer contact information
+
 ## merTools 0.5.2
 
 - Streamline vignette building to be precompiled and move tests to limit burden on CRAN check

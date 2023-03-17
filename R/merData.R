@@ -435,7 +435,7 @@ REquantile <- function(merMod, quantile, groupFctr, term = "(Intercept)"){
     stop("Random effect group name not found. Please respecify grouping factor.")
   }
   myRE.tmp <- try(myRE[order(myRE[, term]), ,drop = FALSE], silent = TRUE)
-  if(class(myRE.tmp) != "data.frame"){
+  if(!is(myRE.tmp, "data.frame")){
     term1 <- names(myRE)[1]
     myRE.tmp <- try(myRE[order(myRE[, term1]), ,drop = FALSE], silent = TRUE)
     warning(paste0(term, " not found in random effect terms. Returning first term, ",
