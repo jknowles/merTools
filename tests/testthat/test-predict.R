@@ -5,7 +5,7 @@ set.seed(51315)
 context("Prediction intervals cover for simulated problems")
 
 test_that("Prediction intervals work for simple linear example", {
-  skip_on_travis()
+  skip_on_ci()
   skip_on_cran()
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:100)
@@ -33,7 +33,7 @@ test_that("Prediction intervals work for simple linear example", {
 
 
 test_that("Prediction intervals work for simple GLMM example", {
-  skip_on_travis()
+  skip_on_ci()
   skip_on_cran()
   set.seed(101)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
@@ -74,7 +74,7 @@ test_that("Prediction intervals work for simple GLMM example", {
 })
 
 test_that("Prediction interval respects user input", {
-  skip_on_travis()
+  skip_on_ci()
   skip_on_cran()
   set.seed(101)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
@@ -118,7 +118,7 @@ context("Prediction works for all combinations of slopes and intercepts")
 
 test_that("Predict handles unused and subset of factor levels", {
   skip_on_cran()
-  skip_on_travis()
+  skip_on_ci()
   set.seed(101)
   moddf <- InstEval[sample(rownames(InstEval), 10000), ]
   g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=moddf)
@@ -143,7 +143,7 @@ test_that("Predict handles unused and subset of factor levels", {
 rm(list = ls())
 
 test_that("Prediction intervals work for multiple parameters per level", {
-  skip_on_travis()
+  skip_on_ci()
   skip_on_cran()
   data(grouseticks)
   grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
@@ -163,7 +163,7 @@ test_that("Prediction intervals work for multiple parameters per level", {
 })
 
 test_that("Prediction works for random slopes not in fixed", {
-  skip_on_travis()
+  skip_on_ci()
   skip_on_cran()
   data(grouseticks)
   grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
@@ -189,7 +189,7 @@ test_that("Prediction works for random slopes not in fixed", {
 context("Test for new factor levels")
 
 test_that("Prediction intervals work with new factor levels added", {
-  skip_on_travis()
+  skip_on_ci()
   skip_on_cran()
   data(grouseticks)
   grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
@@ -215,7 +215,7 @@ test_that("Prediction intervals work with new factor levels added", {
 
 
 test_that("Prediction works for factor as a random slope not in fixed", {
-  skip_on_travis()
+  skip_on_ci()
   skip_on_cran()
   data(grouseticks)
   grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
@@ -272,7 +272,7 @@ test_that("Median of prediction interval is close to predict.lmer for single gro
 
 test_that("Median of PI is close to predict.lmer for complex group models", {
   skip_on_cran()
-  skip_on_travis()
+  skip_on_ci()
   set.seed(101)
   moddf <- InstEval[sample(rownames(InstEval), 10000), ]
   g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=moddf)
@@ -287,7 +287,7 @@ test_that("Median of PI is close to predict.lmer for complex group models", {
 
 test_that("Median of PI is close to predict.glmer for basic and complex grouping", {
   skip_on_cran()
-  skip_on_travis()
+  skip_on_ci()
   set.seed(8496)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:8), fac2 = LETTERS[12:19],
                    obs=1:20)
@@ -319,7 +319,7 @@ test_that("Median of PI is close to predict.glmer for basic and complex grouping
 
 test_that("Prediction intervals work with new factor levels added", {
   skip_on_cran()
-  skip_on_travis()
+  skip_on_ci()
   data(grouseticks)
   grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
   grouseticks <- merge(grouseticks, grouseticks_agg[, 1:3], by = "BROOD")
@@ -345,7 +345,7 @@ test_that("Prediction intervals work with new factor levels added", {
 })
 
 test_that("Prediction intervals work with slope not in fixed effects and data reordered", {
-  skip_on_travis()
+  skip_on_ci()
   skip_on_cran()
   data(grouseticks)
   grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
@@ -375,7 +375,7 @@ test_that("Prediction intervals work with slope not in fixed effects and data re
 context("Special cases - rank deficiency")
 
 test_that("Prediction intervals are accurate with interaction terms and rank deficiency", {
-  skip_on_travis()
+  skip_on_ci()
   skip_on_cran()
   set.seed(54656)
   n <- 20
@@ -478,7 +478,7 @@ test_that("simResults option behaves", {
 context("Test out of sample predictions")
 
 test_that("predictInterval makes predictions without observed outcome", {
-  skip_on_travis()
+  skip_on_ci()
   skip_on_cran()
   possNames <- expand.grid(letters,LETTERS)
   possNames <- paste(possNames[, 1], possNames[, 2])
@@ -542,7 +542,7 @@ context("Test Parallel")
 
 test_that("parallelization does not throw errors and generates good results", {
   skip_on_cran()
-  skip_on_travis()
+  skip_on_ci()
   library(foreach)
   set.seed(1241)
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
