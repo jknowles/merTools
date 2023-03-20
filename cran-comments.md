@@ -5,6 +5,7 @@
 
 ## R CMD check results
 
+* Fixed redirected URL for sciencedirect article to https
 * Updated contact information for primary package maintainer
 * One false alarm about a missing jstor URL
 * Used `utils::globalVariables(c(".shinyMerPar", "sig", "sigma"))` to fix notes
