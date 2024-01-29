@@ -160,7 +160,7 @@ subsetList <- function(data, list){
 #' The purpose is to properly derive data for the average observation in the
 #' data by being 'aware' of formulas that contain interactions and/or function
 #' calls. For example, in the old behavior, if the formula contained a square
-#' term specified as \code{I(x^2)}, we were returning the mean of x{^2} not the
+#' term specified as \code{I(x^2)}, we were returning the mean of \code{x(^2)} not the
 #' square of mean(x).
 #'
 #' @param merMod the merMod object from which to draw the average observation

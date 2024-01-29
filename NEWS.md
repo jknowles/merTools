@@ -1,5 +1,9 @@
 # NEWS
 
+## merTools 0.6.2
+
+- Maintenance release to fix minor issues with function documentation
+
 ## merTools 0.6.1
 
 - Maintenance release to keep package listed on CRAN

@@ -36,10 +36,9 @@
 #'   \item \code{\link{shinyMer}}
 #' }
 #'
-#' @name merTools
-#' @docType package
-#' @aliases merTools merTools-package
-NULL
+
+#' @keywords internal
+"_PACKAGE"
 
 #' A subset of data from the 1982 High School and Beyond survey used as examples for HLM software
 #' @description A key example dataset used for examples in the HLM software manual.

@@ -1,6 +1,6 @@
 Package: merTools
 Title: Tools for Analyzing Mixed Effect Regression Models
-Version: 0.6.1
+Version: 0.6.2
 Authors@R: c(
     person(c("Jared", "E."), "Knowles", email = "jared@civilytics.com", role = c("aut", "cre")),
     person("Carl", "Frederick", email="carlbfrederick@gmail.com", role = c("aut")),
@@ -38,6 +38,6 @@ Imports:
 License: GPL (>=2)
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 Encoding: UTF-8
 BugReports: https://github.com/jknowles/merTools

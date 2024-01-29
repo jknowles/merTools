@@ -136,7 +136,7 @@ safeDeparse <- function(x, collapse=" ") paste(deparse(x, 500L), collapse=collap
 #' both the group level and fixed effect level
 #' @param model a merMod object from lme4
 #' @param newdata a data frame to construct the matrix from
-#' @param character which matrix to return,default is full matrix with fixed and
+#' @param which a character which matrix to return,default is full matrix with fixed and
 #' random terms, other options are "fixed" and "random"
 #' @source Taken from predict.merMod in lme4
 #' @import lme4

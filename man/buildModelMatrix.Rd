@@ -14,7 +14,7 @@ buildModelMatrix(model, newdata, which = "full")
 
 \item{newdata}{a data frame to construct the matrix from}
 
-\item{character}{which matrix to return,default is full matrix with fixed and
+\item{which}{a character which matrix to return,default is full matrix with fixed and
 random terms, other options are "fixed" and "random"}
 }
 \description{
