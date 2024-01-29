@@ -3,6 +3,7 @@
 ## merTools 0.6.2
 
 - Maintenance release to fix minor issues with function documentation
+- Fix #130 by avoiding conflict with `vcov` in the `merDeriv` package
 
 ## merTools 0.6.1
 

@@ -41,3 +41,5 @@ VignetteBuilder: knitr
 RoxygenNote: 7.3.0
 Encoding: UTF-8
 BugReports: https://github.com/jknowles/merTools
+Config/testthat/edition: 3
+Config/testthat/parallel: true

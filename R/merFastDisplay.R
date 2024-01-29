@@ -37,7 +37,7 @@ fastdisp.merMod <- function (x, ...)
     print(out$call)
     fcoef <- fixef(x)
     useScale <- getME(x, "devcomp")$dims["useSc"]
-    corF <- vcov(x)@factors$correlation
+    corF <- lme4::vcov.merMod(x)@factors$correlation
     coefs <- cbind(fcoef, corF@sd)
     if (length(fcoef) > 0) {
       if (!useScale) {
