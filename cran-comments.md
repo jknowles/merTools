@@ -1,13 +1,11 @@
 ## Test environments
-* local Windows 10 install, R 4.2.1
+* local Windows 11 install, R 4.3.1
 * r-hub (R-release macOS 10.11, R-devel)
 * win-builder (R-release, R-devel)
 
 ## R CMD check results
 
-* Fixed redirected URL for sciencedirect article to https
-* Updated contact information for primary package maintainer
-* One false alarm about a missing jstor URL
+* Updated \usage sections
 * Used `utils::globalVariables(c(".shinyMerPar", "sig", "sigma"))` to fix notes
   about unexported objects.
 
@@ -20,4 +18,3 @@
 ## Downstream dependencies
 There are currently two downstream dependencies. No issues with either were 
 found.
-
