@@ -4,6 +4,7 @@
 
 - Maintenance release to fix minor issues with function documentation
 - Fix #130 by avoiding conflict with `vcov` in the `merDeriv` package
+- Upgrade package test infrastructure to 3e testthat specification
 
 ## merTools 0.6.1
 
