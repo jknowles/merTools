@@ -3,7 +3,7 @@ library(lme4)
 set.seed(157)
 
 # Test all user parameters for REimpact----
-context("Test all user parameters for REimpact")
+#context("Test all user parameters for REimpact")
 
 test_that("REimpact parameters are respected", {
   skip_on_cran()
@@ -28,10 +28,13 @@ test_that("REimpact respects passed values for predictInterval", {
   skip_on_travis()
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:30),
                    obs=1:100)
-  d$y <- simulate(~fac1+(1|grp),family = gaussian,
-                  newdata=d,
-                  newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
-                                 sigma = c(.23)))[[1]]
+  suppressMessages({
+    d$y <- simulate(~fac1+(1|grp),family = gaussian,
+                    newdata=d,
+                    newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
+                                   sigma = c(.23)))[[1]]
+  })
+
   subD <- d[sample(row.names(d), 1000),]
 
   g1 <- lmer(y ~ fac1 + (1|grp), data=subD)
@@ -47,7 +50,7 @@ test_that("REimpact respects passed values for predictInterval", {
 })
 
 # Test for slopes, intercepts, and combinations----
-context("Test for slopes, intercepts, and combinations")
+#context("Test for slopes, intercepts, and combinations")
 
 test_that("Multiple terms can be accessed", {
   skip_on_cran()
@@ -57,9 +60,12 @@ test_that("Multiple terms can be accessed", {
   grouseticks$TICKS_BIN <- ifelse(grouseticks$TICKS >=1, 1, 0)
   # GLMER 3 level + slope
   form <- TICKS_BIN ~ YEAR + HEIGHT + (1 + HEIGHT|BROOD) + (1|LOCATION) + (1|INDEX)
-  glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks,
-                           control = glmerControl(optimizer="bobyqa",
-                                                  optCtrl=list(maxfun = 1e5)))
+  suppressMessages({
+    glmer3LevSlope  <- glmer(form, family="binomial",data=grouseticks,
+                             control = glmerControl(optimizer="bobyqa",
+                                                    optCtrl=list(maxfun = 1e5)))
+  })
+
   # This is the same issue of zero mean zero variance in the predict interval call
   zed1 <- suppressWarnings(REimpact(glmer3LevSlope, newdata = grouseticks[5, ], groupFctr = "BROOD",
                   term = "HEIGHT", n.sims = 500,
@@ -91,7 +97,7 @@ test_that("Multiple terms can be accessed", {
 })
 
 # Custom breaks----
-context("Custom breaks")
+#context("Custom breaks")
 
 test_that("Custom breakpoints can be set", {
   skip_on_cran()

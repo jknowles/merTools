@@ -32,14 +32,13 @@ lmerSlope2 <- lmer(distance ~ age + (0 + age + nsex|Subject), data=Orthodont)
 
 ###############################################
 # Extract Random Effects from merMod----
-context("Extract Random Effects from merMod")
 ################################################
 
 test_that("REextract pulls out a data frame", {
-  expect_is(REextract(lmerSlope2), "data.frame")
-  expect_is(REextract(glmer3LevSlope), "data.frame")
-  expect_is(REextract(glmer3Lev), "data.frame")
-  expect_is(REextract(lmerSlope1), "data.frame")
+  expect_s3_class(REextract(lmerSlope2), "data.frame")
+  expect_s3_class(REextract(glmer3LevSlope), "data.frame")
+  expect_s3_class(REextract(glmer3Lev), "data.frame")
+  expect_s3_class(REextract(lmerSlope1), "data.frame")
 })
 
 test_that("REextract issues error with non merMod objects", {
@@ -64,14 +63,14 @@ test_that("REextract gets correct dimensions", {
 
 ###############################################
 # Fixed effect estimates from posterior----
-context("Fixed effect estimates from posterior")
+
 ################################################
 
 test_that("FEsim produces data.frames", {
-  expect_is(FEsim(lmerSlope1, n.sims=100), "data.frame")
-  expect_is(FEsim(lmerSlope2, n.sims=100), "data.frame")
-  expect_is(FEsim(glmer3Lev, n.sims=100), "data.frame")
-  expect_is(FEsim(glmer3LevSlope, n.sims=100), "data.frame")
+  expect_s3_class(FEsim(lmerSlope1, n.sims=100), "data.frame")
+  expect_s3_class(FEsim(lmerSlope2, n.sims=100), "data.frame")
+  expect_s3_class(FEsim(glmer3Lev, n.sims=100), "data.frame")
+  expect_s3_class(FEsim(glmer3LevSlope, n.sims=100), "data.frame")
 })
 
 test_that("n.sims changes simulation results", {
@@ -83,27 +82,25 @@ test_that("n.sims changes simulation results", {
 
 ###############################################
 # Random effect estimates from posterior----
-context("Random effect estimates from posterior")
 ################################################
 
 test_that("REsim produces data.frames", {
-  expect_is(REsim(lmerSlope1, n.sims=100), "data.frame")
-  expect_is(REsim(lmerSlope2, n.sims=100), "data.frame")
-  expect_is(REsim(glmer3Lev, n.sims=100), "data.frame")
-  expect_is(REsim(glmer3LevSlope, n.sims=100), "data.frame")
+  expect_s3_class(REsim(lmerSlope1, n.sims=100), "data.frame")
+  expect_s3_class(REsim(lmerSlope2, n.sims=100), "data.frame")
+  expect_s3_class(REsim(glmer3Lev, n.sims=100), "data.frame")
+  expect_s3_class(REsim(glmer3LevSlope, n.sims=100), "data.frame")
 })
 
 
 ###############################################
 # RMSE estimates----
-context("RMSE estimates")
 ################################################
 
 test_that("RMSE produces correct variable types", {
-  expect_is(RMSE.merMod(lmerSlope1), "numeric")
-  expect_is(RMSE.merMod(lmerSlope2), "numeric")
-  expect_is(RMSE.merMod(lmerSlope1, scale = TRUE), "numeric")
-  expect_is(RMSE.merMod(lmerSlope2, scale = TRUE), "numeric")
+  expect_type(RMSE.merMod(lmerSlope1), "double")
+  expect_type(RMSE.merMod(lmerSlope2), "double")
+  expect_type(RMSE.merMod(lmerSlope1, scale = TRUE), "double")
+  expect_type(RMSE.merMod(lmerSlope2, scale = TRUE), "double")
 })
 
 

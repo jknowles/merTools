@@ -6,7 +6,7 @@ test_that("Text marginalized effects object has the correct dimensions", {
   set.seed(51315)
   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
   #
-  context("Test random effect marginalization works")
+
   #
   mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
   #

@@ -7,7 +7,6 @@ library(lme4)
 
 ###############################################
 # Testing expected rank----
-context("Testing expected rank")
 ###############################################
 test_that("expectedRank parameters work and dont work as intended", {
   skip_on_cran()

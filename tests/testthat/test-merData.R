@@ -1,6 +1,6 @@
 # -----------------------------------------------------
 #-------------------------------------------------------
-
+local_edition(3)
 set.seed(51315)
 library(lme4)
 data(grouseticks)
@@ -36,7 +36,6 @@ lmerSlope2 <- lmer(distance ~ age + (0 + age + nsex|Subject), data=Orthodont)
 
 ###############################################
 #Sanitize Names----
-context("Sanitize Names")
 ################################################
 
 test_that("Sanitize names renames variables in data.frame", {
@@ -45,7 +44,7 @@ test_that("Sanitize names renames variables in data.frame", {
                    lmerControl(check.conv.grad = .makeCC("warning", tol= 8e-3)))
   expect_false(identical(names(badMod@frame),
                          names(merTools:::sanitizeNames(badMod@frame))))
-  expect_is(merTools:::sanitizeNames(badMod@frame), "data.frame")
+  expect_s3_class(merTools:::sanitizeNames(badMod@frame), "data.frame")
   expect_identical(names(merTools:::sanitizeNames(badMod@frame))[2], "Sex")
   expect_identical(names(badMod@frame)[2], "factor(Sex)")
 })
@@ -53,7 +52,6 @@ test_that("Sanitize names renames variables in data.frame", {
 
 ###############################################
 #Strip Attributes----
-context("Strip attributes")
 ################################################
 
 test_that("Attributes can be stripped from data.frame", {
@@ -69,7 +67,6 @@ test_that("Attributes can be stripped from data.frame", {
 
 ###############################################
 #Random Observation----
-context("Random observation")
 ################################################
 
 
@@ -116,7 +113,6 @@ test_that("Random observation preserves factor levels", {
 
 ###############################################
 #Collapse frame----
-context("Collapse frame")
 ################################################
 
 test_that("Collapsing a dataframe results in single row", {
@@ -138,7 +134,7 @@ test_that("Collapsing a dataframe results in single row", {
 })
 
 ###############################################
-context("Subset by a list")
+
 ################################################
 
 test_that("Data can be subset by a list", {
@@ -168,7 +164,6 @@ test_that("Data can be subset by a list", {
 
 ###############################################
 #Super factor ----
-context("Super factor")
 ################################################
 
 test_that("Unobserved factor levels can be respected", {
@@ -202,7 +197,6 @@ test_that("SuperFactor handles new factor levels correctly", {
 
 ###############################################
 #Shuffle----
-context("Shuffle")
 ################################################
 
 test_that("Data can be shuffled", {
@@ -214,21 +208,20 @@ test_that("Data can be shuffled", {
 
 ###############################################
 #Find RE Quantiles----
-context("Find RE Quantiles")
 ################################################
 
-test_that("Errors and messages are issued", {
+test_that("RE Quantile errors and messages are issued", {
   expect_error(REquantile(glmer3Lev, 23, groupFctr = "BROOD"))
-  expect_warning(REquantile(glmer3Lev, .23, groupFctr = "BROOD", term = "Cat"))
+  expect_warning(REquantile(glmer3Lev, .23, groupFctr = "BROOD", term = "Cat"), "Cat not found")
   expect_error(REquantile(glmer3Lev, .23, groupFctr = "Cat"))
   expect_error(REquantile(glmer3Lev, c(23, .56, .75), "BROOD"))
   expect_error(REquantile(glmer3Lev, c(.23, 56, .75), "BROOD"))
   expect_error(REquantile(glmer3Lev, c(.23, .56, 75), "BROOD"))
   expect_error(REquantile(glmer3Lev, c(.23, .56, 107), "BROOD"))
   expect_error(REquantile(glmer3Lev, c(-2, .56, .7), "BROOD"))
-  expect_message(REquantile(lmerSlope1, .25, groupFctr = "Subject"))
-  expect_warning(REquantile(lmerSlope2, c(.24), "Subject"))
-  expect_warning(REquantile(lmerSlope2, c(.24), "Subject", term = "Cat"))
+  expect_message(REquantile(lmerSlope1, .25, groupFctr = "Subject"), "Number of observations < 20")
+  expect_warning(REquantile(lmerSlope2, c(.24), "Subject"), "not found in random effect terms")
+  expect_warning(REquantile(lmerSlope2, c(.24), "Subject", term = "Cat"), "Cat not found")
 })
 
 # what to do without intercepts (REquantile(lmerSlope2), c(.24), "Subject")
@@ -242,7 +235,6 @@ test_that("Errors and messages are issued", {
 
 ###############################################
 #Test observation wiggle----
-context("Test observation wiggle")
 ################################################
 
 test_that("Row and column lengths are correct -- single_wiggle", {
@@ -357,25 +349,27 @@ test_that("we can use wiggle for multiple variables", {
 
 ###############################################
 #Test average observation extraction----
-context("Test average observation extraction")
 ################################################
 
-test_that("Returns a single row", {
+test_that("Test averageobs returns a single row", {
   data1 <- draw(glmer3Lev, type = 'average')
   data1a <- draw(glmer3LevSlope, type = 'average')
-  data2 <- draw(lmerSlope1, type = 'average')
+  suppressMessages({
+    data2 <- draw(lmerSlope1, type = 'average')
+  })
+
   expect_equal(nrow(data1), 1)
   expect_equal(nrow(data1a), 1)
   expect_equal(nrow(data2), 1)
 })
 
-test_that("Warnings and errors are correct", {
-  expect_message(draw(lmerSlope1, type = 'average'))
-  expect_warning(draw(lmerSlope2, type = 'average'))
+test_that("Draw warnings and errors are correct", {
+  expect_message(draw(lmerSlope1, type = 'average'), "Number of observations < 20")
+  expect_warning(draw(lmerSlope2, type = 'average'), "not found in random effect terms")
   mylist2 <- list("YEAR" = "97", "LOCATION" = "16")
-  expect_warning(draw(glmer3LevSlope, type = 'average', varList = mylist2))
+  expect_warning(draw(glmer3LevSlope, type = 'average', varList = mylist2), "Subset has less than 20")
   mylist3 <- list("YEAR" = "97", "LOCATION" = c("16", "56"))
-  expect_warning(draw(glmer3LevSlope, type = 'average', varList = mylist3))
+  expect_warning(draw(glmer3LevSlope, type = 'average', varList = mylist3), "Subset has fewer than 3 rows")
 })
 
 test_that("Subsets work", {
@@ -397,26 +391,29 @@ test_that("Nested specifications work", {
   library(ggplot2)
   mod1 <- lmer(sleep_total ~ bodywt + (1|vore/order), data=msleep)
   data1 <- draw(mod1, "random")
-  expect_is(data1, "data.frame")
-  data2 <- draw(mod1, "average")
-  expect_is(data2, "data.frame")
+  expect_s3_class(data1, "data.frame")
+  suppressMessages({
+    data2 <- draw(mod1, "average")
+  })
+
+  expect_s3_class(data2, "data.frame")
   mylist1 <- list("vore" = "carni")
   mylist2 <- list("order" = "Cetacea")
   data1 <- draw(mod1, "random", varList = mylist1)
-  expect_is(data1, "data.frame")
+  expect_s3_class(data1, "data.frame")
   expect_identical(as.character(data1$vore), "carni")
   data1 <- draw(mod1, "random", varList = mylist2)
-  expect_is(data1, "data.frame")
+  expect_s3_class(data1, "data.frame")
   expect_identical(as.character(data1$order), "Cetacea")
   data1 <- suppressWarnings(draw(mod1, "average", varList = mylist1))
-  expect_is(data1, "data.frame")
+  expect_s3_class(data1, "data.frame")
   expect_identical(as.character(data1$vore), "carni")
   data1 <- suppressWarnings(draw(mod1, "average", varList = mylist2))
-  expect_is(data1, "data.frame")
+  expect_s3_class(data1, "data.frame")
   expect_identical(as.character(data1$order), "Cetacea")
   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
   data1 <- suppressWarnings(draw(fm1, type = "average", varList = list("Subject" = "308")))
-  expect_is(data1, "data.frame")
+  expect_s3_class(data1, "data.frame")
   expect_identical(as.character(data1$Subject), "308")
 })
 
@@ -443,19 +440,27 @@ test_that("findFormFuns works", {
   trueMeans <- merTools:::collapseFrame(play)
   #Estimate toy models
   ##. Scenario 1: I()
-  s1 <- lmer(y ~ a + b + I(b^2) + c + d + (1|grp), data=play)
+  suppressMessages({
+    s1 <- lmer(y ~ a + b + I(b^2) + c + d + (1|grp), data=play)
+  } )
+
   expect_equal(findFormFuns(s1)[names(trueMeans)], trueMeans)
   expect_equal(findFormFuns(s1)$b^2, findFormFuns(s1)$`I(b^2)`)
   expect_length(findFormFuns(s1), 7L)
 
   ##. Scenario 2: log and no regular a
-  s2 <- lmer(y ~ log(a) + b + c + d + (1|grp), data=play)
+  suppressMessages({
+    s2 <- lmer(y ~ log(a) + b + c + d + (1|grp), data=play)
+  })
+
   expect_warning(findFormFuns(s2))
   expect_false(suppressWarnings(findFormFuns(s2)$`log(a)` == log(trueMeans$a)))
   expect_silent(findFormFuns(s2, origData = play))
   expect_equal(findFormFuns(s2, origData = play)$`log(a)`, log(trueMeans$a))
   ##. Scenario 3: 2 continuous interaction with *
-  s3 <- lmer(y ~ a*b + c + d + (1|grp), data=play)
+  suppressMessages({
+    s3 <- lmer(y ~ a*b + c + d + (1|grp), data=play)
+  })
   expect_equal(findFormFuns(s3)[names(trueMeans)], trueMeans)
   expect_length(findFormFuns(s3), 6L)
   ##. Scenario 4: 2 continuous interaction with :
@@ -463,28 +468,43 @@ test_that("findFormFuns works", {
   expect_equal(findFormFuns(s4)[names(trueMeans)], trueMeans)
   expect_length(findFormFuns(s4), 6L)
   ##. Scenario 5: 1 cont 1 cat interaction with *
-  s5 <- lmer(y ~ a + c + b*d + (1|grp), data = play)
+  suppressMessages({
+    s5 <- lmer(y ~ a + c + b*d + (1|grp), data = play)
+  })
+
   expect_equal(findFormFuns(s5)[names(trueMeans)], trueMeans)
   expect_length(findFormFuns(s5), 6L)
   ##. Scenario 6: 1 cont 1 cat interaction with :
-  s6 <- lmer(y ~ a + c + b:d + (1|grp), data = play)
+  suppressMessages({
+    s6 <- lmer(y ~ a + c + b:d + (1|grp), data = play)
+  })
+
   expect_equal(findFormFuns(s6)[names(trueMeans)], trueMeans)
   expect_length(findFormFuns(s6), 6L)
   ##. Scenario 7: 2 cat interaction with *
-  s7 <- lmer(y ~ a + b + c*d + (1|grp), data = play)
+  suppressMessages({
+    s7 <- lmer(y ~ a + b + c*d + (1|grp), data = play)
+  })
+
   expect_equal(findFormFuns(s7)[names(trueMeans)], trueMeans)
   expect_length(findFormFuns(s7), 6L)
   ##. Scenario 8: 2 cat interaction with :
-  s8 <- lmer(y ~ a + b + c:d + (1|grp), data = play)
+  suppressMessages({
+    s8 <- lmer(y ~ a + b + c:d + (1|grp), data = play)
+  })
   expect_equal(findFormFuns(s8)[names(trueMeans)], trueMeans)
   expect_length(findFormFuns(s8), 6L)
   ##. Scenario 9: function in random slope
-  s9 <- lmer(y ~ a + b + c + d + (1 + sqrt(abs(b))|grp), data = play)
+  suppressMessages({
+    s9 <- lmer(y ~ a + b + c + d + (1 + sqrt(abs(b))|grp), data = play)
+  })
   expect_equal(findFormFuns(s9)[names(trueMeans)], trueMeans)
   expect_equal(findFormFuns(s9)$`sqrt(abs(b))`, sqrt(abs(trueMeans$b)))
   expect_length(findFormFuns(s9), 7L)
   ##. Scenario 10: two columns in I with no main effects
-  s10 <- lmer(y ~ I(log(a) + b^3) + c + d + (1|grp), data=play)
+  suppressMessages({
+    s10 <- lmer(y ~ I(log(a) + b^3) + c + d + (1|grp), data=play)
+  })
   expect_warning(findFormFuns(s10))
   expect_false(suppressWarnings(findFormFuns(s10)$`I(log(a) + b^3)`) == log(trueMeans$a) + trueMeans$b^3)
   expect_silent(findFormFuns(s10, origData = play))

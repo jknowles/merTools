@@ -1,5 +1,5 @@
 # 'seed' options in draw, REsim, FEsim, predictInterval and subBoot----
-context("'seed' options in draw, REsim, FEsim, predictInterval and subBoot")
+
 
 test_that("Equivalent seeds return equivalent results", {
   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
@@ -21,9 +21,16 @@ test_that("Equivalent seeds return equivalent results", {
   p2  <- predictInterval(fm1, newdata=sleepstudy[1:10,], seed=456)
   p1b <- predictInterval(fm1, newdata=sleepstudy[1:10,], seed=1234)
 
-  s1a <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20, seed=1234)
+  s1a <- suppressMessages({
+    subBoot(fm1, n = 160, FUN = thetaExtract, R = 20, seed=1234)
+  })
+  suppressMessages({
   s2  <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20, seed=456)
-  s1b <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20, seed=1234)
+  })
+  suppressMessages({
+    s1b <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20, seed=1234)
+  })
+
 
   expect_identical(d1a, d1b)
   expect_identical(r1a, r1b)
