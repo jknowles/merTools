@@ -110,9 +110,11 @@ test_that("Prediction works for factor as a random slope not in fixed", {
   zNew <- grouseticks[1:10,]
   # Expect warnings because we have 0 for our reMeans on location in this model
   # mvtnorm now issues a warning about the indefinite/rank-deficient matrix
-  predictInterval(glmer3LevSlope, newdata = zNew) |>
-    expect_warning("the matrix is either rank-deficient or not positive definite") |>
-    suppressWarnings()
+
+  suppressWarnings({
+    predictInterval(glmer3LevSlope, newdata = zNew) |>
+      expect_warning("the matrix is either rank-deficient or not positive definite")
+  })
   # Add test to confirm this
   suppressWarnings({
     outs2 <- predictInterval(glmer3LevSlope, newdata = zNew)

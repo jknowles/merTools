@@ -130,9 +130,11 @@ test_that("Predict handles unused and subset of factor levels", {
   expect_s3_class(outs1a, "data.frame")
   expect_equal(nrow(outs1), 100)
   expect_equal(nrow(outs1a), 100)
-
-  g2 <- lmer(y ~ lectage + studage + (1+lectage|d) + (1|dept), data=moddf) |>
-    suppresWarnings()
+  suppressWarnings(
+    {
+      g2 <- lmer(y ~ lectage + studage + (1+lectage|d) + (1|dept), data=moddf)
+    }
+  )
 
   d2 <- InstEval[670:900,]
   outs1a <- suppressWarnings(predictInterval(g2, newdata = d2, level = 0.8, n.sims = 500,

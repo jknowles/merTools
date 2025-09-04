@@ -1,9 +1,9 @@
 #' Extract theta parameters from a merMod model
 #' @description A convenience function that returns the theta parameters for a
-#' \code{\link[=merMod-class]{merMod}} object.
+#' \code{\link[lme4]{merMod}} object.
 #' @param merMod a valid merMod object
 #'
-#' @return a vector of the covariance, theta, parameters from a \code{\link[=merMod-class]{merMod}}
+#' @return a vector of the covariance, theta, parameters from a \code{\link[lme4]{merMod}}
 #' @seealso merMod
 #' @export
 #' @examples
