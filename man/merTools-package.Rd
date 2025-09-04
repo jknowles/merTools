@@ -50,7 +50,7 @@ See the vignettes for usage examples
 \seealso{
 Useful links:
 \itemize{
-  \item Report bugs at \url{https://github.com/jknowles/merTools}
+  \item Report bugs at \url{https://github.com/jknowles/merTools/issues}
 }
 
 }

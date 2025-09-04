@@ -5,15 +5,14 @@
 
 ## R CMD check results
 
-* Updated \usage sections
+* Fixed all package crossreferences
+  * Remaining crossreference issues are from inherited parameters in the `lme4` package upstream
 * Used `utils::globalVariables(c(".shinyMerPar", "sig", "sigma"))` to fix notes
   about unexported objects.
-
 * Used `utils::globalVariables(c("Lind", "group", "est", "mean_est", "est_ss", 
                                 "within_var", "between_var", "statistic"))` 
     to fix notes about unexported objects in `modelFixedEff` and 
     `fastdisp.merList` functions
-    
 
 ## Downstream dependencies
 There are currently two downstream dependencies. No issues with either were 

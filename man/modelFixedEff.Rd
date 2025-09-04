@@ -9,7 +9,7 @@ modelFixedEff(modList, ...)
 \arguments{
 \item{modList}{an object of class merModList}
 
-\item{...}{additional arguments to pass to \code{\link{tidy}}}
+\item{...}{additional arguments to pass to \code{\link[broom.mixed]{tidy}}}
 }
 \value{
 a data.frame of the averaged fixed effect parameters

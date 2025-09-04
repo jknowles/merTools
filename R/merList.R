@@ -86,7 +86,7 @@ modelRandEffStats <- function(modList){
 #' Extract averaged fixed effect parameters across a list of merMod objects
 #'
 #' @param modList an object of class merModList
-#' @param ... additional arguments to pass to \code{\link{tidy}}
+#' @param ... additional arguments to pass to \code{\link[broom.mixed]{tidy}}
 #'
 #' @return a data.frame of the averaged fixed effect parameters
 #' @details The Rubin correction for combining estimates and standard errors from
@@ -104,7 +104,7 @@ modelRandEffStats <- function(modList){
 #' modelFixedEff(mod)
 #' }
 modelFixedEff <- function(modList, ...){
-  fixEst <- lapply(modList, tidy, effects = "fixed", ...)
+  fixEst <- lapply(modList, broom.mixed::tidy, effects = "fixed", ...)
   fixEst <- do.call(rbind, fixEst)
   # Collapse
   # Rubin correction, get length of list
@@ -159,8 +159,8 @@ fixef.merModList <- function(object, add.dropped = FALSE, ...){
 #' @inheritParams lme4::ranef
 #' @return a named, numeric vector of random-effects estimates.
 #' @details Extract the estimates of the random-effects parameters from a list of
-#' fitted \code{merMod} models. Takes the mean of the individual \code{ranef}
-#' objects for each of the component models in the \code{merModList}.
+#' fitted \code{\link[lme4]{merMod}} models. Takes the mean of the individual \code{ranef}
+#' objects for each of the component models in the \code{\link{merModList}}.
 #' @export
 #' @examples
 #' \donttest{
@@ -459,4 +459,11 @@ bglmerModList <- function(formula, data, parallel = FALSE, ...){
   class(ml) <- "merModList"
   return(ml)
 }
+
+#' merModList S3 Class
+#'
+#' @description A list of fitted mixed-effects models from lme4
+#' @name merModList-class
+#' @aliases merModList
+NULL
 
