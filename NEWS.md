@@ -1,5 +1,9 @@
 # NEWS
 
+## merTools 0.6.3
+
+- Maintenance release to fix crossreference issues with function documentation
+
 ## merTools 0.6.2
 
 - Maintenance release to fix minor issues with function documentation
