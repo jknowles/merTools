@@ -157,6 +157,7 @@ fixef.merModList <- function(object, add.dropped = FALSE, ...){
 #' Extract random-effects estimates for a merModList
 #'
 #' @inheritParams lme4::ranef
+#' @param object a \code{\link{merModList}} list fitted models with random effects
 #' @return a named, numeric vector of random-effects estimates.
 #' @details Extract the estimates of the random-effects parameters from a list of
 #' fitted \code{\link[lme4]{merMod}} models. Takes the mean of the individual \code{ranef}
@@ -184,6 +185,7 @@ ranef.merModList <- function(object, ...){
 
 
 #' Extract the variances and correlations for random effects from a merMod list
+#' @param x a \code{\link{merModList}} list fitted models with random effects
 #' @inheritParams lme4::VarCorr
 #' @param rdig the number of digits to round to, integer
 #' @return a list with two elements "stddev" and "correlation" for the standard

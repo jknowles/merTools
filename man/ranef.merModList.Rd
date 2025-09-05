@@ -7,9 +7,7 @@
 \method{ranef}{merModList}(object, ...)
 }
 \arguments{
-\item{object}{an object of a class of fitted models with
-    random effects, typically a
-    \code{\linkS4class{merMod}} object.}
+\item{object}{a \code{\link{merModList}} list fitted models with random effects}
 
 \item{...}{some methods for these generic functions
     require additional arguments.}

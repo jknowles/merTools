@@ -7,9 +7,7 @@
 \method{VarCorr}{merModList}(x, sigma = 1, rdig = 3L, ...)
 }
 \arguments{
-\item{x}{for \code{VarCorr}: a fitted model object, usually an object inheriting from
-    class \code{\linkS4class{merMod}}. For \code{as.data.frame}, a
-    \code{VarCorr.merMod} object returned from \code{VarCorr}.}
+\item{x}{a \code{\link{merModList}} list fitted models with random effects}
 
 \item{sigma}{an optional numeric value used as a multiplier for the
     standard deviations.}

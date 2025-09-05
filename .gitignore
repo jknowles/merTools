@@ -14,3 +14,4 @@ test_20160701.txt
 test_20160705.txt
 *.Rcheck
 *merTools.Rcheck
+/revdep
