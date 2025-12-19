@@ -318,3 +318,20 @@ levelfun <- function(x,nl.n,allow.new.levels=FALSE) {
   }
   return(x)
 }
+
+undim <- function(x) {
+  dim <- dim(x)
+
+  if (is.null(dim)) {
+    return(x)
+  }
+
+  dim(x) <- NULL
+
+  if (length(dim) == 1L && !is.null(rownames(x))) {
+    # Preserve names of 1D arrays
+    names(x) <- rownames(x)
+  }
+
+  x
+}
