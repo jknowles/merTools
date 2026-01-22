@@ -85,6 +85,7 @@ REsim <- function(merMod, n.sims = 200, oddsRatio = FALSE, seed=NULL){
   for(i in c(1:reDims)){
     zed <- apply(mysim@ranef[[i]], c(2, 3),
                  function(x) as.data.frame(x) %>% dplyr::summarise_all(.funs = c("mean", "median", "sd")))
+    zed <- undim(zed)
     zed <- bind_rows(zed)
     zed$X1 <- rep(dimnames(mysim@ranef[[i]])[[2]], length(dimnames(mysim@ranef[[i]])[[3]]))
     zed$X2 <- rep(dimnames(mysim@ranef[[i]])[[3]], each = length(dimnames(mysim@ranef[[i]])[[2]]))
