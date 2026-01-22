@@ -2,9 +2,7 @@
 
 ## merTools 0.6.4
 
-- Maintenance release to merge @DavisVaughan changes to accomodate upstream changes in `vctrs` package
-- Fixes changes in `findbars` and `mkReTrms` upstream
-
+- Maintenance release to merge @DavisVaughan changes to accomodate upstream changes in `vctrs` package impacting `dplyr::bind_rows()` usage in `REsim` (#133)
 
 ## merTools 0.6.3
 

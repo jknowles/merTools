@@ -10,8 +10,7 @@
 
 ## R CMD check results
 
-* Fixed all
-* Fixed all package crossreference issues
+* Fixed all issues with upstream dependencies caused by `dplyr::bind_rows()`
 * Used `utils::globalVariables(c(".shinyMerPar", "sig", "sigma"))` to fix notes
   about unexported objects.
 * Used `utils::globalVariables(c("Lind", "group", "est", "mean_est", "est_ss",
