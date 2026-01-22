@@ -27,7 +27,6 @@ Suggests:
     DT
 Imports:
     dplyr,
-    reformulas,
     mvtnorm,
     foreach,
     shiny,

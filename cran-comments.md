@@ -1,6 +1,6 @@
 ## Test environments
 
-* local Windows 11 install, R 4.5.1
+* local Ubuntu linux install, R 4.5.2
 * GitHub Actions
     - {os: macos-latest,   r: 'release'}
     - {os: windows-latest, r: 'release'}
@@ -10,12 +10,13 @@
 
 ## R CMD check results
 
+* Fixed all
 * Fixed all package crossreference issues
 * Used `utils::globalVariables(c(".shinyMerPar", "sig", "sigma"))` to fix notes
   about unexported objects.
-* Used `utils::globalVariables(c("Lind", "group", "est", "mean_est", "est_ss", 
-                                "within_var", "between_var", "statistic"))` 
-    to fix notes about unexported objects in `modelFixedEff` and 
+* Used `utils::globalVariables(c("Lind", "group", "est", "mean_est", "est_ss",
+                                "within_var", "between_var", "statistic"))`
+    to fix notes about unexported objects in `modelFixedEff` and
     `fastdisp.merList` functions
 
 ## Reverse depencency check results

@@ -106,7 +106,6 @@ reTermNames <- function(model){
 #' effect level
 #' @param model a merMod object from lme4
 #' @return a formula object
-#' @importFrom reformulas nobars
 #' @keywords internal
 formulaBuild <- function(model){
   slopeFX <- setdiff(all.vars(model@call$formula), names(ngrps(model)))
@@ -123,7 +122,6 @@ formulaBuild <- function(model){
 #' @param f a model formula
 #' @param response logical, should the result include the response
 #' @return a formula
-#' @importFrom reformulas findbars
 #' @keywords internal
 reOnly <- function(f,response=FALSE) {
   response <- if (response && length(f)==3) f[[2]] else NULL
@@ -230,8 +228,6 @@ ICC <- function(outcome, group, data, subset=NULL){
 #' @param na.action an object describing how NA values should be handled in newdata
 #' @param allow.new.levels logical, should new levels be allowed in factor variables
 #' @return a random effect terms object for a merMod
-#' @importFrom reformulas findbars
-#' @importFrom reformulas mkReTrms
 #' @import lme4
 #' @keywords internal
 mkNewReTrms <- function(object, newdata, re.form=NULL, na.action=na.pass,
