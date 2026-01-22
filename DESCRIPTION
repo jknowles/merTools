@@ -27,6 +27,7 @@ Suggests:
     DT
 Imports:
     dplyr,
+    reformulas,
     mvtnorm,
     foreach,
     shiny,
@@ -38,7 +39,7 @@ Imports:
 License: GPL (>=2)
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Encoding: UTF-8
 BugReports: https://github.com/jknowles/merTools/issues
 Config/testthat/edition: 3

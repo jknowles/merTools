@@ -76,6 +76,7 @@
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom foreach %dopar%
 #' @importFrom foreach foreach
+#' @importFrom reformulas subbars
 #' @examples
 #' \donttest{
 #' m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
