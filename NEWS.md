@@ -1,5 +1,33 @@
 # NEWS
 
+## merTools 0.6.5
+
+### Code Architecture Improvements
+
+- Refactored `predictInterval()` into modular component functions for improved maintainability and testability. The main function now orchestrates five internal helper functions:
+  - `simulate_residual_variance()` - Draws residual standard deviation samples from the posterior
+  - `simulate_fixed_effects()` - Simulates fixed effect predictions with proper variance-covariance handling
+  - `simulate_random_effects()` - Simulates random effect contributions for all grouping factors
+  - `combine_components()` - Combines fixed, random, and residual variance components
+  - `summarise_predictions()` - Computes prediction intervals from simulation results
+
+- This refactoring reduces the main `predictInterval()` function from ~520 lines to ~180 lines while preserving complete backward compatibility
+- Added comprehensive unit tests for all helper functions (43 new tests)
+- All existing tests pass without modification, ensuring numeric accuracy is preserved
+
+### Benefits
+
+- **Easier maintenance**: Each component function has a single responsibility and can be updated independently
+- **Better testability**: Individual simulation components can now be unit tested in isolation
+- **Improved readability**: The main `predictInterval()` function now clearly shows the high-level algorithm flow
+- **Foundation for future enhancements**: The modular architecture makes it easier to add new features or optimization strategies
+
+### Notes
+
+- The helper functions are internal and not exported; the public API remains unchanged
+- Parallelization support is preserved in `simulate_random_effects()`
+- Seed reproducibility is maintained by setting the random seed once at the start of `predictInterval()`
+
 ## merTools 0.6.4
 
 - Maintenance release to merge @DavisVaughan changes to accomodate upstream changes in `vctrs` package impacting `dplyr::bind_rows()` usage in `REsim` (#133)
