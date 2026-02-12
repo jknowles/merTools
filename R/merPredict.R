@@ -118,12 +118,13 @@ predictInterval <- function(
 
   #--- Simulations ------------------------------------------------------------
   # Order matters for reproducibility: sigma -> random effects -> fixed effects
-  sigma_vec <- simulate_residual_variance(merMod, n.sims)
+  sigma_vec <- simulate_residual_variance(merMod, n.sims, seed = seed)
   random_list <- simulate_random_effects(
     merMod,
     newdata,
     n.sims,
-    .parallel = .parallel
+    .parallel = .parallel,
+    seed = seed
   )
   fixed_mat <- simulate_fixed_effects(
     merMod,
@@ -131,7 +132,8 @@ predictInterval <- function(
     n.sims,
     ignore.fixed.terms = ignore.fixed.terms,
     fix.intercept.variance = fix.intercept.variance,
-    .parallel = .parallel
+    .parallel = .parallel,
+    seed = seed
   )
 
   #--- Combine components ------------------------------------------------------

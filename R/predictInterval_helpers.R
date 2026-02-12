@@ -6,9 +6,10 @@
 #'
 #' @param merMod A merMod object from lme4.
 #' @param n.sims Number of simulation draws.
+#' @param seed Optional random seed for reproducibility.
 #' @return Numeric vector of length `n.sims`.
 #' @keywords internal
-simulate_residual_variance <- function(merMod, n.sims) {
+simulate_residual_variance <- function(merMod, n.sims, seed = NULL) {
   devcomp <- getME(merMod, 'devcomp')
   # Linear model (no GLMM/NLMM)
   if (devcomp$dims[["GLMM"]] == 0 && devcomp$dims[["NLMM"]] == 0) {
@@ -59,8 +60,11 @@ simulate_fixed_effects <- function(
   n.sims,
   ignore.fixed.terms = NULL,
   fix.intercept.variance = FALSE,
-  .parallel = FALSE
+  .parallel = FALSE,
+  seed = NULL
 ) {
+  if (!is.null(seed)) set.seed(seed)
+  else if (!exists('.Random.seed', envir = .GlobalEnv)) runif(1)
   fe.tmp <- fixef(merMod)
   vcov.tmp <- as.matrix(vcov(merMod))
 
@@ -239,8 +243,11 @@ simulate_random_effects <- function(
   merMod,
   newdata,
   n.sims,
-  .parallel = FALSE
+  .parallel = FALSE,
+  seed = NULL
 ) {
+  if (!is.null(seed)) set.seed(seed)
+  else if (!exists('.Random.seed', envir = .GlobalEnv)) runif(1)
   rr <- ranef(merMod, condVar = TRUE)
   re.xb <- vector(getME(merMod, 'n_rfacs'), mode = 'list')
   names(re.xb) <- names(ngrps(merMod))
