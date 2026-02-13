@@ -116,9 +116,39 @@ predictInterval <- function(
     }
   }
 
+  # Check GLMM support
+  check_glmm_support <- function(merMod, include.resid.var) {
+    devcomp <- getME(merMod, 'devcomp')
+    
+    if (devcomp$dims[["GLMM"]] == TRUE) {
+      family <- merMod@resp$family$family
+      supported_families <- c("binomial", "poisson", "Gamma")
+      
+      if (!(family %in% supported_families)) {
+        msg <- paste0(
+          "Prediction for ", family, " GLMMs is not supported.\n",
+          "Supported families: binomial, poisson, Gamma\n",
+          "Try include.resid.var = FALSE as a fallback."
+        )
+        stop(msg, call. = FALSE)
+      }
+      
+      if (include.resid.var && family == "binomial") {
+        warning(paste0(
+          "For binomial GLMMs, include.resid.var = TRUE simulates from the\n",
+          "conditional binomial distribution (n-trial binomial simulation).\n",
+          "This is the theoretically correct approach.\n",
+          "To get predictions without residual variance, set include.resid.var = FALSE."
+        ), call. = FALSE)
+      }
+    }
+  }
+  
+  check_glmm_support(merMod, include.resid.var)
+
   #--- Simulations ------------------------------------------------------------
   # Order matters for reproducibility: sigma -> random effects -> fixed effects
-  sigma_vec <- simulate_residual_variance(merMod, n.sims, seed = seed)
+  sigma_vec <- simulate_residual_variance(merMod, n.sims)
   random_list <- simulate_random_effects(
     merMod,
     newdata,
@@ -136,14 +166,46 @@ predictInterval <- function(
     seed = seed
   )
 
+  # Extract family/link info for GLMM support
+  devcomp <- getME(merMod, 'devcomp')
+  family_info <- NULL
+  weights <- NULL
+  
+  if (devcomp$dims[["GLMM"]] == TRUE) {
+    family_info <- list(
+      family = merMod@resp$family$family,
+      link = merMod@resp$family$link
+    )
+    
+    # Handle weights for binomial GLMMs
+    if (family_info$family == "binomial") {
+      # First check for explicit weights
+      if (!is.null(merMod@frame$weights)) {
+        weights <- as.numeric(merMod@frame$weights)
+      } else if (any(grepl("cbind", names(merMod@frame)))) {
+        # For cbind syntax, extract weights from response columns
+        cbind_cols <- names(merMod@frame)[grepl("cbind", names(merMod@frame))]
+        if (length(cbind_cols) == 1) {
+          weights <- rowSums(merMod@frame[, cbind_cols, drop = FALSE])
+        }
+      }
+    }
+  }
+
   #--- Combine components ------------------------------------------------------
-  combined_result <- combine_components(
-    fixed_mat = fixed_mat,
-    random_list = random_list,
-    sigma_vec = sigma_vec,
-    include.resid.var = include.resid.var,
-    which = which.eff
-  )
+combined_result <- combine_components(
+     fixed_mat = fixed_mat,
+     random_list = random_list,
+     sigma_vec = sigma_vec,
+     include.resid.var = include.resid.var,
+     which = which.eff,
+     family = if (!is.null(family_info)) family_info$family else NULL,
+     link = if (!is.null(family_info)) family_info$link else NULL,
+     weights = weights,
+     use.probability = (include.resid.var && !is.null(family_info) &&
+                        family_info$family %in% c("binomial", "poisson", "Gamma") &&
+                        predict.type == "probability")
+   )
 
   # Handle which = "all" case separately
   if (which.eff == "all") {
@@ -155,6 +217,11 @@ predictInterval <- function(
   }
 
   #--- Summarise --------------------------------------------------------------
+  # For GLMMs with include.resid.var=TRUE, simulations are in response scale
+  # so skip linkinv. For LMMs or GLMMs without residual variance, use original logic.
+  devcomp <- getME(merMod, "devcomp")
+  is.glmm.with.response <- (devcomp$dims[["GLMM"]] == TRUE && include.resid.var)
+  
   outs <- summarise_predictions(
     yhat_arr = yhat_arr,
     level = level,
@@ -163,7 +230,8 @@ predictInterval <- function(
     N = nrow(newdata),
     merMod = merMod,
     which.eff = which.eff,
-    pi.comps = pi.comps
+    pi.comps = pi.comps,
+    is.glmm.with.response = is.glmm.with.response
   )
 
   # Attach simulation results if requested

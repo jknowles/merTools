@@ -82,8 +82,40 @@ and,
 5. returns newdata with the lower and upper limits of the prediction interval
 and the mean or median of the simulated predictions
 
-Currently, the supported model types are linear mixed models and mixed logistic
-regression models.
+Currently, the supported model types are:
+
+- **Linear Mixed Models (LMMs)**: Gaussian residual variance added via `rnorm()`
+- **Binomial GLMMs**: Conditional binomial simulation via `rbinom()` (with weights support)
+- **Poisson GLMMs**: Conditional Poisson simulation via `rpois()`
+- **Gamma GLMMs**: Conditional Gamma simulation via `rgamma()`
+
+For GLMMs with `include.resid.var = TRUE`, the function simulates from the
+conditional distribution of Y|b (given random effects), which is theoretically
+correct for discrete distributions where residual variance is inherent in the
+distribution parameters.
+
+## GLMM Residual Variance and Conditional Simulation
+
+For generalized linear mixed models (GLMMs), the concept of "residual variance"
+differs from LMMs. In GLMMs, the distributional family (binomial, Poisson, Gamma)
+defines the conditional variance of Y|b. For example:
+
+- **Binomial**: Var(Y|b) = n·p·(1-p) - variance is determined by the mean probability
+- **Poisson**: Var(Y|b) = λ - variance equals the mean rate
+- **Gamma**: Var(Y|b) = shape/rate² - variance determined by shape and rate parameters
+
+The traditional approach of adding Gaussian noise with sd=1 to binomial GLMMs
+is theoretically incorrect. Instead, `predictInterval()` now:
+
+1. Computes the linear predictor η = fixed_eff + random_eff
+2. Applies the inverse link function to get distribution parameters (p, λ, or rate)
+3. Simulates from the conditional distribution: `rbinom()`, `rpois()`, or `rgamma()`
+
+This approach matches the principles of `lme4::simulate.merMod()` and provides
+theoretically correct prediction intervals for GLMMs.
+
+For LMMs, the behavior remains unchanged: Gaussian residual variance is added
+via `rnorm(N, yhat, sigma)`.
 
 The prediction data set *can* include levels that are not in the estimation model
 frame. The prediction intervals for such observations only incorporate

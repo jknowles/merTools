@@ -9,9 +9,20 @@
 #' @param seed Optional random seed for reproducibility.
 #' @return Numeric vector of length `n.sims`.
 #' @keywords internal
-simulate_residual_variance <- function(merMod, n.sims, seed = NULL) {
+simulate_residual_variance <- function(merMod, n.sims) {
   devcomp <- getME(merMod, 'devcomp')
-  # Linear model (no GLMM/NLMM)
+  
+  # GLMM: No residual variance to simulate (dispersion = 1 by definition)
+  if (devcomp$dims[["GLMM"]] == TRUE) {
+    return(NULL)
+  }
+  
+  # NLMM: No residual variance either
+  if (devcomp$dims[["NLMM"]] == TRUE) {
+    return(NULL)
+  }
+  
+  # LMM: Gamma-based sigma simulation
   if (devcomp$dims[["GLMM"]] == 0 && devcomp$dims[["NLMM"]] == 0) {
     sigma <- sqrt(
       1 / rgamma(
@@ -22,20 +33,8 @@ simulate_residual_variance <- function(merMod, n.sims, seed = NULL) {
     )
     return(sigma)
   }
-
-  # Binomial GLMM with logit/probit link – residual variance fixed at 1
-  if (devcomp$dims[["GLMM"]] == TRUE &&
-      merMod@resp$family$family == "binomial" &&
-      merMod@resp$family$link %in% c('logit', 'probit')) {
-    return(rep(1, n.sims))
-  }
-
-  # Fallback for other GLMM/NLMM cases (not extensively tested)
-  warning(
-    "Prediction for NLMMs or GLMMs that are not mixed binomial regressions is not tested. Sigma set at 1.",
-    call. = FALSE
-  )
-  rep(1, n.sims)
+  
+  stop("Unknown model type in simulate_residual_variance")
 }
 
 #' Simulate fixed-effect predictions
@@ -386,7 +385,11 @@ combine_components <- function(
   random_list,
   sigma_vec,
   include.resid.var = TRUE,
-  which = c('full', 'fixed', 'random', 'all')
+  which = c('full', 'fixed', 'random', 'all'),
+  family = NULL,
+  link = NULL,
+  weights = NULL,
+  use.probability = FALSE
 ) {
   which <- match.arg(which)
   re.xb <- random_list
@@ -396,57 +399,88 @@ combine_components <- function(
     yhat <- re.xb[['fixed']]
     if (include.resid.var) {
       N <- nrow(yhat)
-      yhat <- abind::abind(
-        lapply(seq_len(length(sigma_vec)), function(x) rnorm(N, yhat[, x], sigma_vec[x])),
-        along = 2
-      )
-    }
-    return(yhat)
-  }
-
-  if (which == 'random') {
+      
+if (use.probability) {
+         yhat <- simulate_glmm_response(yhat, family = family, link = link,
+                                         weights = weights, use.probability = TRUE)
+       } else if (!is.null(sigma_vec)) {
+         yhat <- abind::abind(
+           lapply(seq_len(length(sigma_vec)), function(x) rnorm(N, yhat[, x], sigma_vec[x])),
+           along = 2
+         )
+       }
+     }
+     return(yhat)
+   }
+ 
+   if (which == 'random') {
     re.xb[['fixed']] <- NULL
     yhat <- Reduce('+', re.xb)
     if (include.resid.var) {
       N <- nrow(yhat)
-      yhat <- abind::abind(
-        lapply(seq_len(length(sigma_vec)), function(x) rnorm(N, yhat[, x], sigma_vec[x])),
-        along = 2
-      )
-    }
-    return(yhat)
-  }
-
-  if (which == 'full') {
+      
+if (use.probability) {
+         yhat <- simulate_glmm_response(yhat, family = family, link = link,
+                                         weights = weights, use.probability = TRUE)
+       } else if (!is.null(sigma_vec)) {
+         yhat <- abind::abind(
+           lapply(seq_len(length(sigma_vec)), function(x) rnorm(N, yhat[, x], sigma_vec[x])),
+           along = 2
+         )
+       }
+     }
+     return(yhat)
+   }
+ 
+   if (which == 'full') {
     yhat <- Reduce('+', re.xb)
     if (include.resid.var) {
       N <- nrow(yhat)
-      yhat <- abind::abind(
-        lapply(seq_len(length(sigma_vec)), function(x) rnorm(N, yhat[, x], sigma_vec[x])),
-        along = 2
-      )
+      
+      if (use.probability) {
+        yhat <- simulate_glmm_response(yhat, family = family, link = link,
+                                        weights = weights, use.probability = TRUE)
+      } else if (!is.null(sigma_vec)) {
+        yhat <- abind::abind(
+          lapply(seq_len(length(sigma_vec)), function(x) rnorm(N, yhat[, x], sigma_vec[x])),
+          along = 2
+        )
+      }
     }
     return(yhat)
   }
 
   if (which == 'all') {
     yhat <- Reduce('+', re.xb)
-    # For 'all', apply residual variance to components (for returnSims)
-    # and also to yhat for the summary
+    
+    for (i in seq_along(re.xb)) {
+      if (include.resid.var) {
+        N <- nrow(yhat)
+        
+if (!is.null(family) && family %in% c("binomial", "poisson", "Gamma")) {
+           re.xb[[i]] <- simulate_glmm_response(re.xb[[i]], family = family, link = link,
+                                                 weights = weights, use.probability = use.probability)
+         } else if (!is.null(sigma_vec)) {
+           re.xb[[i]] <- abind::abind(
+             lapply(seq_len(length(sigma_vec)), function(x) rnorm(N, re.xb[[i]][, x], sigma_vec[x])),
+             along = 2
+           )
+         }
+      }
+    }
+    
     if (include.resid.var) {
       N <- nrow(yhat)
-      # Apply residual variance to each component
-      for (i in seq_along(re.xb)) {
-        re.xb[[i]] <- abind::abind(
-          lapply(seq_len(length(sigma_vec)), function(x) rnorm(N, re.xb[[i]][, x], sigma_vec[x])),
+      
+      if (use.probability) {
+        yhat <- simulate_glmm_response(yhat, family = family, link = link,
+                                        weights = weights, use.probability = TRUE)
+      } else if (!is.null(sigma_vec)) {
+        yhat <- abind::abind(
+          lapply(seq_len(length(sigma_vec)), function(x) rnorm(N, yhat[, x], sigma_vec[x])),
           along = 2
         )
       }
-      # Apply residual variance to combined yhat
-      yhat <- abind::abind(
-        lapply(seq_len(length(sigma_vec)), function(x) rnorm(N, yhat[, x], sigma_vec[x])),
-        along = 2
-      )
     }
     return(list(yhat = yhat, components = re.xb))
   }
@@ -481,7 +515,8 @@ summarise_predictions <- function(
   N,
   merMod = NULL,
   which.eff = "full",
-  pi.comps = NULL
+  pi.comps = NULL,
+  is.glmm.with.response = FALSE
 ) {
   # Calculate quantile bounds
 
@@ -512,11 +547,19 @@ upCI <- 1 - ((1 - level) / 2)
     if (is.null(merMod)) {
       stop("merMod object required for probability predictions", call. = FALSE)
     }
-    if (nrow(outs) == 1) {
-      outs <- t(apply(outs, 2, merMod@resp$family$linkinv))
-    } else {
-      outs <- apply(outs, 2, merMod@resp$family$linkinv)
+    
+    # Skip linkinv for ALL GLMM families with response-scale simulations
+    devcomp <- getME(merMod, "devcomp")
+    is_glmm <- (devcomp$dims[["GLMM"]] == TRUE)
+    
+    if (!(is.glmm.with.response && is_glmm)) {
+      if (nrow(outs) == 1) {
+        outs <- t(apply(outs, 2, merMod@resp$family$linkinv))
+      } else {
+        outs <- apply(outs, 2, merMod@resp$family$linkinv)
+      }
     }
+    
     outs <- as.data.frame(outs)
     names(outs) <- c("fit", "upr", "lwr")
   }
@@ -545,7 +588,13 @@ upCI <- 1 - ((1 - level) / 2)
       }
       # Apply link function for probability predictions
       if (predict.type == "probability") {
-        pi.comps[[i]] <- apply(pi.comps[[i]], 2, merMod@resp$family$linkinv)
+        devcomp <- getME(merMod, "devcomp")
+        is_binomial_glmm <- (devcomp$dims[["GLMM"]] == TRUE &&
+                             merMod@resp$family$family == "binomial")
+        
+        if (!(is.glmm.with.response && is_binomial_glmm)) {
+          pi.comps[[i]] <- apply(pi.comps[[i]], 2, merMod@resp$family$linkinv)
+        }
         pi.comps[[i]] <- as.data.frame(pi.comps[[i]])
         names(pi.comps[[i]]) <- c("fit", "upr", "lwr")
       }
@@ -559,4 +608,94 @@ upCI <- 1 - ((1 - level) / 2)
   }
 
   as.data.frame(outs)
+}
+
+#' Inverse link function for GLMM families
+#'
+#' Internal helper that applies the inverse link function to convert linear
+#' predictors to distribution parameters.
+#'
+#' @param eta Linear predictor (fixed + random effects).
+#' @param family Character string specifying the distribution family.
+#' @param link Character string specifying the link function.
+#' @return Vector of distribution parameters (prob, lambda, or rate).
+#' @keywords internal
+inverse_link <- function(eta, family, link) {
+  if (family == "binomial") {
+    if (link == "logit") return(1 / (1 + exp(-eta)))
+    if (link == "probit") return(pnorm(eta))
+    if (link == "cloglog") return(1 - exp(-exp(eta)))
+  }
+  
+  if (family == "poisson") {
+    if (link == "log") return(exp(eta))
+    if (link == "sqrt") return(pmax(eta, 0)^2)
+    if (link == "identity") return(pmax(eta, 0))
+  }
+  
+  if (family == "Gamma") {
+    eps <- .Machine$double.xmin
+    if (link == "inverse") return(1 / pmax(eta, eps))
+    if (link == "identity") return(pmax(eta, eps))
+    if (link == "log") return(exp(eta))
+  }
+  
+  stop("Unsupported family/link combination: ", family, "/", link)
+}
+
+#' Simulate GLMM responses from conditional distribution
+#'
+#' Internal helper that simulates responses from the conditional distribution
+#' of Y|b (given random effects) for GLMMs. This implements the correct
+#' theoretical approach where residual variance is inherent in the distribution.
+#'
+#' @param yhat Matrix of linear predictors (fixed + random effects).
+#' @param family Character string specifying the distribution family.
+#' @param link Character string specifying the link function.
+#' @param weights Optional weights (for binomial with n-trial parameter).
+#' @param use.probability For binomial, return proportions (0-1) instead of counts?
+#' @return Matrix of simulated responses with same dimensions as yhat.
+#' @keywords internal
+simulate_glmm_response <- function(yhat, family, link, weights = NULL, use.probability = FALSE) {
+  N <- nrow(yhat)
+  n_sims <- ncol(yhat)
+  
+  if (family == "binomial") {
+    if (is.null(weights)) weights <- rep(1, N)
+    if (length(weights) == 1) weights <- rep(weights, N)
+    
+    eta <- as.matrix(yhat)
+    prob <- inverse_link(eta, family, link)
+    
+    result <- matrix(nrow = N, ncol = n_sims)
+    for (i in 1:N) {
+      if (use.probability) {
+        result[i, ] <- rbinom(n_sims, size = weights[i], prob = prob[i, ]) / weights[i]
+      } else {
+        result[i, ] <- rbinom(n_sims, size = weights[i], prob = prob[i, ])
+      }
+    }
+    return(result)
+  }
+  
+  if (family == "poisson") {
+    lambda <- inverse_link(as.matrix(yhat), family, link)
+    result <- matrix(nrow = N, ncol = n_sims)
+    for (i in 1:N) {
+      result[i, ] <- rpois(n_sims, lambda = lambda[i])
+    }
+    return(result)
+  }
+  
+  if (family == "Gamma") {
+    rate <- inverse_link(as.matrix(yhat), family, link)
+    shape <- 1
+    result <- matrix(nrow = N, ncol = n_sims)
+    for (i in 1:N) {
+      result[i, ] <- rgamma(n_sims, shape = shape, rate = rate[i])
+    }
+    return(result)
+  }
+  
+  stop("Unsupported family for GLMM simulation: ", family)
 }

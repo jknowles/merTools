@@ -206,7 +206,7 @@ test_that("component-by-component consistency with predictInterval wrapper", {
     seed = seed
   )
   
-  sigma_vec <- merTools:::simulate_residual_variance(m, n.sims, seed = seed)
+  sigma_vec <- merTools:::simulate_residual_variance(m, n.sims)
   random_list <- merTools:::simulate_random_effects(m, newdata, n.sims, seed = seed)
   fixed_mat <- merTools:::simulate_fixed_effects(m, newdata, n.sims, seed = seed)
   
