@@ -1,0 +1,138 @@
+name: r-cmd-check-detailed
+description: |
+  Detailed skill for executing R CMD CHECK with detailed interpretation of 
+  output, error handling, and fix guidance.
+
+context:
+  This skill provides deep expertise in running and interpreting R CMD CHECK 
+  for the merTools package. Use when full check execution and error analysis 
+  is required.
+
+when-to-use:
+  - Before submitting pull requests
+  - After significant code changes in R/
+  - When test failures occur
+  - For CRAN submission preparation
+
+check-phases:
+  install:
+    description: Install package from source
+    command: R CMD INSTALL merTools_*.tar.gz
+    what-to-check:
+      - No installation errors
+      - All dependencies satisfied
+      - Package loads successfully
+  build:
+    description: Build package tarball
+    command: R CMD BUILD merTools
+    what-to-check:
+      - DESCRIPTION valid
+      - NAMESPACE generated correctly
+      - No files excluded incorrectly (check .Rbuildignore)
+  check:
+    description: Run full package check
+    command: R CMD CHECK merTools_*.tar.gz
+    phases:
+      - install: Check 01install.out for installation issues
+      - byte-compile: Check for compilation errors
+      - test: Check 00test.log for test failures (Status must be OK)
+      - examples: Check 00examples.log for example errors
+      - vignettes: Check vignette building worked
+
+success-indicators:
+  - Status: OK in check summary
+  - 0 errors, 0 warnings (or only "note" level issues)
+  - All tests pass
+  - Examples run without errors
+
+critical-checkpoints:
+  phase1-install:
+    log: merTools.Rcheck/01install.log
+    fail-if:
+      - Contains "ERROR:"
+      - Missing dependencies reported
+  phase2-tests:
+    log: merTools.Rcheck/00test.log
+    fail-if:
+      - any test failures
+      - Status != OK
+      - Test errors in output
+  phase3-examples:
+    log: merTools.Rcheck/00examples.log
+    fail-if:
+      - Examples show errors
+      - Code in examples fails to run
+  phase4-vignettes:
+    log: merTools.Rcheck/vigntest.log (if generated)
+    fail-if:
+      - Vignette rebuilding failed
+      - Missing R Markdown dependencies
+
+fix-guide:
+  error-in-installation:
+    symptom: Installation fails
+    solution: 
+      - Check DESCRIPTION dependencies
+      - Install missing packages manually
+      - Verify R version requirements
+  warning-in-check:
+    symptom: WARNING found in check
+    solution:
+      - Review specific warning message
+      - Some warnings may be acceptable, others block CRAN
+      - Run check with --no-manual for faster iteration
+  test-failure:
+    symptom: Tests fail during check
+    solution:
+      - Run tests locally with devtools::test()
+      - Check testthat output for stack traces
+      - Fix code or update test expectations
+  vignette-rebuild-fail:
+    symptom: Vignettes fail to rebuild
+    solution:
+      - Check vignettes/precompile.R for API dependencies
+      - Ensure knitr and rmarkdown installed
+      - Check vignette Rmd files for errors
+
+troubleshooting-commands:
+  quick-check-no-manual:
+    command: R CMD CHECK --no-manual merTools_*.tar.gz
+  check-with-keep:
+    command: R CMD CHECK --keep-empty-dirs merTools_*.tar.gz
+  check-inside-r:
+    command: Rscript -e "rcmdcheck::rcmdcheck('merTools_*.tar.gz')"
+  verbose-check:
+    command: R CMD CHECK --timings merTools_*.tar.gz
+  check-only-tests:
+    command: Rscript -e "devtools::test()"
+  install-then-check:
+    command: R CMD INSTALL merTools_*.tar.gz && R CMD check --no-manual merTools_*.tar.gz
+
+artifact-files:
+  check-log: merTools.Rcheck/00check.log
+  install-log: merTools.Rcheck/01install.log
+  test-log: merTools.Rcheck/00test.log
+  examples-log: merTools.Rcheck/00examples.log
+  timing-file: merTools.Rcheck/merTools-Ex.timings
+
+note-level-issues:
+  These may be acceptable for development but review before CRAN:
+  - Package metadata notes
+  - Documentation style notes
+  - Cross-reference notes
+
+blocking-issues:
+  These must be fixed before merge/CRAN:
+  - Any ERROR
+  - Production-quality WARNINGs
+  - Test failures
+  - Example errors
+
+CRAN-checklist:
+  Before CRAN submission, verify:
+  - Status: OK
+  - 0 errors, 0 warnings
+  - All tests pass
+  - Examples run in <5 seconds each
+  - Vignettes build successfully
+  - No Platform-specific code without alternatives
