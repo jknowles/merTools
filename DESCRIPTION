@@ -28,6 +28,7 @@ Suggests:
 Imports:
     dplyr,
     mvtnorm,
+    reformulas,
     foreach,
     shiny,
     abind,

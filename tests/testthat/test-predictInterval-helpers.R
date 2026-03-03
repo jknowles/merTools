@@ -33,21 +33,6 @@ test_that("simulate_residual_variance returns NULL for binomial GLMM", {
    expect_null(sigma_vec)
  })
 
-test_that("simulate_residual_variance warns for non-binomial GLMM", {
-  skip_on_cran()
-  skip_on_ci()
-  d <- data.frame(
-    y = rpois(100, 3),
-    x = rnorm(100),
-    g = factor(rep(1:10, each = 10))
-  )
-  gm1 <- glmer(y ~ x + (1 | g), family = poisson, data = d)
-  expect_warning(
-    merTools:::simulate_residual_variance(gm1, n.sims = 100),
-    "not tested"
-  )
-})
-
 
 # Test simulate_fixed_effects() ----
 

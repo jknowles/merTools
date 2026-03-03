@@ -60,8 +60,7 @@ predictInterval <- function(
   if (any(c("data.frame") != class(newdata))) {
     if (any(c("tbl_df", "tbl") %in% class(newdata))) {
       newdata <- as.data.frame(newdata)
-      warning("newdata is tbl_df or tbl object from dplyr package and has been
-              coerced to a data.frame")
+      warning("newdata is tbl_df or tbl object from dplyr package and has been coerced to a data.frame")
     } else {
       newdata <- as.data.frame(newdata)
     }
