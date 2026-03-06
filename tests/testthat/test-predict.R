@@ -118,12 +118,12 @@ test_that("Models with no fixed intercept and cross-level interaction work", {
     expect_warning("No fixed-effect intercept detected") |>
     suppressWarnings()
 
-  preds1 <- predictInterval(m1, newdata = sleepstudy[1:10, ],
+  preds1 <- predictInterval(m1, newdata = sleepstudy[1:25, ],
                             level = 0.9, n.sims = 500, include.resid.var = FALSE,
                             ignore.fixed.terms = TRUE)
-  expect_equal(nrow(preds1), 10)
+  expect_equal(nrow(preds1), 25)
   expect_equal(ncol(preds1), 3)
-  truPred <- predict(m1, newdata = sleepstudy[1:10,])
+  truPred <- predict(m1, newdata = sleepstudy[1:25,])
   expect_equal(mean(preds1$fit - truPred), 0, tolerance = sd(truPred)/100)
 
   # This is less close
