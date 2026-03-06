@@ -15,3 +15,4 @@ test_20160705.txt
 *.Rcheck
 *merTools.Rcheck
 /revdep
+NUL
