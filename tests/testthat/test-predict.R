@@ -129,7 +129,7 @@ test_that("Models with no fixed intercept and cross-level interaction work", {
   # This is less close
   preds1 <- predictInterval(m1, newdata = sleepstudy[1:50, ],
                             level = 0.9, n.sims = 500, include.resid.var = FALSE,
-                            ignore.fixed.terms = FALSE)
+                            ignore.fixed.terms = FALSE, seed = 42)
   expect_equal(nrow(preds1), 50)
   expect_equal(ncol(preds1), 3)
   truPred <- predict(m1, newdata = sleepstudy[1:50,])

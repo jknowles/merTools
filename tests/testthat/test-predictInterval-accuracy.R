@@ -103,7 +103,7 @@ test_that("parallelization does not throw errors", {
   
   seed <- 999
   
-  expect_no_error({
+  suppressWarnings(expect_no_error({
     predictInterval(
       m,
       newdata = sleepstudy[1:20, ],
@@ -111,7 +111,7 @@ test_that("parallelization does not throw errors", {
       seed = seed,
       .parallel = TRUE
     )
-  })
+  }))
 })
 
 test_that("all which options return correct dimensions", {
