@@ -12,8 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     concurrency:
       group: pkgdown-${{ github.ref }}
+    env:
+      # Opt into Node.js 24 for transitive JS actions (actions/cache,
+      # actions/upload-artifact) used internally by r-lib/actions, which
+      # still ship Node 20. Remove once r-lib/actions publishes Node
+      # 24-native versions.
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: r-lib/actions/setup-pkgdown@v2
         with:

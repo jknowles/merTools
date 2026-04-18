@@ -28,9 +28,14 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      # Opt into Node.js 24 for transitive JS actions (actions/cache,
+      # actions/upload-artifact) used internally by r-lib/actions, which
+      # still ship Node 20. Remove once r-lib/actions publishes Node
+      # 24-native versions.
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       - uses: r-lib/actions/setup-pandoc@v2
 
