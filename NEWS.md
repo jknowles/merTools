@@ -4,6 +4,18 @@
 
 ### Bug Fixes
 
+- **Restored single RNG stream in `predictInterval()`.** The refactor of
+  `predictInterval()` into component helpers inadvertently had each helper
+  (`simulate_random_effects()`, `simulate_fixed_effects()`) call
+  `set.seed(seed)` internally when invoked from the main function, resetting
+  the RNG stream mid-call. This produced numerically different output for
+  any user-supplied seed compared to CRAN releases. Fixed by passing
+  `seed = NULL` from `predictInterval()` to the helpers; the outer
+  `set.seed(seed)` now pins a single, sequential stream (sigma → random
+  effects → fixed effects → residuals) exactly as before the refactor.
+  Verified against `origin/master` with a 16-case harness: 14 of 16 cases
+  are now bit-for-bit identical to master, and the remaining 2 differ only
+  by the intentional GLMM binomial-residual simulation fix below.
 - Fixed parse error caused by debug statements inserted mid-function call in `predictInterval()`
   (now correctly handles the function call structure)
 - Fixed GLMM residual variance simulation to properly return NULL for all GLMM/NLMM models
@@ -13,6 +25,9 @@
 - Removed `seed` parameter from `simulate_residual_variance()` (seeds are now handled at the
   `predictInterval()` level for reproducibility)
 - Updated test expectations to reflect that GLMMs return NULL from `simulate_residual_variance()`
+- Replaced bare `subbars()` with `reformulas::subbars()` in the random-effect
+  prediction path to resolve the deprecation warning from lme4, which has
+  migrated `subbars` to the `reformulas` package.
 
 ### Technical Improvements
 
@@ -23,6 +38,38 @@
   distribution (theoretically correct for discrete distributions)
 - When `include.resid.var = TRUE` and GLMM with `type = "linear.prediction"`: Returns linear
   predictor without Gaussian noise (correct behavior - GLMMs don't have additive Gaussian noise)
+
+### Test Infrastructure
+
+- **Added `tests/comparisons/predictInterval-regression.R`**, a standalone
+  cross-version numeric regression harness. It pins a canonical set of LMM
+  and GLMM inputs — covering `which`, `level`, `stat`,
+  `ignore.fixed.terms`, `fix.intercept.variance`, and single-row-newdata
+  cases — and serializes `predictInterval()` output to an RDS bundle so
+  two package versions can be compared bit-for-bit via a `diff` subcommand.
+  Invoke it whenever touching simulation internals to confirm the change
+  does not silently alter user-facing numeric output. See the README for a
+  worked `git worktree`-based workflow.
+- Pinned RNG version and algorithm across R releases via a new
+  `tests/testthat/helper-seed.R` that sets `RNGversion("4.1.0")` and an
+  explicit `RNGkind()`. This prevents silent stream differences across
+  R-oldrel / R-release / R-devel on CI.
+- Disabled testthat parallel execution (`Config/testthat/parallel: false`).
+  File-level `set.seed()` behaves unpredictably under parallel workers
+  with separate RNG state, which was the root cause of several of the
+  intermittent CI failures observed during the 0.9.0 development cycle.
+- Unified all test seeds to `11213` for consistency, preserving a single
+  differing seed in two tests that explicitly assert that different seeds
+  produce different results.
+- Refactored the `thetaExtract()` test in `test-helpers.R` from a brittle
+  numeric-equality check against a value calibrated to an older seed, into
+  behavioral assertions (type, length, bounds).
+
+### CI
+
+- Bumped `actions/checkout` to `@v5` and set
+  `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` on both workflows to address
+  the GitHub Actions Node.js 20 deprecation (scheduled for 2026-09-16).
 
 ## merTools 0.6.5
 
