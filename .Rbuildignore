@@ -22,3 +22,6 @@ readmeplot
 ^\.claude$
 ^\.skills$
 ^merTools.*\.tar\.gz$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
