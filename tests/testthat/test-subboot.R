@@ -1,6 +1,6 @@
 # test subboot
 
-set.seed(51315)
+set.seed(11213)
 library(lme4)
 # Sleepstudy
 lmerSlope1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
@@ -56,7 +56,7 @@ test_that("subBoot produces correct glmer output", {
                   newdata = d,
                   newparams = list( beta = c(2,-1,3,-2,1.2),
                                     theta = c(.33)),
-                  seed =634)[[1]]
+                  seed =11213)[[1]]
   subD <- d[sample(row.names(d), 1200), ]
 
   g1 <- glmer(y~fac1+(1|grp), data=subD, family = 'binomial')

@@ -304,7 +304,7 @@ simulate_random_effects <- function(
         keepCols <- grep(dimnames(REcoefs)[[2]], names(tmp), value = TRUE)
       }
       if (length(keepCols) == 0) {
-        tmp <- cbind(model.frame(subbars(formula(merMod)), data = newdata),
+        tmp <- cbind(model.frame(reformulas::subbars(formula(merMod)), data = newdata),
                      var = newdata[, j])
         keepCols <- grep(dimnames(REcoefs)[[2]], names(tmp), value = TRUE)
       }

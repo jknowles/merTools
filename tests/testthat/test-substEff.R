@@ -1,6 +1,6 @@
 # Test substantive effects
 library(lme4)
-set.seed(157)
+set.seed(11213)
 
 # Test all user parameters for REimpact----
 #context("Test all user parameters for REimpact")

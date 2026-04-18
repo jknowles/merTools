@@ -3,7 +3,7 @@
 test_that("Prediction intervals are accurate with interaction terms and rank deficiency", {
   skip_on_ci()
   skip_on_cran()
-  set.seed(54656)
+  set.seed(11213)
   n <- 20
   x <- y <- rnorm(n)
   z <- rnorm(n)
@@ -20,7 +20,7 @@ test_that("Prediction intervals are accurate with interaction terms and rank def
 
   newPred <- predictInterval(fm, newdata = d2, level = 0.8, n.sims = 1500,
                              stat = 'median', include.resid.var = FALSE,
-                             seed = 2342)
+                             seed = 11213)
   truPred <- predict(fm, newdata = d2)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/15)
   fm2 <- lmer( z ~ a*b + (1+b|r), data=d2) |> suppressMessages()
@@ -52,25 +52,25 @@ test_that("simResults option behaves", {
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   preds1 <- predictInterval(m1, newdata = sleepstudy[1:5, ],
                             returnSims = TRUE,
-                            which = "random", seed = 23151)
+                            which = "random", seed = 11213)
   preds2 <- predictInterval(m1, newdata = sleepstudy[1:5, ], which = "fixed",
-                            returnSims = TRUE, seed = 23151)
+                            returnSims = TRUE, seed = 11213)
   preds3 <- predictInterval(m1, newdata = sleepstudy[1:5, ], which = "all",
-                            returnSims = TRUE, seed = 23151)
+                            returnSims = TRUE, seed = 11213)
   preds4 <- predictInterval(m1, newdata = sleepstudy[1:5, ],
-                            returnSims = TRUE, seed = 23151)
+                            returnSims = TRUE, seed = 11213)
   preds1b <- predictInterval(m1, newdata = sleepstudy[1:5, ],
                              returnSims = TRUE,
-                             which = "random", seed = 23151,
+                             which = "random", seed = 11213,
                              include.resid.var = FALSE)
   preds2b <- predictInterval(m1, newdata = sleepstudy[1:5, ], which = "fixed",
-                             returnSims = TRUE, seed = 23151,
+                             returnSims = TRUE, seed = 11213,
                              include.resid.var = FALSE)
   preds3b <- predictInterval(m1, newdata = sleepstudy[1:5, ], which = "all",
-                             returnSims = TRUE, seed = 23151,
+                             returnSims = TRUE, seed = 11213,
                              include.resid.var = FALSE)
   preds4b <- predictInterval(m1, newdata = sleepstudy[1:5, ],
-                             returnSims = TRUE, seed = 23151,
+                             returnSims = TRUE, seed = 11213,
                              include.resid.var = FALSE)
   expect_true(is.matrix(attr(preds1, "sim.results")))
   expect_gt(abs(mean(attr(preds1, "sim.results") - attr(preds2, "sim.results"))),
@@ -133,7 +133,7 @@ test_that("predictInterval makes predictions without observed outcome", {
 
 test_that("dplyr objects are successfully coerced", {
   skip_on_cran()
-  set.seed(101)
+  set.seed(11213)
   data(sleepstudy)
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
   predData <- sleepstudy |>

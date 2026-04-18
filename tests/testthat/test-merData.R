@@ -1,7 +1,7 @@
 # -----------------------------------------------------
 #-------------------------------------------------------
 local_edition(3)
-set.seed(51315)
+set.seed(11213)
 library(lme4)
 data(grouseticks)
 grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
@@ -419,7 +419,7 @@ test_that("Nested specifications work", {
 
 test_that("findFormFuns works", {
   #Replicable toy data
-  set.seed(72167)
+  set.seed(11213)
   play <- data.frame(
     a = runif(1000),
     b = rnorm(1000),

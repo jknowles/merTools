@@ -3,7 +3,7 @@
 test_that("Text marginalized effects object has the correct dimensions", {
   skip_on_travis()
   skip_on_cran()
-  set.seed(51315)
+  set.seed(11213)
   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
   #
 

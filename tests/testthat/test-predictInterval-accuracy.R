@@ -2,7 +2,7 @@ test_that("component reproducibility with seed", {
   data(sleepstudy, package = "lme4")
   m <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy, REML = FALSE)
   
-  seed <- 42
+  seed <- 11213
   n.sims <- 100
   
   result1 <- predictInterval(
@@ -26,7 +26,7 @@ test_that("single observation predictions (n=1)", {
   data(sleepstudy, package = "lme4")
   m <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy, REML = FALSE)
   
-  seed <- 123
+  seed <- 11213
   result <- predictInterval(
     m,
     newdata = sleepstudy[1, ],
@@ -44,7 +44,7 @@ test_that("extreme confidence levels (0.8 vs 0.99)", {
   data(sleepstudy, package = "lme4")
   m <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy, REML = FALSE)
   
-  seed <- 456
+  seed <- 11213
   
   result_80 <- predictInterval(
     m,
@@ -80,7 +80,7 @@ test_that("GLMM probability predictions bounded [0,1]", {
     family = binomial
   )
   
-  seed <- 789
+  seed <- 11213
   result <- predictInterval(
     m,
     newdata = cbpp[1:10, ],
@@ -101,7 +101,7 @@ test_that("parallelization does not throw errors", {
   data(sleepstudy, package = "lme4")
   m <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy, REML = FALSE)
   
-  seed <- 999
+  seed <- 11213
   
   suppressWarnings(expect_no_error({
     predictInterval(
@@ -118,7 +118,7 @@ test_that("all which options return correct dimensions", {
   data(sleepstudy, package = "lme4")
   m <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy, REML = FALSE)
   
-  seed <- 111
+  seed <- 11213
   n.sims <- 200
   n.obs <- 5
   
@@ -170,7 +170,7 @@ test_that("large simulation count (n.sims = 10000)", {
   data(sleepstudy, package = "lme4")
   m <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy, REML = FALSE)
   
-  seed <- 222
+  seed <- 11213
   n.sims <- 10000
   
   result <- predictInterval(
@@ -194,7 +194,7 @@ test_that("component-by-component consistency with predictInterval wrapper", {
   data(sleepstudy, package = "lme4")
   m <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy, REML = FALSE)
   
-  seed <- 12345
+  seed <- 11213
   n.sims <- 200
   newdata <- sleepstudy[1:5, ]
   

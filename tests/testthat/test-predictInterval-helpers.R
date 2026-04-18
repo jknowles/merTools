@@ -5,7 +5,7 @@
 test_that("simulate_residual_variance returns correct length for LMM", {
   skip_on_cran()
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-  set.seed(123)
+  set.seed(11213)
   sigma_vec <- merTools:::simulate_residual_variance(m1, n.sims = 100)
   expect_length(sigma_vec, 100)
   expect_true(all(sigma_vec > 0))
@@ -14,9 +14,9 @@ test_that("simulate_residual_variance returns correct length for LMM", {
 test_that("simulate_residual_variance respects seed set externally", {
   skip_on_cran()
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-  set.seed(123)
+  set.seed(11213)
   sigma1 <- merTools:::simulate_residual_variance(m1, n.sims = 100)
-  set.seed(123)
+  set.seed(11213)
   sigma2 <- merTools:::simulate_residual_variance(m1, n.sims = 100)
   set.seed(456)
   sigma3 <- merTools:::simulate_residual_variance(m1, n.sims = 100)
@@ -51,14 +51,14 @@ test_that("simulate_fixed_effects returns correct dimensions", {
 test_that("simulate_fixed_effects respects ignore.fixed.terms", {
   skip_on_cran()
   m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-  set.seed(123)
+  set.seed(11213)
   fixed1 <- merTools:::simulate_fixed_effects(
     m1,
     newdata = sleepstudy[1:5, ],
     n.sims = 500,
     ignore.fixed.terms = NULL
   )
-  set.seed(123)
+  set.seed(11213)
   fixed2 <- merTools:::simulate_fixed_effects(
     m1,
     newdata = sleepstudy[1:5, ],
@@ -206,7 +206,7 @@ test_that("combine_components returns correct structure for each which option", 
 
 test_that("combine_components applies residual variance", {
   skip_on_cran()
-  set.seed(123)
+  set.seed(11213)
   fixed_mat <- matrix(rep(0, 300), nrow = 3, ncol = 100)
   random_list <- list(
     Subject = matrix(rep(0, 300), nrow = 3, ncol = 100)
@@ -246,7 +246,7 @@ test_that("summarise_predictions returns correct columns", {
 
 test_that("summarise_predictions respects stat.type", {
   skip_on_cran()
-  set.seed(123)
+  set.seed(11213)
   yhat_arr <- matrix(rnorm(3000, mean = 100), nrow = 3, ncol = 1000)
   result_median <- merTools:::summarise_predictions(
     yhat_arr,
@@ -269,7 +269,7 @@ test_that("summarise_predictions respects stat.type", {
 
 test_that("summarise_predictions respects level parameter", {
   skip_on_cran()
-  set.seed(123)
+  set.seed(11213)
   yhat_arr <- matrix(rnorm(3000), nrow = 3, ncol = 1000)
   result_80 <- merTools:::summarise_predictions(
     yhat_arr,

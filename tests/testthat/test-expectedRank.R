@@ -2,7 +2,7 @@
 
 #Using 2 of sample models from test_merExtract.R
 
-set.seed(51315)
+set.seed(11213)
 library(lme4)
 
 ###############################################

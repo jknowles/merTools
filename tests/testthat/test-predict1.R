@@ -2,7 +2,7 @@
 #Prediction intervals cover for simulated problems----
 
 test_that("Prediction intervals work for simple linear example", {
-  set.seed(51315)
+  set.seed(11213)
   skip_on_ci()
   skip_on_cran()
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
@@ -10,7 +10,7 @@ test_that("Prediction intervals work for simple linear example", {
   d$y <- simulate(~fac1+(1|grp),family = gaussian,
                   newdata=d,
                   newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
-                                 sigma = c(.23)), seed = 4548)[[1]]
+                                 sigma = c(.23)), seed = 11213)[[1]]
   subD <- d[sample(row.names(d), 1000),]
 
   g1 <- lmer(y~fac1+(1|grp), data=subD)
@@ -18,7 +18,7 @@ test_that("Prediction intervals work for simple linear example", {
   #This suppresses the warning about no parallel backend registered
   outs <- suppressWarnings(
     predictInterval(g1, newdata = d, level = 0.9, n.sims = 1000,
-                    seed = 468,
+                    seed = 11213,
                     stat = 'mean', include.resid.var = TRUE)
   )
   outs <- cbind(d, outs); outs$coverage <- FALSE
@@ -33,20 +33,20 @@ test_that("Prediction intervals work for simple linear example", {
 test_that("Prediction intervals work for simple GLMM example", {
   skip_on_ci()
   skip_on_cran()
-  set.seed(101)
+  set.seed(11213)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:50)
   d$y <- simulate(~fac1+(1|grp),family = binomial,
                   newdata=d,
                   newparams=list(beta=c(2,-1,3,-2,1.2), theta=c(.33)),
-                  seed =634)[[1]]
+                  seed =11213)[[1]]
   subD <- d[sample(row.names(d), 1200),]
 
   g1 <- glmer(y~fac1+(1|grp), data=subD, family = 'binomial')
   d$fitted <- predict(g1, d)
   outs <- predictInterval(g1, newdata = d, level = 0.9, n.sims = 500,
                           stat = 'mean', include.resid.var = TRUE,
-                          type = 'linear.prediction', seed = 4563)
+                          type = 'linear.prediction', seed = 11213)
   outs <- cbind(d, outs); outs$coverage <- FALSE
   outs$coverage <- outs$fitted <= outs$upr & outs$fitted >= outs$lwr
   expect_true(all(outs$coverage))
@@ -74,31 +74,31 @@ test_that("Prediction intervals work for simple GLMM example", {
 test_that("Prediction interval respects user input", {
   skip_on_ci()
   skip_on_cran()
-  set.seed(101)
+  set.seed(11213)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:25)
   d$y <- simulate(~fac1+(1|grp),family = gaussian,
                   newdata=d,
                   newparams=list(beta=c(2,1,3,4,7), theta=c(.25),
-                                 sigma = c(.23)), seed =463)[[1]]
+                                 sigma = c(.23)), seed =11213)[[1]]
   subD <- d[sample(row.names(d), 1000),]
 
   g1 <- lmer(y~fac1+(1|grp), data=subD)
   d$fitted <- predict(g1, d)
   outs1 <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
-                           stat = 'mean', include.resid.var = TRUE, seed=643)
+                           stat = 'mean', include.resid.var = TRUE, seed=11213)
   outs2 <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 500,
-                           stat = 'mean', include.resid.var = TRUE, seed=643)
+                           stat = 'mean', include.resid.var = TRUE, seed=11213)
   outs1a <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 1500,
-                            stat = 'mean', include.resid.var = TRUE, seed=643)
+                            stat = 'mean', include.resid.var = TRUE, seed=11213)
   outs2a <- predictInterval(g1, newdata = d, level = 0.95, n.sims = 1500,
-                            stat = 'mean', include.resid.var = TRUE, seed=643)
+                            stat = 'mean', include.resid.var = TRUE, seed=11213)
   outs3 <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
-                           stat = 'mean', include.resid.var = FALSE, seed=643)
+                           stat = 'mean', include.resid.var = FALSE, seed=11213)
   outs3b <- predictInterval(g1, newdata = d, level = 0.8, n.sims = 500,
-                            stat = 'median', include.resid.var = FALSE, seed=643)
+                            stat = 'median', include.resid.var = FALSE, seed=11213)
   outs3c <- predictInterval(g1, newdata = d[1, ], level = 0.8, n.sims = 500,
-                            stat = 'median', include.resid.var = FALSE, seed=643)
+                            stat = 'median', include.resid.var = FALSE, seed=11213)
 
   expect_gt(median(outs2$upr - outs1$upr), 0.1)
   expect_gt(median(outs2a$upr - outs1a$upr), 0.1)
@@ -117,15 +117,15 @@ test_that("Prediction interval respects user input", {
 test_that("Predict handles unused and subset of factor levels", {
   skip_on_cran()
   skip_on_ci()
-  set.seed(101)
+  set.seed(11213)
   moddf <- InstEval[sample(rownames(InstEval), 10000), ]
   g1 <- lmer(y ~ lectage + studage + (1|d) + (1|s), data=moddf)
   d1 <- InstEval[1:100, ]
   outs1 <- suppressWarnings(predictInterval(g1, newdata = d1, level = 0.8, n.sims = 500,
-                                            stat = 'mean', include.resid.var = TRUE, seed = 4632))
+                                            stat = 'mean', include.resid.var = TRUE, seed = 11213))
   d2 <- rbind(d1, InstEval[670:900,])
   outs1a <- suppressWarnings(predictInterval(g1, newdata = d2, level = 0.8, n.sims = 500,
-                                             stat = 'mean', include.resid.var=TRUE, seed = 4632)[1:100,])
+                                             stat = 'mean', include.resid.var=TRUE, seed = 11213)[1:100,])
   expect_s3_class(outs1, "data.frame")
   expect_s3_class(outs1a, "data.frame")
   expect_equal(nrow(outs1), 100)
@@ -138,7 +138,7 @@ test_that("Predict handles unused and subset of factor levels", {
 
   d2 <- InstEval[670:900,]
   outs1a <- suppressWarnings(predictInterval(g2, newdata = d2, level = 0.8, n.sims = 500,
-                                             stat = 'mean', include.resid.var=TRUE, seed = 4632))
+                                             stat = 'mean', include.resid.var=TRUE, seed = 11213))
   expect_s3_class(outs1a, "data.frame")
   expect_equal(nrow(outs1a), 231)
 })

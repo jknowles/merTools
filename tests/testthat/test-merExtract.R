@@ -4,7 +4,7 @@
 # works in these scenarios
 #-------------------------------------------------------
 
-set.seed(51315)
+set.seed(11213)
 library(lme4)
 data(grouseticks)
 grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)

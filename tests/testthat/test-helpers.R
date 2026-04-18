@@ -1,5 +1,5 @@
 # Test helper functions
-set.seed(51315)
+set.seed(11213)
 # Trimming data frame----
 
 test_that("Trimming results in correct size", {
@@ -35,7 +35,7 @@ test_that("Trimming does not corrupt order", {
 
 test_that("Can extract theta from a fit model", {
   skip_on_cran()
-  set.seed(404)
+  set.seed(11213)
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
                    obs=1:100)
 
@@ -130,7 +130,7 @@ test_that("Build model matrix produces matrices of the right size", {
                     newdata = d,
                     newparams = list( "theta" = c(.33),
                                       "beta" = c(2,-1,3,-2,1.2)),
-                    seed =634)[[1]]
+                    seed =11213)[[1]]
 
   })
 
