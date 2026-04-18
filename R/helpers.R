@@ -267,7 +267,7 @@ mkNewReTrms <- function(object, newdata, re.form=NULL, na.action=na.pass,
     }
     ## note: mkReTrms automatically *drops* unused levels
     # rfd = model frame
-    ReTrms <- mkReTrms(findbars(re.form[[2]]), rfd)
+    ReTrms <- reformulas::mkReTrms(findbars(re.form[[2]]), rfd)
     ## update Lambdat (ugh, better way to do this?)
     ReTrms <- within(ReTrms, Lambdat@x <- unname(getME(object,"theta")[Lind]))
     #

@@ -1,13 +1,13 @@
 # Global variables
 utils::globalVariables(c(".shinyMerPar", "sig", "sigma", "Lind", "group",
                          "est", "mean_est", "est_ss", "within_var", "between_var",
-                         "statistic"))
+                         "statistic", "i"))
 
 #' @importFrom methods as is
-#' @importFrom reformulas findbars mkReTrms
+#' @importFrom reformulas findbars
 #' @importFrom stats AIC as.formula formula logLik median model.matrix na.omit
-#' pnorm qnorm quantile residuals rgamma rnorm sd vcov weighted.mean delete.response
-#' model.frame na.pass reformulate runif terms getCall
+#' pnorm qnorm quantile residuals rbinom rgamma rnorm rpois sd vcov weighted.mean
+#' delete.response model.frame na.pass reformulate runif terms getCall
 #' @importFrom utils packageVersion
 zzz <- function(){
   # Nothing

@@ -20,6 +20,8 @@ simulate_random_effects(
 \item{n.sims}{Number of simulations.}
 
 \item{.parallel}{Logical flag to enable parallel execution via foreach.}
+
+\item{seed}{Optional random seed for reproducibility.}
 }
 \value{
 List of matrices (rows = observations, cols = simulations).

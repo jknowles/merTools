@@ -18,3 +18,7 @@ readmeplot
 ^CRAN-RELEASE$
 ^\.github$
 ^CRAN-SUBMISSION$
+^\.agent\.md$
+^\.claude$
+^\.skills$
+^merTools.*\.tar\.gz$

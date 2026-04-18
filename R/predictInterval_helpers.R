@@ -6,7 +6,6 @@
 #'
 #' @param merMod A merMod object from lme4.
 #' @param n.sims Number of simulation draws.
-#' @param seed Optional random seed for reproducibility.
 #' @return Numeric vector of length `n.sims`.
 #' @keywords internal
 simulate_residual_variance <- function(merMod, n.sims) {
@@ -237,6 +236,7 @@ tmp.pred <- function(data, coefs, group) {
 #' @param newdata Data frame containing the prediction covariates.
 #' @param n.sims Number of simulations.
 #' @param .parallel Logical flag to enable parallel execution via foreach.
+#' @param seed Optional random seed for reproducibility.
 #' @return List of matrices (rows = observations, cols = simulations).
 simulate_random_effects <- function(
   merMod,

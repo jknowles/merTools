@@ -10,8 +10,6 @@ simulate_residual_variance(merMod, n.sims)
 \item{merMod}{A merMod object from lme4.}
 
 \item{n.sims}{Number of simulation draws.}
-
-\item{seed}{Optional random seed for reproducibility.}
 }
 \value{
 Numeric vector of length `n.sims`.

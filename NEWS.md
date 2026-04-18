@@ -1,6 +1,6 @@
 # NEWS
 
-## merTools 0.6.5 (unreleased)
+## merTools 0.9.0 (unreleased)
 
 ### Bug Fixes
 
