@@ -146,14 +146,18 @@ predictInterval <- function(
   check_glmm_support(merMod, include.resid.var)
 
   #--- Simulations ------------------------------------------------------------
-  # Order matters for reproducibility: sigma -> random effects -> fixed effects
+  # Draw from a single RNG stream seeded once above: sigma -> random effects
+  # -> fixed effects. Passing seed = NULL to the helpers means they use the
+  # ambient RNG state rather than reset it, which would otherwise correlate
+  # FE and RE draws and diverge from the pre-refactor numeric output for
+  # any user-supplied seed.
   sigma_vec <- simulate_residual_variance(merMod, n.sims)
   random_list <- simulate_random_effects(
     merMod,
     newdata,
     n.sims,
     .parallel = .parallel,
-    seed = seed
+    seed = NULL
   )
   fixed_mat <- simulate_fixed_effects(
     merMod,
@@ -162,7 +166,7 @@ predictInterval <- function(
     ignore.fixed.terms = ignore.fixed.terms,
     fix.intercept.variance = fix.intercept.variance,
     .parallel = .parallel,
-    seed = seed
+    seed = NULL
   )
 
   # Extract family/link info for GLMM support
