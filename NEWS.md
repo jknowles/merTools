@@ -1,5 +1,29 @@
 # NEWS
 
+## merTools 0.6.5 (unreleased)
+
+### Bug Fixes
+
+- Fixed parse error caused by debug statements inserted mid-function call in `predictInterval()`
+  (now correctly handles the function call structure)
+- Fixed GLMM residual variance simulation to properly return NULL for all GLMM/NLMM models
+  (no Gaussian residual variance exists for discrete distributions)
+- Added `!is.null(sigma_vec)` checks in `combine_components()` to handle cases where
+  GLMMs don't have Gaussian residual variance to add (prevents errors with `sigma_vec = NULL`)
+- Removed `seed` parameter from `simulate_residual_variance()` (seeds are now handled at the
+  `predictInterval()` level for reproducibility)
+- Updated test expectations to reflect that GLMMs return NULL from `simulate_residual_variance()`
+
+### Technical Improvements
+
+- The residual variance logic now correctly distinguishes between:
+  - **LMMs**: Gaussian residual variance via `rnorm(N, yhat, sigma)` from gamma-distributed sigma
+  - **GLMMs**: Conditional distribution simulation via `simulate_glmm_response()` (binomial/poisson/gamma)
+- When `include.resid.var = TRUE` and GLMM with `type = "probability"`: Simulates from conditional
+  distribution (theoretically correct for discrete distributions)
+- When `include.resid.var = TRUE` and GLMM with `type = "linear.prediction"`: Returns linear
+  predictor without Gaussian noise (correct behavior - GLMMs don't have additive Gaussian noise)
+
 ## merTools 0.6.5
 
 ### Code Architecture Improvements
@@ -225,7 +249,7 @@ C++ RMVN sampler courtesy of Giri Gopalan 's excellent FastGP
 - Provides `predictInterval` to allow prediction intervals from `glmer` and `lmer`
 objects
 - Provides `FEsim` and `REsim` to extract distributions of model parameters
-- Provides `shinyMer` an interactive `shiny` application for exploring `lmer`
+- Shows `shinyMer` an interactive `shiny` application for exploring `lmer`
 and `glmer` models
 - Provides `expectedRank` function to interpret the ordering of effects
 - Provides `REimpact` to simulate the impact of grouping factors on the outcome

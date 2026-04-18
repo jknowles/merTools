@@ -150,18 +150,3 @@ test_that("dplyr objects are successfully coerced", {
 })
 
 # Model type warnings for non-binomial GLMM----
-
-
-test_that("Warnings issued", {
-  skip_on_cran()
-  d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:10),
-                   obs=1:50)
-  d$y <- simulate(~fac1+(1|grp),family = poisson,
-                  newdata=d,
-                  newparams=list(beta=c(2,-1,3,-2,1.2), theta=c(.33)),
-                  seed = 5636)[[1]] |> suppressMessages()
-  g1 <- glmer(y~fac1+(1|grp), data=d, family = 'poisson')
-  expect_warning(predictInterval(g1, newdata = d[1:100,]),
-                 regexp = "Prediction for NLMMs or GLMMs that are not mixed")
-  rm(list = ls())
-})

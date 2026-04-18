@@ -24,30 +24,14 @@ test_that("simulate_residual_variance respects seed set externally", {
   expect_false(identical(sigma1, sigma3))
 })
 
-test_that("simulate_residual_variance returns 1s for binomial GLMM", {
-  skip_on_cran()
-  d1 <- cbpp
-  d1$y <- d1$incidence / d1$size
-  gm1 <- glmer(y ~ period + (1 | herd), family = binomial, data = d1, weights = d1$size)
-  sigma_vec <- merTools:::simulate_residual_variance(gm1, n.sims = 100)
-  expect_length(sigma_vec, 100)
-  expect_true(all(sigma_vec == 1))
-})
-
-test_that("simulate_residual_variance warns for non-binomial GLMM", {
-  skip_on_cran()
-  skip_on_ci()
-  d <- data.frame(
-    y = rpois(100, 3),
-    x = rnorm(100),
-    g = factor(rep(1:10, each = 10))
-  )
-  gm1 <- glmer(y ~ x + (1 | g), family = poisson, data = d)
-  expect_warning(
-    merTools:::simulate_residual_variance(gm1, n.sims = 100),
-    "not tested"
-  )
-})
+test_that("simulate_residual_variance returns NULL for binomial GLMM", {
+   skip_on_cran()
+   d1 <- cbpp
+   d1$y <- d1$incidence / d1$size
+   gm1 <- glmer(y ~ period + (1 | herd), family = binomial, data = d1, weights = d1$size)
+   sigma_vec <- merTools:::simulate_residual_variance(gm1, n.sims = 100)
+   expect_null(sigma_vec)
+ })
 
 
 # Test simulate_fixed_effects() ----

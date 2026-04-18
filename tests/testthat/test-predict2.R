@@ -50,7 +50,7 @@ test_that("Prediction works for random slopes not in fixed", {
 
 # Test for new factor levels----
 
-test_that("Prediction intervals work with new factor levels added", {
+test_that("Prediction intervals work with new factor levels added part 2", {
   skip_on_ci()
   skip_on_cran()
   set.seed(5150)
