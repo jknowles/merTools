@@ -15,6 +15,7 @@ output:
 knitr::opts_chunk$set(
   collapse = TRUE, echo = TRUE,
   comment = "#>",
+  error = TRUE,
   fig.path = "man/figures/README_"
 )
 library(merTools)
@@ -352,6 +353,51 @@ ggplot(plotdf, aes(y = fit, x = Anger, color = btype, group = btype)) +
   facet_wrap(~situ) + theme_bw() +
   labs(y = "Predicted Probability")
 ```
+
+## Cross-version numeric regression checks (for contributors)
+
+`predictInterval()` is stochastic, so the usual unit-test tolerances are
+not a reliable way to confirm that a refactor of the simulation internals
+has preserved numeric behavior for users who rely on a fixed seed. To
+address this, the package ships a standalone regression harness that
+pins a canonical set of inputs (LMM and GLMM models, various `which`,
+`level`, `stat`, `ignore.fixed.terms`, `fix.intercept.variance`, and
+single-row-newdata cases) and dumps `predictInterval()` output to an RDS
+bundle for two package versions so they can be diffed bit-for-bit.
+
+The script lives at `tests/comparisons/predictInterval-regression.R`
+and is NOT part of `R CMD check`. It has two modes:
+
+```
+# Generate an output bundle for one package version
+Rscript tests/comparisons/predictInterval-regression.R harness \
+        <pkg_path> <output.rds>
+
+# Diff two bundles
+Rscript tests/comparisons/predictInterval-regression.R diff \
+        <a.rds> <b.rds>
+```
+
+Typical workflow — comparing the current checkout against `origin/master`:
+
+```
+git worktree add /tmp/mT-old origin/master
+Rscript tests/comparisons/predictInterval-regression.R harness /tmp/mT-old /tmp/old.rds
+Rscript tests/comparisons/predictInterval-regression.R harness .          /tmp/new.rds
+Rscript tests/comparisons/predictInterval-regression.R diff  /tmp/old.rds /tmp/new.rds
+git worktree remove /tmp/mT-old
+```
+
+The diff output categorizes every case as `IDENTICAL`, `numeric-equal`
+(< 1e-6), or various drift tiers. Any LMM case showing more than
+`numeric-equal` indicates that the refactor changed behavior for a
+user-supplied seed and should be investigated before the change is
+merged. Known-intentional numeric differences (for example, the GLMM
+`include.resid.var = TRUE` binomial-residual simulation fix introduced
+in 0.9.0) will show up only in the two `glmm_bin_with_resid_*` cases.
+
+Run this whenever touching `R/merPredict.R`, `R/predictInterval_helpers.R`,
+or the simulation helpers they call.
 
 ## Marginalizing Random Effects
 
