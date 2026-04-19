@@ -8,7 +8,7 @@ test_that("Text marginalized effects object has the correct dimensions", {
   #
 
   #
-  mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
+  mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,], seed = 11213)
   #
   # mfx has a row for each unique combo of row in newdata, breaks, grouping_var, and term
   expect_equal(nrow(mfx), 10 * length(unique(mfx$breaks)) * length(unique(mfx$grouping_var)) *

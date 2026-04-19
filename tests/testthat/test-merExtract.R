@@ -67,15 +67,15 @@ test_that("REextract gets correct dimensions", {
 ################################################
 
 test_that("FEsim produces data.frames", {
-  expect_s3_class(FEsim(lmerSlope1, n.sims=100), "data.frame")
-  expect_s3_class(FEsim(lmerSlope2, n.sims=100), "data.frame")
-  expect_s3_class(FEsim(glmer3Lev, n.sims=100), "data.frame")
-  expect_s3_class(FEsim(glmer3LevSlope, n.sims=100), "data.frame")
+  expect_s3_class(FEsim(lmerSlope1, n.sims=100, seed=11213), "data.frame")
+  expect_s3_class(FEsim(lmerSlope2, n.sims=100, seed=11213), "data.frame")
+  expect_s3_class(FEsim(glmer3Lev, n.sims=100, seed=11213), "data.frame")
+  expect_s3_class(FEsim(glmer3LevSlope, n.sims=100, seed=11213), "data.frame")
 })
 
 test_that("n.sims changes simulation results", {
-  expect_false(identical(FEsim(lmerSlope1, n.sims = 1000),
-                         FEsim(lmerSlope1, n.sims = 10)))
+  expect_false(identical(FEsim(lmerSlope1, n.sims = 1000, seed = 11213),
+                         FEsim(lmerSlope1, n.sims = 10,   seed = 11213)))
 })
 
 # numeric checks
@@ -85,10 +85,10 @@ test_that("n.sims changes simulation results", {
 ################################################
 
 test_that("REsim produces data.frames", {
-  expect_s3_class(REsim(lmerSlope1, n.sims=100), "data.frame")
-  expect_s3_class(REsim(lmerSlope2, n.sims=100), "data.frame")
-  expect_s3_class(REsim(glmer3Lev, n.sims=100), "data.frame")
-  expect_s3_class(REsim(glmer3LevSlope, n.sims=100), "data.frame")
+  expect_s3_class(REsim(lmerSlope1, n.sims=100, seed=11213), "data.frame")
+  expect_s3_class(REsim(lmerSlope2, n.sims=100, seed=11213), "data.frame")
+  expect_s3_class(REsim(glmer3Lev, n.sims=100, seed=11213), "data.frame")
+  expect_s3_class(REsim(glmer3LevSlope, n.sims=100, seed=11213), "data.frame")
 })
 
 
