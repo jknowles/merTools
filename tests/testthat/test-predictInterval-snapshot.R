@@ -132,33 +132,20 @@ test_that("LMM: single-row newdata and variance-adjustment options are stable", 
   )
 })
 
-# LMM: no fixed intercept + cross-level interaction -------------------------
-# This is the edge-case model that historically caused intermittent CI
-# failures because of tight MC tolerances combined with platform-specific
-# floating-point drift. Pinning the output here replaces those flaky bias
-# checks with a deterministic regression contract.
-
-test_that("LMM no fixed intercept + cross-level interaction is stable", {
-  snapshot_platform_ok()
-
-  data(sleepstudy, package = "lme4")
-  m <- suppressMessages(
-    lmer(Reaction ~ 0 + Days + Days:Subject + (1 | Days), data = sleepstudy)
-  )
-
-  expect_snapshot_value(
-    predictInterval(m, newdata = sleepstudy[1:25, ],
-                    seed = SEED, n.sims = NSIMS, include.resid.var = FALSE,
-                    ignore.fixed.terms = TRUE),
-    style = "json2", tolerance = TOL
-  )
-  expect_snapshot_value(
-    predictInterval(m, newdata = sleepstudy[1:50, ],
-                    seed = SEED, n.sims = NSIMS, include.resid.var = FALSE,
-                    ignore.fixed.terms = FALSE),
-    style = "json2", tolerance = TOL
-  )
-})
+# NOTE: pathological / rank-deficient models (e.g.,
+# `Reaction ~ 0 + Days + Days:Subject + (1 | Days)`) are deliberately NOT in
+# Layer 2. `mvtnorm::rmvnorm(method = "chol")` on a near-singular covariance
+# matrix gives output that differs across BLAS/LAPACK implementations by
+# enough to blow past any reasonable snapshot tolerance, even on the same
+# OS across R versions. Layer 2 contracts require numerical stability across
+# every target runner; if the model cannot deliver that, snapshot it is
+# misplaced there. Such models are covered by:
+#   - Layer 1 structural invariants in test-predict.R (dim, type, ordering)
+#   - Layer 3 manual regression harness at
+#     tests/comparisons/predictInterval-regression.R
+#
+# Rule of thumb: before adding a model to this file, ask whether the design
+# matrix is rank-deficient or near-singular. If yes, skip Layer 2.
 
 # GLMM: binomial ------------------------------------------------------------
 
