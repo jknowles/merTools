@@ -187,3 +187,29 @@ test_that("GLMM type='probability' output is in [0, 1]", {
   expect_true(all(out$upr >= 0 & out$upr <= 1))
   expect_true(all(out$lwr >= 0 & out$lwr <= 1))
 })
+
+# --------------------------------------------------------------------------
+# Regression test: GitHub issue #101
+# predictInterval() must not crash on no-intercept random-slope models.
+# --------------------------------------------------------------------------
+
+test_that("no-intercept random-slope models do not crash (#101)", {
+  skip_on_cran()
+  data(sleepstudy, package = "lme4")
+  set.seed(SEED)
+  sleepstudy$Test <- rep(
+    sample(c(TRUE, FALSE), length(unique(sleepstudy$Subject)), replace = TRUE),
+    each = 10
+  )
+  fit <- suppressMessages(
+    lmer(Reaction ~ Days:Test + (0 + Days | Subject), data = sleepstudy)
+  )
+  out <- suppressMessages(
+    predictInterval(fit, newdata = head(sleepstudy), n.sims = 200, seed = SEED)
+  )
+  expect_s3_class(out, "data.frame")
+  expect_equal(nrow(out), 6L)
+  expect_named(out, c("fit", "upr", "lwr"))
+  expect_true(all(out$upr >= out$fit))
+  expect_true(all(out$fit >= out$lwr))
+})

@@ -1,5 +1,6 @@
 ^Meta$
 ^doc$
+^plans$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.travis\.yml$

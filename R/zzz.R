@@ -8,27 +8,20 @@ utils::globalVariables(c(".shinyMerPar", "sig", "sigma", "Lind", "group",
 #' pnorm qnorm quantile residuals rbinom rgamma rnorm rpois sd vcov weighted.mean
 #' delete.response model.frame na.pass reformulate runif terms getCall
 #' @importFrom utils packageVersion
-zzz <- function(){
-  # Nothing
-
-}
-
-
-#' Title
+#' Compute summary statistics for a merMod object
 #'
 #' @param object a merMod object
 #' @param correlation optional p value
 #' @param use.hessian logical
 #' @param ... additional arguments to pass through
 #'
-#' @return a summary of the object
+#' @return a summary.merMod object
 sum.mm <- function(object,
                            correlation = (p <= getOption("lme4.summary.cor.max")),
                            use.hessian = NULL,
                            ...)
 {
   if (length(list(...)) > 0) {
-    ## FIXME: need testing code
     warning("additional arguments ignored")
   }
   ## se.calc:
@@ -55,14 +48,12 @@ sum.mm <- function(object,
   if (p > 0) {
     coefs <- cbind(coefs, (cf3 <- coefs[,1]/coefs[,2]), deparse.level = 0)
     colnames(coefs)[3] <- paste(if(useSc) "t" else "z", "value")
-    if (isGLMM(object)) # FIXME: if "t" above, cannot have "z" here
+    if (isGLMM(object))
       coefs <- cbind(coefs, "Pr(>|z|)" =
                        2*pnorm(abs(cf3), lower.tail = FALSE))
   }
 
   llAIC <- llikAIC(object)
-  ## FIXME: You can't count on object@re@flist,
-  ##	      nor compute VarCorr() unless is(re, "reTrms"):
   varcor <- VarCorr(object)
   # use S3 class for now
   structure(list(methTitle = methTitle(dd),

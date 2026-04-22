@@ -23,7 +23,6 @@
 #' @param returnSims logical, should all n.sims simulations be returned?
 #' @param seed numeric, optional argument to set seed for simulations
 #' @param .parallel logical, use parallel computation (default FALSE)
-#' @param .paropts not used - placeholder for future foreach options
 #' @param fix.intercept.variance logical; should the variance of the intercept
 #'   term be adjusted downwards to roughly correct for its covariance with the
 #'   random effects, as if all the random effects are intercept effects?
@@ -49,7 +48,6 @@ predictInterval <- function(
   returnSims = FALSE,
   seed = NULL,
   .parallel = FALSE,
-  .paropts = NULL,
   fix.intercept.variance = FALSE,
   ignore.fixed.terms = NULL
 ) {
