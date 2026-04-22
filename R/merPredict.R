@@ -54,10 +54,13 @@ predictInterval <- function(
   ignore.fixed.terms = NULL
 ) {
   #--- Argument handling -------------------------------------------------------
+  if (inherits(merMod, "nlmerMod")) {
+    stop("predictInterval() does not support nlmer models.", call. = FALSE)
+  }
   if (missing(newdata)) {
     newdata <- merMod@frame
   }
-  if (any(c("data.frame") != class(newdata))) {
+  if (!inherits(newdata, "data.frame")) {
     if (any(c("tbl_df", "tbl") %in% class(newdata))) {
       newdata <- as.data.frame(newdata)
       warning("newdata is tbl_df or tbl object from dplyr package and has been coerced to a data.frame")

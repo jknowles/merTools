@@ -16,3 +16,4 @@ test_20160705.txt
 *merTools.Rcheck
 /revdep
 NUL
+*.tar.gz
