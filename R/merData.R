@@ -163,6 +163,12 @@ subsetList <- function(data, list){
 #' term specified as \code{I(x^2)}, we were returning the mean of \code{x(^2)} not the
 #' square of mean(x).
 #'
+#' Matrix-valued response columns (e.g. the \code{cbind(successes, failures)}
+#' left-hand side of a binomial GLMM) are detected and dropped from the
+#' working frame before averaging, since they cannot be collapsed to a
+#' single scalar. The returned frame therefore has no response column for
+#' matrix-LHS models; see \code{\link{averageObs}} for rationale.
+#'
 #' @param merMod the merMod object from which to draw the average observation
 #' @param origData (default=NULL) a data frame containing the original,
 #'        untransformed data used to call the model. This MUST be specified if
@@ -283,6 +289,19 @@ hasWeights <- function(merMod) {
 #' @details Each character and factor variable in the data.frame is assigned to the
 #' modal category and each numeric variable is collapsed to the mean. Currently if
 #' mode is a tie, returns a "." Uses the collapseFrame function.
+#'
+#' For models with a scalar left-hand side (e.g. \code{lmer(y ~ ...)}), the
+#' response column is included in the output and is set to the mean of the
+#' observed response. For models with a matrix-valued left-hand side --
+#' most commonly two-column \code{cbind()} specifications in binomial GLMMs
+#' such as \code{glmer(cbind(successes, failures) ~ ..., family = binomial)}
+#' -- the response column is omitted from the output. A matrix response
+#' cannot be meaningfully collapsed to a single "average" value, and
+#' \code{averageObs()} is primarily intended to produce \code{newdata} for
+#' \code{\link[stats]{predict}} / \code{\link{predictInterval}}, both of which
+#' ignore the response column in \code{newdata}. Callers that iterate over
+#' \code{names(averageObs(merMod))} or compare against \code{merMod@@frame}
+#' should not assume column parity for matrix-LHS models.
 #' @export
 averageObs <- function(merMod, varList = NULL, origData = NULL, ...){
   if(!missing(varList)){

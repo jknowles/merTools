@@ -548,4 +548,23 @@ test_that("averageObs handles cbind binomial GLMM (#83)", {
   # Matrix response is intentionally excluded; predictors must be present.
   expect_true(all(c("period", "herd") %in% names(out)))
   expect_false("cbind(incidence, size - incidence)" %in% names(out))
+
+  # Predictor averages must match the documented semantics: modal factor
+  # for categorical predictors, median group for random-effect grouping
+  # variables handled via REquantile(0.5).
+  modal_period <- names(sort(table(cbpp$period), decreasing = TRUE))[1]
+  expect_equal(as.character(out$period), modal_period)
+
+  # averageObs() output must round-trip through predict() as newdata.
+  # This is the promise the docs make to users after the matrix-LHS fix:
+  # the response column is dropped, but predict() ignores response in
+  # newdata anyway, so the returned frame is valid prediction input.
+  pred_link <- predict(gm1, newdata = out, allow.new.levels = TRUE)
+  expect_length(pred_link, 1L)
+  expect_true(is.finite(pred_link))
+
+  pred_resp <- predict(gm1, newdata = out, type = "response",
+                       allow.new.levels = TRUE)
+  expect_length(pred_resp, 1L)
+  expect_true(pred_resp >= 0 && pred_resp <= 1)
 })

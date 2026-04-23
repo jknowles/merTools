@@ -28,6 +28,20 @@
 - Replaced bare `subbars()` with `reformulas::subbars()` in the random-effect
   prediction path to resolve the deprecation warning from lme4, which has
   migrated `subbars` to the `reformulas` package.
+- **Fixed `averageObs()` / `findFormFuns()` on matrix-LHS models (#83).**
+  `averageObs(gm1)` previously errored on two-column binomial GLMMs such
+  as `glmer(cbind(successes, failures) ~ ..., family = binomial)` because
+  `collapseFrame()` attempted to take the mean of the matrix response
+  column, and a latent bug in the weights-selection path tried to index a
+  `(weights)` column that does not exist in the model frame for cbind
+  specifications. Matrix response columns are now detected and dropped
+  before averaging. **Behavior change:** for matrix-LHS models the
+  returned frame no longer contains the response column; for scalar-LHS
+  models the response is still included as before. Callers that key off
+  column count or column names from `averageObs()` should treat
+  matrix-LHS output as predictors-only. The output remains valid
+  `newdata` for `predict()` and `predictInterval()`, which ignore the
+  response column.
 
 ### Technical Improvements
 
