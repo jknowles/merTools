@@ -8,7 +8,7 @@
 #' including number of digits
 #' @details The time saving is only noticeable for large, time-consuming (g)lmer
 #' fits.
-#' @import arm
+#' @importFrom arm pfround fround
 #' @return A list with model summary components (\code{call}, \code{coef},
 #'   \code{se}, \code{ngrps}, \code{AIC}, \code{n}, and fit statistics),
 #'   returned invisibly. The summary is also printed to the console.

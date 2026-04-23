@@ -186,15 +186,28 @@ findFormFuns <- function(merMod, origData = NULL) {
   modFrame.resp <- setdiff(rownames(attr(modFrame.tt, "factors")),
                            unique(unlist(strsplit(colnames(attr(modFrame.tt, "factors")), split = ":", fixed = TRUE))))
 
-  merMod.weights <- hasWeights(merMod)
+  # Matrix-valued response columns (e.g. cbind(y1, y2) LHS in binomial GLMs)
+  # cannot be averaged by collapseFrame(). averageObs only needs predictors,
+  # so drop matrix responses from the working frame.
+  resp_is_matrix <- vapply(
+    modFrame.resp,
+    function(nm) nm %in% names(modFrame) && is.matrix(modFrame[[nm]]),
+    logical(1)
+  )
+  kept_resp <- modFrame.resp[!resp_is_matrix]
+
+  # For cbind-style binomial GLMMs, hasWeights() is TRUE (weights come from
+  # the size vector) but the model frame has no explicit "(weights)" column.
+  # Only include the weights column when it actually exists in the frame.
+  merMod.weights <- hasWeights(merMod) && "(weights)" %in% names(modFrame)
   if (merMod.weights) {
-    modFrame <- modFrame[, c(modFrame.resp, modFrame.labels, "(weights)")]
+    modFrame <- modFrame[, c(kept_resp, modFrame.labels, "(weights)"), drop = FALSE]
   } else {
-    modFrame <- modFrame[, c(modFrame.resp, modFrame.labels)]
+    modFrame <- modFrame[, c(kept_resp, modFrame.labels), drop = FALSE]
   }
 
   #Scan RHS of formula labels for parens -> exit if clean
-  paren_terms <- grepl("[()]", c(modFrame.resp, modFrame.labels))
+  paren_terms <- grepl("[()]", c(kept_resp, modFrame.labels))
 
   if (!any(paren_terms)) {
     if(is.null(origData)){
@@ -313,7 +326,10 @@ averageObs <- function(merMod, varList = NULL, origData = NULL, ...){
     out[, i] <- try(superFactor(out[, i], fullLev = unique(merMod@frame[, i])), silent = TRUE)
   }
   out <- stripAttributes(out)
-  out <- out[, names(merMod@frame)]
+  # Reorder to match merMod@frame, but only for columns that exist in `out`.
+  # Matrix-LHS responses (e.g. cbind binomial) are intentionally absent from
+  # `out`; they are not part of an "average observation".
+  out <- out[, intersect(names(merMod@frame), names(out)), drop = FALSE]
   return(out)
 }
 

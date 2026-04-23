@@ -15,37 +15,15 @@
 #' @return A shiny app
 #'
 #' @import ggplot2
-#' @importFrom shiny shinyApp
-#' @importFrom shiny fluidPage
-#' @importFrom shiny titlePanel
-#' @importFrom shiny sidebarLayout
-#' @importFrom shiny sidebarPanel
-#' @importFrom shiny radioButtons
-#' @importFrom shiny numericInput
-#' @importFrom shiny checkboxInput
-#' @importFrom shiny actionButton
-#' @importFrom shiny mainPanel
-#' @importFrom shiny tabsetPanel
-#' @importFrom shiny tabPanel
-#' @importFrom shiny h3
-#' @importFrom shiny textOutput
-#' @importFrom shiny plotOutput
-#' @importFrom shiny downloadButton
-#' @importFrom shiny em
-#' @importFrom shiny reactiveValues
-#' @importFrom shiny eventReactive
-#' @importFrom shiny observeEvent
-#' @importFrom shiny reactive
-#' @importFrom shiny renderPrint
-#' @importFrom shiny renderPlot
-#' @importFrom shiny isolate
-#' @importFrom shiny renderPrint
-#' @importFrom shiny downloadHandler
-#' @importFrom shiny strong
-#' @importFrom shiny runApp
 #' @export
-
 shinyMer <- function(merMod, simData = NULL, pos = 1) {
+  if (!requireNamespace("shiny", quietly = TRUE)) {
+    stop(
+      "shinyMer() requires the 'shiny' package. Install it with ",
+      "install.packages(\"shiny\").",
+      call. = FALSE
+    )
+  }
   envir = as.environment(pos)
   if(exists("simData")){
     expParm <- function(x, y) assign(".shinyMerPar", list("merMod" = x, "simData" = y), envir = envir)

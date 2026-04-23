@@ -12,25 +12,24 @@ Description: Provides methods for extracting results from mixed-effect model
     Data Analysis Using Regression and Multilevel/Hierarchical Models.
 Depends:
     R (>= 3.0.2),
-    arm,
     lme4 (>= 1.1-11),
     methods
 Suggests:
     testthat,
     knitr,
     rmarkdown,
-    parallel,
+    shiny,
     nlme,
     future.apply,
     rstanarm,
     Amelia,
     DT
 Imports:
+    arm,
     dplyr,
     mvtnorm,
     reformulas,
     foreach,
-    shiny,
     abind,
     ggplot2,
     blme,

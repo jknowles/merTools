@@ -5,9 +5,11 @@ utils::globalVariables(c(".shinyMerPar", "sig", "sigma", "Lind", "group",
 
 #' @importFrom methods as is
 #' @importFrom stats AIC as.formula formula logLik median model.matrix na.omit
-#' pnorm qnorm quantile residuals rbinom rgamma rnorm rpois sd vcov weighted.mean
-#' delete.response model.frame na.pass reformulate runif terms getCall
+#'   pnorm qnorm quantile residuals rbinom rgamma rnorm rpois sd vcov weighted.mean
+#'   delete.response model.frame na.pass reformulate runif terms getCall
 #' @importFrom utils packageVersion
+NULL
+
 #' Compute summary statistics for a merMod object
 #'
 #' @param object a merMod object
@@ -16,6 +18,8 @@ utils::globalVariables(c(".shinyMerPar", "sig", "sigma", "Lind", "group",
 #' @param ... additional arguments to pass through
 #'
 #' @return a summary.merMod object
+#' @keywords internal
+#' @noRd
 sum.mm <- function(object,
                            correlation = (p <= getOption("lme4.summary.cor.max")),
                            use.hessian = NULL,

@@ -16,7 +16,6 @@ predictInterval(
   returnSims = FALSE,
   seed = NULL,
   .parallel = FALSE,
-  .paropts = NULL,
   fix.intercept.variance = FALSE,
   ignore.fixed.terms = NULL
 )
@@ -47,8 +46,6 @@ linear models}
 \item{seed}{numeric, optional argument to set seed for simulations}
 
 \item{.parallel}{logical, use parallel computation (default FALSE)}
-
-\item{.paropts}{not used - placeholder for future foreach options}
 
 \item{fix.intercept.variance}{logical; should the variance of the intercept
 term be adjusted downwards to roughly correct for its covariance with the

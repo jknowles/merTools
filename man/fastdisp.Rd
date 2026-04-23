@@ -19,7 +19,9 @@ fastdisp(x, ...)
 including number of digits}
 }
 \value{
-A printed summary of a x object
+A list with model summary components (\code{call}, \code{coef},
+  \code{se}, \code{ngrps}, \code{AIC}, \code{n}, and fit statistics),
+  returned invisibly. The summary is also printed to the console.
 }
 \description{
 Display model fit summary of x or x like objects, fast

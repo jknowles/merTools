@@ -532,3 +532,20 @@ test_that("weights work for averageObs", {
 
 
 })
+
+# Regression test: GitHub issue #83
+# averageObs() must not crash on two-column (cbind) binomial GLMM specs.
+test_that("averageObs handles cbind binomial GLMM (#83)", {
+  skip_on_cran()
+  data(cbpp, package = "lme4")
+  gm1 <- suppressMessages(
+    glmer(cbind(incidence, size - incidence) ~ period + (1 | herd),
+          data = cbpp, family = binomial)
+  )
+  out <- suppressWarnings(averageObs(gm1))
+  expect_s3_class(out, "data.frame")
+  expect_equal(nrow(out), 1L)
+  # Matrix response is intentionally excluded; predictors must be present.
+  expect_true(all(c("period", "herd") %in% names(out)))
+  expect_false("cbind(incidence, size - incidence)" %in% names(out))
+})

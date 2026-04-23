@@ -203,6 +203,7 @@ buildModelMatrix <- function(model, newdata, which = "full"){
 #' @return a numeric for the intraclass correlation
 #' @export
 #' @import lme4
+#' @importFrom arm sigma.hat
 #' @examples
 #' data(sleepstudy)
 #' ICC(outcome = "Reaction", group = "Subject", data = sleepstudy)
