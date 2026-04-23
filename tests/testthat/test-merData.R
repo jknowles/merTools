@@ -1,7 +1,7 @@
 # -----------------------------------------------------
 #-------------------------------------------------------
 local_edition(3)
-set.seed(51315)
+set.seed(11213)
 library(lme4)
 data(grouseticks)
 grouseticks$HEIGHT <- scale(grouseticks$HEIGHT)
@@ -419,7 +419,7 @@ test_that("Nested specifications work", {
 
 test_that("findFormFuns works", {
   #Replicable toy data
-  set.seed(72167)
+  set.seed(11213)
   play <- data.frame(
     a = runif(1000),
     b = rnorm(1000),
@@ -531,4 +531,40 @@ test_that("weights work for averageObs", {
   expect_equal(ncol(out2), 3)
 
 
+})
+
+# Regression test: GitHub issue #83
+# averageObs() must not crash on two-column (cbind) binomial GLMM specs.
+test_that("averageObs handles cbind binomial GLMM (#83)", {
+  skip_on_cran()
+  data(cbpp, package = "lme4")
+  gm1 <- suppressMessages(
+    glmer(cbind(incidence, size - incidence) ~ period + (1 | herd),
+          data = cbpp, family = binomial)
+  )
+  out <- suppressWarnings(averageObs(gm1))
+  expect_s3_class(out, "data.frame")
+  expect_equal(nrow(out), 1L)
+  # Matrix response is intentionally excluded; predictors must be present.
+  expect_true(all(c("period", "herd") %in% names(out)))
+  expect_false("cbind(incidence, size - incidence)" %in% names(out))
+
+  # Predictor averages must match the documented semantics: modal factor
+  # for categorical predictors, median group for random-effect grouping
+  # variables handled via REquantile(0.5).
+  modal_period <- names(sort(table(cbpp$period), decreasing = TRUE))[1]
+  expect_equal(as.character(out$period), modal_period)
+
+  # averageObs() output must round-trip through predict() as newdata.
+  # This is the promise the docs make to users after the matrix-LHS fix:
+  # the response column is dropped, but predict() ignores response in
+  # newdata anyway, so the returned frame is valid prediction input.
+  pred_link <- predict(gm1, newdata = out, allow.new.levels = TRUE)
+  expect_length(pred_link, 1L)
+  expect_true(is.finite(pred_link))
+
+  pred_resp <- predict(gm1, newdata = out, type = "response",
+                       allow.new.levels = TRUE)
+  expect_length(pred_resp, 1L)
+  expect_true(pred_resp >= 0 && pred_resp <= 1)
 })

@@ -1,0 +1,27 @@
+title: "merTools"
+description: Tools for Analyzing Mixed Effect Regression Models
+
+navbar:
+  title: "merTools"
+  type: default
+  left:
+    - text: Home
+      href: index.html
+    - text: Reference
+      href: reference/index.html
+    - text: Articles
+      href: articles/index.html
+    - text: News
+      href: news/index.html
+
+articles:
+- title: Articles
+  desc: In-depth guides and examples
+  contents:
+    - merToolsIntro
+    - Using_predictInterval
+    - marginal_effects
+    - imputation
+
+template:
+  bootstrap: 5

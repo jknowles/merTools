@@ -1,0 +1,47 @@
+# Workflow for building and deploying pkgdown site
+name: pkgdown
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  pkgdown:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pkgdown-${{ github.ref }}
+    env:
+      # Opt into Node.js 24 for transitive JS actions (actions/cache,
+      # actions/upload-artifact) used internally by r-lib/actions, which
+      # still ship Node 20. Remove once r-lib/actions publishes Node
+      # 24-native versions.
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::pkgdown, local::.
+          needs: website
+
+      - name: Build site
+        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+        shell: Rscript {0}
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.7.2
+        if: ${{ github.event_name == 'push' }}
+        with:
+          branch: gh-pages
+          folder: docs

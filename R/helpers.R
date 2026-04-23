@@ -125,7 +125,7 @@ formulaBuild <- function(model){
 #' @keywords internal
 reOnly <- function(f,response=FALSE) {
   response <- if (response && length(f)==3) f[[2]] else NULL
-  reformulate(paste0("(", vapply(findbars(f), safeDeparse, ""), ")"),
+  reformulate(paste0("(", vapply(reformulas::findbars(f), safeDeparse, ""), ")"),
               response=response)
 }
 
@@ -203,6 +203,7 @@ buildModelMatrix <- function(model, newdata, which = "full"){
 #' @return a numeric for the intraclass correlation
 #' @export
 #' @import lme4
+#' @importFrom arm sigma.hat
 #' @examples
 #' data(sleepstudy)
 #' ICC(outcome = "Reaction", group = "Subject", data = sleepstudy)
@@ -267,7 +268,7 @@ mkNewReTrms <- function(object, newdata, re.form=NULL, na.action=na.pass,
     }
     ## note: mkReTrms automatically *drops* unused levels
     # rfd = model frame
-    ReTrms <- mkReTrms(findbars(re.form[[2]]), rfd)
+    ReTrms <- reformulas::mkReTrms(reformulas::findbars(re.form[[2]]), rfd)
     ## update Lambdat (ugh, better way to do this?)
     ReTrms <- within(ReTrms, Lambdat@x <- unname(getME(object,"theta")[Lind]))
     #

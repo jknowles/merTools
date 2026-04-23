@@ -26,3 +26,10 @@ calls. For example, in the old behavior, if the formula contained a square
 term specified as \code{I(x^2)}, we were returning the mean of \code{x(^2)} not the
 square of mean(x).
 }
+\details{
+Matrix-valued response columns (e.g. the \code{cbind(successes, failures)}
+left-hand side of a binomial GLMM) are detected and dropped from the
+working frame before averaging, since they cannot be collapsed to a
+single scalar. The returned frame therefore has no response column for
+matrix-LHS models; see \code{\link{averageObs}} for rationale.
+}

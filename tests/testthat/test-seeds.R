@@ -4,31 +4,31 @@
 test_that("Equivalent seeds return equivalent results", {
   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 
-  d1a <- draw(fm1, type="random", seed=1234)
+  d1a <- draw(fm1, type="random", seed=11213)
   d2  <- draw(fm1, type="random", seed=456)
-  d1b <- draw(fm1, type="random", seed=1234)
+  d1b <- draw(fm1, type="random", seed=11213)
 
-  r1a <- REsim(fm1, 25, seed=1234)
+  r1a <- REsim(fm1, 25, seed=11213)
   r2  <- REsim(fm1, 25, seed=456)
-  r1b <- REsim(fm1, 25, seed=1234)
+  r1b <- REsim(fm1, 25, seed=11213)
 
-  f1a <- FEsim(fm1, 25, seed=1234)
+  f1a <- FEsim(fm1, 25, seed=11213)
   f2  <- FEsim(fm1, 25, seed=456)
-  f1b <- FEsim(fm1, 25, seed=1234)
+  f1b <- FEsim(fm1, 25, seed=11213)
 
   # TODO - subboot now returns warnings and needs to be checked
-  p1a <- predictInterval(fm1, newdata=sleepstudy[1:10,], seed=1234)
+  p1a <- predictInterval(fm1, newdata=sleepstudy[1:10,], seed=11213)
   p2  <- predictInterval(fm1, newdata=sleepstudy[1:10,], seed=456)
-  p1b <- predictInterval(fm1, newdata=sleepstudy[1:10,], seed=1234)
+  p1b <- predictInterval(fm1, newdata=sleepstudy[1:10,], seed=11213)
 
   s1a <- suppressMessages({
-    subBoot(fm1, n = 160, FUN = thetaExtract, R = 20, seed=1234)
+    subBoot(fm1, n = 160, FUN = thetaExtract, R = 20, seed=11213)
   })
   suppressMessages({
   s2  <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20, seed=456)
   })
   suppressMessages({
-    s1b <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20, seed=1234)
+    s1b <- subBoot(fm1, n = 160, FUN = thetaExtract, R = 20, seed=11213)
   })
 
 

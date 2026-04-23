@@ -8,8 +8,10 @@
 #' including number of digits
 #' @details The time saving is only noticeable for large, time-consuming (g)lmer
 #' fits.
-#' @import arm
-#' @return A printed summary of a x object
+#' @importFrom arm pfround fround
+#' @return A list with model summary components (\code{call}, \code{coef},
+#'   \code{se}, \code{ngrps}, \code{AIC}, \code{n}, and fit statistics),
+#'   returned invisibly. The summary is also printed to the console.
 #' @examples
 #' \donttest{
 #' #Compare the time for displaying this modest model

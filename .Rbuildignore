@@ -1,5 +1,6 @@
 ^Meta$
 ^doc$
+^plans$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.travis\.yml$
@@ -18,3 +19,10 @@ readmeplot
 ^CRAN-RELEASE$
 ^\.github$
 ^CRAN-SUBMISSION$
+^\.agent\.md$
+^\.claude$
+^\.skills$
+^merTools.*\.tar\.gz$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

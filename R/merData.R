@@ -163,6 +163,12 @@ subsetList <- function(data, list){
 #' term specified as \code{I(x^2)}, we were returning the mean of \code{x(^2)} not the
 #' square of mean(x).
 #'
+#' Matrix-valued response columns (e.g. the \code{cbind(successes, failures)}
+#' left-hand side of a binomial GLMM) are detected and dropped from the
+#' working frame before averaging, since they cannot be collapsed to a
+#' single scalar. The returned frame therefore has no response column for
+#' matrix-LHS models; see \code{\link{averageObs}} for rationale.
+#'
 #' @param merMod the merMod object from which to draw the average observation
 #' @param origData (default=NULL) a data frame containing the original,
 #'        untransformed data used to call the model. This MUST be specified if
@@ -186,15 +192,28 @@ findFormFuns <- function(merMod, origData = NULL) {
   modFrame.resp <- setdiff(rownames(attr(modFrame.tt, "factors")),
                            unique(unlist(strsplit(colnames(attr(modFrame.tt, "factors")), split = ":", fixed = TRUE))))
 
-  merMod.weights <- hasWeights(merMod)
+  # Matrix-valued response columns (e.g. cbind(y1, y2) LHS in binomial GLMs)
+  # cannot be averaged by collapseFrame(). averageObs only needs predictors,
+  # so drop matrix responses from the working frame.
+  resp_is_matrix <- vapply(
+    modFrame.resp,
+    function(nm) nm %in% names(modFrame) && is.matrix(modFrame[[nm]]),
+    logical(1)
+  )
+  kept_resp <- modFrame.resp[!resp_is_matrix]
+
+  # For cbind-style binomial GLMMs, hasWeights() is TRUE (weights come from
+  # the size vector) but the model frame has no explicit "(weights)" column.
+  # Only include the weights column when it actually exists in the frame.
+  merMod.weights <- hasWeights(merMod) && "(weights)" %in% names(modFrame)
   if (merMod.weights) {
-    modFrame <- modFrame[, c(modFrame.resp, modFrame.labels, "(weights)")]
+    modFrame <- modFrame[, c(kept_resp, modFrame.labels, "(weights)"), drop = FALSE]
   } else {
-    modFrame <- modFrame[, c(modFrame.resp, modFrame.labels)]
+    modFrame <- modFrame[, c(kept_resp, modFrame.labels), drop = FALSE]
   }
 
   #Scan RHS of formula labels for parens -> exit if clean
-  paren_terms <- grepl("[()]", c(modFrame.resp, modFrame.labels))
+  paren_terms <- grepl("[()]", c(kept_resp, modFrame.labels))
 
   if (!any(paren_terms)) {
     if(is.null(origData)){
@@ -270,6 +289,19 @@ hasWeights <- function(merMod) {
 #' @details Each character and factor variable in the data.frame is assigned to the
 #' modal category and each numeric variable is collapsed to the mean. Currently if
 #' mode is a tie, returns a "." Uses the collapseFrame function.
+#'
+#' For models with a scalar left-hand side (e.g. \code{lmer(y ~ ...)}), the
+#' response column is included in the output and is set to the mean of the
+#' observed response. For models with a matrix-valued left-hand side --
+#' most commonly two-column \code{cbind()} specifications in binomial GLMMs
+#' such as \code{glmer(cbind(successes, failures) ~ ..., family = binomial)}
+#' -- the response column is omitted from the output. A matrix response
+#' cannot be meaningfully collapsed to a single "average" value, and
+#' \code{averageObs()} is primarily intended to produce \code{newdata} for
+#' \code{\link[stats]{predict}} / \code{\link{predictInterval}}, both of which
+#' ignore the response column in \code{newdata}. Callers that iterate over
+#' \code{names(averageObs(merMod))} or compare against \code{merMod@@frame}
+#' should not assume column parity for matrix-LHS models.
 #' @export
 averageObs <- function(merMod, varList = NULL, origData = NULL, ...){
   if(!missing(varList)){
@@ -313,7 +345,10 @@ averageObs <- function(merMod, varList = NULL, origData = NULL, ...){
     out[, i] <- try(superFactor(out[, i], fullLev = unique(merMod@frame[, i])), silent = TRUE)
   }
   out <- stripAttributes(out)
-  out <- out[, names(merMod@frame)]
+  # Reorder to match merMod@frame, but only for columns that exist in `out`.
+  # Matrix-LHS responses (e.g. cbind binomial) are intentionally absent from
+  # `out`; they are not part of an "average observation".
+  out <- out[, intersect(names(merMod@frame), names(out)), drop = FALSE]
   return(out)
 }
 

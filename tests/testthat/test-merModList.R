@@ -4,7 +4,7 @@
 
 old_warn <- getOption("warn")
 options(warn = -1)
-set.seed(432422)
+set.seed(11213)
 
 test_that("simple cases work", {
   skip_on_cran()
