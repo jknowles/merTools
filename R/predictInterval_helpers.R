@@ -226,6 +226,49 @@ tmp.pred <- function(data, coefs, group) {
   return(yhatTmp)
 }
 
+#' Combine a per-term list of postVar arrays into a block-diagonal array
+#'
+#' When a grouping factor has multiple random-effect term blocks — from the
+#' double-bar syntax (`(x + y || g)`), explicit splits (`(1|g) + (0+x|g)`),
+#' or mixed correlated + uncorrelated specs — `lme4::ranef(..., condVar =
+#' TRUE)` returns `postVar` as a list of arrays, one per term block. Each
+#' element has shape `d_m × d_m × n_levels`. This helper concatenates the
+#' blocks into a single `d × d × n_levels` array with block-diagonal
+#' structure per level (zeros off-diagonal because uncorrelated). The block
+#' ordering and column ordering match `colnames(reMeans)` / lme4's `cnms`.
+#' @param pv_list List of per-term postVar arrays.
+#' @param reMeans The `as.matrix(ranef(m)[[j]])` matrix for the same
+#'   grouping factor; used to size and name the combined array.
+#' @return 3-D array of shape `ncol(reMeans) × ncol(reMeans) × nrow(reMeans)`.
+#' @keywords internal
+combine_postvar_blocks <- function(pv_list, reMeans) {
+  n_levels <- dim(pv_list[[1L]])[3L]
+  d_total  <- ncol(reMeans)
+  block_dims <- vapply(pv_list, function(b) dim(b)[1L], integer(1L))
+  if (sum(block_dims) != d_total) {
+    stop(
+      "Unexpected lme4 postVar structure: sum of block dimensions (",
+      sum(block_dims), ") does not match ncol(reMeans) (", d_total,
+      "). Please report this with your model specification and lme4 version.",
+      call. = FALSE
+    )
+  }
+  out <- array(0, dim = c(d_total, d_total, n_levels))
+  pos <- 1L
+  for (block in pv_list) {
+    d_m <- dim(block)[1L]
+    idx <- seq.int(pos, length.out = d_m)
+    for (lvl in seq_len(n_levels)) {
+      out[idx, idx, lvl] <- block[, , lvl]
+    }
+    pos <- pos + d_m
+  }
+  dimnames(out) <- list(colnames(reMeans),
+                        colnames(reMeans),
+                        rownames(reMeans))
+  out
+}
+
 #' Simulate random‑effect contributions for all grouping factors
 #'
 #' For each random effect term the function draws `n.sims` samples from the
@@ -255,6 +298,12 @@ simulate_random_effects <- function(
   for (j in names(re.xb)) {
     reMeans <- as.matrix(rr[[j]])
     reMatrix <- attr(rr[[j]], which = 'postVar')
+    # When a grouping factor has multiple RE term blocks (|| or explicit
+    # splits), lme4 returns postVar as a list of per-block arrays. Convert
+    # to a single block-diagonal array so downstream indexing works (#118).
+    if (is.list(reMatrix)) {
+      reMatrix <- combine_postvar_blocks(reMatrix, reMeans)
+    }
     # Determine levels to keep based on newdata
     if (j %in% names(newdata)) {
       obslvl <- unique(as.character(newdata[, j]))

@@ -28,6 +28,19 @@
 - Replaced bare `subbars()` with `reformulas::subbars()` in the random-effect
   prediction path to resolve the deprecation warning from lme4, which has
   migrated `subbars` to the `reformulas` package.
+- **Fixed `predictInterval()` on models with multiple random-effect term
+  blocks per grouping factor (#118).** Models using the double-bar syntax
+  (`(x + y || g)`), explicit splits (`(1|g) + (0 + x|g)`), or mixed
+  correlated + uncorrelated specs previously failed with
+  `Error in dimnames(reMatrix) <- *vtmp* : 'dimnames' applied to non-array`
+  because `lme4::ranef(..., condVar = TRUE)` returns `postVar` as a list
+  of per-block arrays in those cases, and the level-filtering code
+  assumed a 3-D array. `simulate_random_effects()` now normalizes the
+  list to a single block-diagonal array (zero off-diagonals between
+  uncorrelated blocks, preserving full covariance within correlated
+  blocks) before indexing, so the `mvtnorm::rmvnorm()` path sees the
+  mathematically correct joint posterior covariance. Correlated-only
+  models are unaffected (guarded by `is.list()` check).
 - **Fixed `averageObs()` / `findFormFuns()` on matrix-LHS models (#83).**
   `averageObs(gm1)` previously errored on two-column binomial GLMMs such
   as `glmer(cbind(successes, failures) ~ ..., family = binomial)` because
