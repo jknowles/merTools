@@ -1,6 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
 <url><loc>/CONTRIBUTING.html</loc></url>
+<url><loc>/TODO.html</loc></url>
 <url><loc>/articles/Using_predictInterval.html</loc></url>
 <url><loc>/articles/imputation.html</loc></url>
 <url><loc>/articles/index.html</loc></url>
@@ -25,6 +26,7 @@
 <url><loc>/reference/buildModelMatrix.html</loc></url>
 <url><loc>/reference/collapseFrame.html</loc></url>
 <url><loc>/reference/combine_components.html</loc></url>
+<url><loc>/reference/combine_postvar_blocks.html</loc></url>
 <url><loc>/reference/draw.html</loc></url>
 <url><loc>/reference/expectedRank.html</loc></url>
 <url><loc>/reference/famlink.html</loc></url>

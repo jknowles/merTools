@@ -1,4 +1,4 @@
-pandoc: 3.1.11
+pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
@@ -6,4 +6,4 @@ articles:
   marginal_effects: marginal_effects.html
   merToolsIntro: merToolsIntro.html
   Using_predictInterval: Using_predictInterval.html
-last_built: 2026-04-24T01:09Z
+last_built: 2026-05-24T00:12Z

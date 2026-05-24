@@ -33,6 +33,7 @@ sample of students nested within schools. The data has no missingness,
 so first we will simulate some missing data.
 
 ``` r
+
 data(hsb)
 
 # Create a function to randomly assign NA values
@@ -69,6 +70,7 @@ table(is.na(hsb$size))
 ```
 
 ``` r
+
 # Load imputation library
 library(Amelia)
 # Declare the variables to include in the imputation data
@@ -131,6 +133,7 @@ summary(impute.out)
 ```
 
 ``` r
+
 # Amelia is not available so let's just boostrap resample our data
 impute.out <- vector(mode = "list", 5)
 
@@ -147,6 +150,7 @@ summary(impute.out)
 Fitting a model is very similar
 
 ``` r
+
 fmla <- "mathach ~ minority + female + ses + meanses + (1 + ses|schid)"
 mod <- lmer(fmla, data = hsb)
 if(amelia_eval) {
@@ -166,6 +170,7 @@ Using this, we can directly compare the model fit with missing data
 excluded to the aggregate from the imputed models:
 
 ``` r
+
 fixef(mod) # model with dropped missing
 #> (Intercept)    minority      female         ses     meanses 
 #>   14.149102   -2.868687   -1.318437    2.067309    2.833490
@@ -175,6 +180,7 @@ fixef(modList)
 ```
 
 ``` r
+
 VarCorr(mod) # model with dropped missing
 #>  Groups   Name        Std.Dev. Corr  
 #>  schid    (Intercept) 1.54204        
@@ -199,6 +205,7 @@ the mean across the imputation replications, you can take the
 `merModList` apart easily:
 
 ``` r
+
 lapply(modList, fixef)
 #> $imp1
 #> (Intercept)    minority      female         ses     meanses 
@@ -224,6 +231,7 @@ lapply(modList, fixef)
 And, you can always operate on any single element of the list:
 
 ``` r
+
 fixef(modList[[1]])
 #> (Intercept)    minority      female         ses     meanses 
 #>   13.976636   -2.587948   -1.170291    1.984663    3.170845
@@ -235,6 +243,7 @@ fixef(modList[[2]])
 ## Output of a Model List
 
 ``` r
+
 print(modList)
 #> $imp1
 #> Linear mixed model fit by REML ['lmerMod']
@@ -403,6 +412,7 @@ print(modList)
 ```
 
 ``` r
+
 summary(modList)
 #> [1] "Linear mixed model fit by REML"
 #> Model family: 
@@ -445,6 +455,7 @@ summary(modList)
 ```
 
 ``` r
+
 fastdisp(modList)
 #> lmer(formula = mathach ~ minority + female + ses + meanses + 
 #>     (1 + ses | schid), data = d)
@@ -472,6 +483,7 @@ between imputation set variance as well.
 ## Specific Model Information Summaries
 
 ``` r
+
 modelRandEffStats(modList)
 #>                        term    group   estimate   std.error
 #> 1 cor_(Intercept).ses.schid    schid -0.5247666 0.084101895
@@ -502,6 +514,7 @@ VarCorr(modList)
 ### Diagnostics of List Components
 
 ``` r
+
 modelInfo(mod)
 #>   n.obs n.lvls      AIC   sigma
 #> 1  6160      1 39764.15 5.98842
@@ -510,6 +523,7 @@ modelInfo(mod)
 Let’s apply this to our model list.
 
 ``` r
+
 lapply(modList, modelInfo)
 #> $imp1
 #>   n.obs n.lvls      AIC    sigma
@@ -535,6 +549,7 @@ lapply(modList, modelInfo)
 ### Model List Generics
 
 ``` r
+
 summary(modList)
 #> [1] "Linear mixed model fit by REML"
 #> Model family: 
@@ -577,6 +592,7 @@ summary(modList)
 ```
 
 ``` r
+
 modelFixedEff(modList)
 #>          term  estimate std.error  statistic        df
 #> 1 (Intercept) 14.028792 0.1741275  80.566201  99310.59
@@ -587,6 +603,7 @@ modelFixedEff(modList)
 ```
 
 ``` r
+
 ranef(modList)
 #> $schid
 #>       (Intercept)           ses

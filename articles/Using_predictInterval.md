@@ -176,6 +176,7 @@ First, we will load the required packages and data and estimate the
 model:
 
 ``` r
+
 set.seed(271828)
 data(sleepstudy)
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
@@ -211,6 +212,7 @@ that we want the predictions to incorporate the residual variance from
 the model – an option only available for `lmerMod` objects.
 
 ``` r
+
 PI.time <- system.time(
   PI <- predictInterval(merMod = fm1, newdata = sleepstudy,
                         level = 0.95, n.sims = 1000,
@@ -236,6 +238,7 @@ following figure displays the output graphically for the first 30
 observations.
 
 ``` r
+
 library(ggplot2);
 ggplot(aes(x=1:30, y=fit, ymin=lwr, ymax=upr), data=PI[1:30,]) +
   geom_point() +
@@ -264,6 +267,7 @@ To show this issue, we’ll use the sleep study model, predicting the
 reaction times of subjects after experiencing sleep deprivation:
 
 ``` r
+
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
 display(fm1)
 #> lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)
@@ -287,6 +291,7 @@ a large group of students like the first one in the study — a 196cm
 female baseball player:
 
 ``` r
+
 sleepstudy[1,]
 #>   Reaction Days Subject
 #> 1   249.56    0     308
@@ -301,6 +306,7 @@ certain fixed effects as fully-known (that is, with an effectively 0
 variance.) This is done using the `ignore.fixed.effects` argument.
 
 ``` r
+
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1)
 #>        fit      upr      lwr
 #> 1 253.8537 268.5299 239.6275
@@ -318,9 +324,11 @@ predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1
 
 The second way is to use an ad-hoc variance adjustment, with the
 `fix.intercept.variance` argument. This takes the model’s intercept
-variance ${\widehat{\sigma}}_{\mu}^{2}$ and adjusts it to:
+variance $`\hat\sigma^2_\mu`$ and adjusts it to:
 
-$$\widehat{\sigma}\prime_{\mu}^{2} = {\widehat{\sigma}}_{\mu}^{2} - \Sigma_{levels}\frac{1}{\Sigma_{groups{(level)}}1/\left( {\widehat{\sigma}}_{level}^{2} + sigma_{group}^{2} \right)}$$
+``` math
+\hat\sigma\prime^2_\mu = \hat\sigma^2_\mu-\Sigma_{levels}\frac{1}{\Sigma_{groups(level)}1/(\hat\sigma^2_{level}+sigma^2_{group})}
+```
 
 In other words, it assumes the given intercept variance incorporates
 spurious variance for each level, where each of the spurious variance
@@ -328,6 +336,7 @@ terms has a precision equal to the of the precisions due to the
 individual groups at that level.
 
 ``` r
+
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0,
                 fix.intercept.variance = TRUE)
 #>        fit      upr      lwr
@@ -349,6 +358,7 @@ How does the output above compare to what we could get from
 [`arm::sim()`](https://rdrr.io/pkg/arm/man/sim.html)?
 
 ``` r
+
 PI.arm.time <- system.time(
   PI.arm.sims <- arm::sim(fm1, 1000)
 )
@@ -391,7 +401,7 @@ calculate them. The documentation for
 to describe three implemented flavors of bootstrapped estimates:
 
 1.  parametrically resampling both the *“spherical”* random effects *u*
-    and the i.i.d. errors $\epsilon$
+    and the i.i.d. errors $`\epsilon`$
 2.  treating the random effects as fixed and parametrically resampling
     the i.i.d. errors
 3.  treating the random effects as fixed and semi-parametrically
@@ -404,6 +414,7 @@ in turn.
 #### Step 3a: `lme4::bootMer()` method 1
 
 ``` r
+
 ##Functions for bootMer() and objects
 ####Return predicted values from bootstrap
 mySumm <- function(.) {
@@ -453,6 +464,7 @@ prediction intervals than the `predictInterval` method.
 [`lme4::bootMer()`](https://rdrr.io/pkg/lme4/man/bootMer.html) method 2
 
 ``` r
+
 ##lme4::bootMer() method 2
 PI.boot2.time <- system.time(
   boot2 <- lme4::bootMer(fm1, mySumm, nsim=250, use.u=TRUE, type="parametric")
@@ -484,6 +496,7 @@ effects – similar to the
 #### Step 3c: `lme4::bootMer()` method 3
 
 ``` r
+
 ##lme4::bootMer() method 3
 PI.boot3.time <- system.time(
   boot3 <- lme4::bootMer(fm1, mySumm, nsim=250, use.u=TRUE, type="semiparametric")
@@ -510,6 +523,7 @@ These results are virtually identical to those above.
 #### Step 3c: Comparison to rstanarm
 
 ``` r
+
 PI.time.stan <- system.time({
   fm_stan <- stan_lmer(Reaction ~ Days + (Days|Subject), data = sleepstudy,
                        verbose = FALSE, open_progress = FALSE, refresh = -1,

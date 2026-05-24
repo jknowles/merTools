@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>An Introduction to merTools • merTools</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="An Introduction to merTools">
 </head>
@@ -211,7 +211,7 @@ for the individual levels.</p>
 <span><span class="co">#&gt; 6         s       6 (Intercept)  0.10806580  0.11082677 0.2429651</span></span></code></pre></div>
 <p>The result is a dataframe with estimates of the values of each of the
 random effects provided by the <code><a href="https://rdrr.io/pkg/arm/man/sim.html" class="external-link">arm::sim()</a></code> function.
-<em>groupID</em> represents the identfiable level for the variable for
+<em>groupID</em> represents the identifiable level for the variable for
 one random effect, <em>term</em> represents whether the simulated values
 are for an intercept or which slope, and <em>groupFctr</em> identifies
 which of the <code>(1|x)</code> terms the values represent. To make
@@ -250,7 +250,7 @@ outliers with both high and low averages that need to be accounted
 for.</p>
 </div>
 <div class="section level2">
-<h2 id="subtantive-effects">Subtantive Effects<a class="anchor" aria-label="anchor" href="#subtantive-effects"></a>
+<h2 id="substantive-effects">Substantive Effects<a class="anchor" aria-label="anchor" href="#substantive-effects"></a>
 </h2>
 <p>A logical next line of questioning is to see how much of the
 variation in a rating can be caused by changing the student rater and
@@ -280,7 +280,7 @@ of operations to this observation:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">m1</span>, newdata <span class="op">=</span> <span class="va">example1</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    29762 </span></span>
 <span><span class="co">#&gt; 3.671278</span></span></code></pre></div>
-<p>More interesting, let’s programatically modify this observation to
+<p>More interesting, let’s programmatically modify this observation to
 see how the predicted value changes if we hold everything but one
 variable constant.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">

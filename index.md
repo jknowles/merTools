@@ -14,6 +14,7 @@ objects from `lme4`. This package provides those tools.
 ## Installation
 
 ``` r
+
 # development version
 library(devtools)
 install_github("jknowles/merTools")
@@ -26,7 +27,7 @@ install.packages("merTools")
 
 ## merTools 0.6.4 (January 2026)
 
-- Maintenance release to merge @DavisVaughan changes to accomodate
+- Maintenance release to merge @DavisVaughan changes to accommodate
   upstream changes in `vctrs` package impacting
   [`dplyr::bind_rows()`](https://dplyr.tidyverse.org/reference/bind_rows.html)
   usage in `REsim` (#133)
@@ -134,6 +135,7 @@ variables, and also between models on the same data.
 Standard prediction looks like so.
 
 ``` r
+
 predict(m1, newdata = InstEval[1:10, ])
 #>        1        2        3        4        5        6        7        8 
 #> 3.146337 3.165212 3.398499 3.114249 3.320686 3.252670 4.180897 3.845219 
@@ -145,6 +147,7 @@ With `predictInterval` we obtain predictions that are more like the
 standard objects produced by `lm` and `glm`:
 
 ``` r
+
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9,
                 stat = 'median')
 #>         fit      upr      lwr
@@ -176,6 +179,7 @@ We can also explore the components of the prediction interval by asking
 interval.
 
 ``` r
+
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9,
                 stat = 'median', which = "all")
 #>      effect          fit      upr        lwr obs
@@ -224,6 +228,7 @@ predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9,
 This can lead to some useful plotting:
 
 ``` r
+
 library(ggplot2)
 plotdf <- predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 2000,
                           level = 0.9, stat = 'median', which = "all",
@@ -254,6 +259,7 @@ We can also investigate the makeup of the prediction for each
 observation.
 
 ``` r
+
 ggplot(plotdf[plotdf$obs < 6,],
        aes(x = effect, y = fit, ymin = lwr, ymax = upr)) +
   geom_pointrange() +
@@ -270,6 +276,7 @@ visually. The easiest are getting the posterior distributions of both
 fixed and random effect parameters.
 
 ``` r
+
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
@@ -284,6 +291,7 @@ head(feSims)
 And we can also plot this:
 
 ``` r
+
 plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FALSE)
 ```
 
@@ -292,6 +300,7 @@ plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FAL
 We can also quickly make caterpillar plots for the random-effect terms:
 
 ``` r
+
 reSims <- REsim(m1, n.sims = 100)
 #> Error in `list_flatten()`:
 #> ! `x` must be a list, not a list matrix.
@@ -300,6 +309,7 @@ head(reSims)
 ```
 
 ``` r
+
 plotREsim(REsim(m1, n.sims = 100), stat = 'median', sd = TRUE)
 #> Error in `list_flatten()`:
 #> ! `x` must be a list, not a list matrix.
@@ -318,6 +328,7 @@ into account both the magnitude and uncertainty of the estimated effect
 for each group.
 
 ``` r
+
 ranks <- expectedRank(m1, groupFctr = "d")
 head(ranks)
 #>   groupFctr groupLevel      term   estimate  std.error       ER pctER
@@ -333,6 +344,7 @@ A nice features `expectedRank` is that you can return the expected rank
 for all factors simultaneously and use them:
 
 ``` r
+
 ranks <- expectedRank(m1)
 head(ranks)
 #>   groupFctr groupLevel      term    estimate  std.error       ER pctER
@@ -358,6 +370,7 @@ predicted outcome. This is where the `REimpact` and the `wiggle`
 functions in `merTools` can be handy.
 
 ``` r
+
 impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
                    n.sims = 300, level = 0.9)
 #> Warning: executing %dopar% sequentially: no parallel backend registered
@@ -377,6 +390,7 @@ that the individual professor effect has a strong impact on the outcome
 variable. This can be shown graphically as well:
 
 ``` r
+
 ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE,
                    ymax = AvgFit + 1.96*AvgFitSE)) +
   geom_pointrange() + theme_bw() + labs(x = "Bin of `d` term", y = "Predicted Fit")
@@ -401,6 +415,7 @@ an interaction term between a category and a continuous predictor.
 First, we fit a model with interactions:
 
 ``` r
+
 data(VerbAgg)
 fmVA <- glmer(r2 ~ (Anger + Gender + btype + situ)^2 +
            (1|id) + (1|item), family = binomial,
@@ -417,6 +432,7 @@ parameter. Here, we expand the dataset to all values of `btype`, `situ`,
 and `Anger` subsequently.
 
 ``` r
+
 # Select the average case
 newData <- draw(fmVA, type = "average")
 newData <- wiggle(newData, varlist = "btype",
@@ -446,6 +462,7 @@ continuous variable, `Anger`, and facet and group on the two categorical
 variables `situ` and `btype` respectively.
 
 ``` r
+
 plotdf <- predictInterval(fmVA, newdata = newData, type = "probability",
             stat = "median", n.sims = 1000)
 plotdf <- cbind(plotdf, newData)
@@ -509,6 +526,7 @@ Run this whenever touching `R/merPredict.R`,
 ## Marginalizing Random Effects
 
 ``` r
+
 # get cases
 case_idx <- sample(1:nrow(VerbAgg), 10)
 mfx <- REmargins(fmVA, newdata = VerbAgg[case_idx,], breaks = 4, groupFctr = "item",

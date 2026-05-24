@@ -24,6 +24,7 @@ lecture, and `y` is an integer 1:5 representing the ratings of the
 lecture from “poor” to “very good”:
 
 ``` r
+
 library(lme4)
 head(InstEval)
 #>   s    d studage lectage service dept y
@@ -47,6 +48,7 @@ str(InstEval)
 Starting with a simple model:
 
 ``` r
+
 m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
 ```
 
@@ -56,6 +58,7 @@ more quickly display a summary of the model without calculating the
 model sigma:
 
 ``` r
+
 library(merTools)
 fastdisp(m1)
 #> lmer(formula = y ~ service + lectage + studage + (1 | d) + (1 | 
@@ -100,6 +103,7 @@ posterior using the function
 data frame of the results.
 
 ``` r
+
 feEx <- FEsim(m1, 1000)
 cbind(feEx[,1] , round(feEx[, 2:4], 3))
 #>      feEx[, 1]   mean median    sd
@@ -118,6 +122,7 @@ cbind(feEx[,1] , round(feEx[, 2:4], 3))
 We can present these results graphically, using `ggplot2`:
 
 ``` r
+
 library(ggplot2)
 ggplot(feEx[feEx$term!= "(Intercept)", ]) +
   aes(x = term, ymin = median - 1.96 * sd,
@@ -136,6 +141,7 @@ plot of chunk fixeffplot
 However, an easier option is:
 
 ``` r
+
 plotFEsim(feEx) +
   theme_bw() + labs(title = "Coefficient Plot of InstEval Model",
                     x = "Median Effect Estimate", y = "Evaluation Rating")
@@ -152,6 +158,7 @@ create a dataframe of the values of the simulation of these effects for
 the individual levels.
 
 ``` r
+
 reEx <- REsim(m1)
 head(reEx)
 #>   groupFctr groupID        term        mean      median        sd
@@ -166,14 +173,16 @@ head(reEx)
 The result is a dataframe with estimates of the values of each of the
 random effects provided by the
 [`arm::sim()`](https://rdrr.io/pkg/arm/man/sim.html) function. *groupID*
-represents the identfiable level for the variable for one random effect,
-*term* represents whether the simulated values are for an intercept or
-which slope, and *groupFctr* identifies which of the `(1|x)` terms the
-values represent. To make unique identifiers for each term, we need to
-use both the `groupID` and the `groupFctr` term in case these two
-variables use overlapping label names for their groups. In this case:
+represents the identifiable level for the variable for one random
+effect, *term* represents whether the simulated values are for an
+intercept or which slope, and *groupFctr* identifies which of the
+`(1|x)` terms the values represent. To make unique identifiers for each
+term, we need to use both the `groupID` and the `groupFctr` term in case
+these two variables use overlapping label names for their groups. In
+this case:
 
 ``` r
+
 table(reEx$term)
 #> 
 #> (Intercept) 
@@ -189,6 +198,7 @@ explore their variation. This is easily accomplished with the `dotplot`
 function:
 
 ``` r
+
 lattice::dotplot(ranef(m1, condVar=TRUE))
 ```
 
@@ -197,6 +207,7 @@ Instead, we can use the `plotREsim` function in `merTools` to gain more
 control over plotting of the random effect simulations.
 
 ``` r
+
 p1 <- plotREsim(reEx)
 p1
 ```
@@ -210,7 +221,7 @@ sees fit. Here, we’ve established that most student and professor
 effects are indistinguishable from zero, but there do exist extreme
 outliers with both high and low averages that need to be accounted for.
 
-## Subtantive Effects
+## Substantive Effects
 
 A logical next line of questioning is to see how much of the variation
 in a rating can be caused by changing the student rater and how much is
@@ -225,6 +236,7 @@ its values deliberately to see how the prediction changes in response.
 `merTools` makes this task very simple:
 
 ``` r
+
 example1 <- draw(m1, type = 'random')
 head(example1)
 #>       y service lectage studage   d    s
@@ -236,6 +248,7 @@ model and extracts it as a dataframe. We can now do a number of
 operations to this observation:
 
 ``` r
+
 # predict it
 predict(m1, newdata = example1)
 #>    29762 
@@ -247,11 +260,12 @@ predict(m1, newdata = example1)
 #> 3.671278
 ```
 
-More interesting, let’s programatically modify this observation to see
+More interesting, let’s programmatically modify this observation to see
 how the predicted value changes if we hold everything but one variable
 constant.
 
 ``` r
+
 example2 <- wiggle(example1, varlist = "lectage",
           valueslist = list(c("1", "2", "3", "4", "5", "6")))
 
@@ -271,6 +285,7 @@ calls, we can see how the variable behaves under a number of different
 scenarios simultaneously.
 
 ``` r
+
 example2$yhat <- predict(m1, newdata = example2)
 
 ggplot(example2, aes(x = lectage, y = yhat)) + geom_line(aes(group = 1)) +
@@ -296,6 +311,7 @@ as it may not be very meaningful. To address this, we can instead take
 the average observation:
 
 ``` r
+
 example3 <- draw(m1, type = 'average')
 example3
 #>          y service lectage studage    d    s
@@ -308,6 +324,7 @@ random effect terms are set to the level equivalent to the median effect
 – very close to 0.
 
 ``` r
+
 example3 <- wiggle(example1, varlist = "service",
           valueslist = list(c("0", "1")))
 example3$yhat <- predict(m1, newdata = example3)
@@ -335,6 +352,7 @@ function which helps to identify which levels of the grouping terms
 correspond to which quantile of the magnitude of the random effects:
 
 ``` r
+
 REquantile(m1, quantile = 0.25, groupFctr = "s")
 #> [1] "446"
 REquantile(m1, quantile = 0.25, groupFctr = "d")
@@ -349,6 +367,7 @@ reassign a specific observation to varying magnitudes of grouping term
 effects to see how much they might influence our final prediction.
 
 ``` r
+
 example4 <- draw(m1, type = 'average')
 example4 <- wiggle(example4, varlist = "s",
                       list(REquantile(m1, quantile = seq(0.1, 0.9, .1),
@@ -379,6 +398,7 @@ which allows us to specify a subset of the data to compute an average
 for.
 
 ``` r
+
 subExample <- list(studage = "2", lectage = "4")
 example5 <- draw(m1, type = 'average', varList = subExample)
 example5
@@ -392,6 +412,7 @@ explore the effects on our subsamples. Before we do that, let’s fit a
 slightly more complex model that includes a random slope.
 
 ``` r
+
 data(VerbAgg)
 m2 <- glmer(r2 ~ Anger + Gender + btype + situ +
                 (1|id) + (1 + Gender|item), family = binomial,
@@ -453,6 +474,7 @@ able to generate prediction intervals for individual observations from
 very large models very quickly. And, it works a lot like `predict`:
 
 ``` r
+
 exampPreds <- predictInterval(m2, newdata = tempdf,
                               type = "probability", level = 0.8)
 
@@ -476,6 +498,7 @@ includes the residual variance of the model. If we instead focus just on
 the uncertainty of the random and fixed effects, we get:
 
 ``` r
+
 exampPreds <- predictInterval(m2, newdata = tempdf,
                               type = "probability",
                               include.resid.var = FALSE, level = 0.8)

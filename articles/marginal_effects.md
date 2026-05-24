@@ -20,6 +20,7 @@ Subject:Days). By default, the function will marginalize over the
 effect distribution for each term.
 
 ``` r
+
 fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
 head(mfx)
@@ -61,6 +62,7 @@ Finally - you can plot the results marginalization to evaluate the
 effect of the random effect terms graphically.
 
 ``` r
+
 ggplot(mfx) + aes(x = breaks, y = fit_Subject, group = case) +
   geom_line() +
   facet_wrap(~term)

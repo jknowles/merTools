@@ -38,7 +38,7 @@ REmargins(
   in the \[g\]lmer formula. This parameter is optional, if not
   specified, it will perform the calculation for the first effect listed
   by `ranef`. If the length is \> 1 then the combined effect of all
-  listed groups will calculated and marginalized over co-occurences of
+  listed groups will calculated and marginalized over co-occurrences of
   those groups if desired.
 
 - term:
