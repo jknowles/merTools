@@ -58,7 +58,7 @@ test_that("print methods work for merModList", {
   rm(split);
   g1 <- lmerModList(formula = y~fac1+(1|grp), data=out,
                     control= lmerControl(check.conv.grad = .makeCC("warning", tol= 1e-2)));
-  {sink("NUL"); zz <- print(g1);
+  {sink(nullfile()); zz <- print(g1);
     sink()}
   expect_type(zz, "list")
   zz <- summary(g1)

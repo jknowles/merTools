@@ -26,7 +26,7 @@ coefficient of interest varies.  This is the variable to the right of the
 pipe, \code{|}, in the [g]lmer formula. This parameter is optional, if not
 specified, it will perform the calculation for the first effect listed
 by \code{ranef}. If the length is > 1 then the combined effect of all
-listed groups will calculated and marginalized over co-occurences of those
+listed groups will calculated and marginalized over co-occurrences of those
 groups if desired.}
 
 \item{term}{The name of the random coefficient of interest. This is the

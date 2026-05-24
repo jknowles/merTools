@@ -32,7 +32,7 @@ install.packages("merTools")
 
 ## merTools 0.6.4 (January 2026)
 
-- Maintenance release to merge @DavisVaughan changes to accomodate
+- Maintenance release to merge @DavisVaughan changes to accommodate
   upstream changes in `vctrs` package impacting `dplyr::bind_rows()`
   usage in `REsim` (#133)
 

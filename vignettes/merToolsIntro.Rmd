@@ -173,7 +173,7 @@ head(reEx)
 ```
 
 The result is a dataframe with estimates of the values of each of the random
-effects provided by the `arm::sim()` function. *groupID* represents the identfiable
+effects provided by the `arm::sim()` function. *groupID* represents the identifiable
 level for the variable for one random effect, *term* represents whether the
 simulated values are for an intercept or which slope, and *groupFctr* identifies
 which of the `(1|x)` terms the values represent. To make unique identifiers
@@ -217,7 +217,7 @@ fit. Here, we've established that most student and professor effects are
 indistinguishable from zero, but there do exist extreme outliers with both
 high and low averages that need to be accounted for.
 
-## Subtantive Effects
+## Substantive Effects
 
 A logical next line of questioning is to see how much of the variation in a
 rating can be caused by changing the student rater and how much is due to the
@@ -255,7 +255,7 @@ predict(m1, newdata = example1)
 #> 3.671278
 ```
 
-More interesting, let's programatically modify this observation to see how the
+More interesting, let's programmatically modify this observation to see how the
 predicted value changes if we hold everything but one variable constant.
 
 

@@ -25,7 +25,7 @@ test_that("REimpact parameters are respected", {
 
 test_that("REimpact respects passed values for predictInterval", {
   skip_on_cran()
-  skip_on_travis()
+  skip_on_ci()
   d <- expand.grid(fac1=LETTERS[1:5], grp=factor(1:30),
                    obs=1:100)
   suppressMessages({

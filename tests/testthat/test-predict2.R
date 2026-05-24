@@ -151,7 +151,6 @@ test_that("Median of PI is close to predict.lmer for complex group models", {
                              seed = 11213)
   truPred <- predict(g1, newdata = d1)
   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/100)
-  rm(list=ls())
 })
 
 test_that("Median of PI is close to predict.glmer for basic and complex grouping", {
@@ -185,7 +184,6 @@ test_that("Median of PI is close to predict.glmer for basic and complex grouping
   #                              stat = 'median', include.resid.var = FALSE,
   #                              type = 'probability')
   #   expect_equal(mean(newPred$fit - truPred), 0, tolerance = sd(truPred)/20)
-  rm(list = ls())
 })
 
 

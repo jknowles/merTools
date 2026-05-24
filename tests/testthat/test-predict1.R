@@ -142,5 +142,3 @@ test_that("Predict handles unused and subset of factor levels", {
   expect_s3_class(outs1a, "data.frame")
   expect_equal(nrow(outs1a), 231)
 })
-
-rm(list = ls())

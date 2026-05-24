@@ -62,7 +62,7 @@
 #' @references
 #' Laird NM and Louis TA. Empirical Bayes Ranking Methods. \emph{Journal of
 #' Education Statistics}. 1989;14(1)29-46. Available at
-#' \url{http://www.jstor.org/stable/1164724}.
+#' \doi{10.2307/1164724}.
 #'
 #'
 #' Lingsma HF, Steyerberg EW, Eijkemans MJC, et al. Comparing and

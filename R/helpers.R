@@ -17,11 +17,14 @@ trimModelFrame <- function(data){
 }
 
 # FROM LME4
+# Residual degrees of freedom: n - (fixed effects + RE variance params + scale).
+# The scale parameter (sigma) is counted because it is estimated from the data
+# and consumed as the shape parameter of the inverse-gamma posterior in
+# simulate_residual_variance(), following Gelman & Hill (2007, ch. 12).
 residDF.merMod <- function(object) {
   npar <- length(object@beta) + length(object@theta) +
     object@devcomp[["dims"]][["useSc"]]
   nobs <- nrow(object@frame)
-  ## TODO: how do we feel about counting the scale parameter ???
   return(nobs - npar)
 }
 
