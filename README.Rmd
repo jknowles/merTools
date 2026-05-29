@@ -48,22 +48,34 @@ install.packages("merTools")
 
 ## Recent Updates
 
-## merTools 0.6.4 (January 2026)
+### merTools 1.0.0 (May 2026): Long-Term Support release
+
+- This release marks `merTools` as **feature complete**. The package now
+  enters **maintenance mode**: future releases will focus on bug fixes,
+  dependency and CRAN compatibility, and documentation rather than new
+  features.
+- It also resolves the last of the open issues: a correctness fix for
+  `predictInterval()` on nested random effects (#124), a repaired and
+  extended `shinyMer()` (#32, #78), the new `plotREimpact()` plot (#84,
+  #85), and refreshed documentation (#116, #136, #137). See `NEWS.md` for
+  the full list.
+
+### merTools 0.6.4 (January 2026)
 
 - Maintenance release to merge @DavisVaughan changes to accommodate upstream changes in `vctrs` package impacting `dplyr::bind_rows()` usage in `REsim` (#133)
 
-## merTools 0.6.3 (September 2025)
+### merTools 0.6.3 (September 2025)
 
 - Maintenance release to fix crossreference issues with function documentation
 
 
-## merTools 0.6.2 (Early 2024)
+### merTools 0.6.2 (Early 2024)
 
 - Maintenance release to fix minor issues with function documentation
 - Fix #130 by avoiding conflict with `vcov` in the `merDeriv` package
 - Upgrade package test infrastructure to 3e testthat specification
 
-## merTools 0.6.1 (Spring 2023)
+### merTools 0.6.1 (Spring 2023)
 
 - Maintenance release to keep package listed on CRAN
 - Fix a small bug where parallel code path is run twice (#126)
