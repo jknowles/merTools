@@ -1,7 +1,8 @@
 # Calculate the predicted value for each observation across the distribution of the random effect terms.
 
 `REmargins` calculates the average predicted value for each row of a new
-data frame across the distribution of [`expectedRank`](expectedRank.md)
+data frame across the distribution of
+[`expectedRank`](https://jknowles.github.io/merTools/reference/expectedRank.md)
 for a merMod object. This allows the user to make meaningful comparisons
 about the influence of random effect terms on the scale of the response
 variable, for user-defined inputs, and accounting for the variability in
@@ -62,7 +63,7 @@ REmargins(
 - ...:
 
   additional arguments to pass to
-  [`predictInterval`](predictInterval.md)
+  [`predictInterval`](https://jknowles.github.io/merTools/reference/predictInterval.md)
 
 ## Value
 
@@ -160,8 +161,8 @@ Cochran, WG. 1977. Sampling Techniques (3rd Edition). Wiley, New York.
 
 ## See also
 
-[`expectedRank`](expectedRank.md),
-[`predictInterval`](predictInterval.md)
+[`expectedRank`](https://jknowles.github.io/merTools/reference/expectedRank.md),
+[`predictInterval`](https://jknowles.github.io/merTools/reference/predictInterval.md)
 
 ## Examples
 

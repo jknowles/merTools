@@ -2,8 +2,12 @@ pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
+  contextual_effects: contextual_effects.html
   imputation: imputation.html
   marginal_effects: marginal_effects.html
   merToolsIntro: merToolsIntro.html
   Using_predictInterval: Using_predictInterval.html
-last_built: 2026-05-24T00:12Z
+last_built: 2026-05-29T21:07Z
+urls:
+  reference: https://jknowles.github.io/merTools/reference
+  article: https://jknowles.github.io/merTools/articles

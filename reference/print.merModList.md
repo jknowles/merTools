@@ -40,8 +40,8 @@ summary(mod)
 #> 
 #> Fixed Effects:
 #>             estimate std.error statistic           df
-#> (Intercept)  251.405     6.825    36.838 1.018856e+50
-#> Days          10.467     1.546     6.771 3.794005e+51
+#> (Intercept)  251.405     6.825    36.838 9.122454e+49
+#> Days          10.467     1.546     6.771 5.478340e+51
 #> 
 #> Random Effects:
 #> 

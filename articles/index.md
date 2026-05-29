@@ -4,9 +4,13 @@
 
 In-depth guides and examples
 
-- [An Introduction to merTools](merToolsIntro.md):
-- [Prediction Intervals from merMod Objects](Using_predictInterval.md):
+- [An Introduction to
+  merTools](https://jknowles.github.io/merTools/articles/merToolsIntro.md):
+- [Prediction Intervals from merMod
+  Objects](https://jknowles.github.io/merTools/articles/Using_predictInterval.md):
+- [Exploring Contextual Effects with
+  merTools](https://jknowles.github.io/merTools/articles/contextual_effects.md):
 - [Using merTools to Marginalize Over Random Effect
-  Levels](marginal_effects.md):
+  Levels](https://jknowles.github.io/merTools/articles/marginal_effects.md):
 - [Analyzing Imputed Data with Multilevel Models and
-  merTools](imputation.md):
+  merTools](https://jknowles.github.io/merTools/articles/imputation.md):

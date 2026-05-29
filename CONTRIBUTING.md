@@ -51,4 +51,5 @@ Any questions you have can be opened as GitHub issues or directed to
 jknowles (at) gmail.com.
 
 Modified from the `CONTRIBUTING.md` for the `rio` package, an excellent
-example produced by [Thomas J. Leeper](www.github.com/leeper).
+example produced by [Thomas J.
+Leeper](https://jknowles.github.io/merTools/www.github.com/leeper).

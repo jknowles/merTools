@@ -12,12 +12,13 @@ of the grouping term and grouping levels on the outcome scale by
 simulating predictions for simulated values of each observation across
 the distribution of effect sizes.
 
-The [`REmargins()`](../reference/REmargins.md) function allows you to do
-this. Here, we take the example `sleepstudy` model and marginalize
-predictions for all of the random effect terms (Subject:Intercept,
-Subject:Days). By default, the function will marginalize over the
-*quartiles* of the expected rank (see expected rank vignette) of the
-effect distribution for each term.
+The
+[`REmargins()`](https://jknowles.github.io/merTools/reference/REmargins.md)
+function allows you to do this. Here, we take the example `sleepstudy`
+model and marginalize predictions for all of the random effect terms
+(Subject:Intercept, Subject:Days). By default, the function will
+marginalize over the *quartiles* of the expected rank (see expected rank
+vignette) of the effect distribution for each term.
 
 ``` r
 

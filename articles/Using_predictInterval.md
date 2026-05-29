@@ -28,7 +28,8 @@ simulate values. Unfortunately, this only takes variation of the fixed
 coefficients and residuals into account, and assumes the conditional
 modes of the random effects are fixed.
 
-We developed the [`predictInterval()`](../reference/predictInterval.md)
+We developed the
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
 function to incorporate the variation in the conditional modes of the
 random effects (CMRE, a.k.a. BLUPs in the LMM case) into calculating
 prediction intervals. Ignoring the variance in the CMRE results in
@@ -64,17 +65,18 @@ model using random samples of the data.
 When inference about the values of the CMREs is of interest, it would be
 nice to incorporate some degree of uncertainty in those estimates when
 comparing observations across groups.
-[`predictInterval()`](../reference/predictInterval.md) does this by
-drawing values of the CMREs from the conditional variance-covariance
-matrix of the random affects accessible from
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+does this by drawing values of the CMREs from the conditional
+variance-covariance matrix of the random affects accessible from
 `lme4::ranef(model, condVar=TRUE)`. Thus,
-[`predictInterval()`](../reference/predictInterval.md) incorporates all
-of the uncertainty from sources one and two, and part of the variance
-from source 3, but the variance parameters themselves are treated as
-fixed.
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+incorporates all of the uncertainty from sources one and two, and part
+of the variance from source 3, but the variance parameters themselves
+are treated as fixed.
 
-To do this, [`predictInterval()`](../reference/predictInterval.md) takes
-an estimated model of class `merMod` and, like
+To do this,
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+takes an estimated model of class `merMod` and, like
 [`predict()`](https://rdrr.io/r/stats/predict.html), a data.frame upon
 which to make those predictions and:
 
@@ -88,54 +90,8 @@ which to make those predictions and:
 5.  returns newdata with the lower and upper limits of the prediction
     interval and the mean or median of the simulated predictions
 
-Currently, the supported model types are:
-
-- **Linear Mixed Models (LMMs)**: Gaussian residual variance added via
-  [`rnorm()`](https://rdrr.io/r/stats/Normal.html)
-- **Binomial GLMMs**: Conditional binomial simulation via
-  [`rbinom()`](https://rdrr.io/r/stats/Binomial.html) (with weights
-  support)
-- **Poisson GLMMs**: Conditional Poisson simulation via
-  [`rpois()`](https://rdrr.io/r/stats/Poisson.html)
-- **Gamma GLMMs**: Conditional Gamma simulation via
-  [`rgamma()`](https://rdrr.io/r/stats/GammaDist.html)
-
-For GLMMs with `include.resid.var = TRUE`, the function simulates from
-the conditional distribution of Y\|b (given random effects), which is
-theoretically correct for discrete distributions where residual variance
-is inherent in the distribution parameters.
-
-## GLMM Residual Variance and Conditional Simulation
-
-For generalized linear mixed models (GLMMs), the concept of “residual
-variance” differs from LMMs. In GLMMs, the distributional family
-(binomial, Poisson, Gamma) defines the conditional variance of Y\|b. For
-example:
-
-- **Binomial**: Var(Y\|b) = n·p·(1-p) - variance is determined by the
-  mean probability
-- **Poisson**: Var(Y\|b) = λ - variance equals the mean rate
-- **Gamma**: Var(Y\|b) = shape/rate² - variance determined by shape and
-  rate parameters
-
-The traditional approach of adding Gaussian noise with sd=1 to binomial
-GLMMs is theoretically incorrect. Instead,
-[`predictInterval()`](../reference/predictInterval.md) now:
-
-1.  Computes the linear predictor η = fixed_eff + random_eff
-2.  Applies the inverse link function to get distribution parameters (p,
-    λ, or rate)
-3.  Simulates from the conditional distribution:
-    [`rbinom()`](https://rdrr.io/r/stats/Binomial.html),
-    [`rpois()`](https://rdrr.io/r/stats/Poisson.html), or
-    [`rgamma()`](https://rdrr.io/r/stats/GammaDist.html)
-
-This approach matches the principles of
-[`lme4::simulate.merMod()`](https://rdrr.io/pkg/lme4/man/simulate.merMod.html)
-and provides theoretically correct prediction intervals for GLMMs.
-
-For LMMs, the behavior remains unchanged: Gaussian residual variance is
-added via `rnorm(N, yhat, sigma)`.
+Currently, the supported model types are linear mixed models and mixed
+logistic regression models.
 
 The prediction data set *can* include levels that are not in the
 estimation model frame. The prediction intervals for such observations
@@ -145,22 +101,24 @@ residual level of variation.
 ## Comparison to existing methods
 
 What do the differences between
-[`predictInterval()`](../reference/predictInterval.md) and the other
-methods for constructing prediction intervals mean in practice? We would
-expect to see [`predictInterval()`](../reference/predictInterval.md) to
-produce prediction intervals that are wider than all methods except for
-the [`bootMer()`](https://rdrr.io/pkg/lme4/man/bootMer.html) method. We
-would also hope that the prediction point estimate from other methods
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+and the other methods for constructing prediction intervals mean in
+practice? We would expect to see
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+to produce prediction intervals that are wider than all methods except
+for the [`bootMer()`](https://rdrr.io/pkg/lme4/man/bootMer.html) method.
+We would also hope that the prediction point estimate from other methods
 falls within the prediction interval produced by
-[`predictInterval()`](../reference/predictInterval.md). Ideally, the
-predicted point estimate produced by
-[`predictInterval()`](../reference/predictInterval.md) would fall close
-to that produced by
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md).
+Ideally, the predicted point estimate produced by
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+would fall close to that produced by
 [`bootMer()`](https://rdrr.io/pkg/lme4/man/bootMer.html).
 
 This section compares the results of
-[`predictInterval()`](../reference/predictInterval.md) with those
-obtained using [`arm::sim()`](https://rdrr.io/pkg/arm/man/sim.html) and
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+with those obtained using
+[`arm::sim()`](https://rdrr.io/pkg/arm/man/sim.html) and
 [`lme4::bootMer()`](https://rdrr.io/pkg/lme4/man/bootMer.html) using the
 sleepstudy data from `lme4`. These data contain reaction time
 observations for 10 days on 18 subjects. The data are sorted such that
@@ -169,8 +127,7 @@ next 10 are days one through ten for subject 2 and so on. The example
 model that we are estimating below estimates random intercepts and a
 random slope for the number of days.
 
-\###Step 1: Estimating the model and using
-[`predictInterval()`](../reference/predictInterval.md)
+### Step 1: Estimating the model and using `predictInterval()`
 
 First, we will load the required packages and data and estimate the
 model:
@@ -180,7 +137,7 @@ model:
 set.seed(271828)
 data(sleepstudy)
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
-display(fm1)
+arm::display(fm1)
 #> lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)
 #>             coef.est coef.se
 #> (Intercept) 251.41     6.82 
@@ -198,18 +155,19 @@ display(fm1)
 ```
 
 Then, calculate prediction intervals using
-[`predictInterval()`](../reference/predictInterval.md). The
-`predictInterval` function has a number of user configurable options. In
-this example, we use the original data `sleepstudy` as the newdata. We
-pass the function the `fm1` model we fit above. We also choose a 95%
-interval with `level = 0.95`, though we could choose a less conservative
-prediction interval. We make 1,000 simulations for each observation
-`n.sims = 1000`. We set the point estimate to be the median of the
-simulated values, instead of the mean. We ask for the linear predictor
-back, if we fit a logistic regression, we could have asked instead for
-our predictions on the probability scale instead. Finally, we indicate
-that we want the predictions to incorporate the residual variance from
-the model – an option only available for `lmerMod` objects.
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md).
+The `predictInterval` function has a number of user configurable
+options. In this example, we use the original data `sleepstudy` as the
+newdata. We pass the function the `fm1` model we fit above. We also
+choose a 95% interval with `level = 0.95`, though we could choose a less
+conservative prediction interval. We make 1,000 simulations for each
+observation `n.sims = 1000`. We set the point estimate to be the median
+of the simulated values, instead of the mean. We ask for the linear
+predictor back, if we fit a logistic regression, we could have asked
+instead for our predictions on the probability scale instead. Finally,
+we indicate that we want the predictions to incorporate the residual
+variance from the model – an option only available for `lmerMod`
+objects.
 
 ``` r
 
@@ -246,8 +204,9 @@ ggplot(aes(x=1:30, y=fit, ymin=lwr, ymax=upr), data=PI[1:30,]) +
   labs(x="Index", y="Prediction w/ 95% PI") + theme_bw()
 ```
 
-![plot of chunk
-Inspect_predInt_2](usage-Inspect_predInt_2-1.png "plot of chunk Inspect_predInt_2")
+![plot of chunk Inspect_predInt_2](usage-Inspect_predInt_2-1.png)
+
+plot of chunk Inspect_predInt_2
 
 #### Step 1a: Adjusting for correlation between fixed and random effects
 
@@ -269,7 +228,7 @@ reaction times of subjects after experiencing sleep deprivation:
 ``` r
 
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
-display(fm1)
+arm::display(fm1)
 #> lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)
 #>             coef.est coef.se
 #> (Intercept) 251.41     6.82 
@@ -380,19 +339,20 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-![plot of chunk arm.Sim](usage-arm.Sim-1.png "plot of chunk arm.Sim")
+![plot of chunk arm.Sim](usage-arm.Sim-1.png)
+
+plot of chunk arm.Sim
 
 The prediction intervals from `arm:sim()` are much smaller and the
 random slope for days vary more than they do for `predictInterval`. Both
 results are as expected, given the small number of subjects and
 observations per subject in these data. Because
-[`predictInterval()`](../reference/predictInterval.md) is incorporating
-uncertainty in the CMFEs (but not the variance parameters of the random
-coefficients themselves), the Days slopes are closer to the overall or
-pooled regression slope.
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+is incorporating uncertainty in the CMFEs (but not the variance
+parameters of the random coefficients themselves), the Days slopes are
+closer to the overall or pooled regression slope.
 
-\###Step 3: Comparison with
-[`lme4::bootMer()`](https://rdrr.io/pkg/lme4/man/bootMer.html)
+### Step 3: Comparison with `lme4::bootMer()`
 
 As quoted above, the developers of lme4 suggest that users interested in
 uncertainty estimates around their predictions use `lme4::bootmer()` to
@@ -408,8 +368,8 @@ to describe three implemented flavors of bootstrapped estimates:
     resampling the i.i.d. errors from the distribution of residuals.
 
 We will compare the results from
-[`predictInterval()`](../reference/predictInterval.md) with each method,
-in turn.
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+with each method, in turn.
 
 #### Step 3a: `lme4::bootMer()` method 1
 
@@ -448,8 +408,9 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-![plot of chunk
-bootMer.1](usage-bootMer.1-1.png "plot of chunk bootMer.1")
+![plot of chunk bootMer.1](usage-bootMer.1-1.png)
+
+plot of chunk bootMer.1
 
 The intervals produced by `predictInterval`, represented in green, cover
 the point estimates produced by `bootMer` in every case for these 30
@@ -460,8 +421,7 @@ by refitting the model, they are also taking into account the
 conditional variance of these terms, or `theta`, and provide tighter
 prediction intervals than the `predictInterval` method.
 
-\####Step 3b:
-[`lme4::bootMer()`](https://rdrr.io/pkg/lme4/man/bootMer.html) method 2
+#### Step 3b: `lme4::bootMer()` method 2
 
 ``` r
 
@@ -483,8 +443,9 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-![plot of chunk
-bootMer.2](usage-bootMer.2-1.png "plot of chunk bootMer.2")
+![plot of chunk bootMer.2](usage-bootMer.2-1.png)
+
+plot of chunk bootMer.2
 
 Here, the results for `predictInterval` in green again encompass the
 results from `bootMer`, but are much wider. The `bootMer` estimates are
@@ -515,12 +476,13 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-![plot of chunk
-bootMer.3](usage-bootMer.3-1.png "plot of chunk bootMer.3")
+![plot of chunk bootMer.3](usage-bootMer.3-1.png)
+
+plot of chunk bootMer.3
 
 These results are virtually identical to those above.
 
-#### Step 3c: Comparison to rstanarm
+#### Step 3d: Comparison to rstanarm
 
 ``` r
 
@@ -532,15 +494,15 @@ PI.time.stan <- system.time({
   PI.stan <- cbind(apply(zed, 2, median), central_intervals(zed, prob=0.95))
 })
 #> Chain 1: 
-#> Chain 1: Gradient evaluation took 0 seconds
-#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+#> Chain 1: Gradient evaluation took 5.8e-05 seconds
+#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.58 seconds.
 #> Chain 1: Adjust your expectations accordingly!
 #> Chain 1: 
 #> Chain 1: 
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 6.994 seconds (Warm-up)
-#> Chain 1:                2.497 seconds (Sampling)
-#> Chain 1:                9.491 seconds (Total)
+#> Chain 1:  Elapsed Time: 4.159 seconds (Warm-up)
+#> Chain 1:                1.226 seconds (Sampling)
+#> Chain 1:                5.385 seconds (Total)
 #> Chain 1:
 
 
@@ -551,18 +513,18 @@ print(fm_stan)
 #>  observations: 180
 #> ------
 #>             Median MAD_SD
-#> (Intercept) 251.5    6.4 
-#> Days         10.5    1.7 
+#> (Intercept) 251.6    6.7 
+#> Days         10.6    1.6 
 #> 
 #> Auxiliary parameter(s):
 #>       Median MAD_SD
 #> sigma 25.9    1.6  
 #> 
 #> Error terms:
-#>  Groups   Name        Std.Dev. Corr
-#>  Subject  (Intercept) 23.8         
-#>           Days         6.9     0.09
-#>  Residual             26.0         
+#>  Groups   Name        Std.Dev. Corr 
+#>  Subject  (Intercept) 24.3          
+#>           Days         6.8     0.06 
+#>  Residual             26.0          
 #> Num. levels: Subject 18 
 #> 
 #> ------
@@ -583,7 +545,9 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-![plot of chunk stancomp](usage-stancomp-1.png "plot of chunk stancomp")
+![plot of chunk stancomp](usage-stancomp-1.png)
+
+plot of chunk stancomp
 
 ### Computation time
 
@@ -594,36 +558,37 @@ complexity, using
 [`lme4::bootMer()`](https://rdrr.io/pkg/lme4/man/bootMer.html) quickly
 becomes time prohibitive because it involves re-estimating the model for
 each simulation. We have seen how each alternative compares to
-[`predictInterval()`](../reference/predictInterval.md) substantively,
-but how do they compare in terms of computational time? The table below
-lists the output of
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+substantively, but how do they compare in terms of computational time?
+The table below lists the output of
 [`system.time()`](https://rdrr.io/r/base/system.time.html) for all five
 methods for calculating prediction intervals for `merMod` objects.
 
 |                          | user.self | sys.self | elapsed |
 |:-------------------------|----------:|---------:|--------:|
-| predictInterval()        |      0.30 |     0.01 |    0.31 |
-| arm::sim()               |      0.56 |     0.00 |    0.56 |
-| lme4::bootMer()-Method 1 |      5.79 |     0.08 |    5.92 |
-| lme4::bootMer()-Method 2 |      6.03 |     0.05 |    6.13 |
-| lme4::bootMer()-Method 3 |      5.93 |     0.01 |    6.05 |
-| rstanarm:predict         |     10.09 |     0.05 |   10.19 |
+| predictInterval()        |     0.213 |    0.043 |   0.263 |
+| arm::sim()               |     0.440 |    0.000 |   0.442 |
+| lme4::bootMer()-Method 1 |     4.213 |    0.001 |   4.234 |
+| lme4::bootMer()-Method 2 |     4.299 |    0.002 |   4.342 |
+| lme4::bootMer()-Method 3 |     4.000 |    0.000 |   4.002 |
+| rstanarm:predict         |     5.927 |    0.009 |   5.938 |
 
 For this simple example, we see that
 [`arm::sim()`](https://rdrr.io/pkg/arm/man/sim.html) is the
 fastest–nearly five times faster than
-[`predictInterval()`](../reference/predictInterval.md). However,
-[`predictInterval()`](../reference/predictInterval.md) is nearly six
-times faster than any of the bootstrapping options via
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md).
+However,
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+is nearly six times faster than any of the bootstrapping options via
 [`lme4::bootMer`](https://rdrr.io/pkg/lme4/man/bootMer.html). This may
 not seem like a lot, but consider that the computational time for
 required for bootstrapping is roughly proportional to the number of
 bootstrapped simulations requested …
-[`predictInterval()`](../reference/predictInterval.md) is not because it
-is just a series of draws from various multivariate normal
-distributions, so the time ratios in the table below represents the
-lowest bound of the computation time ratio of bootstrapping to
-[`predictInterval()`](../reference/predictInterval.md).
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+is not because it is just a series of draws from various multivariate
+normal distributions, so the time ratios in the table below represents
+the lowest bound of the computation time ratio of bootstrapping to
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md).
 
 ## Simulation
 

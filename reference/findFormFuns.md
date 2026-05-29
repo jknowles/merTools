@@ -1,4 +1,4 @@
-# `findFormFuns` used by [averageObs](averageObs.md) to calculate proper averages
+# `findFormFuns` used by [averageObs](https://jknowles.github.io/merTools/reference/averageObs.md) to calculate proper averages
 
 The purpose is to properly derive data for the average observation in
 the data by being 'aware' of formulas that contain interactions and/or
@@ -36,4 +36,6 @@ Matrix-valued response columns (e.g. the `cbind(successes, failures)`
 left-hand side of a binomial GLMM) are detected and dropped from the
 working frame before averaging, since they cannot be collapsed to a
 single scalar. The returned frame therefore has no response column for
-matrix-LHS models; see [`averageObs`](averageObs.md) for rationale.
+matrix-LHS models; see
+[`averageObs`](https://jknowles.github.io/merTools/reference/averageObs.md)
+for rationale.

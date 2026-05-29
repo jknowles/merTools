@@ -15,7 +15,7 @@ because they are estimated on very large samples."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">merTools</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,6 +77,7 @@ because they are estimated on very large samples.</p>
 
 <ul><li><p><code><a href="plotREsim.html">plotREsim</a></code></p></li>
 <li><p><code><a href="plotFEsim.html">plotFEsim</a></code></p></li>
+<li><p><code><a href="plotREimpact.html">plotREimpact</a></code></p></li>
 <li><p><code><a href="draw.html">draw</a></code></p></li>
 <li><p><code><a href="wiggle.html">wiggle</a></code></p></li>
 <li><p><code><a href="subBoot.html">subBoot</a></code></p></li>
@@ -86,6 +87,28 @@ because they are estimated on very large samples.</p>
 <li><p><code><a href="shinyMer.html">shinyMer</a></code></p></li>
 </ul></div>
     <div class="section level2">
+    <h2 id="influences-and-acknowledgements">Influences and acknowledgements<a class="anchor" aria-label="anchor" href="#influences-and-acknowledgements"></a></h2>
+
+
+
+<p>The simulation approach used by <code><a href="predictInterval.html">predictInterval</a></code> to propagate
+uncertainty from both the fixed and random effects draws on the framework
+described by Gelman and Hill (2007) and implemented in the <span class="pkg">arm</span>
+package's <code><a href="https://rdrr.io/pkg/arm/man/sim.html" class="external-link">sim()</a></code> function. The package is built on top of the model
+objects fit by <span class="pkg">lme4</span> (Bates et al. 2015) and is intended to complement
+<code><a href="https://rdrr.io/pkg/lme4/man/bootMer.html" class="external-link">lme4::bootMer()</a></code> by offering a faster, simulation-based alternative
+for large models. We are grateful to the authors and maintainers of those
+packages.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Gelman, A. and Hill, J. (2007). <em>Data Analysis Using Regression and
+Multilevel/Hierarchical Models</em>. Cambridge University Press.</p>
+<p>Bates, D., Maechler, M., Bolker, B., and Walker, S. (2015). Fitting Linear
+Mixed-Effects Models Using lme4. <em>Journal of Statistical Software</em>,
+67(1), 1-48. <a href="https://doi.org/10.18637/jss.v067.i01" class="external-link">doi:10.18637/jss.v067.i01</a></p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Useful links:</p><ul><li><p>Report bugs at <a href="https://github.com/jknowles/merTools/issues" class="external-link">https://github.com/jknowles/merTools/issues</a></p></li>
 </ul></div>
@@ -93,7 +116,8 @@ because they are estimated on very large samples.</p>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p><strong>Maintainer</strong>: Jared E. Knowles <a href="mailto:jared@civilytics.com">jared@civilytics.com</a></p>
-<p>Authors:</p><ul><li><p>Carl Frederick <a href="mailto:carlbfrederick@gmail.com">carlbfrederick@gmail.com</a></p></li>
+<p>Authors:</p><ul><li><p>Jared E. Knowles <a href="mailto:jared@civilytics.com">jared@civilytics.com</a></p></li>
+<li><p>Carl Frederick <a href="mailto:carlbfrederick@gmail.com">carlbfrederick@gmail.com</a></p></li>
 </ul><p>Other contributors:</p><ul><li><p>Alex Whitworth <a href="mailto:whitworth.alex@gmail.com">whitworth.alex@gmail.com</a> [contributor]</p></li>
 </ul></div>
 

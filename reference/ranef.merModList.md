@@ -13,8 +13,9 @@ ranef(object, ...)
 
 - object:
 
-  a [`merModList`](merModList-class.md) list fitted models with random
-  effects
+  a
+  [`merModList`](https://jknowles.github.io/merTools/reference/merModList-class.md)
+  list fitted models with random effects
 
 - ...:
 
@@ -29,7 +30,8 @@ a named, numeric vector of random-effects estimates.
 Extract the estimates of the random-effects parameters from a list of
 fitted [`merMod`](https://rdrr.io/pkg/lme4/man/merMod-class.html)
 models. Takes the mean of the individual `ranef` objects for each of the
-component models in the [`merModList`](merModList-class.md).
+component models in the
+[`merModList`](https://jknowles.github.io/merTools/reference/merModList-class.md).
 
 ## Examples
 

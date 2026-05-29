@@ -478,15 +478,17 @@ ggplot(plotdf, aes(y = fit, x = Anger, color = btype, group = btype)) +
 
 ## Cross-version numeric regression checks (for contributors)
 
-[`predictInterval()`](reference/predictInterval.md) is stochastic, so
-the usual unit-test tolerances are not a reliable way to confirm that a
-refactor of the simulation internals has preserved numeric behavior for
-users who rely on a fixed seed. To address this, the package ships a
-standalone regression harness that pins a canonical set of inputs (LMM
-and GLMM models, various `which`, `level`, `stat`, `ignore.fixed.terms`,
-`fix.intercept.variance`, and single-row-newdata cases) and dumps
-[`predictInterval()`](reference/predictInterval.md) output to an RDS
-bundle for two package versions so they can be diffed bit-for-bit.
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+is stochastic, so the usual unit-test tolerances are not a reliable way
+to confirm that a refactor of the simulation internals has preserved
+numeric behavior for users who rely on a fixed seed. To address this,
+the package ships a standalone regression harness that pins a canonical
+set of inputs (LMM and GLMM models, various `which`, `level`, `stat`,
+`ignore.fixed.terms`, `fix.intercept.variance`, and single-row-newdata
+cases) and dumps
+[`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
+output to an RDS bundle for two package versions so they can be diffed
+bit-for-bit.
 
 The script lives at `tests/comparisons/predictInterval-regression.R` and
 is NOT part of `R CMD check`. It has two modes:

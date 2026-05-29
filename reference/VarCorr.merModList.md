@@ -14,8 +14,9 @@ VarCorr(x, sigma = 1, rdig = 3L, ...)
 
 - x:
 
-  a [`merModList`](merModList-class.md) list fitted models with random
-  effects
+  a
+  [`merModList`](https://jknowles.github.io/merTools/reference/merModList-class.md)
+  list fitted models with random effects
 
 - sigma:
 

@@ -53,7 +53,7 @@ observed/unobserved levels
 Determine root cause (mkNewReTrms, reMatrix path, or FE simulation)
 
 Fix or document as expected behavior in
-[`?predictInterval`](reference/predictInterval.md)
+[`?predictInterval`](https://jknowles.github.io/merTools/reference/predictInterval.md)
 
 Add regression test for the chosen behavior
 
@@ -82,8 +82,9 @@ randomObs
 Add basic tests for untested exports: bglmerModList, fixef.merModList,
 ranef.merModList
 
-Document [`REmargins()`](reference/REmargins.md) tie-breaking behavior;
-add performance bounds note
+Document
+[`REmargins()`](https://jknowles.github.io/merTools/reference/REmargins.md)
+tie-breaking behavior; add performance bounds note
 
 Investigate and fix test coverage gaps (8 files at 0%)
 

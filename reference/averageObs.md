@@ -54,7 +54,7 @@ response column is omitted from the output. A matrix response cannot be
 meaningfully collapsed to a single "average" value, and `averageObs()`
 is primarily intended to produce `newdata` for
 [`predict`](https://rdrr.io/r/stats/predict.html) /
-[`predictInterval`](predictInterval.md), both of which ignore the
-response column in `newdata`. Callers that iterate over
-`names(averageObs(merMod))` or compare against `merMod@frame` should not
-assume column parity for matrix-LHS models.
+[`predictInterval`](https://jknowles.github.io/merTools/reference/predictInterval.md),
+both of which ignore the response column in `newdata`. Callers that
+iterate over `names(averageObs(merMod))` or compare against
+`merMod@frame` should not assume column parity for matrix-LHS models.

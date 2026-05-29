@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">merTools</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,7 +56,7 @@
                         <h4 data-toc-skip class="author">Jared Knowles
 and Carl Frederick</h4>
             
-            <h4 data-toc-skip class="date">2020-06-22</h4>
+            <h4 data-toc-skip class="date">2026-05-29</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jknowles/merTools/blob/main/vignettes/Using_predictInterval.Rmd" class="external-link"><code>vignettes/Using_predictInterval.Rmd</code></a></small>
       <div class="d-none name"><code>Using_predictInterval.Rmd</code></div>
@@ -141,63 +141,8 @@ based on these draws, and</li>
 <li>returns newdata with the lower and upper limits of the prediction
 interval and the mean or median of the simulated predictions</li>
 </ol>
-<p>Currently, the supported model types are:</p>
-<ul>
-<li>
-<strong>Linear Mixed Models (LMMs)</strong>: Gaussian residual
-variance added via <code><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm()</a></code>
-</li>
-<li>
-<strong>Binomial GLMMs</strong>: Conditional binomial simulation via
-<code><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom()</a></code> (with weights support)</li>
-<li>
-<strong>Poisson GLMMs</strong>: Conditional Poisson simulation via
-<code><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois()</a></code>
-</li>
-<li>
-<strong>Gamma GLMMs</strong>: Conditional Gamma simulation via
-<code><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">rgamma()</a></code>
-</li>
-</ul>
-<p>For GLMMs with <code>include.resid.var = TRUE</code>, the function
-simulates from the conditional distribution of Y|b (given random
-effects), which is theoretically correct for discrete distributions
-where residual variance is inherent in the distribution parameters.</p>
-</div>
-<div class="section level2">
-<h2 id="glmm-residual-variance-and-conditional-simulation">GLMM Residual Variance and Conditional Simulation<a class="anchor" aria-label="anchor" href="#glmm-residual-variance-and-conditional-simulation"></a>
-</h2>
-<p>For generalized linear mixed models (GLMMs), the concept of “residual
-variance” differs from LMMs. In GLMMs, the distributional family
-(binomial, Poisson, Gamma) defines the conditional variance of Y|b. For
-example:</p>
-<ul>
-<li>
-<strong>Binomial</strong>: Var(Y|b) = n·p·(1-p) - variance is
-determined by the mean probability</li>
-<li>
-<strong>Poisson</strong>: Var(Y|b) = λ - variance equals the mean
-rate</li>
-<li>
-<strong>Gamma</strong>: Var(Y|b) = shape/rate² - variance determined
-by shape and rate parameters</li>
-</ul>
-<p>The traditional approach of adding Gaussian noise with sd=1 to
-binomial GLMMs is theoretically incorrect. Instead,
-<code><a href="../reference/predictInterval.html">predictInterval()</a></code> now:</p>
-<ol style="list-style-type: decimal">
-<li>Computes the linear predictor η = fixed_eff + random_eff</li>
-<li>Applies the inverse link function to get distribution parameters (p,
-λ, or rate)</li>
-<li>Simulates from the conditional distribution: <code><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom()</a></code>,
-<code><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois()</a></code>, or <code><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">rgamma()</a></code>
-</li>
-</ol>
-<p>This approach matches the principles of
-<code><a href="https://rdrr.io/pkg/lme4/man/simulate.merMod.html" class="external-link">lme4::simulate.merMod()</a></code> and provides theoretically correct
-prediction intervals for GLMMs.</p>
-<p>For LMMs, the behavior remains unchanged: Gaussian residual variance
-is added via <code>rnorm(N, yhat, sigma)</code>.</p>
+<p>Currently, the supported model types are linear mixed models and
+mixed logistic regression models.</p>
 <p>The prediction data set <em>can</em> include levels that are not in
 the estimation model frame. The prediction intervals for such
 observations only incorporate uncertainty from fixed coefficient
@@ -224,15 +169,17 @@ observations are days one through ten for subject 1, the next 10 are
 days one through ten for subject 2 and so on. The example model that we
 are estimating below estimates random intercepts and a random slope for
 the number of days.</p>
-<p>###Step 1: Estimating the model and using
-<code><a href="../reference/predictInterval.html">predictInterval()</a></code></p>
+<div class="section level3">
+<h3 id="step-1-estimating-the-model-and-using-predictinterval">Step 1: Estimating the model and using
+<code>predictInterval()</code><a class="anchor" aria-label="anchor" href="#step-1-estimating-the-model-and-using-predictinterval"></a>
+</h3>
 <p>First, we will load the required packages and data and estimate the
 model:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">271828</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sleepstudy</span><span class="op">)</span></span>
 <span><span class="va">fm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">Reaction</span> <span class="op">~</span> <span class="va">Days</span> <span class="op">+</span> <span class="op">(</span><span class="va">Days</span><span class="op">|</span><span class="va">Subject</span><span class="op">)</span>, data<span class="op">=</span><span class="va">sleepstudy</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display</a></span><span class="op">(</span><span class="va">fm1</span><span class="op">)</span></span>
+<span><span class="fu">arm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display</a></span><span class="op">(</span><span class="va">fm1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)</span></span>
 <span><span class="co">#&gt;             coef.est coef.se</span></span>
 <span><span class="co">#&gt; (Intercept) 251.41     6.82 </span></span>
@@ -318,7 +265,11 @@ graphically for the first 30 observations.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_linerange</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Index"</span>, y<span class="op">=</span><span class="st">"Prediction w/ 95% PI"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="usage-Inspect_predInt_2-1.png" title="plot of chunk Inspect_predInt_2" alt="plot of chunk Inspect_predInt_2" style="display: block; margin: auto;"></p>
+<div class="figure" style="text-align: center">
+<img src="usage-Inspect_predInt_2-1.png" alt="plot of chunk Inspect_predInt_2"><p class="caption">
+plot of chunk Inspect_predInt_2
+</p>
+</div>
 <div class="section level4">
 <h4 id="step-1a-adjusting-for-correlation-between-fixed-and-random-effects">Step 1a: Adjusting for correlation between fixed and random
 effects<a class="anchor" aria-label="anchor" href="#step-1a-adjusting-for-correlation-between-fixed-and-random-effects"></a>
@@ -338,7 +289,7 @@ occur in this package’s simulations.)</p>
 reaction times of subjects after experiencing sleep deprivation:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">Reaction</span> <span class="op">~</span> <span class="va">Days</span> <span class="op">+</span> <span class="op">(</span><span class="va">Days</span><span class="op">|</span><span class="va">Subject</span><span class="op">)</span>, data<span class="op">=</span><span class="va">sleepstudy</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display</a></span><span class="op">(</span><span class="va">fm1</span><span class="op">)</span></span>
+<span><span class="fu">arm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display</a></span><span class="op">(</span><span class="va">fm1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)</span></span>
 <span><span class="co">#&gt;             coef.est coef.se</span></span>
 <span><span class="co">#&gt; (Intercept) 251.41     6.82 </span></span>
@@ -408,6 +359,7 @@ individual groups at that level.</p>
 groups not present in the original data.</li>
 </ul>
 </div>
+</div>
 <div class="section level3">
 <h3 id="step-2-comparison-with-armsim">Step 2: Comparison with <code>arm::sim()</code><a class="anchor" aria-label="anchor" href="#step-2-comparison-with-armsim"></a>
 </h3>
@@ -433,7 +385,11 @@ groups not present in the original data.</li>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Index"</span>, y<span class="op">=</span><span class="st">"Prediction w/ 95% PI"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span>, palette <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="usage-arm.Sim-1.png" title="plot of chunk arm.Sim" alt="plot of chunk arm.Sim" style="display: block; margin: auto;"></p>
+<div class="figure" style="text-align: center">
+<img src="usage-arm.Sim-1.png" alt="plot of chunk arm.Sim"><p class="caption">
+plot of chunk arm.Sim
+</p>
+</div>
 <p>The prediction intervals from <code>arm:sim()</code> are much smaller
 and the random slope for days vary more than they do for
 <code>predictInterval</code>. Both results are as expected, given the
@@ -442,7 +398,10 @@ Because <code><a href="../reference/predictInterval.html">predictInterval()</a><
 the CMFEs (but not the variance parameters of the random coefficients
 themselves), the Days slopes are closer to the overall or pooled
 regression slope.</p>
-<p>###Step 3: Comparison with <code><a href="https://rdrr.io/pkg/lme4/man/bootMer.html" class="external-link">lme4::bootMer()</a></code></p>
+</div>
+<div class="section level3">
+<h3 id="step-3-comparison-with-lme4bootmer">Step 3: Comparison with <code>lme4::bootMer()</code><a class="anchor" aria-label="anchor" href="#step-3-comparison-with-lme4bootmer"></a>
+</h3>
 <p>As quoted above, the developers of lme4 suggest that users interested
 in uncertainty estimates around their predictions use
 <code>lme4::bootmer()</code> to calculate them. The documentation for
@@ -495,7 +454,11 @@ each method, in turn.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Index"</span>, y<span class="op">=</span><span class="st">"Prediction w/ 95% PI"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span>, palette <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="usage-bootMer.1-1.png" title="plot of chunk bootMer.1" alt="plot of chunk bootMer.1" style="display: block; margin: auto;"></p>
+<div class="figure" style="text-align: center">
+<img src="usage-bootMer.1-1.png" alt="plot of chunk bootMer.1"><p class="caption">
+plot of chunk bootMer.1
+</p>
+</div>
 <p>The intervals produced by <code>predictInterval</code>, represented
 in green, cover the point estimates produced by <code>bootMer</code> in
 every case for these 30 observations. Additionally, in almost every
@@ -505,7 +468,10 @@ presented by <code>bootMer</code>. Here, the estimates produced by
 the model, they are also taking into account the conditional variance of
 these terms, or <code>theta</code>, and provide tighter prediction
 intervals than the <code>predictInterval</code> method.</p>
-<p>####Step 3b: <code><a href="https://rdrr.io/pkg/lme4/man/bootMer.html" class="external-link">lme4::bootMer()</a></code> method 2</p>
+</div>
+<div class="section level4">
+<h4 id="step-3b-lme4bootmer-method-2">Step 3b: <code>lme4::bootMer()</code> method 2<a class="anchor" aria-label="anchor" href="#step-3b-lme4bootmer-method-2"></a>
+</h4>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">##lme4::bootMer() method 2</span></span>
 <span><span class="va">PI.boot2.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
@@ -523,7 +489,11 @@ intervals than the <code>predictInterval</code> method.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Index"</span>, y<span class="op">=</span><span class="st">"Prediction w/ 95% PI"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span>, palette <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="usage-bootMer.2-1.png" title="plot of chunk bootMer.2" alt="plot of chunk bootMer.2" style="display: block; margin: auto;"></p>
+<div class="figure" style="text-align: center">
+<img src="usage-bootMer.2-1.png" alt="plot of chunk bootMer.2"><p class="caption">
+plot of chunk bootMer.2
+</p>
+</div>
 <p>Here, the results for <code>predictInterval</code> in green again
 encompass the results from <code>bootMer</code>, but are much wider. The
 <code>bootMer</code> estimates are ignoring the variance in the group
@@ -551,11 +521,15 @@ the variance in the fixed effects – similar to the
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Index"</span>, y<span class="op">=</span><span class="st">"Prediction w/ 95% PI"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span>, palette <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="usage-bootMer.3-1.png" title="plot of chunk bootMer.3" alt="plot of chunk bootMer.3" style="display: block; margin: auto;"></p>
+<div class="figure" style="text-align: center">
+<img src="usage-bootMer.3-1.png" alt="plot of chunk bootMer.3"><p class="caption">
+plot of chunk bootMer.3
+</p>
+</div>
 <p>These results are virtually identical to those above.</p>
 </div>
 <div class="section level4">
-<h4 id="step-3c-comparison-to-rstanarm">Step 3c: Comparison to rstanarm<a class="anchor" aria-label="anchor" href="#step-3c-comparison-to-rstanarm"></a>
+<h4 id="step-3d-comparison-to-rstanarm">Step 3d: Comparison to rstanarm<a class="anchor" aria-label="anchor" href="#step-3d-comparison-to-rstanarm"></a>
 </h4>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">PI.time.stan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
@@ -566,15 +540,15 @@ the variance in the fixed effects – similar to the
 <span>  <span class="va">PI.stan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">zed</span>, <span class="fl">2</span>, <span class="va">median</span><span class="op">)</span>, <span class="fu">central_intervals</span><span class="op">(</span><span class="va">zed</span>, prob<span class="op">=</span><span class="fl">0.95</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1: Gradient evaluation took 0 seconds</span></span>
-<span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1: Gradient evaluation took 5.8e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.58 seconds.</span></span>
 <span><span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1:  Elapsed Time: 6.994 seconds (Warm-up)</span></span>
-<span><span class="co">#&gt; Chain 1:                2.497 seconds (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 1:                9.491 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 1:  Elapsed Time: 4.159 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 1:                1.226 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 1:                5.385 seconds (Total)</span></span>
 <span><span class="co">#&gt; Chain 1:</span></span>
 <span></span>
 <span></span>
@@ -585,18 +559,18 @@ the variance in the fixed effects – similar to the
 <span><span class="co">#&gt;  observations: 180</span></span>
 <span><span class="co">#&gt; ------</span></span>
 <span><span class="co">#&gt;             Median MAD_SD</span></span>
-<span><span class="co">#&gt; (Intercept) 251.5    6.4 </span></span>
-<span><span class="co">#&gt; Days         10.5    1.7 </span></span>
+<span><span class="co">#&gt; (Intercept) 251.6    6.7 </span></span>
+<span><span class="co">#&gt; Days         10.6    1.6 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Auxiliary parameter(s):</span></span>
 <span><span class="co">#&gt;       Median MAD_SD</span></span>
 <span><span class="co">#&gt; sigma 25.9    1.6  </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Error terms:</span></span>
-<span><span class="co">#&gt;  Groups   Name        Std.Dev. Corr</span></span>
-<span><span class="co">#&gt;  Subject  (Intercept) 23.8         </span></span>
-<span><span class="co">#&gt;           Days         6.9     0.09</span></span>
-<span><span class="co">#&gt;  Residual             26.0         </span></span>
+<span><span class="co">#&gt;  Groups   Name        Std.Dev. Corr </span></span>
+<span><span class="co">#&gt;  Subject  (Intercept) 24.3          </span></span>
+<span><span class="co">#&gt;           Days         6.8     0.06 </span></span>
+<span><span class="co">#&gt;  Residual             26.0          </span></span>
 <span><span class="co">#&gt; Num. levels: Subject 18 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ------</span></span>
@@ -615,7 +589,11 @@ the variance in the fixed effects – similar to the
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Index"</span>, y<span class="op">=</span><span class="st">"Prediction w/ 95% PI"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span>, palette <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="usage-stancomp-1.png" title="plot of chunk stancomp" alt="plot of chunk stancomp" style="display: block; margin: auto;"></p>
+<div class="figure" style="text-align: center">
+<img src="usage-stancomp-1.png" alt="plot of chunk stancomp"><p class="caption">
+plot of chunk stancomp
+</p>
+</div>
 </div>
 </div>
 <div class="section level3">
@@ -641,39 +619,39 @@ prediction intervals for <code>merMod</code> objects.</p>
 <tbody>
 <tr class="odd">
 <td align="left">predictInterval()</td>
-<td align="right">0.30</td>
-<td align="right">0.01</td>
-<td align="right">0.31</td>
+<td align="right">0.213</td>
+<td align="right">0.043</td>
+<td align="right">0.263</td>
 </tr>
 <tr class="even">
 <td align="left">arm::sim()</td>
-<td align="right">0.56</td>
-<td align="right">0.00</td>
-<td align="right">0.56</td>
+<td align="right">0.440</td>
+<td align="right">0.000</td>
+<td align="right">0.442</td>
 </tr>
 <tr class="odd">
 <td align="left">lme4::bootMer()-Method 1</td>
-<td align="right">5.79</td>
-<td align="right">0.08</td>
-<td align="right">5.92</td>
+<td align="right">4.213</td>
+<td align="right">0.001</td>
+<td align="right">4.234</td>
 </tr>
 <tr class="even">
 <td align="left">lme4::bootMer()-Method 2</td>
-<td align="right">6.03</td>
-<td align="right">0.05</td>
-<td align="right">6.13</td>
+<td align="right">4.299</td>
+<td align="right">0.002</td>
+<td align="right">4.342</td>
 </tr>
 <tr class="odd">
 <td align="left">lme4::bootMer()-Method 3</td>
-<td align="right">5.93</td>
-<td align="right">0.01</td>
-<td align="right">6.05</td>
+<td align="right">4.000</td>
+<td align="right">0.000</td>
+<td align="right">4.002</td>
 </tr>
 <tr class="even">
 <td align="left">rstanarm:predict</td>
-<td align="right">10.09</td>
-<td align="right">0.05</td>
-<td align="right">10.19</td>
+<td align="right">5.927</td>
+<td align="right">0.009</td>
+<td align="right">5.938</td>
 </tr>
 </tbody>
 </table>
