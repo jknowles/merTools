@@ -381,8 +381,18 @@ simulate_random_effects <- function(
         tmp <- as.data.frame(newdata.modelMatrix)
       }
       tmp <- tmp[, !duplicated(colnames(tmp))]
-      # Assign grouping variable based on which model matrix column is active
-      tmp$var <- names(tmp[keep])[max.col(tmp[keep])]
+      # Assign the grouping level for each row based on which model-matrix
+      # column is active. Rows whose interaction level is not among the
+      # observed `keep` levels are all-zero across tmp[keep]; max.col() would
+      # otherwise pick a column at random (an all-zero row is a tie), silently
+      # borrowing an unrelated level's random effect and making the result
+      # depend on the RNG seed (#124). Detect those rows and assign NA so that
+      # tmp.pred() treats them as new levels and zeroes the random-effect
+      # contribution, matching the documented out-of-sample behavior.
+      keepMat <- as.matrix(tmp[keep])
+      activeLevel <- names(tmp[keep])[max.col(keepMat, ties.method = "first")]
+      activeLevel[rowSums(keepMat != 0) == 0] <- NA_character_
+      tmp$var <- activeLevel
       keepCols <- names(tmp)[names(tmp) %in% dimnames(REcoefs)[[2]]]
       tmp <- tmp[, c(keepCols, "var"), drop = FALSE]
       tmp[, "var"] <- as.character(tmp[, "var"])

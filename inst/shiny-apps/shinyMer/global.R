@@ -1,9 +1,9 @@
-# Import variables from function
+# Import variables passed in from shinyMer()
 library(ggplot2)
 library(shiny)
 
 merMod <<- .shinyMerPar$merMod
-if(is.null(.shinyMerPar$simData)){
+if (is.null(.shinyMerPar$simData)) {
 
 } else {
   newdata <<- .shinyMerPar$simData
@@ -20,4 +20,6 @@ if (!exists("newdata")) {
                   "Average Obs"   = "mean")
 }
 
-
+# Variables in the model frame that the user can restrict a random/average draw
+# to (issue #32). Used to build the optional subset controls in the sidebar.
+subset.choices <- c("(use all data)" = "", names(merMod@frame))

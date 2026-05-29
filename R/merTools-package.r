@@ -27,6 +27,7 @@
 #' \itemize{
 #'   \item \code{\link{plotREsim}}
 #'   \item \code{\link{plotFEsim}}
+#'   \item \code{\link{plotREimpact}}
 #'   \item \code{\link{draw}}
 #'   \item \code{\link{wiggle}}
 #'   \item \code{\link{subBoot}}
@@ -36,7 +37,25 @@
 #'   \item \code{\link{shinyMer}}
 #' }
 #'
-
+#' @section Influences and acknowledgements:
+#'
+#' The simulation approach used by \code{\link{predictInterval}} to propagate
+#' uncertainty from both the fixed and random effects draws on the framework
+#' described by Gelman and Hill (2007) and implemented in the \pkg{arm}
+#' package's \code{sim()} function. The package is built on top of the model
+#' objects fit by \pkg{lme4} (Bates et al. 2015) and is intended to complement
+#' \code{lme4::bootMer()} by offering a faster, simulation-based alternative
+#' for large models. We are grateful to the authors and maintainers of those
+#' packages.
+#'
+#' @references
+#' Gelman, A. and Hill, J. (2007). \emph{Data Analysis Using Regression and
+#' Multilevel/Hierarchical Models}. Cambridge University Press.
+#'
+#' Bates, D., Maechler, M., Bolker, B., and Walker, S. (2015). Fitting Linear
+#' Mixed-Effects Models Using lme4. \emph{Journal of Statistical Software},
+#' 67(1), 1-48. \doi{10.18637/jss.v067.i01}
+#'
 #' @keywords internal
 "_PACKAGE"
 

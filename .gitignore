@@ -17,3 +17,5 @@ test_20160705.txt
 /revdep
 NUL
 *.tar.gz
+.claude/
+Rplots.pdf

@@ -1,15 +1,43 @@
 #SERVER----
-server = function(input, output){
+server = function(input, output, session){
   output$text1 <- renderText({
     paste("You have selected", input$stat)
   })
 
+  # Optional subset of the model frame for the Random/Average draws (issue #32).
+  # Returns a named list suitable for draw(..., varList = ) or NULL when the user
+  # has not chosen a variable to restrict on.
+  subsetVarList <- reactive({
+    if (is.null(input$subsetVar) || identical(input$subsetVar, "") ||
+        is.null(input$subsetVal) || identical(input$subsetVal, "")) {
+      return(NULL)
+    }
+    stats::setNames(list(input$subsetVal), input$subsetVar)
+  })
+
+  # Value picker for the chosen subset variable, populated from the model frame.
+  output$subsetVal_ui <- renderUI({
+    if (is.null(input$subsetVar) || identical(input$subsetVar, "")) {
+      return(NULL)
+    }
+    vals <- sort(unique(as.character(merMod@frame[, input$subsetVar])))
+    selectInput("subsetVal",
+                paste0("Value of ", input$subsetVar, ":"),
+                choices = vals,
+                selected = vals[1])
+  })
+
+  # Resolve the requested scenario into a data.frame of cases to predict from.
+  drawData <- function() {
+    switch(input$newdataType,
+           "orig" = merMod@frame,
+           "mean" = draw(merMod, type = "average", varList = subsetVarList()),
+           "rand" = draw(merMod, type = "random", varList = subsetVarList()),
+           "user" = newdata)
+  }
+
   predInput <- reactive({
-    data <- switch(input$newdataType,
-                   "orig" = merMod@frame,
-                   "mean" = draw(merMod, type = "average"),
-                   "rand" = draw(merMod, type = "random"),
-                   "user" = newdata)
+    data <- drawData()
     cbind(predictInterval(merMod, newdata = data, level = input$alpha/100,
                           type = input$predMetric,
                           include.resid.var = input$resid.var,
@@ -17,7 +45,7 @@ server = function(input, output){
   })
 
   if ("DT" %in% rownames(installed.packages())) {
-    output$dt <- renderDataTable({
+    output$dt <- DT::renderDT({
       predInput()
     })
   } else {
@@ -73,12 +101,33 @@ server = function(input, output){
     merMod@call
   })
 
+  # ---- Model Summary tab (issue #78) ----
+  output$modelInfo <- renderTable({
+    merTools::modelInfo(merMod)
+  }, digits = 3)
+
+  output$summaryCall <- renderPrint({
+    print(merMod@call)
+  })
+
+  output$fixefTab <- renderTable({
+    fe <- lme4::fixef(merMod)
+    data.frame(term = names(fe), estimate = as.numeric(fe),
+               check.names = FALSE)
+  }, digits = 4)
+
+  output$vcTab <- renderPrint({
+    print(lme4::VarCorr(merMod), comp = c("Variance", "Std.Dev."))
+  })
+
+  output$ngrpsTab <- renderTable({
+    ng <- lme4::ngrps(merMod)
+    data.frame(grouping_factor = names(ng), n_levels = as.integer(ng),
+               check.names = FALSE)
+  })
+
   reEffInput <- reactive({
-    data <- switch(input$newdataType,
-                   "orig" = merMod@frame,
-                   "mean" = draw(merMod, type = "average"),
-                   "rand" = draw(merMod, type = "random"),
-                   "user" = newdata)
+    data <- drawData()
     if(nrow(data) > 12){
       warning("Too much data selected, only using top 12 rows.")
       data <- data[1:12, ]
@@ -95,10 +144,10 @@ server = function(input, output){
                        type = input$predMetric,
                        include.resid.var = input$resid.var,
                        n.sims = input$n.sims, stat = input$stat)
-    plotdf$upr <- qnorm(input$alpha/100) * plotdf$AvgFitSE
-    plotdf$lwr <- qnorm(input$alpha/100) * plotdf$AvgFitSE
-    plotdf$upr <- plotdf$AvgFit + plotdf$upr
-    plotdf$lwr <- plotdf$AvgFit - plotdf$lwr
+    # Two-sided interval half-width from the requested level.
+    z <- qnorm(1 - (1 - input$alpha/100) / 2)
+    plotdf$upr <- plotdf$AvgFit + z * plotdf$AvgFitSE
+    plotdf$lwr <- plotdf$AvgFit - z * plotdf$AvgFitSE
     plotdf$bin <- factor(plotdf$bin)
     return(plotdf)
   })
@@ -111,24 +160,25 @@ server = function(input, output){
   })
 
   wiggleData <- reactive({
+    base <- reEffInput()
     valLookup <- unique(merMod@frame[, input$fixef])
-    if(class(valLookup) %in% c("numeric", "integer")){
+    if (is.numeric(valLookup)) {
       newvals <- seq(min(valLookup), max(valLookup), length.out = 20)
-    } else{
-      if(length(valLookup) < 50){
-        newvals <- newvals
-      } else{
-        newvals <- sample(newvals, 50)
-      }
+    } else if (length(valLookup) < 50) {
+      newvals <- valLookup
+    } else {
+      newvals <- sample(valLookup, 50)
     }
-    plotdf <- wiggle(reEffInput(), input$fixef, values = list(newvals))
-    plotdf <- cbind(plotdf, predictInterval(merMod, newdata=plotdf,
+    plotdf <- wiggle(base, input$fixef, values = list(newvals))
+    plotdf <- cbind(plotdf, predictInterval(merMod, newdata = plotdf,
                                             type = input$predMetric,
                                             level = input$alpha/100,
                                             include.resid.var = input$resid.var,
                                             n.sims = input$n.sims, stat = input$stat))
     plotdf$X <- plotdf[, input$fixef]
-    plotdf$case <- rep(1:length(newvals), length = nrow(reEffInput()))
+    # wiggle() stacks the base data once per value, so each base observation
+    # (the "case" we facet on) repeats across the value blocks.
+    plotdf$case <- rep(seq_len(nrow(base)), times = length(newvals))
     return(plotdf)
   })
 
@@ -149,4 +199,3 @@ server = function(input, output){
   })
 
   }
-

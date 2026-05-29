@@ -137,16 +137,122 @@ plotFEsim <- function(data, level=0.95, stat = "median", sd = TRUE,
     data[, "ymin"] <- exp(data[, "ymin"])
     hlineInt <- 1
   }
+  # Flag terms whose interval excludes the null line so they can be highlighted,
+  # mirroring the convention used by plotREsim() (#85).
+  data[, "sig"] <- data[, "ymin"] > hlineInt | data[, "ymax"] < hlineInt
   xvar <- "term"
   data$term <- as.character(data$term)
   data$term <- factor(data$term , levels = data[order(data[, stat]), 1])
-  p <- ggplot(aes(x = .data[[xvar]], y = .data[[stat]], ymax = .data[["ymax"]], ymin = .data[["ymin"]]), data = data) +
-    geom_hline(yintercept = hlineInt, color = I("red")) +
-    geom_point(size=I(3)) +
+  p <- ggplot(aes(x = .data[[xvar]], y = .data[[stat]], ymax = .data[["ymax"]],
+                  ymin = .data[["ymin"]], color = .data[["sig"]]), data = data) +
+    geom_hline(yintercept = hlineInt, color = "red", linetype = 2) +
+    geom_point(size = I(3)) +
+    scale_color_manual(values = c(`FALSE` = "grey60", `TRUE` = "black"),
+                       guide = "none") +
     coord_flip() +
-    theme_bw()
+    labs(x = "Fixed effect", y = "Estimate") +
+    theme_minimal(base_size = 12) +
+    theme(panel.grid.minor = element_blank())
   if (sd) {
     p <- p + geom_errorbar(width = 0.2)
+  }
+  p
+}
+
+#' @title Plot the impact of grouping-factor levels on predictions
+#' @name plotREimpact
+#' @description Plot the output of one or more \code{\link{REimpact}} calls on a
+#' single chart. Each point is the weighted-average fitted value for a bin of
+#' the expected-rank distribution of a grouping factor, with a confidence
+#' interval derived from the weighted standard error. Supplying a named list of
+#' \code{REimpact} results overlays them on the same axes -- for example to
+#' compare the influence of two different grouping factors, or the same factor
+#' across two models -- which previously required hand-assembling the data
+#' frames (#84).
+#' @param data either a single data.frame produced by \code{\link{REimpact}},
+#' or a named list of such data.frames. When a named list is supplied the names
+#' are used to colour and label the series.
+#' @param level the width of the confidence interval (default 0.95).
+#' @param facet logical, facet the plot by \code{case} (default \code{TRUE}).
+#' @param point_size numeric size of the plotted central points.
+#' @return a ggplot2 object.
+#' @seealso \code{\link{REimpact}}
+#' @examples
+#' \donttest{
+#'  m1 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+#'  imp <- REimpact(m1, newdata = sleepstudy[1, ], groupFctr = "Subject",
+#'                  breaks = 4)
+#'  plotREimpact(imp)
+#'
+#'  # Compare two grouping factors on the same chart
+#'  g1 <- lmer(y ~ lectage + studage + (1 | d) + (1 | s), data = InstEval)
+#'  d_eff <- REimpact(g1, newdata = InstEval[1, ], groupFctr = "d", breaks = 4)
+#'  s_eff <- REimpact(g1, newdata = InstEval[1, ], groupFctr = "s", breaks = 4)
+#'  plotREimpact(list("Instructor (d)" = d_eff, "Student (s)" = s_eff))
+#'  }
+#' @export
+#' @import ggplot2
+plotREimpact <- function(data, level = 0.95, facet = TRUE, point_size = 2.5) {
+  if (!is.numeric(level) || length(level) != 1 || level <= 0 || level >= 1) {
+    stop("`level` must be a single number between 0 and 1.", call. = FALSE)
+  }
+  # Normalize input to a single data.frame carrying a `series` label.
+  if (is.data.frame(data)) {
+    data[["series"]] <- "REimpact"
+    multi <- FALSE
+  } else if (is.list(data)) {
+    if (length(data) == 0L) stop("`data` is an empty list.", call. = FALSE)
+    nm <- names(data)
+    if (is.null(nm) || any(nm == "" | is.na(nm))) {
+      nm <- paste0("series ", seq_along(data))
+    }
+    data <- do.call(rbind, Map(function(d, s) {
+      if (!is.data.frame(d)) {
+        stop("Each element of `data` must be a REimpact() data.frame.",
+             call. = FALSE)
+      }
+      d[["series"]] <- s
+      d
+    }, data, nm))
+    multi <- length(unique(data[["series"]])) > 1L
+  } else {
+    stop("`data` must be a REimpact() data.frame or a (named) list of them.",
+         call. = FALSE)
+  }
+
+  req_cols <- c("case", "bin", "AvgFit", "AvgFitSE")
+  missing_cols <- setdiff(req_cols, names(data))
+  if (length(missing_cols) > 0) {
+    stop("`data` does not look like REimpact() output; missing column(s): ",
+         paste(missing_cols, collapse = ", "), call. = FALSE)
+  }
+
+  z <- qnorm(1 - (1 - level) / 2)
+  data[["ymin"]] <- data[["AvgFit"]] - z * data[["AvgFitSE"]]
+  data[["ymax"]] <- data[["AvgFit"]] + z * data[["AvgFitSE"]]
+  data[["bin"]] <- factor(data[["bin"]])
+
+  p <- ggplot(data, aes(x = .data[["bin"]], y = .data[["AvgFit"]],
+                        ymin = .data[["ymin"]], ymax = .data[["ymax"]])) +
+    labs(x = "Expected rank bin (low to high)",
+         y = "Average fitted value",
+         title = "Impact of grouping-factor levels on the outcome") +
+    theme_minimal(base_size = 12) +
+    theme(panel.grid.minor = element_blank(),
+          legend.position = "top")
+
+  if (multi) {
+    dodge <- position_dodge(width = 0.5)
+    p <- p +
+      geom_pointrange(aes(color = .data[["series"]]), position = dodge,
+                      size = point_size / 4, fatten = point_size) +
+      labs(color = NULL)
+  } else {
+    p <- p + geom_pointrange(size = point_size / 4, fatten = point_size)
+  }
+
+  if (facet) {
+    p <- p + facet_wrap(~ case)
   }
   p
 }

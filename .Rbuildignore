@@ -16,6 +16,9 @@ readmeplot
 ^vignettes/marginal_effects\.Rmd\.orig$
 ^vignettes/Using_predictInterval\.Rmd\.orig$
 ^vignettes/imputation\.Rmd\.orig$
+^vignettes/contextual_effects\.Rmd\.orig$
+^vignettes/precompile\.R$
+^TODO\.md$
 ^CRAN-RELEASE$
 ^\.github$
 ^CRAN-SUBMISSION$

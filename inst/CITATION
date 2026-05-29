@@ -1,4 +1,15 @@
-citHeader("To cite merTools in publications, please use:")
+citHeader("To cite merTools in publications, please cite the package itself.")
+
+# Derive the version/year from the installed package metadata so the citation
+# stays current across releases instead of hard-coding a stale value.
+vers <- meta$Version
+if (is.null(vers)) vers <- "1.0.0"
+year <- meta$Date
+if (is.null(year) || !nzchar(year)) {
+  year <- format(Sys.Date(), "%Y")
+} else {
+  year <- sub("-.*", "", year)
+}
 
 bibentry(
   bibtype  = "Manual",
@@ -7,7 +18,19 @@ bibentry(
     person("Jared E.", "Knowles"),
     person("Carl",     "Frederick")
   ),
-  year     = "2024",
-  note     = "R package version 0.9.0",
+  year     = year,
+  note     = paste("R package version", vers),
   url      = "https://CRAN.R-project.org/package=merTools"
+)
+
+citFooter(
+  "merTools implements the simulation-based prediction-interval framework of ",
+  "Gelman and Hill (2007), popularized by the 'arm' package, and is designed ",
+  "to complement lme4::bootMer(). If you use predictInterval(), please also ",
+  "consider citing:\n\n",
+  "  Gelman, A. and Hill, J. (2007). Data Analysis Using Regression and ",
+  "Multilevel/Hierarchical Models. Cambridge University Press.\n\n",
+  "  Bates, D., Maechler, M., Bolker, B., and Walker, S. (2015). Fitting ",
+  "Linear Mixed-Effects Models Using lme4. Journal of Statistical Software, ",
+  "67(1), 1-48."
 )

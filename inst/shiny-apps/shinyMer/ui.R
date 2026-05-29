@@ -5,18 +5,24 @@ shinyUI(fluidPage(
     shiny::sidebarPanel(
       shiny::radioButtons("newdataType",
                           "Simulated data scenario",
-                          choices=df.choices,
-                          selected=NULL),
-      #                  conditionalPanel(condition = "input.newdataType!='orig'",
-      #                                   selectInput("filter", "Filter",
-      #                                               choices = names(merMod@frame))
-      #                                   ),
+                          choices = df.choices,
+                          selected = NULL),
+      # Optional subset of the model frame to draw a random/average case from
+      # (issue #32). Only relevant for the "Random Obs" / "Average Obs" draws.
+      conditionalPanel(
+        condition = "input.newdataType == 'rand' || input.newdataType == 'mean'",
+        shiny::selectInput("subsetVar",
+                           "Restrict draw to a subset (optional):",
+                           choices = subset.choices,
+                           selected = ""),
+        shiny::uiOutput("subsetVal_ui")
+      ),
       shiny::numericInput("n.sims",
-                          label="Simulations (Max=1,000)",
-                          value=100,
-                          min=1,
-                          max=1000),
-      conditionalPanel(condition="input.conditionedPanels==3",
+                          label = "Simulations (Max=1,000)",
+                          value = 100,
+                          min = 1,
+                          max = 1000),
+      conditionalPanel(condition = "input.conditionedPanels==3",
                        helpText("Here you can compare impact of
                                 changing input variables on the
                                 outcome variable for selected cases."),
@@ -32,35 +38,35 @@ shinyUI(fluidPage(
                                    selected = NULL)
                        ),
       shiny::numericInput("alpha",
-                          label="Credible Interval (%)",
-                          value=95,
-                          min=0,
-                          max=100),
+                          label = "Credible Interval (%)",
+                          value = 95,
+                          min = 0,
+                          max = 100),
       shiny::radioButtons("stat",
                           "Measure of central tendency",
-                          choices=c("Median"="median", "Mean"="mean"),
-                          selected=NULL),
+                          choices = c("Median" = "median", "Mean" = "mean"),
+                          selected = NULL),
       shiny::radioButtons("predMetric",
                           "Prediction metric",
-                          choices=c("Linear Predictor"="linear.prediction",
-                                    "Probability"="probability"),
-                          selected=NULL),
+                          choices = c("Linear Predictor" = "linear.prediction",
+                                    "Probability" = "probability"),
+                          selected = NULL),
       shiny::checkboxInput("resid.var",
-                           label="Include Residual Variation",
-                           value=TRUE)
+                           label = "Include Residual Variation",
+                           value = TRUE)
     ),
     shiny::mainPanel(
-      shiny::tabsetPanel(type="tabs",
+      shiny::tabsetPanel(type = "tabs",
                          shiny::tabPanel("Prediction uncertainty",
                                          shiny::h3("Prediction Intervals:"),
                                          plotOutput("predPlot"),
                                          shiny::h3("All Predictions"),
                                          if ("DT" %in% rownames(installed.packages())) {
-                                            dataTableOutput("dt") } else {
-                                            tableOutput("shiny")
+                                            DT::DTOutput("dt") } else {
+                                            tableOutput("dt")
                                             },
                                          shiny::downloadButton("downloadData", "Download predict interval data")
-                                         ,value = 1
+                                         , value = 1
                          ),
                          shiny::tabPanel("Parameters",
                                          shiny::h3("Original call"),
@@ -75,6 +81,18 @@ shinyUI(fluidPage(
                                          plotOutput("gPlot"),
                                          shiny::h3("Fixef Effect Impact"),
                                          plotOutput("wigglePlot"), value = 3
+                         ),
+                         shiny::tabPanel("Model Summary",
+                                         shiny::h3("Model overview"),
+                                         tableOutput("modelInfo"),
+                                         shiny::h3("Original call"),
+                                         verbatimTextOutput("summaryCall"),
+                                         shiny::h3("Fixed effects"),
+                                         tableOutput("fixefTab"),
+                                         shiny::h3("Random effects (variances & correlations)"),
+                                         verbatimTextOutput("vcTab"),
+                                         shiny::h3("Grouping factors"),
+                                         tableOutput("ngrpsTab"), value = 4
                          ), id = "conditionedPanels"
       )
     )

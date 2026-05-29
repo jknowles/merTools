@@ -118,7 +118,7 @@ ten for subject 1, the next 10 are days one through ten for subject 2 and so on.
 The example model that we are estimating below estimates random intercepts and a
 random slope for the number of days.
 
-###Step 1: Estimating the model and using `predictInterval()`
+### Step 1: Estimating the model and using `predictInterval()`
 
 First, we will load the required packages and data and estimate the model:
 
@@ -126,7 +126,7 @@ First, we will load the required packages and data and estimate the model:
 set.seed(271828)
 data(sleepstudy)
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
-display(fm1)
+arm::display(fm1)
 ```
 
 Then, calculate prediction intervals using `predictInterval()`. The `predictInterval`
@@ -186,7 +186,7 @@ of subjects after experiencing sleep deprivation:
 
 ```{r prepSleep, message=FALSE, warning=FALSE}
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
-display(fm1)
+arm::display(fm1)
 ```
 
 Let's use the model to give an interval for the true average body fat of a
@@ -273,7 +273,7 @@ these data. Because `predictInterval()` is incorporating uncertainty in the CMFE
 (but not the variance parameters of the random coefficients themselves), the
 Days slopes are closer to the overall or pooled regression slope.
 
-###Step 3: Comparison with `lme4::bootMer()`
+### Step 3: Comparison with `lme4::bootMer()`
 
 As quoted above, the developers of lme4 suggest that users interested in
 uncertainty estimates around their predictions use `lme4::bootmer()` to calculate
@@ -334,7 +334,7 @@ re-estimating the group terms, but by refitting the model, they are also taking
 into account the conditional variance of these terms, or `theta`, and provide
 tighter prediction intervals than the `predictInterval` method.
 
-####Step 3b: `lme4::bootMer()` method 2
+#### Step 3b: `lme4::bootMer()` method 2
 
 ```{r bootMer.2, fig.width=7, fig.height=4, fig.align="center"}
 ##lme4::bootMer() method 2
@@ -387,7 +387,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
 
 These results are virtually identical to those above.
 
-#### Step 3c: Comparison to rstanarm
+#### Step 3d: Comparison to rstanarm
 
 ```{r echo=FALSE, message=FALSE, eval = rstanarm_eval}
 library(rstanarm)

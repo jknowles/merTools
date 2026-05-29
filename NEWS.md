@@ -1,9 +1,91 @@
 # NEWS
 
-## merTools 0.9.0 (unreleased)
+## merTools 1.0.0
+
+This is the 1.0 long-term-support release. It resolves the remaining open
+issues, fixes a correctness bug in `predictInterval()` for nested random
+effects, repairs and extends the `shinyMer()` explorer, adds a new
+`plotREimpact()` visualization, refreshes the documentation, and tidies the
+test suite for low-maintenance, long-term use.
+
+### New Features
+
+- **New `plotREimpact()` function for visualizing `REimpact()` output (#84,
+  #85).** Plots the weighted-average fitted value for each expected-rank bin of
+  a grouping factor, with confidence intervals, faceted by case. Passing a
+  *named list* of `REimpact()` results overlays them on shared axes so the
+  influence of different grouping factors (or the same factor across models)
+  can be compared directly — previously this required hand-assembling the data
+  frames. Uses a clean `theme_minimal()` look.
+- **`plotFEsim()` now highlights significant fixed effects (#85).** Terms whose
+  interval excludes the null line are drawn in solid black and the rest in
+  grey, matching the convention already used by `plotREsim()`, on a cleaner
+  `theme_minimal()` canvas with labelled axes.
+- **`shinyMer()` gained a "Model Summary" tab (#78).** The interactive
+  explorer now opens a dedicated tab summarizing the fitted model: the
+  `modelInfo()` overview (observations, grouping factors, AIC, residual
+  sigma), the original model call, the fixed-effect estimates, the random
+  effect variances/correlations (`VarCorr`), and the number of levels per
+  grouping factor (`ngrps`).
+- **`shinyMer()` can now restrict the Random / Average draw to a subset of
+  the data (#32).** When the "Random Obs" or "Average Obs" scenario is
+  selected, a sidebar control lets you pick a model-frame variable and value
+  to filter on; the chosen case is drawn from that subset (via the existing
+  `draw(..., varList = )` machinery), enabling much richer on-the-fly
+  exploration of specific cases.
+
+### Documentation
+
+- **New "Exploring Contextual Effects with merTools" vignette (#136).** A fresh,
+  worked example using the bundled `hsb` data (student SES vs. school-mean SES)
+  that separates within-group and contextual effects, mirroring the easystats
+  `modelbased` "effects in context" article (cited). It demonstrates `FEsim()`/
+  `plotFEsim()`, `wiggle()` + `predictInterval()`, and the new `plotREimpact()`
+  on a single, self-contained model.
+- **Rebuilt the "Prediction Intervals" vignette and fixed its formatting
+  (#116).** Several section headers were missing the space after `#` (so they
+  rendered as body text) and two sub-sections were both numbered "Step 3c";
+  these are corrected. The `predictInterval()`-vs-`bootMer()` comparison
+  figure, which no longer matched the surrounding text, has been regenerated
+  with the current code and now shows the methods agreeing closely. A latent
+  `display()` call (from `arm`, which was not attached) was qualified to
+  `arm::display()`.
+- **Improved package citation and acknowledged influences (#137).**
+  `inst/CITATION` now derives its version and year from the package metadata
+  (rather than hard-coding a stale version), lists all package authors, and a
+  citation footer points users to the methodological foundations —
+  Gelman and Hill (2007), the `arm` package's `sim()`, and `lme4` (Bates et
+  al. 2015). The package-level help page (`?merTools`) gained matching
+  "Influences and acknowledgements" and "References" sections.
 
 ### Bug Fixes
 
+- **Fixed two `shinyMer()` defects in the "Substantive Effect" tab.** The
+  fixed-effect impact ("wiggle") plot crashed for any non-numeric fixed
+  effect (`object 'newvals' not found`), and the numeric/factor branch used
+  `class(x) %in% ...` inside `if()`, which errors with "the condition has
+  length > 1" for multi-class objects (e.g. ordered factors) on R >= 4.2.
+  Both are corrected (`is.numeric()` dispatch, and factor/character values
+  now wiggle across their observed levels), and the per-case faceting index
+  is computed correctly. The app's data table was also migrated from the
+  deprecated `shiny::renderDataTable()` to `DT::renderDT()`, the server now
+  declares a `session` argument, and the substantive-effect interval uses a
+  correct two-sided width.
+
+- **Fixed non-reproducible `predictInterval()` for partially-observed nested /
+  interaction random effects (#124).** For a model such as
+  `y ~ 1 + (1 | a / b)`, a prediction frame mixing observed and unobserved
+  levels of the interaction grouping factor (`a:b`) returned seed-dependent
+  point estimates, and batch predictions disagreed with row-by-row
+  predictions. The mapping from the random-effect model matrix back to a
+  grouping level used `max.col()`, which returns a column even for an all-zero
+  row (an unobserved interaction level) and breaks the resulting tie *at
+  random* — so an unobserved level silently borrowed a randomly chosen
+  observed level's random effect. All-zero rows are now detected and routed
+  through the existing new-level path, which zeroes that random-effect term's
+  contribution so the prediction falls back to the fixed effects plus any
+  observed higher-level random effects, exactly as the out-of-sample warning
+  describes. Observed-level predictions are bit-for-bit unchanged.
 - **Restored single RNG stream in `predictInterval()`.** The refactor of
   `predictInterval()` into component helpers inadvertently had each helper
   (`simulate_random_effects()`, `simulate_fixed_effects()`) call
