@@ -1,13 +1,15 @@
 ---
 title: "Prediction Intervals from merMod Objects"
 author: "Jared Knowles and Carl Frederick"
-date: "2026-05-29"
+date: "Written 2015-05-21 (last updated 2026-05-29)"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Prediction Intervals from merMod Objects}
   %\VignetteEncoding{UTF-8}
 ---
+
+<style type="text/css">pre, pre code { white-space: pre-wrap !important; word-break: break-word; overflow-wrap: anywhere; }</style>
 
 
 
@@ -307,6 +309,7 @@ PI.arm <- data.frame(
 comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
                    data.frame(Predict.Method="arm::sim()", x=(1:nrow(PI.arm))+0.1, PI.arm))
 
+comp.data$Predict.Method <- factor(comp.data$Predict.Method, levels = unique(comp.data$Predict.Method))
 ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
   geom_point() +
   geom_linerange() +
@@ -372,6 +375,7 @@ PI.boot1 <- sumBoot(boot1)
 comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
                    data.frame(Predict.Method="lme4::bootMer() - Method 1", x=(1:nrow(PI.boot1))+0.1, PI.boot1))
 
+comp.data$Predict.Method <- factor(comp.data$Predict.Method, levels = unique(comp.data$Predict.Method))
 ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
   geom_point() +
   geom_linerange() +
@@ -385,13 +389,17 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
 <p class="caption">plot of chunk bootMer.1</p>
 </div>
 
-The intervals produced by `predictInterval`, represented in green, cover the
-point estimates produced by `bootMer` in every case for these 30 observations.
-Additionally, in almost every case, the `predictInterval` encompasses the entire
-interval presented by `bootMer`. Here, the estimates produced by `bootMer` are
-re-estimating the group terms, but by refitting the model, they are also taking
-into account the conditional variance of these terms, or `theta`, and provide
-tighter prediction intervals than the `predictInterval` method.
+Method 1 (`use.u = FALSE`) re-simulates the random effects on every
+bootstrap replicate instead of conditioning on the values estimated from the
+data, so its point predictions are pulled toward the population average and do
+*not* track individual subjects. For subjects whose intercept is far from the
+mean (indices 11-30 above -- subjects 309 and 310, the lowest-reaction-time
+subjects) the `bootMer` points therefore sit well above the subject-specific
+predictions from `predictInterval()` (shown in green), which condition on the
+estimated random effects. This divergence is expected: the two methods are
+answering slightly different questions. The conditional comparisons in Methods
+2 and 3 below, which hold the random effects fixed (`use.u = TRUE`), align
+closely with `predictInterval()`.
 
 #### Step 3b: `lme4::bootMer()` method 2
 
@@ -407,6 +415,7 @@ PI.boot2 <- sumBoot(boot2)
 comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
                    data.frame(Predict.Method="lme4::bootMer() - Method 2", x=(1:nrow(PI.boot2))+0.1, PI.boot2))
 
+comp.data$Predict.Method <- factor(comp.data$Predict.Method, levels = unique(comp.data$Predict.Method))
 ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
   geom_point() +
   geom_linerange() +
@@ -439,6 +448,7 @@ PI.boot3 <- sumBoot(boot3)
 comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
                    data.frame(Predict.Method="lme4::bootMer() - Method 3", x=(1:nrow(PI.boot3))+0.1, PI.boot3))
 
+comp.data$Predict.Method <- factor(comp.data$Predict.Method, levels = unique(comp.data$Predict.Method))
 ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
   geom_point() +
   geom_linerange() +
@@ -469,15 +479,15 @@ PI.time.stan <- system.time({
   PI.stan <- cbind(apply(zed, 2, median), central_intervals(zed, prob=0.95))
 })
 #> Chain 1: 
-#> Chain 1: Gradient evaluation took 5.8e-05 seconds
-#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.58 seconds.
+#> Chain 1: Gradient evaluation took 5.5e-05 seconds
+#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.55 seconds.
 #> Chain 1: Adjust your expectations accordingly!
 #> Chain 1: 
 #> Chain 1: 
 #> Chain 1: 
-#> Chain 1:  Elapsed Time: 4.159 seconds (Warm-up)
-#> Chain 1:                1.226 seconds (Sampling)
-#> Chain 1:                5.385 seconds (Total)
+#> Chain 1:  Elapsed Time: 4.058 seconds (Warm-up)
+#> Chain 1:                1.222 seconds (Sampling)
+#> Chain 1:                5.28 seconds (Total)
 #> Chain 1:
 
 
@@ -512,6 +522,7 @@ PI.stan <- PI.stan[, c("fit", "upr", "lwr")]
 comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
                    data.frame(Predict.Method="rstanArm", x=(1:nrow(PI.stan))+0.1, PI.stan))
 
+comp.data$Predict.Method <- factor(comp.data$Predict.Method, levels = unique(comp.data$Predict.Method))
 ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
   geom_point() +
   geom_linerange() +
@@ -541,12 +552,12 @@ all five methods for calculating prediction intervals for `merMod` objects.
 
 |                         | user.self| sys.self| elapsed|
 |:------------------------|---------:|--------:|-------:|
-|predictInterval()        |     0.213|    0.043|   0.263|
-|arm::sim()               |     0.440|    0.000|   0.442|
-|lme4::bootMer()-Method 1 |     4.213|    0.001|   4.234|
-|lme4::bootMer()-Method 2 |     4.299|    0.002|   4.342|
-|lme4::bootMer()-Method 3 |     4.000|    0.000|   4.002|
-|rstanarm:predict         |     5.927|    0.009|   5.938|
+|predictInterval()        |     0.196|    0.000|   0.196|
+|arm::sim()               |     0.386|    0.000|   0.386|
+|lme4::bootMer()-Method 1 |     3.886|    0.000|   3.889|
+|lme4::bootMer()-Method 2 |     3.699|    0.000|   3.700|
+|lme4::bootMer()-Method 3 |     3.711|    0.000|   3.711|
+|rstanarm:predict         |     5.765|    0.009|   5.781|
 
 
 

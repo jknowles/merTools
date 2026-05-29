@@ -1,13 +1,15 @@
 ---
 title: "Exploring Contextual Effects with merTools"
 author: "Jared Knowles and Carl Frederick"
-date: "`r Sys.Date()`"
+date: "Written 2026-05-29 (last updated `r Sys.Date()`)"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Exploring Contextual Effects with merTools}
   %\VignetteEncoding{UTF-8}
 ---
+
+<style type="text/css">pre, pre code { white-space: pre-wrap !important; word-break: break-word; overflow-wrap: anywhere; }</style>
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide'}
 library(ggplot2); library(knitr); library(merTools)

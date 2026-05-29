@@ -1,13 +1,15 @@
 ---
 title: "Prediction Intervals from merMod Objects"
 author: "Jared Knowles and Carl Frederick"
-date: "`r Sys.Date()`"
+date: "Written 2015-05-21 (last updated `r Sys.Date()`)"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Prediction Intervals from merMod Objects}
   %\VignetteEncoding{UTF-8}
 ---
+
+<style type="text/css">pre, pre code { white-space: pre-wrap !important; word-break: break-word; overflow-wrap: anywhere; }</style>
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide', cache=FALSE}
 library(ggplot2); library(knitr); library(merTools)
@@ -256,6 +258,7 @@ PI.arm <- data.frame(
 comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
                    data.frame(Predict.Method="arm::sim()", x=(1:nrow(PI.arm))+0.1, PI.arm))
 
+comp.data$Predict.Method <- factor(comp.data$Predict.Method, levels = unique(comp.data$Predict.Method))
 ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
   geom_point() +
   geom_linerange() +
@@ -317,6 +320,7 @@ PI.boot1 <- sumBoot(boot1)
 comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
                    data.frame(Predict.Method="lme4::bootMer() - Method 1", x=(1:nrow(PI.boot1))+0.1, PI.boot1))
 
+comp.data$Predict.Method <- factor(comp.data$Predict.Method, levels = unique(comp.data$Predict.Method))
 ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
   geom_point() +
   geom_linerange() +
@@ -326,13 +330,17 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
 
 ```
 
-The intervals produced by `predictInterval`, represented in green, cover the
-point estimates produced by `bootMer` in every case for these 30 observations.
-Additionally, in almost every case, the `predictInterval` encompasses the entire
-interval presented by `bootMer`. Here, the estimates produced by `bootMer` are
-re-estimating the group terms, but by refitting the model, they are also taking
-into account the conditional variance of these terms, or `theta`, and provide
-tighter prediction intervals than the `predictInterval` method.
+Method 1 (`use.u = FALSE`) re-simulates the random effects on every
+bootstrap replicate instead of conditioning on the values estimated from the
+data, so its point predictions are pulled toward the population average and do
+*not* track individual subjects. For subjects whose intercept is far from the
+mean (indices 11-30 above -- subjects 309 and 310, the lowest-reaction-time
+subjects) the `bootMer` points therefore sit well above the subject-specific
+predictions from `predictInterval()` (shown in green), which condition on the
+estimated random effects. This divergence is expected: the two methods are
+answering slightly different questions. The conditional comparisons in Methods
+2 and 3 below, which hold the random effects fixed (`use.u = TRUE`), align
+closely with `predictInterval()`.
 
 #### Step 3b: `lme4::bootMer()` method 2
 
@@ -347,6 +355,7 @@ PI.boot2 <- sumBoot(boot2)
 comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
                    data.frame(Predict.Method="lme4::bootMer() - Method 2", x=(1:nrow(PI.boot2))+0.1, PI.boot2))
 
+comp.data$Predict.Method <- factor(comp.data$Predict.Method, levels = unique(comp.data$Predict.Method))
 ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
   geom_point() +
   geom_linerange() +
@@ -375,6 +384,7 @@ PI.boot3 <- sumBoot(boot3)
 comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
                    data.frame(Predict.Method="lme4::bootMer() - Method 3", x=(1:nrow(PI.boot3))+0.1, PI.boot3))
 
+comp.data$Predict.Method <- factor(comp.data$Predict.Method, levels = unique(comp.data$Predict.Method))
 ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
   geom_point() +
   geom_linerange() +
@@ -424,6 +434,7 @@ PI.stan <- PI.stan[, c("fit", "upr", "lwr")]
 comp.data <- rbind(data.frame(Predict.Method="predictInterval()", x=(1:nrow(PI))-0.1, PI),
                    data.frame(Predict.Method="rstanArm", x=(1:nrow(PI.stan))+0.1, PI.stan))
 
+comp.data$Predict.Method <- factor(comp.data$Predict.Method, levels = unique(comp.data$Predict.Method))
 ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data[c(1:30,181:210),]) +
   geom_point() +
   geom_linerange() +
