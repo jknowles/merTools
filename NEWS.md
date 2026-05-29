@@ -1,6 +1,4 @@
-# NEWS
-
-## merTools 1.0.0
+# merTools 1.0.0
 
 This is the 1.0 long-term-support release. It resolves the remaining open
 issues, fixes a correctness bug in `predictInterval()` for nested random
@@ -8,7 +6,7 @@ effects, repairs and extends the `shinyMer()` explorer, adds a new
 `plotREimpact()` visualization, refreshes the documentation, and tidies the
 test suite for low-maintenance, long-term use.
 
-### New Features
+## New Features
 
 - **New `plotREimpact()` function for visualizing `REimpact()` output (#84,
   #85).** Plots the weighted-average fitted value for each expected-rank bin of
@@ -34,7 +32,7 @@ test suite for low-maintenance, long-term use.
   `draw(..., varList = )` machinery), enabling much richer on-the-fly
   exploration of specific cases.
 
-### Documentation
+## Documentation
 
 - **New "Exploring Contextual Effects with merTools" vignette (#136).** A fresh,
   worked example using the bundled `hsb` data (student SES vs. school-mean SES)
@@ -58,7 +56,7 @@ test suite for low-maintenance, long-term use.
   al. 2015). The package-level help page (`?merTools`) gained matching
   "Influences and acknowledgements" and "References" sections.
 
-### Bug Fixes
+## Bug Fixes
 
 - **Fixed two `shinyMer()` defects in the "Substantive Effect" tab.** The
   fixed-effect impact ("wiggle") plot crashed for any non-numeric fixed
@@ -138,7 +136,7 @@ test suite for low-maintenance, long-term use.
   `newdata` for `predict()` and `predictInterval()`, which ignore the
   response column.
 
-### Technical Improvements
+## Technical Improvements
 
 - The residual variance logic now correctly distinguishes between:
   - **LMMs**: Gaussian residual variance via `rnorm(N, yhat, sigma)` from gamma-distributed sigma
@@ -148,7 +146,7 @@ test suite for low-maintenance, long-term use.
 - When `include.resid.var = TRUE` and GLMM with `type = "linear.prediction"`: Returns linear
   predictor without Gaussian noise (correct behavior - GLMMs don't have additive Gaussian noise)
 
-### Test Infrastructure
+## Test Infrastructure
 
 - **Added `tests/comparisons/predictInterval-regression.R`**, a standalone
   cross-version numeric regression harness. It pins a canonical set of LMM
@@ -174,15 +172,15 @@ test suite for low-maintenance, long-term use.
   numeric-equality check against a value calibrated to an older seed, into
   behavioral assertions (type, length, bounds).
 
-### CI
+## CI
 
 - Bumped `actions/checkout` to `@v5` and set
   `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` on both workflows to address
   the GitHub Actions Node.js 20 deprecation (scheduled for 2026-09-16).
 
-## merTools 0.6.5
+# merTools 0.6.5
 
-### Code Architecture Improvements
+## Code Architecture Improvements
 
 - Refactored `predictInterval()` into modular component functions for improved maintainability and testability. The main function now orchestrates five internal helper functions:
   - `simulate_residual_variance()` - Draws residual standard deviation samples from the posterior
@@ -195,34 +193,34 @@ test suite for low-maintenance, long-term use.
 - Added comprehensive unit tests for all helper functions (43 new tests)
 - All existing tests pass without modification, ensuring numeric accuracy is preserved
 
-### Benefits
+## Benefits
 
 - **Easier maintenance**: Each component function has a single responsibility and can be updated independently
 - **Better testability**: Individual simulation components can now be unit tested in isolation
 - **Improved readability**: The main `predictInterval()` function now clearly shows the high-level algorithm flow
 - **Foundation for future enhancements**: The modular architecture makes it easier to add new features or optimization strategies
 
-### Notes
+## Notes
 
 - The helper functions are internal and not exported; the public API remains unchanged
 - Parallelization support is preserved in `simulate_random_effects()`
 - Seed reproducibility is maintained by setting the random seed once at the start of `predictInterval()`
 
-## merTools 0.6.4
+# merTools 0.6.4
 
 - Maintenance release to merge @DavisVaughan changes to accommodate upstream changes in `vctrs` package impacting `dplyr::bind_rows()` usage in `REsim` (#133)
 
-## merTools 0.6.3
+# merTools 0.6.3
 
 - Maintenance release to fix crossreference issues with function documentation
 
-## merTools 0.6.2
+# merTools 0.6.2
 
 - Maintenance release to fix minor issues with function documentation
 - Fix #130 by avoiding conflict with `vcov` in the `merDeriv` package
 - Upgrade package test infrastructure to 3e testthat specification
 
-## merTools 0.6.1
+# merTools 0.6.1
 
 - Maintenance release to keep package listed on CRAN
 - Fix a small bug where parallel code path is run twice (#126)
@@ -231,27 +229,27 @@ test suite for low-maintenance, long-term use.
 - Speed up PI using @bbolker pull request (#120)
 - Updated package maintainer contact information
 
-## merTools 0.5.2
+# merTools 0.5.2
 
 - Streamline vignette building to be precompiled and move tests to limit burden on CRAN check
 - Switch dependency from `broom` to `broom.mixed` because of upstream package reorganization
 
-## merTools 0.5.1
+# merTools 0.5.1
 
-### Bug fixes
+## Bug fixes
 
 - Fixed an issue where `averageObs` could not be calculated when model weights were specified in the
 original model (closes #110)
 
-## merTools 0.5.0
+# merTools 0.5.0
 
-### New Features
+## New Features
 
 - `subBoot` now works with `glmerMod` objects as well
 - `reMargins` a new function that allows the user to marginalize the prediction over breaks in the
 distribution of random effect distributions, see `?reMargins` and the new `reMargins` vignette (closes #73)
 
-### Bug fixes
+## Bug fixes
 
 - Fixed an issue where known convergence errors were issuing warnings and causing the test suite
 to not work
@@ -260,16 +258,16 @@ to be predicted (#101)
 - Fixed an issue with shinyMer not working with substantive fixed effects (#93)
 
 
-## merTools 0.4.2
+# merTools 0.4.2
 
-### New Features
+## New Features
 
 - Parallel fitting of `merModLists` is now supported using the `future.apply`
 package and the `future_lapply` functions, optionally
 - Reduced package installation surface by eliminating unnecessary packages
 in the `Suggests` field
 
-### Bug fixes
+## Bug fixes
 
 - Fixed a bug (#94) where `predictInterval()` would return a data.frame of the
 wrong dimensions when predicting a single row of observations for a `glm`
@@ -277,22 +275,22 @@ wrong dimensions when predicting a single row of observations for a `glm`
 - Switched from `dontrun` to `donttest` for long-running examples (CRAN compliance)
 - Fixed and made more clear the generics applying to `merModList` objects (#92)
 
-## merTools 0.4.1
+# merTools 0.4.1
 
-### New Features
+## New Features
 
 - Standard errors reported by `merModList` functions now apply the Rubin
 correction for multiple imputation
 
-### Bug fixes
+## Bug fixes
 - Contribution by Alex Whitworth (@alexWhitworth) adding error checking to plotting
 functions
 - The vignettes have been shortened and unit tests reorganized to facilitate
 Travis-CI builds and reduce CRAN build burden
 
-## merTools 0.4.0
+# merTools 0.4.0
 
-### New Features
+## New Features
 - Added vignette on using multilevel models with multiply imputed data
 - Added `fixef` and `ranef` generics for `merModList` objects
 - Added `fastdisp` generic for `merModList`
@@ -303,7 +301,7 @@ imputation vignette
 - Added `modelInfo` generic for `merMod` objects that provides simple summary
 stats about a whole model
 
-### Bug Fixes
+## Bug Fixes
 - Fix bug that returned NaN for `std.error` of a multiply imputed `merModList`
 when calling `modelRandEffStats`
 - Fixed bug in `REimpact` where some column names in `newdata` would prevent the
@@ -311,11 +309,11 @@ prediction intervals from being computed correctly. Users will now be warned.
 - Fixed bug in `wiggle` where documentation incorrectly stated the arguments to
 the function and the documentation did not describe function correctly
 
-## merTools 0.3.1
+# merTools 0.3.1
 
 - Update the `readme.rmd` to package graphics with the R package, per CRAN
 
-## merTools 0.3.0
+# merTools 0.3.0
 
 - Improve handling of formulas. If the original `merMod` has functions specified
 in the formula, the `draw` and `wiggle` functions will check for this and attempt
@@ -352,13 +350,13 @@ expected rank for all terms at once
 - Fix issue #52 ICC wrong calculations ... we just needed to square the standard
   deviations that we pulled
 
-## merTools 0.2.1
+# merTools 0.2.1
 
 - Fix dependency on `lme4` to ensure compatibility with latest changes.
 
-## merTools 0.2
+# merTools 0.2
 
-### Bug fixes
+## Bug fixes
 
 - Coerce `dplyr` `tbl` and `tbl_df` objects to data.frames when they are passed
 to `predictInterval` and issue a warning
@@ -368,7 +366,7 @@ failing if coercion is unsuccessful
 - Fix handling of models with nested random effect terms (GitHub #47)
 - Fix vignette images
 
-### New Functionality
+## New Functionality
 
 - Substantial performance enhancement for `predictInterval` which includes better
 handling of large numbers of parameters and simulations, performance
@@ -384,7 +382,7 @@ of a dataset, useful for imputation or for working with extremely large datasets
 - Add new package data to demonstrate replication from selected published texts
 on multilevel modeling using different software (1982 High School and Beyond Survey data)
 
-### Other changes
+## Other changes
 
 - Changed the default `n.sims` for the `predictInterval` function from 100 to 1,000
 to give better coverage and reflect performance increase
@@ -392,16 +390,16 @@ to give better coverage and reflect performance increase
 to reflect that 0.95 prediction intervals are more conservative than most users
 need
 
-### Future changes
+## Future changes
 - For the next release (1.0) we are considering a permanent switch to
 C++ RMVN sampler courtesy of Giri Gopalan 's excellent FastGP
 
 
 
-## merTools 0.1
+# merTools 0.1
 - Initial release
 
-### New Functions
+## New Functions
 - Provides `predictInterval` to allow prediction intervals from `glmer` and `lmer`
 objects
 - Provides `FEsim` and `REsim` to extract distributions of model parameters
