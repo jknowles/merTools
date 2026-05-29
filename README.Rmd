@@ -287,19 +287,31 @@ impSim
 The result of `REimpact` shows the change in the `yhat` as the case we supplied to
 `newdata` is moved from the first to the fifth quintile in terms of the magnitude
 of the group factor coefficient. We can see here that the individual professor
-effect has a strong impact on the outcome variable. This can be shown graphically
-as well:
+effect has a strong impact on the outcome variable. The new `plotREimpact()` function
+visualizes this directly:
 
 ```{r reImpactplot}
-ggplot(impSim, aes(x = factor(bin), y = AvgFit, ymin = AvgFit - 1.96*AvgFitSE,
-                   ymax = AvgFit + 1.96*AvgFitSE)) +
-  geom_pointrange() + theme_bw() + labs(x = "Bin of `d` term", y = "Predicted Fit")
+plotREimpact(impSim)
 ```
 
 Here the standard error is a bit different -- it is the weighted standard error
 of the mean effect within the bin. It does not take into account the variability
 within the effects of each observation in the bin -- accounting for this variation
 will be a future addition to `merTools`.
+### Comparing grouping factors with `plotREimpact()`
+
+New in merTools 1.0.0, `plotREimpact()` plots `REimpact()` output directly and
+can overlay a *named list* of results on a single chart. This makes it easy to
+compare how strongly different grouping factors move the predicted outcome for
+the same case -- here, the instructor (`d`) and student (`s`) effects from the
+model above:
+
+```{r reImpactCompare}
+s_impSim <- REimpact(m1, InstEval[7, ], groupFctr = "s", breaks = 5,
+                     n.sims = 300, level = 0.9)
+plotREimpact(list("Instructor (d)" = impSim, "Student (s)" = s_impSim))
+```
+
 
 ## Explore Substantive Impacts
 
