@@ -107,15 +107,15 @@ data frame of the results.
 feEx <- FEsim(m1, 1000)
 cbind(feEx[,1] , round(feEx[, 2:4], 3))
 #>      feEx[, 1]   mean median    sd
-#> 1  (Intercept)  3.225  3.225 0.020
-#> 2     service1 -0.070 -0.070 0.013
-#> 3    lectage.L -0.186 -0.186 0.017
-#> 4    lectage.Q  0.024  0.024 0.012
-#> 5    lectage.C -0.025 -0.025 0.013
-#> 6    lectage^4 -0.020 -0.019 0.014
-#> 7    lectage^5 -0.039 -0.039 0.015
-#> 8    studage.L  0.096  0.096 0.018
-#> 9    studage.Q  0.005  0.005 0.017
+#> 1  (Intercept)  3.226  3.226 0.020
+#> 2     service1 -0.072 -0.071 0.013
+#> 3    lectage.L -0.185 -0.186 0.017
+#> 4    lectage.Q  0.024  0.024 0.013
+#> 5    lectage.C -0.024 -0.024 0.013
+#> 6    lectage^4 -0.020 -0.020 0.013
+#> 7    lectage^5 -0.038 -0.039 0.015
+#> 8    studage.L  0.096  0.095 0.019
+#> 9    studage.Q  0.006  0.007 0.016
 #> 10   studage.C  0.017  0.017 0.016
 ```
 
@@ -132,6 +132,11 @@ ggplot(feEx[feEx$term!= "(Intercept)", ]) +
   coord_flip() +
   theme_bw() + labs(title = "Coefficient Plot of InstEval Model",
                     x = "Median Effect Estimate", y = "Evaluation Rating")
+#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+#> ℹ Please use `linewidth` instead.
+#> This warning is displayed once per session.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
 ```
 
 ![plot of chunk fixeffplot](mertoolsIntro-fixeffplot-1.png)
@@ -161,13 +166,13 @@ the individual levels.
 
 reEx <- REsim(m1)
 head(reEx)
-#>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.18042888  0.21906223 0.3145710
-#> 2         s       2 (Intercept) -0.07034954 -0.06339508 0.2972897
-#> 3         s       3 (Intercept)  0.32105622  0.33625741 0.3187445
-#> 4         s       4 (Intercept)  0.23713963  0.23271723 0.2761635
-#> 5         s       5 (Intercept)  0.02613185  0.02878794 0.3054642
-#> 6         s       6 (Intercept)  0.10806580  0.11082677 0.2429651
+#>   groupFctr groupID        term       mean       median        sd
+#> 1         s       1 (Intercept)  0.1867451 0.2108076314 0.3015230
+#> 2         s       2 (Intercept) -0.0251678 0.0006431095 0.3390197
+#> 3         s       3 (Intercept)  0.3098553 0.3219927161 0.2811772
+#> 4         s       4 (Intercept)  0.2305368 0.2428994747 0.2838737
+#> 5         s       5 (Intercept)  0.1085762 0.1061684358 0.3096078
+#> 6         s       6 (Intercept)  0.1125153 0.0945106543 0.2257176
 ```
 
 The result is a dataframe with estimates of the values of each of the
@@ -239,8 +244,8 @@ its values deliberately to see how the prediction changes in response.
 
 example1 <- draw(m1, type = 'random')
 head(example1)
-#>       y service lectage studage   d    s
-#> 29762 1       0       1       4 403 1208
+#>      y service lectage studage    d   s
+#> 5587 2       0       3       8 1212 204
 ```
 
 The `draw` function takes a random observation from the data in the
@@ -251,13 +256,13 @@ operations to this observation:
 
 # predict it
 predict(m1, newdata = example1)
-#>    29762 
-#> 3.742122
+#>     5587 
+#> 3.324069
 # change values
 example1$service <- "1"
 predict(m1, newdata = example1)
-#>    29762 
-#> 3.671278
+#>     5587 
+#> 3.253225
 ```
 
 More interesting, let’s programmatically modify this observation to see
@@ -270,13 +275,13 @@ example2 <- wiggle(example1, varlist = "lectage",
           valueslist = list(c("1", "2", "3", "4", "5", "6")))
 
 example2
-#>        y service lectage studage   d    s
-#> 29762  1       1       1       4 403 1208
-#> 297621 1       1       2       4 403 1208
-#> 297622 1       1       3       4 403 1208
-#> 297623 1       1       4       4 403 1208
-#> 297624 1       1       5       4 403 1208
-#> 297625 1       1       6       4 403 1208
+#>       y service lectage studage    d   s
+#> 5587  2       1       1       8 1212 204
+#> 55871 2       1       2       8 1212 204
+#> 55872 2       1       3       8 1212 204
+#> 55873 2       1       4       8 1212 204
+#> 55874 2       1       5       8 1212 204
+#> 55875 2       1       6       8 1212 204
 ```
 
 The function `wiggle` allows us to create a new dataframe with copies of
@@ -315,7 +320,7 @@ the average observation:
 example3 <- draw(m1, type = 'average')
 example3
 #>          y service lectage studage    d    s
-#> 1 3.205745       0       1       6 1510 2237
+#> 1 3.205745       0       1       6 1510 1014
 ```
 
 Here, the average observation is identified based on either the modal
@@ -354,12 +359,12 @@ correspond to which quantile of the magnitude of the random effects:
 ``` r
 
 REquantile(m1, quantile = 0.25, groupFctr = "s")
-#> [1] "446"
+#> [1] "2518"
 REquantile(m1, quantile = 0.25, groupFctr = "d")
 #> [1] "18"
 ```
 
-Here we can see that group level 446 corresponds to the 25th percentile
+Here we can see that group level 2518 corresponds to the 25th percentile
 of the effect for the student groups, and level
 `REquantile(m1, quantile = 0.25, groupFctr = "d")` corresponds to the
 25th percentile for the instructor group. Using this information we can
@@ -403,7 +408,7 @@ subExample <- list(studage = "2", lectage = "4")
 example5 <- draw(m1, type = 'average', varList = subExample)
 example5
 #>          y service lectage studage    d    s
-#> 1 3.087193       0       4       2 1510 2237
+#> 1 3.087193       0       4       2 1510 1014
 ```
 
 Now we have the average observation with a student age of 2 and a
@@ -417,6 +422,8 @@ data(VerbAgg)
 m2 <- glmer(r2 ~ Anger + Gender + btype + situ +
                 (1|id) + (1 + Gender|item), family = binomial,
               data = VerbAgg)
+#> Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, : Model failed to converge with max|grad| = 0.0882443 (tol = 0.002, component 1)
+#>   See ?lme4::convergence and ?lme4::troubleshooting.
 
 example6 <- draw(m2, type = 'average', varList = list("id" = "149"))
 example6$btype <- "scold"
@@ -477,6 +484,10 @@ very large models very quickly. And, it works a lot like `predict`:
 
 exampPreds <- predictInterval(m2, newdata = tempdf,
                               type = "probability", level = 0.8)
+#> Warning: For binomial GLMMs, include.resid.var = TRUE simulates from the
+#> conditional binomial distribution (n-trial binomial simulation).
+#> This is the theoretically correct approach.
+#> To get predictions without residual variance, set include.resid.var = FALSE.
 
 tempdf <- cbind(tempdf, exampPreds)
 

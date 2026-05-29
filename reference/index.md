@@ -70,8 +70,8 @@
   :
 
   `findFormFuns` used by
-  [averageObs](https://rdrr.io/pkg/merTools/man/averageObs.html) to
-  calculate proper averages
+  [averageObs](https://jknowles.github.io/merTools/reference/averageObs.html)
+  to calculate proper averages
 
 - [`fixef(`*`<merModList>`*`)`](https://jknowles.github.io/merTools/reference/fixef.merModList.md)
   : Extract fixed-effects estimates for a merModList

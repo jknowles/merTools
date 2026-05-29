@@ -56,7 +56,8 @@
                         <h4 data-toc-skip class="author">Jared Knowles
 and Carl Frederick</h4>
             
-            <h4 data-toc-skip class="date">2020-06-22</h4>
+            <h4 data-toc-skip class="date">Written 2019-05-11 (last
+updated 2026-05-29)</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jknowles/merTools/blob/main/vignettes/marginal_effects.Rmd" class="external-link"><code>vignettes/marginal_effects.Rmd</code></a></small>
       <div class="d-none name"><code>marginal_effects.Rmd</code></div>
@@ -64,6 +65,7 @@ and Carl Frederick</h4>
 
     
     
+<style type="text/css">pre, pre code { white-space: pre-wrap !important; word-break: break-word; overflow-wrap: anywhere; }</style>
 <div class="section level2">
 <h2 id="marginalizing-random-effects">Marginalizing Random Effects<a class="anchor" aria-label="anchor" href="#marginalizing-random-effects"></a>
 </h2>
@@ -93,20 +95,20 @@ the effect distribution for each term.</p>
 <span><span class="co">#&gt; 4   249.56    0     330    1      Subject      Days      2                  308</span></span>
 <span><span class="co">#&gt; 5   249.56    0     308    1      Subject Intercept      3                  308</span></span>
 <span><span class="co">#&gt; 6   249.56    0     332    1      Subject      Days      3                  308</span></span>
-<span><span class="co">#&gt;   fit_combined upr_combined lwr_combined fit_Subject upr_Subject lwr_Subject fit_fixed</span></span>
-<span><span class="co">#&gt; 1     209.3846     250.3619     174.2814  -40.366098   -4.412912   -74.60068  250.4405</span></span>
-<span><span class="co">#&gt; 2     243.5345     281.7434     204.8201   -6.989358   29.806462   -46.97090  252.7202</span></span>
-<span><span class="co">#&gt; 3     238.2613     275.8752     199.1572  -13.690991   20.343996   -54.49421  250.8008</span></span>
-<span><span class="co">#&gt; 4     276.0049     310.5112     237.8415   24.923090   60.486658   -11.80239  252.5914</span></span>
-<span><span class="co">#&gt; 5     253.5195     292.6832     216.2007    4.515485   39.504991   -32.36923  251.9662</span></span>
-<span><span class="co">#&gt; 6     259.5311     297.3577     221.2943    9.540808   44.660050   -26.14103  252.0332</span></span>
-<span><span class="co">#&gt;   upr_fixed lwr_fixed</span></span>
-<span><span class="co">#&gt; 1  286.1343  217.3697</span></span>
-<span><span class="co">#&gt; 2  287.0427  217.2515</span></span>
-<span><span class="co">#&gt; 3  286.4434  217.6061</span></span>
-<span><span class="co">#&gt; 4  286.7899  218.4882</span></span>
-<span><span class="co">#&gt; 5  287.3253  218.4392</span></span>
-<span><span class="co">#&gt; 6  287.9647  218.2303</span></span></code></pre></div>
+<span><span class="co">#&gt;   fit_combined upr_combined lwr_combined fit_Subject upr_Subject lwr_Subject</span></span>
+<span><span class="co">#&gt; 1     211.9200     250.8137     173.6175  -37.958384   -2.680876   -76.85914</span></span>
+<span><span class="co">#&gt; 2     245.6775     283.3831     207.7996   -6.238617   25.164606   -46.69958</span></span>
+<span><span class="co">#&gt; 3     236.9896     275.3616     201.5464  -14.117588   21.020768   -51.19104</span></span>
+<span><span class="co">#&gt; 4     273.9680     311.3997     236.0823   23.409186   59.360085   -13.18793</span></span>
+<span><span class="co">#&gt; 5     254.5492     290.2708     218.4986    2.253723   35.755512   -32.79586</span></span>
+<span><span class="co">#&gt; 6     263.1717     296.7733     225.2313    8.055660   43.478246   -27.57725</span></span>
+<span><span class="co">#&gt;   fit_fixed upr_fixed lwr_fixed</span></span>
+<span><span class="co">#&gt; 1  252.4671  288.5500  219.3783</span></span>
+<span><span class="co">#&gt; 2  250.5605  287.2176  215.9889</span></span>
+<span><span class="co">#&gt; 3  252.2250  290.5297  217.9524</span></span>
+<span><span class="co">#&gt; 4  253.0412  287.3219  217.2943</span></span>
+<span><span class="co">#&gt; 5  250.6383  284.8410  216.6404</span></span>
+<span><span class="co">#&gt; 6  252.7486  286.7932  218.2970</span></span></code></pre></div>
 <p>The new data frame output from <code>REmargins</code> contains a lot
 of information. The first few columns contain the original data passed
 to <code>newdata</code>. Each observation in <code>newdata</code> is

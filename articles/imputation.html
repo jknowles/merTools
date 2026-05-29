@@ -56,7 +56,8 @@
                         <h4 data-toc-skip class="author">Jared
 Knowles</h4>
             
-            <h4 data-toc-skip class="date">2020-06-22</h4>
+            <h4 data-toc-skip class="date">Written 2017-07-10 (last
+updated 2026-05-29)</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jknowles/merTools/blob/main/vignettes/imputation.Rmd" class="external-link"><code>vignettes/imputation.Rmd</code></a></small>
       <div class="d-none name"><code>imputation.Rmd</code></div>
@@ -64,6 +65,7 @@ Knowles</h4>
 
     
     
+<style type="text/css">pre, pre code { white-space: pre-wrap !important; word-break: break-word; overflow-wrap: anywhere; }</style>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -111,25 +113,25 @@ data.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">minority</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;  6868   317</span></span>
+<span><span class="co">#&gt;  6832   353</span></span>
 <span></span>
 <span><span class="va">hsb</span><span class="op">$</span><span class="va">female</span> <span class="op">&lt;-</span> <span class="fu">add_NA</span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">female</span>, prob <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">female</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;  6802   383</span></span>
+<span><span class="co">#&gt;  6852   333</span></span>
 <span></span>
 <span><span class="va">hsb</span><span class="op">$</span><span class="va">ses</span> <span class="op">&lt;-</span> <span class="fu">add_NA</span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">ses</span>, prob <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">ses</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;  6803   382</span></span>
+<span><span class="co">#&gt;  6825   360</span></span>
 <span></span>
 <span><span class="va">hsb</span><span class="op">$</span><span class="va">size</span> <span class="op">&lt;-</span> <span class="fu">add_NA</span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">size</span>, prob <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">size</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;  6825   360</span></span></code></pre></div>
+<span><span class="co">#&gt;  6815   370</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load imputation library</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia" class="external-link">Amelia</a></span><span class="op">)</span></span>
@@ -174,7 +176,7 @@ data.</p>
 <span><span class="co">#&gt; Imputation 4:  3</span></span>
 <span><span class="co">#&gt; Imputation 5:  3</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Rows after Listwise Deletion:  5853 </span></span>
+<span><span class="co">#&gt; Rows after Listwise Deletion:  5870 </span></span>
 <span><span class="co">#&gt; Rows after Imputation:  7185 </span></span>
 <span><span class="co">#&gt; Patterns of missingness in the data:  14 </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -183,11 +185,11 @@ data.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;          Fraction Missing</span></span>
 <span><span class="co">#&gt; schid          0.00000000</span></span>
-<span><span class="co">#&gt; minority       0.04411969</span></span>
-<span><span class="co">#&gt; female         0.05330550</span></span>
-<span><span class="co">#&gt; ses            0.05316632</span></span>
+<span><span class="co">#&gt; minority       0.04913013</span></span>
+<span><span class="co">#&gt; female         0.04634656</span></span>
+<span><span class="co">#&gt; ses            0.05010438</span></span>
 <span><span class="co">#&gt; mathach        0.00000000</span></span>
-<span><span class="co">#&gt; size           0.05010438</span></span>
+<span><span class="co">#&gt; size           0.05149617</span></span>
 <span><span class="co">#&gt; schtype        0.00000000</span></span>
 <span><span class="co">#&gt; meanses        0.00000000</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -224,28 +226,28 @@ excluded to the aggregate from the imputed models:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span> <span class="co"># model with dropped missing</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.149102   -2.868687   -1.318437    2.067309    2.833490</span></span>
+<span><span class="co">#&gt;   14.115316   -2.926850   -1.295694    1.927404    3.111054</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.028792   -2.680352   -1.213086    1.966725    3.141636</span></span></code></pre></div>
+<span><span class="co">#&gt;   14.010651   -2.703166   -1.151025    1.907475    3.129565</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span> <span class="co"># model with dropped missing</span></span>
-<span><span class="co">#&gt;  Groups   Name        Std.Dev. Corr  </span></span>
-<span><span class="co">#&gt;  schid    (Intercept) 1.54204        </span></span>
-<span><span class="co">#&gt;           ses         0.52515  -0.765</span></span>
-<span><span class="co">#&gt;  Residual             5.98842</span></span>
+<span><span class="co">#&gt;  Groups   Name        Std.Dev. Corr   </span></span>
+<span><span class="co">#&gt;  schid    (Intercept) 1.51731         </span></span>
+<span><span class="co">#&gt;           ses         0.47516  -0.823 </span></span>
+<span><span class="co">#&gt;  Residual             5.97123</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span> <span class="co"># aggregate of imputed models</span></span>
 <span><span class="co">#&gt; $stddev</span></span>
 <span><span class="co">#&gt; $stddev$schid</span></span>
 <span><span class="co">#&gt; (Intercept)         ses </span></span>
-<span><span class="co">#&gt;   1.5183804   0.6468874 </span></span>
+<span><span class="co">#&gt;   1.5146901   0.4775618 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $correlation</span></span>
 <span><span class="co">#&gt; $correlation$schid</span></span>
 <span><span class="co">#&gt;             (Intercept)        ses</span></span>
-<span><span class="co">#&gt; (Intercept)   1.0000000 -0.5247666</span></span>
-<span><span class="co">#&gt; ses          -0.5247666  1.0000000</span></span></code></pre></div>
+<span><span class="co">#&gt; (Intercept)   1.0000000 -0.8056484</span></span>
+<span><span class="co">#&gt; ses          -0.8056484  1.0000000</span></span></code></pre></div>
 <p>If you want to inspect the individual models, or you do not like
 taking the mean across the imputation replications, you can take the
 <code>merModList</code> apart easily:</p>
@@ -253,31 +255,31 @@ taking the mean across the imputation replications, you can take the
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">modList</span>, <span class="va">fixef</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $imp1</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   13.976636   -2.587948   -1.170291    1.984663    3.170845 </span></span>
+<span><span class="co">#&gt;   13.998828   -2.706329   -1.131058    1.919838    3.145374 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp2</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.070484   -2.673140   -1.294932    1.959564    3.143996 </span></span>
+<span><span class="co">#&gt;   14.021477   -2.725340   -1.163246    1.873299    3.164971 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp3</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.040516   -2.728450   -1.215497    1.958265    3.134720 </span></span>
+<span><span class="co">#&gt;   13.960872   -2.509095   -1.156671    1.927857    3.146464 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp4</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.030150   -2.698588   -1.214679    1.997264    3.081103 </span></span>
+<span><span class="co">#&gt;   14.047832   -2.835816   -1.133556    1.916885    3.061399 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp5</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.026175   -2.713636   -1.170030    1.933870    3.177518</span></span></code></pre></div>
+<span><span class="co">#&gt;   14.024244   -2.739249   -1.170593    1.899499    3.129619</span></span></code></pre></div>
 <p>And, you can always operate on any single element of the list:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   13.976636   -2.587948   -1.170291    1.984663    3.170845</span></span>
+<span><span class="co">#&gt;   13.998828   -2.706329   -1.131058    1.919838    3.145374</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.070484   -2.673140   -1.294932    1.959564    3.143996</span></span></code></pre></div>
+<span><span class="co">#&gt;   14.021477   -2.725340   -1.163246    1.873299    3.164971</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="output-of-a-model-list">Output of a Model List<a class="anchor" aria-label="anchor" href="#output-of-a-model-list"></a>
@@ -289,165 +291,165 @@ taking the mean across the imputation replications, you can take the
 <span><span class="co">#&gt; Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)</span></span>
 <span><span class="co">#&gt;    Data: d</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; REML criterion at convergence: 46328.3</span></span>
+<span><span class="co">#&gt; REML criterion at convergence: 46335.2</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Scaled residuals: </span></span>
 <span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
-<span><span class="co">#&gt; -3.2652 -0.7199  0.0371  0.7614  2.9108 </span></span>
+<span><span class="co">#&gt; -3.2537 -0.7166  0.0341  0.7600  2.9397 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Random effects:</span></span>
-<span><span class="co">#&gt;  Groups   Name        Variance Std.Dev. Corr </span></span>
-<span><span class="co">#&gt;  schid    (Intercept)  2.2763  1.5087        </span></span>
-<span><span class="co">#&gt;           ses          0.3676  0.6063   -0.61</span></span>
-<span><span class="co">#&gt;  Residual             35.7568  5.9797        </span></span>
+<span><span class="co">#&gt;  Groups   Name        Variance Std.Dev. Corr  </span></span>
+<span><span class="co">#&gt;  schid    (Intercept)  2.2980  1.5159         </span></span>
+<span><span class="co">#&gt;           ses          0.2297  0.4793   -0.90 </span></span>
+<span><span class="co">#&gt;  Residual             35.8645  5.9887         </span></span>
 <span><span class="co">#&gt; Number of obs: 7185, groups:  schid, 160</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Fixed effects:</span></span>
 <span><span class="co">#&gt;             Estimate Std. Error t value</span></span>
-<span><span class="co">#&gt; (Intercept)  13.9766     0.1724  81.089</span></span>
-<span><span class="co">#&gt; minority     -2.5879     0.1994 -12.978</span></span>
-<span><span class="co">#&gt; female       -1.1703     0.1576  -7.425</span></span>
-<span><span class="co">#&gt; ses           1.9847     0.1182  16.787</span></span>
-<span><span class="co">#&gt; meanses       3.1708     0.3537   8.966</span></span>
+<span><span class="co">#&gt; (Intercept)  13.9988     0.1725  81.139</span></span>
+<span><span class="co">#&gt; minority     -2.7063     0.1978 -13.684</span></span>
+<span><span class="co">#&gt; female       -1.1311     0.1577  -7.171</span></span>
+<span><span class="co">#&gt; ses           1.9198     0.1148  16.730</span></span>
+<span><span class="co">#&gt; meanses       3.1454     0.3493   9.005</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Correlation of Fixed Effects:</span></span>
 <span><span class="co">#&gt;          (Intr) minrty female ses   </span></span>
-<span><span class="co">#&gt; minority -0.324                     </span></span>
-<span><span class="co">#&gt; female   -0.482  0.012              </span></span>
-<span><span class="co">#&gt; ses      -0.234  0.140  0.036       </span></span>
-<span><span class="co">#&gt; meanses  -0.102  0.126  0.023 -0.237</span></span>
+<span><span class="co">#&gt; minority -0.323                     </span></span>
+<span><span class="co">#&gt; female   -0.480  0.007              </span></span>
+<span><span class="co">#&gt; ses      -0.276  0.144  0.046       </span></span>
+<span><span class="co">#&gt; meanses  -0.112  0.122  0.022 -0.247</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp2</span></span>
 <span><span class="co">#&gt; Linear mixed model fit by REML ['lmerMod']</span></span>
 <span><span class="co">#&gt; Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)</span></span>
 <span><span class="co">#&gt;    Data: d</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; REML criterion at convergence: 46308.7</span></span>
+<span><span class="co">#&gt; REML criterion at convergence: 46346.6</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Scaled residuals: </span></span>
 <span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
-<span><span class="co">#&gt; -3.2162 -0.7183  0.0385  0.7576  2.9117 </span></span>
+<span><span class="co">#&gt; -3.2317 -0.7188  0.0317  0.7662  2.9102 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Random effects:</span></span>
-<span><span class="co">#&gt;  Groups   Name        Variance Std.Dev. Corr </span></span>
-<span><span class="co">#&gt;  schid    (Intercept)  2.286   1.5118        </span></span>
-<span><span class="co">#&gt;           ses          0.443   0.6656   -0.47</span></span>
-<span><span class="co">#&gt;  Residual             35.611   5.9675        </span></span>
+<span><span class="co">#&gt;  Groups   Name        Variance Std.Dev. Corr  </span></span>
+<span><span class="co">#&gt;  schid    (Intercept)  2.321   1.5235         </span></span>
+<span><span class="co">#&gt;           ses          0.223   0.4722   -0.88 </span></span>
+<span><span class="co">#&gt;  Residual             35.915   5.9929         </span></span>
 <span><span class="co">#&gt; Number of obs: 7185, groups:  schid, 160</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Fixed effects:</span></span>
 <span><span class="co">#&gt;             Estimate Std. Error t value</span></span>
-<span><span class="co">#&gt; (Intercept)  14.0705     0.1727  81.485</span></span>
-<span><span class="co">#&gt; minority     -2.6731     0.1985 -13.467</span></span>
-<span><span class="co">#&gt; female       -1.2949     0.1578  -8.205</span></span>
-<span><span class="co">#&gt; ses           1.9596     0.1202  16.299</span></span>
-<span><span class="co">#&gt; meanses       3.1440     0.3574   8.797</span></span>
+<span><span class="co">#&gt; (Intercept)  14.0215     0.1734  80.844</span></span>
+<span><span class="co">#&gt; minority     -2.7253     0.1975 -13.798</span></span>
+<span><span class="co">#&gt; female       -1.1632     0.1578  -7.372</span></span>
+<span><span class="co">#&gt; ses           1.8733     0.1139  16.452</span></span>
+<span><span class="co">#&gt; meanses       3.1650     0.3507   9.025</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Correlation of Fixed Effects:</span></span>
 <span><span class="co">#&gt;          (Intr) minrty female ses   </span></span>
-<span><span class="co">#&gt; minority -0.326                     </span></span>
-<span><span class="co">#&gt; female   -0.482  0.019              </span></span>
-<span><span class="co">#&gt; ses      -0.204  0.140  0.038       </span></span>
-<span><span class="co">#&gt; meanses  -0.094  0.127  0.023 -0.231</span></span>
+<span><span class="co">#&gt; minority -0.324                     </span></span>
+<span><span class="co">#&gt; female   -0.485  0.018              </span></span>
+<span><span class="co">#&gt; ses      -0.266  0.142  0.037       </span></span>
+<span><span class="co">#&gt; meanses  -0.113  0.124  0.029 -0.241</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp3</span></span>
 <span><span class="co">#&gt; Linear mixed model fit by REML ['lmerMod']</span></span>
 <span><span class="co">#&gt; Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)</span></span>
 <span><span class="co">#&gt;    Data: d</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; REML criterion at convergence: 46302.4</span></span>
+<span><span class="co">#&gt; REML criterion at convergence: 46360.8</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Scaled residuals: </span></span>
 <span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
-<span><span class="co">#&gt; -3.2651 -0.7164  0.0325  0.7615  2.9216 </span></span>
+<span><span class="co">#&gt; -3.2194 -0.7200  0.0327  0.7646  2.9237 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Random effects:</span></span>
-<span><span class="co">#&gt;  Groups   Name        Variance Std.Dev. Corr </span></span>
-<span><span class="co">#&gt;  schid    (Intercept)  2.3422  1.5304        </span></span>
-<span><span class="co">#&gt;           ses          0.4413  0.6643   -0.46</span></span>
-<span><span class="co">#&gt;  Residual             35.5652  5.9637        </span></span>
+<span><span class="co">#&gt;  Groups   Name        Variance Std.Dev. Corr  </span></span>
+<span><span class="co">#&gt;  schid    (Intercept)  2.234   1.4947         </span></span>
+<span><span class="co">#&gt;           ses          0.275   0.5244   -0.56 </span></span>
+<span><span class="co">#&gt;  Residual             35.956   5.9963         </span></span>
 <span><span class="co">#&gt; Number of obs: 7185, groups:  schid, 160</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Fixed effects:</span></span>
 <span><span class="co">#&gt;             Estimate Std. Error t value</span></span>
-<span><span class="co">#&gt; (Intercept)  14.0405     0.1738  80.763</span></span>
-<span><span class="co">#&gt; minority     -2.7284     0.1990 -13.709</span></span>
-<span><span class="co">#&gt; female       -1.2155     0.1578  -7.702</span></span>
-<span><span class="co">#&gt; ses           1.9583     0.1198  16.345</span></span>
-<span><span class="co">#&gt; meanses       3.1347     0.3595   8.719</span></span>
+<span><span class="co">#&gt; (Intercept)  13.9609     0.1719  81.198</span></span>
+<span><span class="co">#&gt; minority     -2.5091     0.1978 -12.688</span></span>
+<span><span class="co">#&gt; female       -1.1567     0.1585  -7.299</span></span>
+<span><span class="co">#&gt; ses           1.9279     0.1161  16.611</span></span>
+<span><span class="co">#&gt; meanses       3.1465     0.3538   8.894</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Correlation of Fixed Effects:</span></span>
 <span><span class="co">#&gt;          (Intr) minrty female ses   </span></span>
-<span><span class="co">#&gt; minority -0.325                     </span></span>
-<span><span class="co">#&gt; female   -0.481  0.022              </span></span>
-<span><span class="co">#&gt; ses      -0.209  0.143  0.044       </span></span>
-<span><span class="co">#&gt; meanses  -0.092  0.126  0.021 -0.226</span></span>
+<span><span class="co">#&gt; minority -0.327                     </span></span>
+<span><span class="co">#&gt; female   -0.488  0.015              </span></span>
+<span><span class="co">#&gt; ses      -0.208  0.144  0.045       </span></span>
+<span><span class="co">#&gt; meanses  -0.096  0.127  0.025 -0.242</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp4</span></span>
 <span><span class="co">#&gt; Linear mixed model fit by REML ['lmerMod']</span></span>
 <span><span class="co">#&gt; Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)</span></span>
 <span><span class="co">#&gt;    Data: d</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; REML criterion at convergence: 46302</span></span>
+<span><span class="co">#&gt; REML criterion at convergence: 46313.8</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Scaled residuals: </span></span>
 <span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
-<span><span class="co">#&gt; -3.2610 -0.7229  0.0305  0.7612  2.9166 </span></span>
+<span><span class="co">#&gt; -3.2487 -0.7150  0.0369  0.7606  2.9364 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Random effects:</span></span>
-<span><span class="co">#&gt;  Groups   Name        Variance Std.Dev. Corr </span></span>
-<span><span class="co">#&gt;  schid    (Intercept)  2.3036  1.5178        </span></span>
-<span><span class="co">#&gt;           ses          0.3951  0.6286   -0.62</span></span>
-<span><span class="co">#&gt;  Residual             35.6111  5.9675        </span></span>
+<span><span class="co">#&gt;  Groups   Name        Variance Std.Dev. Corr  </span></span>
+<span><span class="co">#&gt;  schid    (Intercept)  2.3205  1.5233         </span></span>
+<span><span class="co">#&gt;           ses          0.1788  0.4229   -0.89 </span></span>
+<span><span class="co">#&gt;  Residual             35.7569  5.9797         </span></span>
 <span><span class="co">#&gt; Number of obs: 7185, groups:  schid, 160</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Fixed effects:</span></span>
 <span><span class="co">#&gt;             Estimate Std. Error t value</span></span>
-<span><span class="co">#&gt; (Intercept)  14.0302     0.1728  81.179</span></span>
-<span><span class="co">#&gt; minority     -2.6986     0.1985 -13.592</span></span>
-<span><span class="co">#&gt; female       -1.2147     0.1573  -7.721</span></span>
-<span><span class="co">#&gt; ses           1.9973     0.1190  16.784</span></span>
-<span><span class="co">#&gt; meanses       3.0811     0.3544   8.693</span></span>
+<span><span class="co">#&gt; (Intercept)  14.0478     0.1728  81.300</span></span>
+<span><span class="co">#&gt; minority     -2.8358     0.1969 -14.405</span></span>
+<span><span class="co">#&gt; female       -1.1336     0.1578  -7.186</span></span>
+<span><span class="co">#&gt; ses           1.9169     0.1133  16.912</span></span>
+<span><span class="co">#&gt; meanses       3.0614     0.3529   8.674</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Correlation of Fixed Effects:</span></span>
 <span><span class="co">#&gt;          (Intr) minrty female ses   </span></span>
-<span><span class="co">#&gt; minority -0.326                     </span></span>
-<span><span class="co">#&gt; female   -0.481  0.021              </span></span>
-<span><span class="co">#&gt; ses      -0.246  0.140  0.040       </span></span>
-<span><span class="co">#&gt; meanses  -0.104  0.126  0.023 -0.235</span></span>
+<span><span class="co">#&gt; minority -0.322                     </span></span>
+<span><span class="co">#&gt; female   -0.480  0.007              </span></span>
+<span><span class="co">#&gt; ses      -0.249  0.149  0.041       </span></span>
+<span><span class="co">#&gt; meanses  -0.108  0.121  0.026 -0.248</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp5</span></span>
 <span><span class="co">#&gt; Linear mixed model fit by REML ['lmerMod']</span></span>
 <span><span class="co">#&gt; Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)</span></span>
 <span><span class="co">#&gt;    Data: d</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; REML criterion at convergence: 46324.3</span></span>
+<span><span class="co">#&gt; REML criterion at convergence: 46332.3</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Scaled residuals: </span></span>
 <span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
-<span><span class="co">#&gt; -3.2703 -0.7181  0.0316  0.7649  2.9098 </span></span>
+<span><span class="co">#&gt; -3.2359 -0.7195  0.0323  0.7624  2.9225 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Random effects:</span></span>
-<span><span class="co">#&gt;  Groups   Name        Variance Std.Dev. Corr </span></span>
-<span><span class="co">#&gt;  schid    (Intercept)  2.3200  1.5231        </span></span>
-<span><span class="co">#&gt;           ses          0.4484  0.6696   -0.46</span></span>
-<span><span class="co">#&gt;  Residual             35.6782  5.9731        </span></span>
+<span><span class="co">#&gt;  Groups   Name        Variance Std.Dev. Corr  </span></span>
+<span><span class="co">#&gt;  schid    (Intercept)  2.2982  1.516          </span></span>
+<span><span class="co">#&gt;           ses          0.2391  0.489    -0.80 </span></span>
+<span><span class="co">#&gt;  Residual             35.8344  5.986          </span></span>
 <span><span class="co">#&gt; Number of obs: 7185, groups:  schid, 160</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Fixed effects:</span></span>
 <span><span class="co">#&gt;             Estimate Std. Error t value</span></span>
-<span><span class="co">#&gt; (Intercept)  14.0262     0.1734  80.890</span></span>
-<span><span class="co">#&gt; minority     -2.7136     0.1982 -13.689</span></span>
-<span><span class="co">#&gt; female       -1.1700     0.1577  -7.417</span></span>
-<span><span class="co">#&gt; ses           1.9339     0.1204  16.060</span></span>
-<span><span class="co">#&gt; meanses       3.1775     0.3594   8.842</span></span>
+<span><span class="co">#&gt; (Intercept)  14.0242     0.1723  81.399</span></span>
+<span><span class="co">#&gt; minority     -2.7392     0.1973 -13.884</span></span>
+<span><span class="co">#&gt; female       -1.1706     0.1576  -7.425</span></span>
+<span><span class="co">#&gt; ses           1.8995     0.1148  16.539</span></span>
+<span><span class="co">#&gt; meanses       3.1296     0.3513   8.910</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Correlation of Fixed Effects:</span></span>
 <span><span class="co">#&gt;          (Intr) minrty female ses   </span></span>
-<span><span class="co">#&gt; minority -0.329                     </span></span>
-<span><span class="co">#&gt; female   -0.480  0.026              </span></span>
-<span><span class="co">#&gt; ses      -0.200  0.141  0.036       </span></span>
-<span><span class="co">#&gt; meanses  -0.095  0.126  0.026 -0.228</span></span></code></pre></div>
+<span><span class="co">#&gt; minority -0.320                     </span></span>
+<span><span class="co">#&gt; female   -0.479  0.003              </span></span>
+<span><span class="co">#&gt; ses      -0.257  0.143  0.042       </span></span>
+<span><span class="co">#&gt; meanses  -0.106  0.122  0.023 -0.243</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Linear mixed model fit by REML"</span></span>
@@ -456,12 +458,12 @@ taking the mean across the imputation replications, you can take the
 <span><span class="co">#&gt;     (1 + ses | schid), data = d)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Fixed Effects:</span></span>
-<span><span class="co">#&gt;             estimate std.error statistic         df</span></span>
-<span><span class="co">#&gt; (Intercept)   14.029     0.174    80.566  99310.593</span></span>
-<span><span class="co">#&gt; female        -1.213     0.160    -7.574  16493.051</span></span>
-<span><span class="co">#&gt; meanses        3.142     0.358     8.769 259740.570</span></span>
-<span><span class="co">#&gt; minority      -2.680     0.202   -13.289  18540.839</span></span>
-<span><span class="co">#&gt; ses            1.967     0.120    16.372 166028.049</span></span>
+<span><span class="co">#&gt;             estimate std.error statistic          df</span></span>
+<span><span class="co">#&gt; (Intercept)   14.011     0.174    80.693  113115.704</span></span>
+<span><span class="co">#&gt; female        -1.151     0.158    -7.277 1080751.936</span></span>
+<span><span class="co">#&gt; meanses        3.130     0.353     8.862  209086.287</span></span>
+<span><span class="co">#&gt; minority      -2.703     0.211   -12.803     950.730</span></span>
+<span><span class="co">#&gt; ses            1.907     0.115    16.583  257649.852</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Random Effects:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -469,44 +471,44 @@ taking the mean across the imputation replications, you can take the
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; schid</span></span>
 <span><span class="co">#&gt; (Intercept)         ses </span></span>
-<span><span class="co">#&gt;       1.518       0.647 </span></span>
+<span><span class="co">#&gt;       1.515       0.478 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Error Term Correlations:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; schid</span></span>
 <span><span class="co">#&gt;             (Intercept) ses   </span></span>
-<span><span class="co">#&gt; (Intercept)  1.000      -0.525</span></span>
-<span><span class="co">#&gt; ses         -0.525       1.000</span></span>
+<span><span class="co">#&gt; (Intercept)  1.000      -0.806</span></span>
+<span><span class="co">#&gt; ses         -0.806       1.000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Residual Error = 5.970 </span></span>
+<span><span class="co">#&gt; Residual Error = 5.989 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ---Groups</span></span>
 <span><span class="co">#&gt; number of obs: 7185, groups: schid, 160</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Model Fit Stats</span></span>
-<span><span class="co">#&gt; AIC = 46331.1</span></span>
-<span><span class="co">#&gt; Residual standard deviation = 5.970</span></span></code></pre></div>
+<span><span class="co">#&gt; AIC = 46355.7</span></span>
+<span><span class="co">#&gt; Residual standard deviation = 5.989</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/fastdisp.html">fastdisp</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
 <span><span class="co">#&gt; lmer(formula = mathach ~ minority + female + ses + meanses + </span></span>
 <span><span class="co">#&gt;     (1 + ses | schid), data = d)</span></span>
 <span><span class="co">#&gt;             estimate std.error</span></span>
-<span><span class="co">#&gt; (Intercept)    14.03      0.17</span></span>
-<span><span class="co">#&gt; female         -1.21      0.16</span></span>
-<span><span class="co">#&gt; meanses         3.14      0.36</span></span>
-<span><span class="co">#&gt; minority       -2.68      0.20</span></span>
-<span><span class="co">#&gt; ses             1.97      0.12</span></span>
+<span><span class="co">#&gt; (Intercept)    14.01      0.17</span></span>
+<span><span class="co">#&gt; female         -1.15      0.16</span></span>
+<span><span class="co">#&gt; meanses         3.13      0.35</span></span>
+<span><span class="co">#&gt; minority       -2.70      0.21</span></span>
+<span><span class="co">#&gt; ses             1.91      0.12</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Error terms:</span></span>
 <span><span class="co">#&gt;  Groups   Name        Std.Dev. Corr  </span></span>
-<span><span class="co">#&gt;  schid    (Intercept) 1.52           </span></span>
-<span><span class="co">#&gt;           ses         0.65     -0.61 </span></span>
-<span><span class="co">#&gt;  Residual             5.97           </span></span>
+<span><span class="co">#&gt;  schid    (Intercept) 1.51           </span></span>
+<span><span class="co">#&gt;           ses         0.48     -0.90 </span></span>
+<span><span class="co">#&gt;  Residual             5.99           </span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; number of obs: 7185, groups: schid, 160</span></span>
-<span><span class="co">#&gt; AIC = 46331.1---</span></span></code></pre></div>
+<span><span class="co">#&gt; AIC = 46355.7---</span></span></code></pre></div>
 <p>The standard errors reported for the model list include a correction,
 Rubin’s correction (see documentation), which adjusts for the within and
 between imputation set variance as well.</p>
@@ -516,59 +518,59 @@ between imputation set variance as well.</p>
 </h2>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/modelRandEffStats.html">modelRandEffStats</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                        term    group   estimate   std.error</span></span>
-<span><span class="co">#&gt; 1 cor_(Intercept).ses.schid    schid -0.5247666 0.084101895</span></span>
-<span><span class="co">#&gt; 2      sd_(Intercept).schid    schid  1.5183804 0.008713530</span></span>
-<span><span class="co">#&gt; 3   sd_Observation.Residual Residual  5.9703034 0.006244066</span></span>
-<span><span class="co">#&gt; 4              sd_ses.schid    schid  0.6468874 0.028062351</span></span>
+<span><span class="co">#&gt;                   term    group   estimate   std.error</span></span>
+<span><span class="co">#&gt; 1 cor__(Intercept).ses    schid -0.8056484 0.141646398</span></span>
+<span><span class="co">#&gt; 2      sd__(Intercept)    schid  1.5146901 0.011792677</span></span>
+<span><span class="co">#&gt; 3      sd__Observation Residual  5.9887748 0.006394734</span></span>
+<span><span class="co">#&gt; 4              sd__ses    schid  0.4775618 0.036568245</span></span>
 <span><span class="fu"><a href="../reference/modelFixedEff.html">modelFixedEff</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          term  estimate std.error  statistic        df</span></span>
-<span><span class="co">#&gt; 1 (Intercept) 14.028792 0.1741275  80.566201  99310.59</span></span>
-<span><span class="co">#&gt; 2      female -1.213086 0.1601572  -7.574345  16493.05</span></span>
-<span><span class="co">#&gt; 3     meanses  3.141636 0.3582833   8.768580 259740.57</span></span>
-<span><span class="co">#&gt; 4    minority -2.680352 0.2017037 -13.288566  18540.84</span></span>
-<span><span class="co">#&gt; 5         ses  1.966725 0.1201239  16.372467 166028.05</span></span>
+<span><span class="co">#&gt;          term  estimate std.error  statistic           df</span></span>
+<span><span class="co">#&gt; 1 (Intercept) 14.010651 0.1736290  80.693025  113115.7037</span></span>
+<span><span class="co">#&gt; 2      female -1.151025 0.1581831  -7.276536 1080751.9364</span></span>
+<span><span class="co">#&gt; 3     meanses  3.129565 0.3531353   8.862227  209086.2872</span></span>
+<span><span class="co">#&gt; 4    minority -2.703166 0.2111383 -12.802819     950.7301</span></span>
+<span><span class="co">#&gt; 5         ses  1.907475 0.1150281  16.582694  257649.8518</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $stddev</span></span>
 <span><span class="co">#&gt; $stddev$schid</span></span>
 <span><span class="co">#&gt; (Intercept)         ses </span></span>
-<span><span class="co">#&gt;   1.5183804   0.6468874 </span></span>
+<span><span class="co">#&gt;   1.5146901   0.4775618 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $correlation</span></span>
 <span><span class="co">#&gt; $correlation$schid</span></span>
 <span><span class="co">#&gt;             (Intercept)        ses</span></span>
-<span><span class="co">#&gt; (Intercept)   1.0000000 -0.5247666</span></span>
-<span><span class="co">#&gt; ses          -0.5247666  1.0000000</span></span></code></pre></div>
+<span><span class="co">#&gt; (Intercept)   1.0000000 -0.8056484</span></span>
+<span><span class="co">#&gt; ses          -0.8056484  1.0000000</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="diagnostics-of-list-components">Diagnostics of List Components<a class="anchor" aria-label="anchor" href="#diagnostics-of-list-components"></a>
 </h3>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/modelInfo.html">modelInfo</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   n.obs n.lvls      AIC   sigma</span></span>
-<span><span class="co">#&gt; 1  6160      1 39764.15 5.98842</span></span></code></pre></div>
+<span><span class="co">#&gt;   n.obs n.lvls      AIC    sigma</span></span>
+<span><span class="co">#&gt; 1  6177      1 39832.18 5.971227</span></span></code></pre></div>
 <p>Let’s apply this to our model list.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">modList</span>, <span class="va">modelInfo</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $imp1</span></span>
 <span><span class="co">#&gt;   n.obs n.lvls      AIC    sigma</span></span>
-<span><span class="co">#&gt; 1  7185      1 46346.34 5.979699</span></span>
+<span><span class="co">#&gt; 1  7185      1 46353.21 5.988695</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp2</span></span>
-<span><span class="co">#&gt;   n.obs n.lvls      AIC    sigma</span></span>
-<span><span class="co">#&gt; 1  7185      1 46326.72 5.967532</span></span>
+<span><span class="co">#&gt;   n.obs n.lvls     AIC    sigma</span></span>
+<span><span class="co">#&gt; 1  7185      1 46364.6 5.992938</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp3</span></span>
-<span><span class="co">#&gt;   n.obs n.lvls      AIC    sigma</span></span>
-<span><span class="co">#&gt; 1  7185      1 46320.43 5.963655</span></span>
+<span><span class="co">#&gt;   n.obs n.lvls     AIC    sigma</span></span>
+<span><span class="co">#&gt; 1  7185      1 46378.8 5.996347</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp4</span></span>
-<span><span class="co">#&gt;   n.obs n.lvls      AIC    sigma</span></span>
-<span><span class="co">#&gt; 1  7185      1 46319.96 5.967506</span></span>
+<span><span class="co">#&gt;   n.obs n.lvls      AIC   sigma</span></span>
+<span><span class="co">#&gt; 1  7185      1 46331.78 5.97971</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp5</span></span>
 <span><span class="co">#&gt;   n.obs n.lvls      AIC    sigma</span></span>
-<span><span class="co">#&gt; 1  7185      1 46342.27 5.973125</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  7185      1 46350.26 5.986183</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="model-list-generics">Model List Generics<a class="anchor" aria-label="anchor" href="#model-list-generics"></a>
@@ -581,12 +583,12 @@ between imputation set variance as well.</p>
 <span><span class="co">#&gt;     (1 + ses | schid), data = d)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Fixed Effects:</span></span>
-<span><span class="co">#&gt;             estimate std.error statistic         df</span></span>
-<span><span class="co">#&gt; (Intercept)   14.029     0.174    80.566  99310.593</span></span>
-<span><span class="co">#&gt; female        -1.213     0.160    -7.574  16493.051</span></span>
-<span><span class="co">#&gt; meanses        3.142     0.358     8.769 259740.570</span></span>
-<span><span class="co">#&gt; minority      -2.680     0.202   -13.289  18540.839</span></span>
-<span><span class="co">#&gt; ses            1.967     0.120    16.372 166028.049</span></span>
+<span><span class="co">#&gt;             estimate std.error statistic          df</span></span>
+<span><span class="co">#&gt; (Intercept)   14.011     0.174    80.693  113115.704</span></span>
+<span><span class="co">#&gt; female        -1.151     0.158    -7.277 1080751.936</span></span>
+<span><span class="co">#&gt; meanses        3.130     0.353     8.862  209086.287</span></span>
+<span><span class="co">#&gt; minority      -2.703     0.211   -12.803     950.730</span></span>
+<span><span class="co">#&gt; ses            1.907     0.115    16.583  257649.852</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Random Effects:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -594,197 +596,197 @@ between imputation set variance as well.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; schid</span></span>
 <span><span class="co">#&gt; (Intercept)         ses </span></span>
-<span><span class="co">#&gt;       1.518       0.647 </span></span>
+<span><span class="co">#&gt;       1.515       0.478 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Error Term Correlations:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; schid</span></span>
 <span><span class="co">#&gt;             (Intercept) ses   </span></span>
-<span><span class="co">#&gt; (Intercept)  1.000      -0.525</span></span>
-<span><span class="co">#&gt; ses         -0.525       1.000</span></span>
+<span><span class="co">#&gt; (Intercept)  1.000      -0.806</span></span>
+<span><span class="co">#&gt; ses         -0.806       1.000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Residual Error = 5.970 </span></span>
+<span><span class="co">#&gt; Residual Error = 5.989 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ---Groups</span></span>
 <span><span class="co">#&gt; number of obs: 7185, groups: schid, 160</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Model Fit Stats</span></span>
-<span><span class="co">#&gt; AIC = 46331.1</span></span>
-<span><span class="co">#&gt; Residual standard deviation = 5.970</span></span></code></pre></div>
+<span><span class="co">#&gt; AIC = 46355.7</span></span>
+<span><span class="co">#&gt; Residual standard deviation = 5.989</span></span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/modelFixedEff.html">modelFixedEff</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          term  estimate std.error  statistic        df</span></span>
-<span><span class="co">#&gt; 1 (Intercept) 14.028792 0.1741275  80.566201  99310.59</span></span>
-<span><span class="co">#&gt; 2      female -1.213086 0.1601572  -7.574345  16493.05</span></span>
-<span><span class="co">#&gt; 3     meanses  3.141636 0.3582833   8.768580 259740.57</span></span>
-<span><span class="co">#&gt; 4    minority -2.680352 0.2017037 -13.288566  18540.84</span></span>
-<span><span class="co">#&gt; 5         ses  1.966725 0.1201239  16.372467 166028.05</span></span></code></pre></div>
+<span><span class="co">#&gt;          term  estimate std.error  statistic           df</span></span>
+<span><span class="co">#&gt; 1 (Intercept) 14.010651 0.1736290  80.693025  113115.7037</span></span>
+<span><span class="co">#&gt; 2      female -1.151025 0.1581831  -7.276536 1080751.9364</span></span>
+<span><span class="co">#&gt; 3     meanses  3.129565 0.3531353   8.862227  209086.2872</span></span>
+<span><span class="co">#&gt; 4    minority -2.703166 0.2111383 -12.802819     950.7301</span></span>
+<span><span class="co">#&gt; 5         ses  1.907475 0.1150281  16.582694  257649.8518</span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/random.effects.html" class="external-link">ranef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $schid</span></span>
 <span><span class="co">#&gt;       (Intercept)           ses</span></span>
-<span><span class="co">#&gt; 1224 -0.157795533  0.0451127840</span></span>
-<span><span class="co">#&gt; 1288 -0.044476754  0.0191957958</span></span>
-<span><span class="co">#&gt; 1296 -0.126472259  0.0218757135</span></span>
-<span><span class="co">#&gt; 1308  0.064357632 -0.0167977336</span></span>
-<span><span class="co">#&gt; 1317  0.088861755 -0.0350837887</span></span>
-<span><span class="co">#&gt; 1358 -0.301385760  0.1053888143</span></span>
-<span><span class="co">#&gt; 1374 -0.350736225  0.1064976917</span></span>
-<span><span class="co">#&gt; 1433  0.307310844 -0.0444663946</span></span>
-<span><span class="co">#&gt; 1436  0.284513686 -0.0602282100</span></span>
-<span><span class="co">#&gt; 1461 -0.045882842  0.0719067703</span></span>
-<span><span class="co">#&gt; 1462  0.348424677 -0.1562366964</span></span>
-<span><span class="co">#&gt; 1477  0.042686687 -0.0406549686</span></span>
-<span><span class="co">#&gt; 1499 -0.293156885  0.0838236409</span></span>
-<span><span class="co">#&gt; 1637 -0.097080749  0.0324268391</span></span>
-<span><span class="co">#&gt; 1906  0.048446937 -0.0150064112</span></span>
-<span><span class="co">#&gt; 1909 -0.052969237  0.0205894104</span></span>
-<span><span class="co">#&gt; 1942  0.209581012 -0.0525053879</span></span>
-<span><span class="co">#&gt; 1946 -0.042287233  0.0350616964</span></span>
-<span><span class="co">#&gt; 2030 -0.429112816  0.0588461805</span></span>
-<span><span class="co">#&gt; 2208 -0.024593477  0.0228554436</span></span>
-<span><span class="co">#&gt; 2277  0.309800057 -0.1834173408</span></span>
-<span><span class="co">#&gt; 2305  0.550610497 -0.2049548526</span></span>
-<span><span class="co">#&gt; 2336  0.142313348 -0.0290535691</span></span>
-<span><span class="co">#&gt; 2458  0.245993091 -0.0255602587</span></span>
-<span><span class="co">#&gt; 2467 -0.222494935  0.0640753511</span></span>
-<span><span class="co">#&gt; 2526  0.449997476 -0.1312121315</span></span>
-<span><span class="co">#&gt; 2626  0.027751982  0.0238061610</span></span>
-<span><span class="co">#&gt; 2629  0.335613322 -0.0942540137</span></span>
-<span><span class="co">#&gt; 2639  0.094386542 -0.0820201077</span></span>
-<span><span class="co">#&gt; 2651 -0.393517983  0.1350175898</span></span>
-<span><span class="co">#&gt; 2655  0.640384122 -0.1435806679</span></span>
-<span><span class="co">#&gt; 2658 -0.243275105  0.0607205634</span></span>
-<span><span class="co">#&gt; 2755  0.135787228 -0.0631922841</span></span>
-<span><span class="co">#&gt; 2768 -0.268666958  0.0917130815</span></span>
-<span><span class="co">#&gt; 2771  0.033436716  0.0272030521</span></span>
-<span><span class="co">#&gt; 2818 -0.018785461  0.0214043728</span></span>
-<span><span class="co">#&gt; 2917  0.152738008 -0.0762445189</span></span>
-<span><span class="co">#&gt; 2990  0.448844959 -0.0935887501</span></span>
-<span><span class="co">#&gt; 2995 -0.235287167  0.0148768819</span></span>
-<span><span class="co">#&gt; 3013 -0.106680710  0.0516779815</span></span>
-<span><span class="co">#&gt; 3020  0.090727137 -0.0308716386</span></span>
-<span><span class="co">#&gt; 3039  0.243996619 -0.0435977108</span></span>
-<span><span class="co">#&gt; 3088 -0.042231336 -0.0122411932</span></span>
-<span><span class="co">#&gt; 3152 -0.034103349  0.0356155581</span></span>
-<span><span class="co">#&gt; 3332 -0.259777846  0.0305681683</span></span>
-<span><span class="co">#&gt; 3351 -0.461248418  0.0996270996</span></span>
-<span><span class="co">#&gt; 3377  0.142496875 -0.1211102758</span></span>
-<span><span class="co">#&gt; 3427  0.841386693 -0.2339682964</span></span>
-<span><span class="co">#&gt; 3498  0.024887322 -0.0537205006</span></span>
-<span><span class="co">#&gt; 3499 -0.119817169  0.0080680143</span></span>
-<span><span class="co">#&gt; 3533 -0.149220939  0.0010719643</span></span>
-<span><span class="co">#&gt; 3610  0.297746069 -0.0014053243</span></span>
-<span><span class="co">#&gt; 3657 -0.069261452  0.0633533767</span></span>
-<span><span class="co">#&gt; 3688 -0.061555723  0.0315302117</span></span>
-<span><span class="co">#&gt; 3705 -0.427141188  0.0523408834</span></span>
-<span><span class="co">#&gt; 3716  0.061285137  0.0757199239</span></span>
-<span><span class="co">#&gt; 3838  0.485386271 -0.1598435378</span></span>
-<span><span class="co">#&gt; 3881 -0.309537022  0.0860578519</span></span>
-<span><span class="co">#&gt; 3967 -0.056525049  0.0445060296</span></span>
-<span><span class="co">#&gt; 3992  0.075297122 -0.0637600889</span></span>
-<span><span class="co">#&gt; 3999 -0.055817277  0.0457642823</span></span>
-<span><span class="co">#&gt; 4042 -0.197812746  0.0313570583</span></span>
-<span><span class="co">#&gt; 4173 -0.082777595  0.0432272733</span></span>
-<span><span class="co">#&gt; 4223  0.266360906 -0.0698408106</span></span>
-<span><span class="co">#&gt; 4253 -0.002838943 -0.0732012994</span></span>
-<span><span class="co">#&gt; 4292  0.495110532 -0.1764400335</span></span>
-<span><span class="co">#&gt; 4325  0.021047068  0.0103006817</span></span>
-<span><span class="co">#&gt; 4350 -0.262817422  0.1005502052</span></span>
-<span><span class="co">#&gt; 4383 -0.234756733  0.0855789496</span></span>
-<span><span class="co">#&gt; 4410 -0.063023118  0.0284242048</span></span>
-<span><span class="co">#&gt; 4420  0.205737288 -0.0273245989</span></span>
-<span><span class="co">#&gt; 4458 -0.043787877 -0.0105867355</span></span>
-<span><span class="co">#&gt; 4511  0.216198981 -0.0590666506</span></span>
-<span><span class="co">#&gt; 4523 -0.253392354  0.0623924215</span></span>
-<span><span class="co">#&gt; 4530  0.061007622 -0.0141412262</span></span>
-<span><span class="co">#&gt; 4642  0.120939515 -0.0012115746</span></span>
-<span><span class="co">#&gt; 4868 -0.225562808  0.0092349324</span></span>
-<span><span class="co">#&gt; 4931 -0.151489897 -0.0105474646</span></span>
-<span><span class="co">#&gt; 5192 -0.244884720  0.0662313861</span></span>
-<span><span class="co">#&gt; 5404 -0.267282666  0.0289963481</span></span>
-<span><span class="co">#&gt; 5619 -0.088591305  0.1050668069</span></span>
-<span><span class="co">#&gt; 5640  0.066352031  0.0263435429</span></span>
-<span><span class="co">#&gt; 5650  0.496007374 -0.1520751279</span></span>
-<span><span class="co">#&gt; 5667 -0.291090712  0.0849233773</span></span>
-<span><span class="co">#&gt; 5720  0.091591369 -0.0101163734</span></span>
-<span><span class="co">#&gt; 5761  0.134959735  0.0032009015</span></span>
-<span><span class="co">#&gt; 5762 -0.090505308  0.0088358929</span></span>
-<span><span class="co">#&gt; 5783 -0.093105251  0.0419784658</span></span>
-<span><span class="co">#&gt; 5815 -0.180032189  0.0567256485</span></span>
-<span><span class="co">#&gt; 5819 -0.324949316  0.0664861258</span></span>
-<span><span class="co">#&gt; 5838 -0.038168235  0.0005292275</span></span>
-<span><span class="co">#&gt; 5937  0.040928181 -0.0176469977</span></span>
-<span><span class="co">#&gt; 6074  0.361576085 -0.1098990853</span></span>
-<span><span class="co">#&gt; 6089  0.230329688 -0.0455594013</span></span>
-<span><span class="co">#&gt; 6144 -0.272422991  0.0809874046</span></span>
-<span><span class="co">#&gt; 6170  0.279563058 -0.0545497420</span></span>
-<span><span class="co">#&gt; 6291  0.181117957 -0.0356960554</span></span>
-<span><span class="co">#&gt; 6366  0.193708113 -0.0594649551</span></span>
-<span><span class="co">#&gt; 6397  0.183418370 -0.0437084542</span></span>
-<span><span class="co">#&gt; 6415 -0.082399227  0.0577125726</span></span>
-<span><span class="co">#&gt; 6443 -0.098586726 -0.0413265591</span></span>
-<span><span class="co">#&gt; 6464 -0.006930839 -0.0110530398</span></span>
-<span><span class="co">#&gt; 6469  0.342855296 -0.0923368634</span></span>
-<span><span class="co">#&gt; 6484  0.099185197 -0.0332806845</span></span>
-<span><span class="co">#&gt; 6578  0.317864661 -0.0765973348</span></span>
-<span><span class="co">#&gt; 6600 -0.226249834  0.1266724638</span></span>
-<span><span class="co">#&gt; 6808 -0.331443100  0.0659644663</span></span>
-<span><span class="co">#&gt; 6816  0.197569880 -0.0620211170</span></span>
-<span><span class="co">#&gt; 6897  0.032147952  0.0304756664</span></span>
-<span><span class="co">#&gt; 6990 -0.298601140  0.0257587587</span></span>
-<span><span class="co">#&gt; 7011  0.061065847  0.0284790004</span></span>
-<span><span class="co">#&gt; 7101 -0.108095935  0.0111424320</span></span>
-<span><span class="co">#&gt; 7172 -0.200642122  0.0236336161</span></span>
-<span><span class="co">#&gt; 7232 -0.031354643  0.0561977605</span></span>
-<span><span class="co">#&gt; 7276 -0.071317368  0.0498968187</span></span>
-<span><span class="co">#&gt; 7332  0.036955530  0.0115037701</span></span>
-<span><span class="co">#&gt; 7341 -0.284857609  0.0196994369</span></span>
-<span><span class="co">#&gt; 7342  0.071738535 -0.0234087825</span></span>
-<span><span class="co">#&gt; 7345 -0.246456373  0.0990572950</span></span>
-<span><span class="co">#&gt; 7364  0.281626879 -0.0887844808</span></span>
-<span><span class="co">#&gt; 7635  0.067695672 -0.0045773702</span></span>
-<span><span class="co">#&gt; 7688  0.594207877 -0.1591233000</span></span>
-<span><span class="co">#&gt; 7697  0.094743826 -0.0012484228</span></span>
-<span><span class="co">#&gt; 7734  0.033326916  0.0503135537</span></span>
-<span><span class="co">#&gt; 7890 -0.289921123  0.0298758440</span></span>
-<span><span class="co">#&gt; 7919 -0.149007142  0.0495897913</span></span>
-<span><span class="co">#&gt; 8009 -0.244371368  0.0271887171</span></span>
-<span><span class="co">#&gt; 8150  0.064657992 -0.0398760061</span></span>
-<span><span class="co">#&gt; 8165  0.175619037 -0.0474879689</span></span>
-<span><span class="co">#&gt; 8175  0.106248119 -0.0365013872</span></span>
-<span><span class="co">#&gt; 8188 -0.114131805  0.0573622366</span></span>
-<span><span class="co">#&gt; 8193  0.542176501 -0.1395995719</span></span>
-<span><span class="co">#&gt; 8202 -0.224686594  0.0855379047</span></span>
-<span><span class="co">#&gt; 8357  0.189677518 -0.0218034980</span></span>
-<span><span class="co">#&gt; 8367 -0.753895035  0.1525305352</span></span>
-<span><span class="co">#&gt; 8477  0.074297200  0.0168614134</span></span>
-<span><span class="co">#&gt; 8531 -0.205339027  0.0413324032</span></span>
-<span><span class="co">#&gt; 8627 -0.378034984  0.0380125197</span></span>
-<span><span class="co">#&gt; 8628  0.607613395 -0.1688034840</span></span>
-<span><span class="co">#&gt; 8707 -0.085939080  0.0478432971</span></span>
-<span><span class="co">#&gt; 8775 -0.201067311  0.0092501597</span></span>
-<span><span class="co">#&gt; 8800 -0.001740915  0.0111088913</span></span>
-<span><span class="co">#&gt; 8854 -0.559785941  0.1509853643</span></span>
-<span><span class="co">#&gt; 8857  0.264207656 -0.0929013046</span></span>
-<span><span class="co">#&gt; 8874  0.185982681 -0.0115522511</span></span>
-<span><span class="co">#&gt; 8946 -0.167392474  0.0227325069</span></span>
-<span><span class="co">#&gt; 8983 -0.141209027  0.0250288618</span></span>
-<span><span class="co">#&gt; 9021 -0.240450945  0.0425264700</span></span>
-<span><span class="co">#&gt; 9104 -0.041255449  0.0031660145</span></span>
-<span><span class="co">#&gt; 9158 -0.281158323  0.1121016974</span></span>
-<span><span class="co">#&gt; 9198  0.321737680 -0.0485854075</span></span>
-<span><span class="co">#&gt; 9225  0.003967024  0.0297600149</span></span>
-<span><span class="co">#&gt; 9292  0.236024371 -0.0736002233</span></span>
-<span><span class="co">#&gt; 9340 -0.017193371  0.0168080235</span></span>
-<span><span class="co">#&gt; 9347 -0.055089446  0.0615863493</span></span>
-<span><span class="co">#&gt; 9359 -0.048633702 -0.0193351608</span></span>
-<span><span class="co">#&gt; 9397 -0.475984110  0.1004098564</span></span>
-<span><span class="co">#&gt; 9508  0.106191420 -0.0031993549</span></span>
-<span><span class="co">#&gt; 9550 -0.265395980  0.0857421977</span></span>
-<span><span class="co">#&gt; 9586 -0.141583246  0.0331380964</span></span></code></pre></div>
+<span><span class="co">#&gt; 1224 -0.169934903  0.0484630054</span></span>
+<span><span class="co">#&gt; 1288 -0.007840719  0.0020184342</span></span>
+<span><span class="co">#&gt; 1296 -0.120121384  0.0316003121</span></span>
+<span><span class="co">#&gt; 1308  0.110260016 -0.0345814029</span></span>
+<span><span class="co">#&gt; 1317  0.068892627 -0.0236912696</span></span>
+<span><span class="co">#&gt; 1358 -0.296774372  0.0904682545</span></span>
+<span><span class="co">#&gt; 1374 -0.405072947  0.1220606747</span></span>
+<span><span class="co">#&gt; 1433  0.318400202 -0.0830043713</span></span>
+<span><span class="co">#&gt; 1436  0.259394301 -0.0698354596</span></span>
+<span><span class="co">#&gt; 1461 -0.078477863  0.0391032731</span></span>
+<span><span class="co">#&gt; 1462  0.343550954 -0.1048708761</span></span>
+<span><span class="co">#&gt; 1477  0.035716104 -0.0164384112</span></span>
+<span><span class="co">#&gt; 1499 -0.317868388  0.0968881791</span></span>
+<span><span class="co">#&gt; 1637 -0.090390950  0.0269646899</span></span>
+<span><span class="co">#&gt; 1906  0.055768347 -0.0169288276</span></span>
+<span><span class="co">#&gt; 1909 -0.065472718  0.0169395570</span></span>
+<span><span class="co">#&gt; 1942  0.196755113 -0.0558813645</span></span>
+<span><span class="co">#&gt; 1946 -0.095505668  0.0402309899</span></span>
+<span><span class="co">#&gt; 2030 -0.402888189  0.1036469112</span></span>
+<span><span class="co">#&gt; 2208 -0.025120302  0.0114460657</span></span>
+<span><span class="co">#&gt; 2277  0.337550172 -0.1136157208</span></span>
+<span><span class="co">#&gt; 2305  0.582441616 -0.1854428413</span></span>
+<span><span class="co">#&gt; 2336  0.134604118 -0.0366408100</span></span>
+<span><span class="co">#&gt; 2458  0.241996781 -0.0646483272</span></span>
+<span><span class="co">#&gt; 2467 -0.226680562  0.0625779063</span></span>
+<span><span class="co">#&gt; 2526  0.439556485 -0.1276085840</span></span>
+<span><span class="co">#&gt; 2626  0.012854549  0.0012862800</span></span>
+<span><span class="co">#&gt; 2629  0.360692714 -0.1075798863</span></span>
+<span><span class="co">#&gt; 2639  0.120441776 -0.0423993743</span></span>
+<span><span class="co">#&gt; 2651 -0.406708936  0.1242891680</span></span>
+<span><span class="co">#&gt; 2655  0.615656442 -0.1693982670</span></span>
+<span><span class="co">#&gt; 2658 -0.261375232  0.0733533865</span></span>
+<span><span class="co">#&gt; 2755  0.111844309 -0.0347401814</span></span>
+<span><span class="co">#&gt; 2768 -0.287438525  0.0866945732</span></span>
+<span><span class="co">#&gt; 2771  0.007098193  0.0055279386</span></span>
+<span><span class="co">#&gt; 2818 -0.017209992  0.0099641840</span></span>
+<span><span class="co">#&gt; 2917  0.170991702 -0.0565713328</span></span>
+<span><span class="co">#&gt; 2990  0.482050460 -0.1316049132</span></span>
+<span><span class="co">#&gt; 2995 -0.222728540  0.0531943679</span></span>
+<span><span class="co">#&gt; 3013 -0.126917295  0.0408401321</span></span>
+<span><span class="co">#&gt; 3020  0.054081114 -0.0155796367</span></span>
+<span><span class="co">#&gt; 3039  0.244154050 -0.0654082046</span></span>
+<span><span class="co">#&gt; 3088 -0.017186488 -0.0004443775</span></span>
+<span><span class="co">#&gt; 3152 -0.054853716  0.0211548556</span></span>
+<span><span class="co">#&gt; 3332 -0.257656248  0.0698106244</span></span>
+<span><span class="co">#&gt; 3351 -0.420868035  0.1138012619</span></span>
+<span><span class="co">#&gt; 3377  0.174422620 -0.0631883751</span></span>
+<span><span class="co">#&gt; 3427  0.875949018 -0.2551272985</span></span>
+<span><span class="co">#&gt; 3498 -0.009415170 -0.0069280841</span></span>
+<span><span class="co">#&gt; 3499 -0.138316005  0.0318361010</span></span>
+<span><span class="co">#&gt; 3533 -0.145407439  0.0316613782</span></span>
+<span><span class="co">#&gt; 3610  0.313525367 -0.0790018448</span></span>
+<span><span class="co">#&gt; 3657 -0.086102109  0.0280277586</span></span>
+<span><span class="co">#&gt; 3688 -0.030130748  0.0074381151</span></span>
+<span><span class="co">#&gt; 3705 -0.385929782  0.1023309955</span></span>
+<span><span class="co">#&gt; 3716  0.035108793  0.0052430806</span></span>
+<span><span class="co">#&gt; 3838  0.479257816 -0.1411916170</span></span>
+<span><span class="co">#&gt; 3881 -0.296850514  0.0823500523</span></span>
+<span><span class="co">#&gt; 3967 -0.045346466  0.0181219299</span></span>
+<span><span class="co">#&gt; 3992  0.099519612 -0.0356231158</span></span>
+<span><span class="co">#&gt; 3999 -0.052640860  0.0216319988</span></span>
+<span><span class="co">#&gt; 4042 -0.197893269  0.0488311886</span></span>
+<span><span class="co">#&gt; 4173 -0.088350067  0.0301256054</span></span>
+<span><span class="co">#&gt; 4223  0.266744136 -0.0778116717</span></span>
+<span><span class="co">#&gt; 4253  0.031749842 -0.0255555401</span></span>
+<span><span class="co">#&gt; 4292  0.521310978 -0.1594846494</span></span>
+<span><span class="co">#&gt; 4325  0.009310789  0.0050361203</span></span>
+<span><span class="co">#&gt; 4350 -0.297295651  0.0908865951</span></span>
+<span><span class="co">#&gt; 4383 -0.282542432  0.0857098301</span></span>
+<span><span class="co">#&gt; 4410 -0.074926191  0.0232212238</span></span>
+<span><span class="co">#&gt; 4420  0.184666268 -0.0496780305</span></span>
+<span><span class="co">#&gt; 4458 -0.021676941  0.0017713352</span></span>
+<span><span class="co">#&gt; 4511  0.217381792 -0.0672136642</span></span>
+<span><span class="co">#&gt; 4523 -0.259948575  0.0760573128</span></span>
+<span><span class="co">#&gt; 4530  0.017403274 -0.0020254277</span></span>
+<span><span class="co">#&gt; 4642  0.125767623 -0.0273296529</span></span>
+<span><span class="co">#&gt; 4868 -0.236776899  0.0564516730</span></span>
+<span><span class="co">#&gt; 4931 -0.164323177  0.0369784096</span></span>
+<span><span class="co">#&gt; 5192 -0.214861224  0.0573871806</span></span>
+<span><span class="co">#&gt; 5404 -0.208359199  0.0449287006</span></span>
+<span><span class="co">#&gt; 5619 -0.054056780  0.0318423636</span></span>
+<span><span class="co">#&gt; 5640  0.064664160 -0.0126144003</span></span>
+<span><span class="co">#&gt; 5650  0.489479118 -0.1407784263</span></span>
+<span><span class="co">#&gt; 5667 -0.283509096  0.0857569790</span></span>
+<span><span class="co">#&gt; 5720  0.097236634 -0.0245184608</span></span>
+<span><span class="co">#&gt; 5761  0.119344934 -0.0242388711</span></span>
+<span><span class="co">#&gt; 5762 -0.071197537  0.0162747328</span></span>
+<span><span class="co">#&gt; 5783 -0.081933178  0.0247260166</span></span>
+<span><span class="co">#&gt; 5815 -0.187340951  0.0555854868</span></span>
+<span><span class="co">#&gt; 5819 -0.315919366  0.0849850257</span></span>
+<span><span class="co">#&gt; 5838 -0.029283350  0.0077877641</span></span>
+<span><span class="co">#&gt; 5937  0.050432229 -0.0176749438</span></span>
+<span><span class="co">#&gt; 6074  0.360234770 -0.1029339227</span></span>
+<span><span class="co">#&gt; 6089  0.224408433 -0.0604356535</span></span>
+<span><span class="co">#&gt; 6144 -0.291204156  0.0851950899</span></span>
+<span><span class="co">#&gt; 6170  0.290597283 -0.0742598668</span></span>
+<span><span class="co">#&gt; 6291  0.205954836 -0.0561388343</span></span>
+<span><span class="co">#&gt; 6366  0.202510633 -0.0594848229</span></span>
+<span><span class="co">#&gt; 6397  0.168407017 -0.0444952531</span></span>
+<span><span class="co">#&gt; 6415 -0.066353091  0.0252905737</span></span>
+<span><span class="co">#&gt; 6443 -0.074735917  0.0102799339</span></span>
+<span><span class="co">#&gt; 6464 -0.026313523  0.0051057369</span></span>
+<span><span class="co">#&gt; 6469  0.303898400 -0.0785744370</span></span>
+<span><span class="co">#&gt; 6484  0.114243188 -0.0426948964</span></span>
+<span><span class="co">#&gt; 6578  0.312923327 -0.0891869407</span></span>
+<span><span class="co">#&gt; 6600 -0.245760181  0.0803257940</span></span>
+<span><span class="co">#&gt; 6808 -0.303255196  0.0811582973</span></span>
+<span><span class="co">#&gt; 6816  0.180927859 -0.0524687532</span></span>
+<span><span class="co">#&gt; 6897  0.034103208 -0.0006581543</span></span>
+<span><span class="co">#&gt; 6990 -0.285854793  0.0721911619</span></span>
+<span><span class="co">#&gt; 7011  0.031240836 -0.0027379460</span></span>
+<span><span class="co">#&gt; 7101 -0.121583610  0.0331155054</span></span>
+<span><span class="co">#&gt; 7172 -0.185365390  0.0481045833</span></span>
+<span><span class="co">#&gt; 7232 -0.046127481  0.0263432687</span></span>
+<span><span class="co">#&gt; 7276 -0.079475511  0.0312825132</span></span>
+<span><span class="co">#&gt; 7332  0.055182822 -0.0158540995</span></span>
+<span><span class="co">#&gt; 7341 -0.284399889  0.0720398869</span></span>
+<span><span class="co">#&gt; 7342  0.064212989 -0.0189717669</span></span>
+<span><span class="co">#&gt; 7345 -0.252890323  0.0805535321</span></span>
+<span><span class="co">#&gt; 7364  0.290202961 -0.0850729187</span></span>
+<span><span class="co">#&gt; 7635  0.073112761 -0.0172150034</span></span>
+<span><span class="co">#&gt; 7688  0.619349977 -0.1792330219</span></span>
+<span><span class="co">#&gt; 7697  0.095639141 -0.0238826906</span></span>
+<span><span class="co">#&gt; 7734  0.014643894  0.0086617659</span></span>
+<span><span class="co">#&gt; 7890 -0.275256456  0.0715160781</span></span>
+<span><span class="co">#&gt; 7919 -0.164444669  0.0508069476</span></span>
+<span><span class="co">#&gt; 8009 -0.225761029  0.0618499297</span></span>
+<span><span class="co">#&gt; 8150  0.075671140 -0.0279229621</span></span>
+<span><span class="co">#&gt; 8165  0.171725217 -0.0491859344</span></span>
+<span><span class="co">#&gt; 8175  0.123498307 -0.0385463505</span></span>
+<span><span class="co">#&gt; 8188 -0.150869785  0.0448245563</span></span>
+<span><span class="co">#&gt; 8193  0.514473612 -0.1438987815</span></span>
+<span><span class="co">#&gt; 8202 -0.239384601  0.0729096036</span></span>
+<span><span class="co">#&gt; 8357  0.197473961 -0.0562790086</span></span>
+<span><span class="co">#&gt; 8367 -0.776217194  0.2141058702</span></span>
+<span><span class="co">#&gt; 8477  0.036517616 -0.0007453225</span></span>
+<span><span class="co">#&gt; 8531 -0.219928087  0.0626051566</span></span>
+<span><span class="co">#&gt; 8627 -0.352196603  0.0942615438</span></span>
+<span><span class="co">#&gt; 8628  0.595899916 -0.1704784683</span></span>
+<span><span class="co">#&gt; 8707 -0.076777352  0.0261532425</span></span>
+<span><span class="co">#&gt; 8775 -0.190797237  0.0470764418</span></span>
+<span><span class="co">#&gt; 8800  0.007145467 -0.0025477033</span></span>
+<span><span class="co">#&gt; 8854 -0.575354318  0.1649307995</span></span>
+<span><span class="co">#&gt; 8857  0.269589997 -0.0787290632</span></span>
+<span><span class="co">#&gt; 8874  0.154033890 -0.0360728209</span></span>
+<span><span class="co">#&gt; 8946 -0.158654369  0.0475701902</span></span>
+<span><span class="co">#&gt; 8983 -0.124362965  0.0295975945</span></span>
+<span><span class="co">#&gt; 9021 -0.261325833  0.0705960802</span></span>
+<span><span class="co">#&gt; 9104  0.004559101 -0.0033644879</span></span>
+<span><span class="co">#&gt; 9158 -0.292540123  0.0920067855</span></span>
+<span><span class="co">#&gt; 9198  0.347708797 -0.0975904342</span></span>
+<span><span class="co">#&gt; 9225  0.018927189 -0.0005751321</span></span>
+<span><span class="co">#&gt; 9292  0.274423361 -0.0821335974</span></span>
+<span><span class="co">#&gt; 9340 -0.022945413  0.0092996609</span></span>
+<span><span class="co">#&gt; 9347 -0.062717973  0.0244423946</span></span>
+<span><span class="co">#&gt; 9359  0.012302584 -0.0180649618</span></span>
+<span><span class="co">#&gt; 9397 -0.520016492  0.1450591625</span></span>
+<span><span class="co">#&gt; 9508  0.085206319 -0.0193617510</span></span>
+<span><span class="co">#&gt; 9550 -0.267133581  0.0801879186</span></span>
+<span><span class="co">#&gt; 9586 -0.153549872  0.0419366968</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">

@@ -56,7 +56,8 @@
                         <h4 data-toc-skip class="author">Jared Knowles
 and Carl Frederick</h4>
             
-            <h4 data-toc-skip class="date">2026-05-29</h4>
+            <h4 data-toc-skip class="date">Written 2015-05-21 (last
+updated 2026-05-29)</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jknowles/merTools/blob/main/vignettes/Using_predictInterval.Rmd" class="external-link"><code>vignettes/Using_predictInterval.Rmd</code></a></small>
       <div class="d-none name"><code>Using_predictInterval.Rmd</code></div>
@@ -64,6 +65,7 @@ and Carl Frederick</h4>
 
     
     
+<style type="text/css">pre, pre code { white-space: pre-wrap !important; word-break: break-word; overflow-wrap: anywhere; }</style>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -379,6 +381,7 @@ groups not present in the original data.</li>
 <span><span class="va">comp.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"predictInterval()"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fl">0.1</span>, <span class="va">PI</span><span class="op">)</span>,</span>
 <span>                   <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"arm::sim()"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI.arm</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span>, <span class="va">PI.arm</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, y<span class="op">=</span><span class="va">fit</span>, ymin<span class="op">=</span><span class="va">lwr</span>, ymax<span class="op">=</span><span class="va">upr</span>, color<span class="op">=</span><span class="va">Predict.Method</span><span class="op">)</span>, data<span class="op">=</span><span class="va">comp.data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,<span class="fl">181</span><span class="op">:</span><span class="fl">210</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_linerange</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -448,6 +451,7 @@ each method, in turn.</p>
 <span><span class="va">comp.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"predictInterval()"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fl">0.1</span>, <span class="va">PI</span><span class="op">)</span>,</span>
 <span>                   <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"lme4::bootMer() - Method 1"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI.boot1</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span>, <span class="va">PI.boot1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, y<span class="op">=</span><span class="va">fit</span>, ymin<span class="op">=</span><span class="va">lwr</span>, ymax<span class="op">=</span><span class="va">upr</span>, color<span class="op">=</span><span class="va">Predict.Method</span><span class="op">)</span>, data<span class="op">=</span><span class="va">comp.data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,<span class="fl">181</span><span class="op">:</span><span class="fl">210</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_linerange</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -459,15 +463,19 @@ each method, in turn.</p>
 plot of chunk bootMer.1
 </p>
 </div>
-<p>The intervals produced by <code>predictInterval</code>, represented
-in green, cover the point estimates produced by <code>bootMer</code> in
-every case for these 30 observations. Additionally, in almost every
-case, the <code>predictInterval</code> encompasses the entire interval
-presented by <code>bootMer</code>. Here, the estimates produced by
-<code>bootMer</code> are re-estimating the group terms, but by refitting
-the model, they are also taking into account the conditional variance of
-these terms, or <code>theta</code>, and provide tighter prediction
-intervals than the <code>predictInterval</code> method.</p>
+<p>Method 1 (<code>use.u = FALSE</code>) re-simulates the random effects
+on every bootstrap replicate instead of conditioning on the values
+estimated from the data, so its point predictions are pulled toward the
+population average and do <em>not</em> track individual subjects. For
+subjects whose intercept is far from the mean (indices 11-30 above –
+subjects 309 and 310, the lowest-reaction-time subjects) the
+<code>bootMer</code> points therefore sit well above the
+subject-specific predictions from <code><a href="../reference/predictInterval.html">predictInterval()</a></code> (shown
+in green), which condition on the estimated random effects. This
+divergence is expected: the two methods are answering slightly different
+questions. The conditional comparisons in Methods 2 and 3 below, which
+hold the random effects fixed (<code>use.u = TRUE</code>), align closely
+with <code><a href="../reference/predictInterval.html">predictInterval()</a></code>.</p>
 </div>
 <div class="section level4">
 <h4 id="step-3b-lme4bootmer-method-2">Step 3b: <code>lme4::bootMer()</code> method 2<a class="anchor" aria-label="anchor" href="#step-3b-lme4bootmer-method-2"></a>
@@ -483,6 +491,7 @@ intervals than the <code>predictInterval</code> method.</p>
 <span><span class="va">comp.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"predictInterval()"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fl">0.1</span>, <span class="va">PI</span><span class="op">)</span>,</span>
 <span>                   <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"lme4::bootMer() - Method 2"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI.boot2</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span>, <span class="va">PI.boot2</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, y<span class="op">=</span><span class="va">fit</span>, ymin<span class="op">=</span><span class="va">lwr</span>, ymax<span class="op">=</span><span class="va">upr</span>, color<span class="op">=</span><span class="va">Predict.Method</span><span class="op">)</span>, data<span class="op">=</span><span class="va">comp.data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,<span class="fl">181</span><span class="op">:</span><span class="fl">210</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_linerange</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -515,6 +524,7 @@ the variance in the fixed effects – similar to the
 <span><span class="va">comp.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"predictInterval()"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fl">0.1</span>, <span class="va">PI</span><span class="op">)</span>,</span>
 <span>                   <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"lme4::bootMer() - Method 3"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI.boot3</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span>, <span class="va">PI.boot3</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, y<span class="op">=</span><span class="va">fit</span>, ymin<span class="op">=</span><span class="va">lwr</span>, ymax<span class="op">=</span><span class="va">upr</span>, color<span class="op">=</span><span class="va">Predict.Method</span><span class="op">)</span>, data<span class="op">=</span><span class="va">comp.data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,<span class="fl">181</span><span class="op">:</span><span class="fl">210</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_linerange</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -540,15 +550,15 @@ plot of chunk bootMer.3
 <span>  <span class="va">PI.stan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">zed</span>, <span class="fl">2</span>, <span class="va">median</span><span class="op">)</span>, <span class="fu">central_intervals</span><span class="op">(</span><span class="va">zed</span>, prob<span class="op">=</span><span class="fl">0.95</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1: Gradient evaluation took 5.8e-05 seconds</span></span>
-<span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.58 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1: Gradient evaluation took 5.5e-05 seconds</span></span>
+<span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.55 seconds.</span></span>
 <span><span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
 <span><span class="co">#&gt; Chain 1: </span></span>
-<span><span class="co">#&gt; Chain 1:  Elapsed Time: 4.159 seconds (Warm-up)</span></span>
-<span><span class="co">#&gt; Chain 1:                1.226 seconds (Sampling)</span></span>
-<span><span class="co">#&gt; Chain 1:                5.385 seconds (Total)</span></span>
+<span><span class="co">#&gt; Chain 1:  Elapsed Time: 4.058 seconds (Warm-up)</span></span>
+<span><span class="co">#&gt; Chain 1:                1.222 seconds (Sampling)</span></span>
+<span><span class="co">#&gt; Chain 1:                5.28 seconds (Total)</span></span>
 <span><span class="co">#&gt; Chain 1:</span></span>
 <span></span>
 <span></span>
@@ -583,6 +593,7 @@ plot of chunk bootMer.3
 <span><span class="va">comp.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"predictInterval()"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fl">0.1</span>, <span class="va">PI</span><span class="op">)</span>,</span>
 <span>                   <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"rstanArm"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI.stan</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span>, <span class="va">PI.stan</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">comp.data</span><span class="op">$</span><span class="va">Predict.Method</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, y<span class="op">=</span><span class="va">fit</span>, ymin<span class="op">=</span><span class="va">lwr</span>, ymax<span class="op">=</span><span class="va">upr</span>, color<span class="op">=</span><span class="va">Predict.Method</span><span class="op">)</span>, data<span class="op">=</span><span class="va">comp.data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,<span class="fl">181</span><span class="op">:</span><span class="fl">210</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_linerange</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -619,39 +630,39 @@ prediction intervals for <code>merMod</code> objects.</p>
 <tbody>
 <tr class="odd">
 <td align="left">predictInterval()</td>
-<td align="right">0.213</td>
-<td align="right">0.043</td>
-<td align="right">0.263</td>
+<td align="right">0.196</td>
+<td align="right">0.000</td>
+<td align="right">0.196</td>
 </tr>
 <tr class="even">
 <td align="left">arm::sim()</td>
-<td align="right">0.440</td>
+<td align="right">0.386</td>
 <td align="right">0.000</td>
-<td align="right">0.442</td>
+<td align="right">0.386</td>
 </tr>
 <tr class="odd">
 <td align="left">lme4::bootMer()-Method 1</td>
-<td align="right">4.213</td>
-<td align="right">0.001</td>
-<td align="right">4.234</td>
+<td align="right">3.886</td>
+<td align="right">0.000</td>
+<td align="right">3.889</td>
 </tr>
 <tr class="even">
 <td align="left">lme4::bootMer()-Method 2</td>
-<td align="right">4.299</td>
-<td align="right">0.002</td>
-<td align="right">4.342</td>
+<td align="right">3.699</td>
+<td align="right">0.000</td>
+<td align="right">3.700</td>
 </tr>
 <tr class="odd">
 <td align="left">lme4::bootMer()-Method 3</td>
-<td align="right">4.000</td>
+<td align="right">3.711</td>
 <td align="right">0.000</td>
-<td align="right">4.002</td>
+<td align="right">3.711</td>
 </tr>
 <tr class="even">
 <td align="left">rstanarm:predict</td>
-<td align="right">5.927</td>
+<td align="right">5.765</td>
 <td align="right">0.009</td>
-<td align="right">5.938</td>
+<td align="right">5.781</td>
 </tr>
 </tbody>
 </table>
