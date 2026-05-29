@@ -34,7 +34,287 @@
       <small>Source: <a href="https://github.com/jknowles/merTools/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
-  </main></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.0" id="mertools-100">merTools 1.0.0<a class="anchor" aria-label="anchor" href="#mertools-100"></a></h2>
+<p>This is the 1.0 long-term-support release. It resolves the remaining open issues, fixes a correctness bug in <code><a href="../reference/predictInterval.html">predictInterval()</a></code> for nested random effects, repairs and extends the <code><a href="../reference/shinyMer.html">shinyMer()</a></code> explorer, adds a new <code><a href="../reference/plotREimpact.html">plotREimpact()</a></code> visualization, refreshes the documentation, and tidies the test suite for low-maintenance, long-term use.</p>
+<div class="section level3">
+<h3 id="new-features-1-0-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-1-0-0"></a></h3>
+<ul><li>
+<strong>New <code><a href="../reference/plotREimpact.html">plotREimpact()</a></code> function for visualizing <code><a href="../reference/REimpact.html">REimpact()</a></code> output (<a href="https://github.com/jknowles/merTools/issues/84" class="external-link">#84</a>, <a href="https://github.com/jknowles/merTools/issues/85" class="external-link">#85</a>).</strong> Plots the weighted-average fitted value for each expected-rank bin of a grouping factor, with confidence intervals, faceted by case. Passing a <em>named list</em> of <code><a href="../reference/REimpact.html">REimpact()</a></code> results overlays them on shared axes so the influence of different grouping factors (or the same factor across models) can be compared directly — previously this required hand-assembling the data frames. Uses a clean <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal()</a></code> look.</li>
+<li>
+<strong><code><a href="../reference/plotFEsim.html">plotFEsim()</a></code> now highlights significant fixed effects (<a href="https://github.com/jknowles/merTools/issues/85" class="external-link">#85</a>).</strong> Terms whose interval excludes the null line are drawn in solid black and the rest in grey, matching the convention already used by <code><a href="../reference/plotREsim.html">plotREsim()</a></code>, on a cleaner <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal()</a></code> canvas with labelled axes.</li>
+<li>
+<strong><code><a href="../reference/shinyMer.html">shinyMer()</a></code> gained a “Model Summary” tab (<a href="https://github.com/jknowles/merTools/issues/78" class="external-link">#78</a>).</strong> The interactive explorer now opens a dedicated tab summarizing the fitted model: the <code><a href="../reference/modelInfo.html">modelInfo()</a></code> overview (observations, grouping factors, AIC, residual sigma), the original model call, the fixed-effect estimates, the random effect variances/correlations (<code>VarCorr</code>), and the number of levels per grouping factor (<code>ngrps</code>).</li>
+<li>
+<strong><code><a href="../reference/shinyMer.html">shinyMer()</a></code> can now restrict the Random / Average draw to a subset of the data (<a href="https://github.com/jknowles/merTools/issues/32" class="external-link">#32</a>).</strong> When the “Random Obs” or “Average Obs” scenario is selected, a sidebar control lets you pick a model-frame variable and value to filter on; the chosen case is drawn from that subset (via the existing <code>draw(..., varList = )</code> machinery), enabling much richer on-the-fly exploration of specific cases.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-1-0-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-1-0-0"></a></h3>
+<ul><li>
+<strong>New “Exploring Contextual Effects with merTools” vignette (<a href="https://github.com/jknowles/merTools/issues/136" class="external-link">#136</a>).</strong> A fresh, worked example using the bundled <code>hsb</code> data (student SES vs. school-mean SES) that separates within-group and contextual effects, mirroring the easystats <code>modelbased</code> “effects in context” article (cited). It demonstrates <code><a href="../reference/FEsim.html">FEsim()</a></code>/ <code><a href="../reference/plotFEsim.html">plotFEsim()</a></code>, <code><a href="../reference/wiggle.html">wiggle()</a></code> + <code><a href="../reference/predictInterval.html">predictInterval()</a></code>, and the new <code><a href="../reference/plotREimpact.html">plotREimpact()</a></code> on a single, self-contained model.</li>
+<li>
+<strong>Rebuilt the “Prediction Intervals” vignette and fixed its formatting (<a href="https://github.com/jknowles/merTools/issues/116" class="external-link">#116</a>).</strong> Several section headers were missing the space after <code>#</code> (so they rendered as body text) and two sub-sections were both numbered “Step 3c”; these are corrected. The <code><a href="../reference/predictInterval.html">predictInterval()</a></code>-vs-<code><a href="https://rdrr.io/pkg/lme4/man/bootMer.html" class="external-link">bootMer()</a></code> comparison figure, which no longer matched the surrounding text, has been regenerated with the current code and now shows the methods agreeing closely. A latent <code><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display()</a></code> call (from <code>arm</code>, which was not attached) was qualified to <code><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">arm::display()</a></code>.</li>
+<li>
+<strong>Improved package citation and acknowledged influences (<a href="https://github.com/jknowles/merTools/issues/137" class="external-link">#137</a>).</strong> <code>inst/CITATION</code> now derives its version and year from the package metadata (rather than hard-coding a stale version), lists all package authors, and a citation footer points users to the methodological foundations — Gelman and Hill (2007), the <code>arm</code> package’s <code><a href="https://rdrr.io/pkg/arm/man/sim.html" class="external-link">sim()</a></code>, and <code>lme4</code> (Bates et al. 2015). The package-level help page (<code><a href="../reference/merTools-package.html">?merTools</a></code>) gained matching “Influences and acknowledgements” and “References” sections.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-1-0-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-0-0"></a></h3>
+<ul><li><p><strong>Fixed two <code><a href="../reference/shinyMer.html">shinyMer()</a></code> defects in the “Substantive Effect” tab.</strong> The fixed-effect impact (“wiggle”) plot crashed for any non-numeric fixed effect (<code>object 'newvals' not found</code>), and the numeric/factor branch used <code>class(x) %in% ...</code> inside <code>if()</code>, which errors with “the condition has length &gt; 1” for multi-class objects (e.g. ordered factors) on R &gt;= 4.2. Both are corrected (<code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric()</a></code> dispatch, and factor/character values now wiggle across their observed levels), and the per-case faceting index is computed correctly. The app’s data table was also migrated from the deprecated <code><a href="https://rdrr.io/pkg/shiny/man/renderDataTable.html" class="external-link">shiny::renderDataTable()</a></code> to <code><a href="https://rdrr.io/pkg/DT/man/dataTableOutput.html" class="external-link">DT::renderDT()</a></code>, the server now declares a <code>session</code> argument, and the substantive-effect interval uses a correct two-sided width.</p></li>
+<li><p><strong>Fixed non-reproducible <code><a href="../reference/predictInterval.html">predictInterval()</a></code> for partially-observed nested / interaction random effects (<a href="https://github.com/jknowles/merTools/issues/124" class="external-link">#124</a>).</strong> For a model such as <code>y ~ 1 + (1 | a / b)</code>, a prediction frame mixing observed and unobserved levels of the interaction grouping factor (<code>a:b</code>) returned seed-dependent point estimates, and batch predictions disagreed with row-by-row predictions. The mapping from the random-effect model matrix back to a grouping level used <code><a href="https://rdrr.io/r/base/maxCol.html" class="external-link">max.col()</a></code>, which returns a column even for an all-zero row (an unobserved interaction level) and breaks the resulting tie <em>at random</em> — so an unobserved level silently borrowed a randomly chosen observed level’s random effect. All-zero rows are now detected and routed through the existing new-level path, which zeroes that random-effect term’s contribution so the prediction falls back to the fixed effects plus any observed higher-level random effects, exactly as the out-of-sample warning describes. Observed-level predictions are bit-for-bit unchanged.</p></li>
+<li><p><strong>Restored single RNG stream in <code><a href="../reference/predictInterval.html">predictInterval()</a></code>.</strong> The refactor of <code><a href="../reference/predictInterval.html">predictInterval()</a></code> into component helpers inadvertently had each helper (<code><a href="../reference/simulate_random_effects.html">simulate_random_effects()</a></code>, <code><a href="../reference/simulate_fixed_effects.html">simulate_fixed_effects()</a></code>) call <code>set.seed(seed)</code> internally when invoked from the main function, resetting the RNG stream mid-call. This produced numerically different output for any user-supplied seed compared to CRAN releases. Fixed by passing <code>seed = NULL</code> from <code><a href="../reference/predictInterval.html">predictInterval()</a></code> to the helpers; the outer <code>set.seed(seed)</code> now pins a single, sequential stream (sigma → random effects → fixed effects → residuals) exactly as before the refactor. Verified against <code>origin/master</code> with a 16-case harness: 14 of 16 cases are now bit-for-bit identical to master, and the remaining 2 differ only by the intentional GLMM binomial-residual simulation fix below.</p></li>
+<li><p>Fixed parse error caused by debug statements inserted mid-function call in <code><a href="../reference/predictInterval.html">predictInterval()</a></code> (now correctly handles the function call structure)</p></li>
+<li><p>Fixed GLMM residual variance simulation to properly return NULL for all GLMM/NLMM models (no Gaussian residual variance exists for discrete distributions)</p></li>
+<li><p>Added <code>!is.null(sigma_vec)</code> checks in <code><a href="../reference/combine_components.html">combine_components()</a></code> to handle cases where GLMMs don’t have Gaussian residual variance to add (prevents errors with <code>sigma_vec = NULL</code>)</p></li>
+<li><p>Removed <code>seed</code> parameter from <code><a href="../reference/simulate_residual_variance.html">simulate_residual_variance()</a></code> (seeds are now handled at the <code><a href="../reference/predictInterval.html">predictInterval()</a></code> level for reproducibility)</p></li>
+<li><p>Updated test expectations to reflect that GLMMs return NULL from <code><a href="../reference/simulate_residual_variance.html">simulate_residual_variance()</a></code></p></li>
+<li><p>Replaced bare <code>subbars()</code> with <code><a href="https://rdrr.io/pkg/reformulas/man/subbars.html" class="external-link">reformulas::subbars()</a></code> in the random-effect prediction path to resolve the deprecation warning from lme4, which has migrated <code>subbars</code> to the <code>reformulas</code> package.</p></li>
+<li><p><strong>Fixed <code><a href="../reference/predictInterval.html">predictInterval()</a></code> on models with multiple random-effect term blocks per grouping factor (<a href="https://github.com/jknowles/merTools/issues/118" class="external-link">#118</a>).</strong> Models using the double-bar syntax (<code>(x + y || g)</code>), explicit splits (<code>(1|g) + (0 + x|g)</code>), or mixed correlated + uncorrelated specs previously failed with <code>Error in dimnames(reMatrix) &lt;- *vtmp* : 'dimnames' applied to non-array</code> because <code>lme4::ranef(..., condVar = TRUE)</code> returns <code>postVar</code> as a list of per-block arrays in those cases, and the level-filtering code assumed a 3-D array. <code><a href="../reference/simulate_random_effects.html">simulate_random_effects()</a></code> now normalizes the list to a single block-diagonal array (zero off-diagonals between uncorrelated blocks, preserving full covariance within correlated blocks) before indexing, so the <code><a href="https://rdrr.io/pkg/mvtnorm/man/Mvnorm.html" class="external-link">mvtnorm::rmvnorm()</a></code> path sees the mathematically correct joint posterior covariance. Correlated-only models are unaffected (guarded by <code><a href="https://rdrr.io/r/base/list.html" class="external-link">is.list()</a></code> check).</p></li>
+<li><p><strong>Fixed <code><a href="../reference/averageObs.html">averageObs()</a></code> / <code><a href="../reference/findFormFuns.html">findFormFuns()</a></code> on matrix-LHS models (<a href="https://github.com/jknowles/merTools/issues/83" class="external-link">#83</a>).</strong> <code>averageObs(gm1)</code> previously errored on two-column binomial GLMMs such as <code>glmer(cbind(successes, failures) ~ ..., family = binomial)</code> because <code><a href="../reference/collapseFrame.html">collapseFrame()</a></code> attempted to take the mean of the matrix response column, and a latent bug in the weights-selection path tried to index a <code>(weights)</code> column that does not exist in the model frame for cbind specifications. Matrix response columns are now detected and dropped before averaging. <strong>Behavior change:</strong> for matrix-LHS models the returned frame no longer contains the response column; for scalar-LHS models the response is still included as before. Callers that key off column count or column names from <code><a href="../reference/averageObs.html">averageObs()</a></code> should treat matrix-LHS output as predictors-only. The output remains valid <code>newdata</code> for <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> and <code><a href="../reference/predictInterval.html">predictInterval()</a></code>, which ignore the response column.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="technical-improvements-1-0-0">Technical Improvements<a class="anchor" aria-label="anchor" href="#technical-improvements-1-0-0"></a></h3>
+<ul><li>The residual variance logic now correctly distinguishes between:
+<ul><li>
+<strong>LMMs</strong>: Gaussian residual variance via <code>rnorm(N, yhat, sigma)</code> from gamma-distributed sigma</li>
+<li>
+<strong>GLMMs</strong>: Conditional distribution simulation via <code><a href="../reference/simulate_glmm_response.html">simulate_glmm_response()</a></code> (binomial/poisson/gamma)</li>
+</ul></li>
+<li>When <code>include.resid.var = TRUE</code> and GLMM with <code>type = "probability"</code>: Simulates from conditional distribution (theoretically correct for discrete distributions)</li>
+<li>When <code>include.resid.var = TRUE</code> and GLMM with <code>type = "linear.prediction"</code>: Returns linear predictor without Gaussian noise (correct behavior - GLMMs don’t have additive Gaussian noise)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="test-infrastructure-1-0-0">Test Infrastructure<a class="anchor" aria-label="anchor" href="#test-infrastructure-1-0-0"></a></h3>
+<ul><li>
+<strong>Added <code>tests/comparisons/predictInterval-regression.R</code></strong>, a standalone cross-version numeric regression harness. It pins a canonical set of LMM and GLMM inputs — covering <code>which</code>, <code>level</code>, <code>stat</code>, <code>ignore.fixed.terms</code>, <code>fix.intercept.variance</code>, and single-row-newdata cases — and serializes <code><a href="../reference/predictInterval.html">predictInterval()</a></code> output to an RDS bundle so two package versions can be compared bit-for-bit via a <code>diff</code> subcommand. Invoke it whenever touching simulation internals to confirm the change does not silently alter user-facing numeric output. See the README for a worked <code>git worktree</code>-based workflow.</li>
+<li>Pinned RNG version and algorithm across R releases via a new <code>tests/testthat/helper-seed.R</code> that sets <code>RNGversion("4.1.0")</code> and an explicit <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">RNGkind()</a></code>. This prevents silent stream differences across R-oldrel / R-release / R-devel on CI.</li>
+<li>Disabled testthat parallel execution (<code>Config/testthat/parallel: false</code>). File-level <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> behaves unpredictably under parallel workers with separate RNG state, which was the root cause of several of the intermittent CI failures observed during the 0.9.0 development cycle.</li>
+<li>Unified all test seeds to <code>11213</code> for consistency, preserving a single differing seed in two tests that explicitly assert that different seeds produce different results.</li>
+<li>Refactored the <code><a href="../reference/thetaExtract.html">thetaExtract()</a></code> test in <code>test-helpers.R</code> from a brittle numeric-equality check against a value calibrated to an older seed, into behavioral assertions (type, length, bounds).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="ci-1-0-0">CI<a class="anchor" aria-label="anchor" href="#ci-1-0-0"></a></h3>
+<ul><li>Bumped <code>actions/checkout</code> to <code>@v5</code> and set <code>FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true</code> on both workflows to address the GitHub Actions Node.js 20 deprecation (scheduled for 2026-09-16).</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.5" id="mertools-065">merTools 0.6.5<a class="anchor" aria-label="anchor" href="#mertools-065"></a></h2>
+<div class="section level3">
+<h3 id="code-architecture-improvements-0-6-5">Code Architecture Improvements<a class="anchor" aria-label="anchor" href="#code-architecture-improvements-0-6-5"></a></h3>
+<ul><li>Refactored <code><a href="../reference/predictInterval.html">predictInterval()</a></code> into modular component functions for improved maintainability and testability. The main function now orchestrates five internal helper functions:
+<ul><li>
+<code><a href="../reference/simulate_residual_variance.html">simulate_residual_variance()</a></code> - Draws residual standard deviation samples from the posterior</li>
+<li>
+<code><a href="../reference/simulate_fixed_effects.html">simulate_fixed_effects()</a></code> - Simulates fixed effect predictions with proper variance-covariance handling</li>
+<li>
+<code><a href="../reference/simulate_random_effects.html">simulate_random_effects()</a></code> - Simulates random effect contributions for all grouping factors</li>
+<li>
+<code><a href="../reference/combine_components.html">combine_components()</a></code> - Combines fixed, random, and residual variance components</li>
+<li>
+<code><a href="../reference/summarise_predictions.html">summarise_predictions()</a></code> - Computes prediction intervals from simulation results</li>
+</ul></li>
+<li>This refactoring reduces the main <code><a href="../reference/predictInterval.html">predictInterval()</a></code> function from ~520 lines to ~180 lines while preserving complete backward compatibility</li>
+<li>Added comprehensive unit tests for all helper functions (43 new tests)</li>
+<li>All existing tests pass without modification, ensuring numeric accuracy is preserved</li>
+</ul></div>
+<div class="section level3">
+<h3 id="benefits-0-6-5">Benefits<a class="anchor" aria-label="anchor" href="#benefits-0-6-5"></a></h3>
+<ul><li>
+<strong>Easier maintenance</strong>: Each component function has a single responsibility and can be updated independently</li>
+<li>
+<strong>Better testability</strong>: Individual simulation components can now be unit tested in isolation</li>
+<li>
+<strong>Improved readability</strong>: The main <code><a href="../reference/predictInterval.html">predictInterval()</a></code> function now clearly shows the high-level algorithm flow</li>
+<li>
+<strong>Foundation for future enhancements</strong>: The modular architecture makes it easier to add new features or optimization strategies</li>
+</ul></div>
+<div class="section level3">
+<h3 id="notes-0-6-5">Notes<a class="anchor" aria-label="anchor" href="#notes-0-6-5"></a></h3>
+<ul><li>The helper functions are internal and not exported; the public API remains unchanged</li>
+<li>Parallelization support is preserved in <code><a href="../reference/simulate_random_effects.html">simulate_random_effects()</a></code>
+</li>
+<li>Seed reproducibility is maintained by setting the random seed once at the start of <code><a href="../reference/predictInterval.html">predictInterval()</a></code>
+</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.4" id="mertools-064">merTools 0.6.4<a class="anchor" aria-label="anchor" href="#mertools-064"></a></h2><p class="text-muted">CRAN release: 2026-01-23</p>
+<ul><li>Maintenance release to merge <a href="https://github.com/DavisVaughan" class="external-link">@DavisVaughan</a> changes to accommodate upstream changes in <code>vctrs</code> package impacting <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">dplyr::bind_rows()</a></code> usage in <code>REsim</code> (<a href="https://github.com/jknowles/merTools/issues/133" class="external-link">#133</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.3" id="mertools-063">merTools 0.6.3<a class="anchor" aria-label="anchor" href="#mertools-063"></a></h2><p class="text-muted">CRAN release: 2025-09-05</p>
+<ul><li>Maintenance release to fix crossreference issues with function documentation</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.2" id="mertools-062">merTools 0.6.2<a class="anchor" aria-label="anchor" href="#mertools-062"></a></h2><p class="text-muted">CRAN release: 2024-02-08</p>
+<ul><li>Maintenance release to fix minor issues with function documentation</li>
+<li>Fix <a href="https://github.com/jknowles/merTools/issues/130" class="external-link">#130</a> by avoiding conflict with <code>vcov</code> in the <code>merDeriv</code> package</li>
+<li>Upgrade package test infrastructure to 3e testthat specification</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.1" id="mertools-061">merTools 0.6.1<a class="anchor" aria-label="anchor" href="#mertools-061"></a></h2><p class="text-muted">CRAN release: 2023-03-20</p>
+<ul><li>Maintenance release to keep package listed on CRAN</li>
+<li>Fix a small bug where parallel code path is run twice (<a href="https://github.com/jknowles/merTools/issues/126" class="external-link">#126</a>)</li>
+<li>Update plotting functions to avoid deprecated <code><a href="https://ggplot2.tidyverse.org/reference/aes_.html" class="external-link">aes_string()</a></code> calls (<a href="https://github.com/jknowles/merTools/issues/127" class="external-link">#127</a>)</li>
+<li>Fix (<a href="https://github.com/jknowles/merTools/issues/115" class="external-link">#115</a>) in description</li>
+<li>Speed up PI using <a href="https://github.com/bbolker" class="external-link">@bbolker</a> pull request (<a href="https://github.com/jknowles/merTools/issues/120" class="external-link">#120</a>)</li>
+<li>Updated package maintainer contact information</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.2" id="mertools-052">merTools 0.5.2<a class="anchor" aria-label="anchor" href="#mertools-052"></a></h2><p class="text-muted">CRAN release: 2020-06-23</p>
+<ul><li>Streamline vignette building to be precompiled and move tests to limit burden on CRAN check</li>
+<li>Switch dependency from <code>broom</code> to <code>broom.mixed</code> because of upstream package reorganization</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.1" id="mertools-051">merTools 0.5.1<a class="anchor" aria-label="anchor" href="#mertools-051"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-5-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-1"></a></h3>
+<ul><li>Fixed an issue where <code>averageObs</code> could not be calculated when model weights were specified in the original model (closes <a href="https://github.com/jknowles/merTools/issues/110" class="external-link">#110</a>)</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.0" id="mertools-050">merTools 0.5.0<a class="anchor" aria-label="anchor" href="#mertools-050"></a></h2><p class="text-muted">CRAN release: 2019-05-13</p>
+<div class="section level3">
+<h3 id="new-features-0-5-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-5-0"></a></h3>
+<ul><li>
+<code>subBoot</code> now works with <code>glmerMod</code> objects as well</li>
+<li>
+<code>reMargins</code> a new function that allows the user to marginalize the prediction over breaks in the distribution of random effect distributions, see <code>?reMargins</code> and the new <code>reMargins</code> vignette (closes <a href="https://github.com/jknowles/merTools/issues/73" class="external-link">#73</a>)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-5-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-0"></a></h3>
+<ul><li>Fixed an issue where known convergence errors were issuing warnings and causing the test suite to not work</li>
+<li>Fixed an issue where models with a random slope, no intercept, and no fixed term were unable to be predicted (<a href="https://github.com/jknowles/merTools/issues/101" class="external-link">#101</a>)</li>
+<li>Fixed an issue with shinyMer not working with substantive fixed effects (<a href="https://github.com/jknowles/merTools/issues/93" class="external-link">#93</a>)</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.2" id="mertools-042">merTools 0.4.2<a class="anchor" aria-label="anchor" href="#mertools-042"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-4-2">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-2"></a></h3>
+<ul><li>Parallel fitting of <code>merModLists</code> is now supported using the <code>future.apply</code> package and the <code>future_lapply</code> functions, optionally</li>
+<li>Reduced package installation surface by eliminating unnecessary packages in the <code>Suggests</code> field</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-4-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-2"></a></h3>
+<ul><li>Fixed a bug (<a href="https://github.com/jknowles/merTools/issues/94" class="external-link">#94</a>) where <code><a href="../reference/predictInterval.html">predictInterval()</a></code> would return a data.frame of the wrong dimensions when predicting a single row of observations for a <code>glm</code>
+</li>
+<li>Fixed a bug (<a href="https://github.com/jknowles/merTools/issues/96" class="external-link">#96</a>) related to <code>rstanarm</code> dependencies in the package vignette</li>
+<li>Switched from <code>dontrun</code> to <code>donttest</code> for long-running examples (CRAN compliance)</li>
+<li>Fixed and made more clear the generics applying to <code>merModList</code> objects (<a href="https://github.com/jknowles/merTools/issues/92" class="external-link">#92</a>)</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.1" id="mertools-041">merTools 0.4.1<a class="anchor" aria-label="anchor" href="#mertools-041"></a></h2><p class="text-muted">CRAN release: 2018-06-05</p>
+<div class="section level3">
+<h3 id="new-features-0-4-1">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-1"></a></h3>
+<ul><li>Standard errors reported by <code>merModList</code> functions now apply the Rubin correction for multiple imputation</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-4-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-1"></a></h3>
+<ul><li>Contribution by Alex Whitworth (<a href="https://github.com/alexWhitworth" class="external-link">@alexWhitworth</a>) adding error checking to plotting functions</li>
+<li>The vignettes have been shortened and unit tests reorganized to facilitate Travis-CI builds and reduce CRAN build burden</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.0" id="mertools-040">merTools 0.4.0<a class="anchor" aria-label="anchor" href="#mertools-040"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-4-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h3>
+<ul><li>Added vignette on using multilevel models with multiply imputed data</li>
+<li>Added <code>fixef</code> and <code>ranef</code> generics for <code>merModList</code> objects</li>
+<li>Added <code>fastdisp</code> generic for <code>merModList</code>
+</li>
+<li>Added <code>summary</code> generic for <code>merModList</code>
+</li>
+<li>Added <code>print</code> generic for <code>merModList</code>
+</li>
+<li>Documented all generics for <code>merModList</code> including examples and a new imputation vignette</li>
+<li>Added <code>modelInfo</code> generic for <code>merMod</code> objects that provides simple summary stats about a whole model</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-4-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-0"></a></h3>
+<ul><li>Fix bug that returned NaN for <code>std.error</code> of a multiply imputed <code>merModList</code> when calling <code>modelRandEffStats</code>
+</li>
+<li>Fixed bug in <code>REimpact</code> where some column names in <code>newdata</code> would prevent the prediction intervals from being computed correctly. Users will now be warned.</li>
+<li>Fixed bug in <code>wiggle</code> where documentation incorrectly stated the arguments to the function and the documentation did not describe function correctly</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.1" id="mertools-031">merTools 0.3.1<a class="anchor" aria-label="anchor" href="#mertools-031"></a></h2>
+<ul><li>Update the <code>readme.rmd</code> to package graphics with the R package, per CRAN</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.0" id="mertools-030">merTools 0.3.0<a class="anchor" aria-label="anchor" href="#mertools-030"></a></h2><p class="text-muted">CRAN release: 2016-12-12</p>
+<ul><li>Improve handling of formulas. If the original <code>merMod</code> has functions specified in the formula, the <code>draw</code> and <code>wiggle</code> functions will check for this and attempt to respect these variable transformations. Where this is not possible a warning will be issued. Most common transformations are respected as long as the the original variable is passed untransformed to the model.</li>
+<li>Change the calculations of the residual variance. Previously residual variance was used to inflate both the variance around the fixed parameters and around the predicted values themselves. This was incorrect and resulted in overly conservative estimates. Now the residual variance is appropriately only used around the final predictions</li>
+<li>Rebuilt the readme.md to include new information about new features</li>
+<li>New option for <code>predictInterval</code> that allows the user to return the full interval, the fixed component, the random component, or the fixed and each random component separately for each observation</li>
+<li>Fixed a bug with slope+intercept random terms that caused a miscalculation of the random component</li>
+<li>Add comparison to <code>rstanarm</code> to the Vignette</li>
+<li>Make <code>expectedRank</code> output more <code>tidy</code> like and allow function to calculate expected rank for all terms at once
+<ul><li>Note, this breaks the API by changing the names of the columns in the output of this function</li>
+</ul></li>
+<li>Remove tests that test for timing to avoid issues with R-devel JIT compiler</li>
+<li>Remove <code>plyr</code> and replace with <code>dplyr</code>
+</li>
+<li>Fix issue <a href="https://github.com/jknowles/merTools/issues/62" class="external-link">#62</a> <code>varList</code> will now throw an error if <code>==</code> is used instead of <code>=</code>
+</li>
+<li>Fix issue <a href="https://github.com/jknowles/merTools/issues/54" class="external-link">#54</a> <code>predictInterval</code> did not included random effects in calculations when <code>newdata</code> had more than 1000 rows and/or user specified <code>parallel=TRUE</code>. Note: fix was to disable the <code>.paropts</code> option for <code>predictInterval</code> … user can still specify for <em>temporary</em> backward compatibility but this should be either removed or fixed in the permanent solution.</li>
+<li>Fix issue <a href="https://github.com/jknowles/merTools/issues/53" class="external-link">#53</a> about problems with <code>predictInterval</code> when only specific levels of a grouping factor are in <code>newdata</code> with the colon specification of interactions</li>
+<li>Fix issue <a href="https://github.com/jknowles/merTools/issues/52" class="external-link">#52</a> ICC wrong calculations … we just needed to square the standard deviations that we pulled</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="mertools-021">merTools 0.2.1<a class="anchor" aria-label="anchor" href="#mertools-021"></a></h2><p class="text-muted">CRAN release: 2016-03-30</p>
+<ul><li>Fix dependency on <code>lme4</code> to ensure compatibility with latest changes.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2" id="mertools-02">merTools 0.2<a class="anchor" aria-label="anchor" href="#mertools-02"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2"></a></h3>
+<ul><li>Coerce <code>dplyr</code> <code>tbl</code> and <code>tbl_df</code> objects to data.frames when they are passed to <code>predictInterval</code> and issue a warning</li>
+<li>Try to coerce other data types passed to <code>newdata</code> in <code>predictInterval</code> before failing if coercion is unsuccessful</li>
+<li>Numeric stabilization of unit tests by including seed values for random tests</li>
+<li>Fix handling of models with nested random effect terms (GitHub <a href="https://github.com/jknowles/merTools/issues/47" class="external-link">#47</a>)</li>
+<li>Fix vignette images</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-functionality-0-2">New Functionality<a class="anchor" aria-label="anchor" href="#new-functionality-0-2"></a></h3>
+<ul><li>Substantial performance enhancement for <code>predictInterval</code> which includes better handling of large numbers of parameters and simulations, performance tweaks for added speed (~10x), and parallel backend support (currently not optimized)</li>
+<li>Add support for <code>probit</code> models and limited support for other <code>glmm</code> link functions, with warning (still do not know how to handle sigma parameter for these)</li>
+<li>Add ability for user-specified seed for reproducibility</li>
+<li>Add support for <code>blmer</code> objects from the <code>blme</code> package</li>
+<li>Add a <code>merModList</code> object for lists of <code>merMod</code> objects fitted to subsets of a dataset, useful for imputation or for working with extremely large datasets</li>
+<li>Add a <code>print</code> method for <code>merModList</code> to mimic output of <code>summary.merMod</code>
+</li>
+<li>Add a <code>VarCorr</code> method for <code>merModList</code>
+</li>
+<li>Add new package data to demonstrate replication from selected published texts on multilevel modeling using different software (1982 High School and Beyond Survey data)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-changes-0-2">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-2"></a></h3>
+<ul><li>Changed the default <code>n.sims</code> for the <code>predictInterval</code> function from 100 to 1,000 to give better coverage and reflect performance increase</li>
+<li>Changed the default for <code>level</code> in <code>predictInterval</code> to be 0.8 instead of 0.95 to reflect that 0.95 prediction intervals are more conservative than most users need</li>
+</ul></div>
+<div class="section level3">
+<h3 id="future-changes-0-2">Future changes<a class="anchor" aria-label="anchor" href="#future-changes-0-2"></a></h3>
+<ul><li>For the next release (1.0) we are considering a permanent switch to C++ RMVN sampler courtesy of Giri Gopalan ’s excellent FastGP</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1" id="mertools-01">merTools 0.1<a class="anchor" aria-label="anchor" href="#mertools-01"></a></h2>
+<ul><li>Initial release</li>
+</ul><div class="section level3">
+<h3 id="new-functions-0-1">New Functions<a class="anchor" aria-label="anchor" href="#new-functions-0-1"></a></h3>
+<ul><li>Provides <code>predictInterval</code> to allow prediction intervals from <code>glmer</code> and <code>lmer</code> objects</li>
+<li>Provides <code>FEsim</code> and <code>REsim</code> to extract distributions of model parameters</li>
+<li>Shows <code>shinyMer</code> an interactive <code>shiny</code> application for exploring <code>lmer</code> and <code>glmer</code> models</li>
+<li>Provides <code>expectedRank</code> function to interpret the ordering of effects</li>
+<li>Provides <code>REimpact</code> to simulate the impact of grouping factors on the outcome</li>
+<li>Provides <code>draw</code> function to allow user to explore a specific observation</li>
+<li>Provides <code>wiggle</code> function for user to build a simulated set of counterfactual cases to explore</li>
+</ul></div>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

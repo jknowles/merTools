@@ -79,7 +79,7 @@ system.time(display(m1))
 #> AIC = 237675, DIC = 237532.5
 #> deviance = 237591.5 
 #>    user  system elapsed 
-#>   3.498   4.282   2.011 
+#>   4.419   4.990   2.421 
 system.time(fastdisp(m1))
 #> lmer(formula = y ~ lectage + studage + (1 | d) + (1 | s), data = InstEval)
 #>             coef.est coef.se
@@ -102,6 +102,6 @@ system.time(fastdisp(m1))
 #> number of obs: 73421, groups: s, 2972; d, 1128
 #> AIC = 237675
 #>    user  system elapsed 
-#>   0.003   0.000   0.003 
+#>   0.002   0.000   0.002 
 # }
 ```
