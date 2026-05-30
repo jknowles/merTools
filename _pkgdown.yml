@@ -23,6 +23,7 @@ articles:
     - merToolsIntro
     - Using_predictInterval
     - contextual_effects
+    - brms_validation
     - marginal_effects
     - imputation
 

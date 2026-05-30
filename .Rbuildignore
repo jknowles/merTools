@@ -17,6 +17,7 @@ readmeplot
 ^vignettes/Using_predictInterval\.Rmd\.orig$
 ^vignettes/imputation\.Rmd\.orig$
 ^vignettes/contextual_effects\.Rmd\.orig$
+^vignettes/brms_validation\.Rmd\.orig$
 ^vignettes/precompile\.R$
 ^TODO\.md$
 ^CRAN-RELEASE$

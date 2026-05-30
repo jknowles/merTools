@@ -22,4 +22,8 @@ local({
   knit("marginal_effects.Rmd.orig",      "marginal_effects.Rmd")
   knit("imputation.Rmd.orig",            "imputation.Rmd")
   knit("contextual_effects.Rmd.orig",    "contextual_effects.Rmd")
+  # Requires the 'brms' package + a Stan toolchain; only knit when available.
+  if (requireNamespace("brms", quietly = TRUE)) {
+    knit("brms_validation.Rmd.orig",     "brms_validation.Rmd")
+  }
 })
