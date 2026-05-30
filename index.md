@@ -106,9 +106,11 @@ The easiest way to demo the features of this application is to use the
 bundled Shiny application which launches a number of the metrics here to
 aide in exploring the model. To do this:
 
-    library(merTools)
-    m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
-    shinyMer(m1, simData = InstEval[1:100, ]) # just try the first 100 rows of data
+``` R
+library(merTools)
+m1 <- lmer(y ~ service + lectage + studage + (1|d) + (1|s), data=InstEval)
+shinyMer(m1, simData = InstEval[1:100, ]) # just try the first 100 rows of data
+```
 
 ![](reference/figures/README-predPanel.png)
 
@@ -164,16 +166,16 @@ standard objects produced by `lm` and `glm`:
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 500, level = 0.9,
                 stat = 'median')
 #>         fit      upr      lwr
-#> 1  3.114195 5.014895 1.343836
-#> 2  3.136223 5.346656 1.350444
-#> 3  3.484697 5.459851 1.516302
-#> 4  3.267332 5.306613 1.296303
-#> 5  3.318395 5.470572 1.285099
-#> 6  3.152671 5.266252 1.339519
-#> 7  4.157241 6.080516 2.251474
-#> 8  3.829121 5.804499 1.888663
-#> 9  3.766708 5.813650 1.574876
-#> 10 3.300640 5.241812 1.469445
+#> 1  3.161371 5.103826 1.139883
+#> 2  3.232387 5.009761 1.332832
+#> 3  3.445031 5.291794 1.499974
+#> 4  3.013080 5.244352 1.104054
+#> 5  3.291172 5.228658 1.150961
+#> 6  3.311819 5.336952 1.060889
+#> 7  4.165035 5.971790 2.084237
+#> 8  3.830382 5.578582 1.791503
+#> 9  3.801973 5.845741 1.924566
+#> 10 3.358777 5.288322 1.581321
 ```
 
 Note that `predictInterval` is slower because it is computing
@@ -195,47 +197,47 @@ interval.
 
 predictInterval(m1, newdata = InstEval[1:10, ], n.sims = 200, level = 0.9,
                 stat = 'median', which = "all")
-#>      effect         fit      upr        lwr obs
-#> 1  combined  3.13695294 5.084297  0.9926442   1
-#> 2  combined  3.21108982 4.998712  1.1247649   2
-#> 3  combined  3.36315721 5.354771  1.5688543   3
-#> 4  combined  3.12227276 5.217026  1.0696332   4
-#> 5  combined  3.35407221 5.309339  1.2730028   5
-#> 6  combined  3.26823654 5.525844  1.0686324   6
-#> 7  combined  4.19325981 6.047634  2.3066167   7
-#> 8  combined  3.78692725 6.107380  1.6882920   8
-#> 9  combined  3.83989824 5.824866  1.8652660   9
-#> 10 combined  3.41478096 5.390428  1.3278163  10
-#> 11        s  0.15553624 2.069943 -1.4031438   1
-#> 12        s  0.07770600 1.939080 -1.7550106   2
-#> 13        s  0.05644575 2.315268 -1.4793033   3
-#> 14        s  0.08138567 2.612296 -1.8368629   4
-#> 15        s -0.03399727 1.897394 -2.0709360   5
-#> 16        s  0.13190068 2.528070 -2.0468679   6
-#> 17        s  0.10553381 2.295424 -1.8459405   7
-#> 18        s  0.40193776 2.185281 -1.7558465   8
-#> 19        s  0.27479976 2.312950 -1.4633086   9
-#> 20        s  0.43975997 2.461420 -1.3189984  10
-#> 21        d -0.21353935 1.419158 -2.2257536   1
-#> 22        d -0.18246926 1.765156 -2.1586665   2
-#> 23        d  0.01936809 2.048328 -2.2335576   3
-#> 24        d -0.11110354 1.705073 -2.1828290   4
-#> 25        d -0.01459724 1.939148 -1.8089007   5
-#> 26        d  0.03622498 1.924494 -1.9771401   6
-#> 27        d  0.54180182 2.354430 -1.6225136   7
-#> 28        d  0.39992542 2.055927 -1.3471783   8
-#> 29        d  0.03841685 1.951214 -1.9354625   9
-#> 30        d -0.30698718 1.336219 -2.3107419  10
-#> 31    fixed  3.07924702 4.927436  1.3564806   1
-#> 32    fixed  3.21560275 4.974561  1.3746342   2
-#> 33    fixed  3.23762240 5.563410  1.2094448   3
-#> 34    fixed  3.26049291 5.111107  1.4014904   4
-#> 35    fixed  3.38786425 5.221276  1.4032622   5
-#> 36    fixed  3.43697362 5.418414  1.2298116   6
-#> 37    fixed  3.18433494 4.988801  1.3597346   7
-#> 38    fixed  3.33086935 5.293468  1.6038592   8
-#> 39    fixed  3.13209429 5.263800  1.5282241   9
-#> 40    fixed  3.24304354 4.937461  1.6043361  10
+#>      effect          fit      upr        lwr obs
+#> 1  combined  3.083593245 5.062599  0.9674464   1
+#> 2  combined  3.235036697 5.212885  1.1708064   2
+#> 3  combined  3.342847853 5.371818  1.2686879   3
+#> 4  combined  3.077033326 5.251489  1.3107275   4
+#> 5  combined  3.316029839 5.337122  1.4697923   5
+#> 6  combined  3.443738022 5.172142  0.9068009   6
+#> 7  combined  4.112843798 6.535431  2.1650584   7
+#> 8  combined  3.816085776 5.974373  1.8064576   8
+#> 9  combined  3.792304602 5.609345  1.8844468   9
+#> 10 combined  3.333815423 5.402147  1.5005593  10
+#> 11        s  0.231536444 1.790168 -1.7006576   1
+#> 12        s  0.134265072 1.957335 -1.7931547   2
+#> 13        s  0.218560304 2.021749 -1.7836963   3
+#> 14        s -0.099702591 2.029545 -1.8110851   4
+#> 15        s -0.045505671 1.693573 -2.1095589   5
+#> 16        s -0.087337382 1.716194 -2.0527377   6
+#> 17        s  0.376170634 2.109191 -1.8125491   7
+#> 18        s  0.364157813 2.329252 -1.4930631   8
+#> 19        s  0.415591035 2.240454 -1.4130724   9
+#> 20        s  0.356965891 2.283956 -1.7016778  10
+#> 21        d  0.008946287 1.700966 -2.0450912   1
+#> 22        d -0.095226122 1.741526 -2.0126363   2
+#> 23        d -0.171781743 2.068428 -2.2161950   3
+#> 24        d -0.225090139 1.962778 -2.2287493   4
+#> 25        d  0.242943045 2.185860 -1.5681800   5
+#> 26        d -0.083381572 1.958019 -2.1527131   6
+#> 27        d  0.505729236 2.272959 -1.0985370   7
+#> 28        d  0.223848219 1.892653 -1.4133758   8
+#> 29        d  0.232838207 2.161019 -1.6092655   9
+#> 30        d -0.411865471 1.744540 -2.4933411  10
+#> 31    fixed  3.102540070 5.098888  1.2745417   1
+#> 32    fixed  3.071049868 5.045066  1.1160584   2
+#> 33    fixed  3.325102518 5.242442  1.1231595   3
+#> 34    fixed  3.185105756 4.766187  1.1267020   4
+#> 35    fixed  3.392547857 4.902974  1.3989885   5
+#> 36    fixed  3.213560141 4.949743  1.2420229   6
+#> 37    fixed  3.197190288 5.109854  1.1668196   7
+#> 38    fixed  3.305944109 5.132413  1.5010800   8
+#> 39    fixed  3.395006368 5.327011  1.7248772   9
+#> 40    fixed  3.415382668 5.052743  1.1706732  10
 ```
 
 This can lead to some useful plotting:
@@ -266,10 +268,7 @@ ggplot(plotdf, aes(x = obs, y = fit, ymin = lwr, ymax = upr)) +
 #> generated.
 ```
 
-![plot of chunk
-unnamed-chunk-7](reference/figures/README_unnamed-chunk-7-1.png)
-
-plot of chunk unnamed-chunk-7
+![](reference/figures/README_unnamed-chunk-7-1.png)
 
 We can also investigate the makeup of the prediction for each
 observation.
@@ -283,10 +282,7 @@ ggplot(plotdf[plotdf$obs < 6,],
   facet_grid(residVar~obs) + theme_bw()
 ```
 
-![plot of chunk
-unnamed-chunk-8](reference/figures/README_unnamed-chunk-8-1.png)
-
-plot of chunk unnamed-chunk-8
+![](reference/figures/README_unnamed-chunk-8-1.png)
 
 ## Plotting
 
@@ -299,12 +295,12 @@ fixed and random effect parameters.
 feSims <- FEsim(m1, n.sims = 100)
 head(feSims)
 #>          term        mean      median         sd
-#> 1 (Intercept)  3.22426423  3.22451512 0.01944499
-#> 2    service1 -0.06880512 -0.06697362 0.01380185
-#> 3   lectage.L -0.18733254 -0.18690011 0.01796360
-#> 4   lectage.Q  0.02339192  0.02327971 0.01182622
-#> 5   lectage.C -0.02434619 -0.02509319 0.01225270
-#> 6   lectage^4 -0.01917275 -0.01931788 0.01185288
+#> 1 (Intercept)  3.22480254  3.22496233 0.01614456
+#> 2    service1 -0.06978571 -0.07023666 0.01257453
+#> 3   lectage.L -0.18553409 -0.18582412 0.01558176
+#> 4   lectage.Q  0.02485585  0.02585718 0.01197095
+#> 5   lectage.C -0.02587443 -0.02424027 0.01327372
+#> 6   lectage^4 -0.02253842 -0.02115560 0.01434107
 ```
 
 And we can also plot this:
@@ -314,9 +310,7 @@ And we can also plot this:
 plotFEsim(FEsim(m1, n.sims = 100), level = 0.9, stat = 'median', intercept = FALSE)
 ```
 
-![plot of chunk FEsimPlot](reference/figures/README_FEsimPlot-1.png)
-
-plot of chunk FEsimPlot
+![](reference/figures/README_FEsimPlot-1.png)
 
 We can also quickly make caterpillar plots for the random-effect terms:
 
@@ -324,13 +318,13 @@ We can also quickly make caterpillar plots for the random-effect terms:
 
 reSims <- REsim(m1, n.sims = 100)
 head(reSims)
-#>   groupFctr groupID        term        mean      median        sd
-#> 1         s       1 (Intercept)  0.19949663  0.18744004 0.3136821
-#> 2         s       2 (Intercept) -0.07550851 -0.04819648 0.3117390
-#> 3         s       3 (Intercept)  0.29602665  0.28425849 0.2948271
-#> 4         s       4 (Intercept)  0.25401001  0.25305157 0.2712941
-#> 5         s       5 (Intercept)  0.12576172  0.11825271 0.3355271
-#> 6         s       6 (Intercept)  0.09064135  0.08818034 0.2167237
+#>   groupFctr groupID        term         mean      median        sd
+#> 1         s       1 (Intercept)  0.148244481 0.170819888 0.3386784
+#> 2         s       2 (Intercept) -0.006549032 0.009520074 0.3202212
+#> 3         s       3 (Intercept)  0.264735849 0.268038770 0.2765385
+#> 4         s       4 (Intercept)  0.259182685 0.242682150 0.3018633
+#> 5         s       5 (Intercept)  0.020047123 0.019007888 0.3068737
+#> 6         s       6 (Intercept)  0.081449654 0.078937547 0.2519452
 ```
 
 ``` r
@@ -338,9 +332,7 @@ head(reSims)
 plotREsim(REsim(m1, n.sims = 100), stat = 'median', sd = TRUE)
 ```
 
-![plot of chunk reSimplot](reference/figures/README_reSimplot-1.png)
-
-plot of chunk reSimplot
+![](reference/figures/README_reSimplot-1.png)
 
 Note that `plotREsim` highlights group levels that have a simulated
 distribution that does not overlap 0 – these appear darker. The lighter
@@ -387,10 +379,7 @@ ggplot(ranks, aes(x = term, y = estimate)) +
   theme_bw()
 ```
 
-![plot of chunk
-unnamed-chunk-12](reference/figures/README_unnamed-chunk-12-1.png)
-
-plot of chunk unnamed-chunk-12
+![](reference/figures/README_unnamed-chunk-12-1.png)
 
 ## Effect Simulation
 
@@ -406,11 +395,11 @@ impSim <- REimpact(m1, InstEval[7, ], groupFctr = "d", breaks = 5,
 #> Warning: executing %dopar% sequentially: no parallel backend registered
 impSim
 #>   case bin   AvgFit     AvgFitSE nobs
-#> 1    1   1 2.797556 2.999495e-04  193
-#> 2    1   2 3.266790 6.267510e-05  240
-#> 3    1   3 3.551528 5.646700e-05  254
-#> 4    1   4 3.849992 6.200845e-05  265
-#> 5    1   5 4.233984 2.159385e-04  176
+#> 1    1   1 2.780092 3.023753e-04  193
+#> 2    1   2 3.253589 6.367631e-05  240
+#> 3    1   3 3.545126 5.249834e-05  254
+#> 4    1   4 3.829405 6.408711e-05  265
+#> 5    1   5 4.232709 1.919177e-04  176
 ```
 
 The result of `REimpact` shows the change in the `yhat` as the case we
@@ -426,10 +415,7 @@ function visualizes this directly:
 plotREimpact(impSim)
 ```
 
-![plot of chunk
-reImpactplot](reference/figures/README_reImpactplot-1.png)
-
-plot of chunk reImpactplot
+![](reference/figures/README_reImpactplot-1.png)
 
 Here the standard error is a bit different – it is the weighted standard
 error of the mean effect within the bin. It does not take into account
@@ -454,10 +440,7 @@ s_impSim <- REimpact(m1, InstEval[7, ], groupFctr = "s", breaks = 5,
 plotREimpact(list("Instructor (d)" = impSim, "Student (s)" = s_impSim))
 ```
 
-![plot of chunk
-reImpactCompare](reference/figures/README_reImpactCompare-1.png)
-
-plot of chunk reImpactCompare
+![](reference/figures/README_reImpactCompare-1.png)
 
 ## Explore Substantive Impacts
 
@@ -534,10 +517,7 @@ ggplot(plotdf, aes(y = fit, x = Anger, color = btype, group = btype)) +
 #> `geom_smooth()` using formula = 'y ~ x'
 ```
 
-![plot of chunk
-substImpactPredict](reference/figures/README_substImpactPredict-1.png)
-
-plot of chunk substImpactPredict
+![](reference/figures/README_substImpactPredict-1.png)
 
 ## Cross-version numeric regression checks (for contributors)
 
@@ -556,22 +536,26 @@ bit-for-bit.
 The script lives at `tests/comparisons/predictInterval-regression.R` and
 is NOT part of `R CMD check`. It has two modes:
 
-    # Generate an output bundle for one package version
-    Rscript tests/comparisons/predictInterval-regression.R harness \
-            <pkg_path> <output.rds>
+``` R
+# Generate an output bundle for one package version
+Rscript tests/comparisons/predictInterval-regression.R harness \
+        <pkg_path> <output.rds>
 
-    # Diff two bundles
-    Rscript tests/comparisons/predictInterval-regression.R diff \
-            <a.rds> <b.rds>
+# Diff two bundles
+Rscript tests/comparisons/predictInterval-regression.R diff \
+        <a.rds> <b.rds>
+```
 
 Typical workflow — comparing the current checkout against
 `origin/master`:
 
-    git worktree add /tmp/mT-old origin/master
-    Rscript tests/comparisons/predictInterval-regression.R harness /tmp/mT-old /tmp/old.rds
-    Rscript tests/comparisons/predictInterval-regression.R harness .          /tmp/new.rds
-    Rscript tests/comparisons/predictInterval-regression.R diff  /tmp/old.rds /tmp/new.rds
-    git worktree remove /tmp/mT-old
+``` R
+git worktree add /tmp/mT-old origin/master
+Rscript tests/comparisons/predictInterval-regression.R harness /tmp/mT-old /tmp/old.rds
+Rscript tests/comparisons/predictInterval-regression.R harness .          /tmp/new.rds
+Rscript tests/comparisons/predictInterval-regression.R diff  /tmp/old.rds /tmp/new.rds
+git worktree remove /tmp/mT-old
+```
 
 The diff output categorizes every case as `IDENTICAL`, `numeric-equal`
 (\< 1e-6), or various drift tiers. Any LMM case showing more than
@@ -607,7 +591,4 @@ ggplot(mfx, aes(y = fit_combined, x = breaks, group = case)) +
        title = "Simulated Effect of Item Intercept on Predicted Probability for 10 Random Cases")
 ```
 
-![plot of chunk
-unnamed-chunk-14](reference/figures/README_unnamed-chunk-14-1.png)
-
-plot of chunk unnamed-chunk-14
+![](reference/figures/README_unnamed-chunk-14-1.png)

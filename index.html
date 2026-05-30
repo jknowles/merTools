@@ -159,9 +159,9 @@
 <h2 id="shiny-app-and-demo">Shiny App and Demo<a class="anchor" aria-label="anchor" href="#shiny-app-and-demo"></a>
 </h2>
 <p>The easiest way to demo the features of this application is to use the bundled Shiny application which launches a number of the metrics here to aide in exploring the model. To do this:</p>
-<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jknowles.github.io/merTools/">merTools</a></span><span class="op">)</span></span>
-<span><span class="va">m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">service</span> <span class="op">+</span> <span class="va">lectage</span> <span class="op">+</span> <span class="va">studage</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">d</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">s</span><span class="op">)</span>, data<span class="op">=</span><span class="va">InstEval</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/shinyMer.html">shinyMer</a></span><span class="op">(</span><span class="va">m1</span>, simData <span class="op">=</span> <span class="va">InstEval</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="op">]</span><span class="op">)</span> <span class="co"># just try the first 100 rows of data</span></span></code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(merTools)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> service <span class="sc">+</span> lectage <span class="sc">+</span> studage <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>d) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>s), <span class="at">data=</span>InstEval)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">shinyMer</span>(m1, <span class="at">simData =</span> InstEval[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, ]) <span class="co"># just try the first 100 rows of data</span></span></code></pre></div>
 <p><img src="reference/figures/README-predPanel.png"></p>
 <p>On the first tab, the function presents the prediction intervals for the data selected by user which are calculated using the <code>predictInterval</code> function within the package. This function calculates prediction intervals quickly by sampling from the simulated distribution of the fixed effect and random effect terms and combining these simulated estimates to produce a distribution of predictions for each observation. This allows prediction intervals to be generated from very large models where the use of <code>bootMer</code> would not be feasible computationally.</p>
 <p><img src="reference/figures/README-effPanel.png"></p>
@@ -184,16 +184,16 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">m1</span>, newdata <span class="op">=</span> <span class="va">InstEval</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="op">]</span>, n.sims <span class="op">=</span> <span class="fl">500</span>, level <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>                stat <span class="op">=</span> <span class="st">'median'</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         fit      upr      lwr</span></span>
-<span><span class="co">#&gt; 1  3.114195 5.014895 1.343836</span></span>
-<span><span class="co">#&gt; 2  3.136223 5.346656 1.350444</span></span>
-<span><span class="co">#&gt; 3  3.484697 5.459851 1.516302</span></span>
-<span><span class="co">#&gt; 4  3.267332 5.306613 1.296303</span></span>
-<span><span class="co">#&gt; 5  3.318395 5.470572 1.285099</span></span>
-<span><span class="co">#&gt; 6  3.152671 5.266252 1.339519</span></span>
-<span><span class="co">#&gt; 7  4.157241 6.080516 2.251474</span></span>
-<span><span class="co">#&gt; 8  3.829121 5.804499 1.888663</span></span>
-<span><span class="co">#&gt; 9  3.766708 5.813650 1.574876</span></span>
-<span><span class="co">#&gt; 10 3.300640 5.241812 1.469445</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  3.161371 5.103826 1.139883</span></span>
+<span><span class="co">#&gt; 2  3.232387 5.009761 1.332832</span></span>
+<span><span class="co">#&gt; 3  3.445031 5.291794 1.499974</span></span>
+<span><span class="co">#&gt; 4  3.013080 5.244352 1.104054</span></span>
+<span><span class="co">#&gt; 5  3.291172 5.228658 1.150961</span></span>
+<span><span class="co">#&gt; 6  3.311819 5.336952 1.060889</span></span>
+<span><span class="co">#&gt; 7  4.165035 5.971790 2.084237</span></span>
+<span><span class="co">#&gt; 8  3.830382 5.578582 1.791503</span></span>
+<span><span class="co">#&gt; 9  3.801973 5.845741 1.924566</span></span>
+<span><span class="co">#&gt; 10 3.358777 5.288322 1.581321</span></span></code></pre></div>
 <p>Note that <code>predictInterval</code> is slower because it is computing simulations. It can also return all of the simulated <code>yhat</code> values as an attribute to the predict object itself.</p>
 <p><code>predictInterval</code> uses the <code>sim</code> function from the <code>arm</code> package heavily to draw the distributions of the parameters of the model. It then combines these simulated values to create a distribution of the <code>yhat</code> for each observation.</p>
 <div class="section level3">
@@ -203,47 +203,47 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">m1</span>, newdata <span class="op">=</span> <span class="va">InstEval</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="op">]</span>, n.sims <span class="op">=</span> <span class="fl">200</span>, level <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>                stat <span class="op">=</span> <span class="st">'median'</span>, which <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      effect         fit      upr        lwr obs</span></span>
-<span><span class="co">#&gt; 1  combined  3.13695294 5.084297  0.9926442   1</span></span>
-<span><span class="co">#&gt; 2  combined  3.21108982 4.998712  1.1247649   2</span></span>
-<span><span class="co">#&gt; 3  combined  3.36315721 5.354771  1.5688543   3</span></span>
-<span><span class="co">#&gt; 4  combined  3.12227276 5.217026  1.0696332   4</span></span>
-<span><span class="co">#&gt; 5  combined  3.35407221 5.309339  1.2730028   5</span></span>
-<span><span class="co">#&gt; 6  combined  3.26823654 5.525844  1.0686324   6</span></span>
-<span><span class="co">#&gt; 7  combined  4.19325981 6.047634  2.3066167   7</span></span>
-<span><span class="co">#&gt; 8  combined  3.78692725 6.107380  1.6882920   8</span></span>
-<span><span class="co">#&gt; 9  combined  3.83989824 5.824866  1.8652660   9</span></span>
-<span><span class="co">#&gt; 10 combined  3.41478096 5.390428  1.3278163  10</span></span>
-<span><span class="co">#&gt; 11        s  0.15553624 2.069943 -1.4031438   1</span></span>
-<span><span class="co">#&gt; 12        s  0.07770600 1.939080 -1.7550106   2</span></span>
-<span><span class="co">#&gt; 13        s  0.05644575 2.315268 -1.4793033   3</span></span>
-<span><span class="co">#&gt; 14        s  0.08138567 2.612296 -1.8368629   4</span></span>
-<span><span class="co">#&gt; 15        s -0.03399727 1.897394 -2.0709360   5</span></span>
-<span><span class="co">#&gt; 16        s  0.13190068 2.528070 -2.0468679   6</span></span>
-<span><span class="co">#&gt; 17        s  0.10553381 2.295424 -1.8459405   7</span></span>
-<span><span class="co">#&gt; 18        s  0.40193776 2.185281 -1.7558465   8</span></span>
-<span><span class="co">#&gt; 19        s  0.27479976 2.312950 -1.4633086   9</span></span>
-<span><span class="co">#&gt; 20        s  0.43975997 2.461420 -1.3189984  10</span></span>
-<span><span class="co">#&gt; 21        d -0.21353935 1.419158 -2.2257536   1</span></span>
-<span><span class="co">#&gt; 22        d -0.18246926 1.765156 -2.1586665   2</span></span>
-<span><span class="co">#&gt; 23        d  0.01936809 2.048328 -2.2335576   3</span></span>
-<span><span class="co">#&gt; 24        d -0.11110354 1.705073 -2.1828290   4</span></span>
-<span><span class="co">#&gt; 25        d -0.01459724 1.939148 -1.8089007   5</span></span>
-<span><span class="co">#&gt; 26        d  0.03622498 1.924494 -1.9771401   6</span></span>
-<span><span class="co">#&gt; 27        d  0.54180182 2.354430 -1.6225136   7</span></span>
-<span><span class="co">#&gt; 28        d  0.39992542 2.055927 -1.3471783   8</span></span>
-<span><span class="co">#&gt; 29        d  0.03841685 1.951214 -1.9354625   9</span></span>
-<span><span class="co">#&gt; 30        d -0.30698718 1.336219 -2.3107419  10</span></span>
-<span><span class="co">#&gt; 31    fixed  3.07924702 4.927436  1.3564806   1</span></span>
-<span><span class="co">#&gt; 32    fixed  3.21560275 4.974561  1.3746342   2</span></span>
-<span><span class="co">#&gt; 33    fixed  3.23762240 5.563410  1.2094448   3</span></span>
-<span><span class="co">#&gt; 34    fixed  3.26049291 5.111107  1.4014904   4</span></span>
-<span><span class="co">#&gt; 35    fixed  3.38786425 5.221276  1.4032622   5</span></span>
-<span><span class="co">#&gt; 36    fixed  3.43697362 5.418414  1.2298116   6</span></span>
-<span><span class="co">#&gt; 37    fixed  3.18433494 4.988801  1.3597346   7</span></span>
-<span><span class="co">#&gt; 38    fixed  3.33086935 5.293468  1.6038592   8</span></span>
-<span><span class="co">#&gt; 39    fixed  3.13209429 5.263800  1.5282241   9</span></span>
-<span><span class="co">#&gt; 40    fixed  3.24304354 4.937461  1.6043361  10</span></span></code></pre></div>
+<span><span class="co">#&gt;      effect          fit      upr        lwr obs</span></span>
+<span><span class="co">#&gt; 1  combined  3.083593245 5.062599  0.9674464   1</span></span>
+<span><span class="co">#&gt; 2  combined  3.235036697 5.212885  1.1708064   2</span></span>
+<span><span class="co">#&gt; 3  combined  3.342847853 5.371818  1.2686879   3</span></span>
+<span><span class="co">#&gt; 4  combined  3.077033326 5.251489  1.3107275   4</span></span>
+<span><span class="co">#&gt; 5  combined  3.316029839 5.337122  1.4697923   5</span></span>
+<span><span class="co">#&gt; 6  combined  3.443738022 5.172142  0.9068009   6</span></span>
+<span><span class="co">#&gt; 7  combined  4.112843798 6.535431  2.1650584   7</span></span>
+<span><span class="co">#&gt; 8  combined  3.816085776 5.974373  1.8064576   8</span></span>
+<span><span class="co">#&gt; 9  combined  3.792304602 5.609345  1.8844468   9</span></span>
+<span><span class="co">#&gt; 10 combined  3.333815423 5.402147  1.5005593  10</span></span>
+<span><span class="co">#&gt; 11        s  0.231536444 1.790168 -1.7006576   1</span></span>
+<span><span class="co">#&gt; 12        s  0.134265072 1.957335 -1.7931547   2</span></span>
+<span><span class="co">#&gt; 13        s  0.218560304 2.021749 -1.7836963   3</span></span>
+<span><span class="co">#&gt; 14        s -0.099702591 2.029545 -1.8110851   4</span></span>
+<span><span class="co">#&gt; 15        s -0.045505671 1.693573 -2.1095589   5</span></span>
+<span><span class="co">#&gt; 16        s -0.087337382 1.716194 -2.0527377   6</span></span>
+<span><span class="co">#&gt; 17        s  0.376170634 2.109191 -1.8125491   7</span></span>
+<span><span class="co">#&gt; 18        s  0.364157813 2.329252 -1.4930631   8</span></span>
+<span><span class="co">#&gt; 19        s  0.415591035 2.240454 -1.4130724   9</span></span>
+<span><span class="co">#&gt; 20        s  0.356965891 2.283956 -1.7016778  10</span></span>
+<span><span class="co">#&gt; 21        d  0.008946287 1.700966 -2.0450912   1</span></span>
+<span><span class="co">#&gt; 22        d -0.095226122 1.741526 -2.0126363   2</span></span>
+<span><span class="co">#&gt; 23        d -0.171781743 2.068428 -2.2161950   3</span></span>
+<span><span class="co">#&gt; 24        d -0.225090139 1.962778 -2.2287493   4</span></span>
+<span><span class="co">#&gt; 25        d  0.242943045 2.185860 -1.5681800   5</span></span>
+<span><span class="co">#&gt; 26        d -0.083381572 1.958019 -2.1527131   6</span></span>
+<span><span class="co">#&gt; 27        d  0.505729236 2.272959 -1.0985370   7</span></span>
+<span><span class="co">#&gt; 28        d  0.223848219 1.892653 -1.4133758   8</span></span>
+<span><span class="co">#&gt; 29        d  0.232838207 2.161019 -1.6092655   9</span></span>
+<span><span class="co">#&gt; 30        d -0.411865471 1.744540 -2.4933411  10</span></span>
+<span><span class="co">#&gt; 31    fixed  3.102540070 5.098888  1.2745417   1</span></span>
+<span><span class="co">#&gt; 32    fixed  3.071049868 5.045066  1.1160584   2</span></span>
+<span><span class="co">#&gt; 33    fixed  3.325102518 5.242442  1.1231595   3</span></span>
+<span><span class="co">#&gt; 34    fixed  3.185105756 4.766187  1.1267020   4</span></span>
+<span><span class="co">#&gt; 35    fixed  3.392547857 4.902974  1.3989885   5</span></span>
+<span><span class="co">#&gt; 36    fixed  3.213560141 4.949743  1.2420229   6</span></span>
+<span><span class="co">#&gt; 37    fixed  3.197190288 5.109854  1.1668196   7</span></span>
+<span><span class="co">#&gt; 38    fixed  3.305944109 5.132413  1.5010800   8</span></span>
+<span><span class="co">#&gt; 39    fixed  3.395006368 5.327011  1.7248772   9</span></span>
+<span><span class="co">#&gt; 40    fixed  3.415382668 5.052743  1.1706732  10</span></span></code></pre></div>
 <p>This can lead to some useful plotting:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -268,9 +268,7 @@
 <span><span class="co">#&gt; This warning is displayed once per session.</span></span>
 <span><span class="co">#&gt; Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span>
 <span><span class="co">#&gt; generated.</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/README_unnamed-chunk-7-1.png" alt="plot of chunk unnamed-chunk-7"><div class="figcaption">plot of chunk unnamed-chunk-7</div>
-</div>
+<p><img src="reference/figures/README_unnamed-chunk-7-1.png"><!-- --></p>
 <p>We can also investigate the makeup of the prediction for each observation.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">plotdf</span><span class="op">[</span><span class="va">plotdf</span><span class="op">$</span><span class="va">obs</span> <span class="op">&lt;</span> <span class="fl">6</span>,<span class="op">]</span>,</span>
@@ -278,9 +276,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_pointrange</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="st">"red"</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1.1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="va">residVar</span><span class="op">~</span><span class="va">obs</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/README_unnamed-chunk-8-1.png" alt="plot of chunk unnamed-chunk-8"><div class="figcaption">plot of chunk unnamed-chunk-8</div>
-</div>
+<p><img src="reference/figures/README_unnamed-chunk-8-1.png"><!-- --></p>
 </div>
 </div>
 <div class="section level2">
@@ -291,34 +287,30 @@
 <code class="sourceCode R"><span><span class="va">feSims</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/FEsim.html">FEsim</a></span><span class="op">(</span><span class="va">m1</span>, n.sims <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">feSims</span><span class="op">)</span></span>
 <span><span class="co">#&gt;          term        mean      median         sd</span></span>
-<span><span class="co">#&gt; 1 (Intercept)  3.22426423  3.22451512 0.01944499</span></span>
-<span><span class="co">#&gt; 2    service1 -0.06880512 -0.06697362 0.01380185</span></span>
-<span><span class="co">#&gt; 3   lectage.L -0.18733254 -0.18690011 0.01796360</span></span>
-<span><span class="co">#&gt; 4   lectage.Q  0.02339192  0.02327971 0.01182622</span></span>
-<span><span class="co">#&gt; 5   lectage.C -0.02434619 -0.02509319 0.01225270</span></span>
-<span><span class="co">#&gt; 6   lectage^4 -0.01917275 -0.01931788 0.01185288</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 (Intercept)  3.22480254  3.22496233 0.01614456</span></span>
+<span><span class="co">#&gt; 2    service1 -0.06978571 -0.07023666 0.01257453</span></span>
+<span><span class="co">#&gt; 3   lectage.L -0.18553409 -0.18582412 0.01558176</span></span>
+<span><span class="co">#&gt; 4   lectage.Q  0.02485585  0.02585718 0.01197095</span></span>
+<span><span class="co">#&gt; 5   lectage.C -0.02587443 -0.02424027 0.01327372</span></span>
+<span><span class="co">#&gt; 6   lectage^4 -0.02253842 -0.02115560 0.01434107</span></span></code></pre></div>
 <p>And we can also plot this:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plotFEsim.html">plotFEsim</a></span><span class="op">(</span><span class="fu"><a href="reference/FEsim.html">FEsim</a></span><span class="op">(</span><span class="va">m1</span>, n.sims <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>, level <span class="op">=</span> <span class="fl">0.9</span>, stat <span class="op">=</span> <span class="st">'median'</span>, intercept <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/README_FEsimPlot-1.png" alt="plot of chunk FEsimPlot"><div class="figcaption">plot of chunk FEsimPlot</div>
-</div>
+<p><img src="reference/figures/README_FEsimPlot-1.png"><!-- --></p>
 <p>We can also quickly make caterpillar plots for the random-effect terms:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reSims</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/REsim.html">REsim</a></span><span class="op">(</span><span class="va">m1</span>, n.sims <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">reSims</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   groupFctr groupID        term        mean      median        sd</span></span>
-<span><span class="co">#&gt; 1         s       1 (Intercept)  0.19949663  0.18744004 0.3136821</span></span>
-<span><span class="co">#&gt; 2         s       2 (Intercept) -0.07550851 -0.04819648 0.3117390</span></span>
-<span><span class="co">#&gt; 3         s       3 (Intercept)  0.29602665  0.28425849 0.2948271</span></span>
-<span><span class="co">#&gt; 4         s       4 (Intercept)  0.25401001  0.25305157 0.2712941</span></span>
-<span><span class="co">#&gt; 5         s       5 (Intercept)  0.12576172  0.11825271 0.3355271</span></span>
-<span><span class="co">#&gt; 6         s       6 (Intercept)  0.09064135  0.08818034 0.2167237</span></span></code></pre></div>
+<span><span class="co">#&gt;   groupFctr groupID        term         mean      median        sd</span></span>
+<span><span class="co">#&gt; 1         s       1 (Intercept)  0.148244481 0.170819888 0.3386784</span></span>
+<span><span class="co">#&gt; 2         s       2 (Intercept) -0.006549032 0.009520074 0.3202212</span></span>
+<span><span class="co">#&gt; 3         s       3 (Intercept)  0.264735849 0.268038770 0.2765385</span></span>
+<span><span class="co">#&gt; 4         s       4 (Intercept)  0.259182685 0.242682150 0.3018633</span></span>
+<span><span class="co">#&gt; 5         s       5 (Intercept)  0.020047123 0.019007888 0.3068737</span></span>
+<span><span class="co">#&gt; 6         s       6 (Intercept)  0.081449654 0.078937547 0.2519452</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plotREsim.html">plotREsim</a></span><span class="op">(</span><span class="fu"><a href="reference/REsim.html">REsim</a></span><span class="op">(</span><span class="va">m1</span>, n.sims <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>, stat <span class="op">=</span> <span class="st">'median'</span>, sd <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/README_reSimplot-1.png" alt="plot of chunk reSimplot"><div class="figcaption">plot of chunk reSimplot</div>
-</div>
+<p><img src="reference/figures/README_reSimplot-1.png"><!-- --></p>
 <p>Note that <code>plotREsim</code> highlights group levels that have a simulated distribution that does not overlap 0 – these appear darker. The lighter bars represent grouping levels that are not distinguishable from 0 in the data.</p>
 <p>Sometimes the random effects can be hard to interpret and not all of them are meaningfully different from zero. To help with this <code>merTools</code> provides the <code>expectedRank</code> function, which provides the percentile ranks for the observed groups in the random effect distribution taking into account both the magnitude and uncertainty of the estimated effect for each group.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -346,9 +338,7 @@
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ranks</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">term</span>, y <span class="op">=</span> <span class="va">estimate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html" class="external-link">geom_violin</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"gray50"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">groupFctr</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/README_unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12"><div class="figcaption">plot of chunk unnamed-chunk-12</div>
-</div>
+<p><img src="reference/figures/README_unnamed-chunk-12-1.png"><!-- --></p>
 </div>
 <div class="section level2">
 <h2 id="effect-simulation">Effect Simulation<a class="anchor" aria-label="anchor" href="#effect-simulation"></a>
@@ -360,26 +350,22 @@
 <span><span class="co">#&gt; Warning: executing %dopar% sequentially: no parallel backend registered</span></span>
 <span><span class="va">impSim</span></span>
 <span><span class="co">#&gt;   case bin   AvgFit     AvgFitSE nobs</span></span>
-<span><span class="co">#&gt; 1    1   1 2.797556 2.999495e-04  193</span></span>
-<span><span class="co">#&gt; 2    1   2 3.266790 6.267510e-05  240</span></span>
-<span><span class="co">#&gt; 3    1   3 3.551528 5.646700e-05  254</span></span>
-<span><span class="co">#&gt; 4    1   4 3.849992 6.200845e-05  265</span></span>
-<span><span class="co">#&gt; 5    1   5 4.233984 2.159385e-04  176</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    1   1 2.780092 3.023753e-04  193</span></span>
+<span><span class="co">#&gt; 2    1   2 3.253589 6.367631e-05  240</span></span>
+<span><span class="co">#&gt; 3    1   3 3.545126 5.249834e-05  254</span></span>
+<span><span class="co">#&gt; 4    1   4 3.829405 6.408711e-05  265</span></span>
+<span><span class="co">#&gt; 5    1   5 4.232709 1.919177e-04  176</span></span></code></pre></div>
 <p>The result of <code>REimpact</code> shows the change in the <code>yhat</code> as the case we supplied to <code>newdata</code> is moved from the first to the fifth quintile in terms of the magnitude of the group factor coefficient. We can see here that the individual professor effect has a strong impact on the outcome variable. The new <code><a href="reference/plotREimpact.html">plotREimpact()</a></code> function visualizes this directly:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plotREimpact.html">plotREimpact</a></span><span class="op">(</span><span class="va">impSim</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/README_reImpactplot-1.png" alt="plot of chunk reImpactplot"><div class="figcaption">plot of chunk reImpactplot</div>
-</div>
+<p><img src="reference/figures/README_reImpactplot-1.png"><!-- --></p>
 <p>Here the standard error is a bit different – it is the weighted standard error of the mean effect within the bin. It does not take into account the variability within the effects of each observation in the bin – accounting for this variation will be a future addition to <code>merTools</code>. ### Comparing grouping factors with <code><a href="reference/plotREimpact.html">plotREimpact()</a></code></p>
 <p>New in merTools 1.0.0, <code><a href="reference/plotREimpact.html">plotREimpact()</a></code> plots <code><a href="reference/REimpact.html">REimpact()</a></code> output directly and can overlay a <em>named list</em> of results on a single chart. This makes it easy to compare how strongly different grouping factors move the predicted outcome for the same case – here, the instructor (<code>d</code>) and student (<code>s</code>) effects from the model above:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s_impSim</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/REimpact.html">REimpact</a></span><span class="op">(</span><span class="va">m1</span>, <span class="va">InstEval</span><span class="op">[</span><span class="fl">7</span>, <span class="op">]</span>, groupFctr <span class="op">=</span> <span class="st">"s"</span>, breaks <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>                     n.sims <span class="op">=</span> <span class="fl">300</span>, level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/plotREimpact.html">plotREimpact</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Instructor (d)"</span> <span class="op">=</span> <span class="va">impSim</span>, <span class="st">"Student (s)"</span> <span class="op">=</span> <span class="va">s_impSim</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/README_reImpactCompare-1.png" alt="plot of chunk reImpactCompare"><div class="figcaption">plot of chunk reImpactCompare</div>
-</div>
+<p><img src="reference/figures/README_reImpactCompare-1.png"><!-- --></p>
 </div>
 <div class="section level2">
 <h2 id="explore-substantive-impacts">Explore Substantive Impacts<a class="anchor" aria-label="anchor" href="#explore-substantive-impacts"></a>
@@ -430,28 +416,26 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">situ</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Predicted Probability"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `geom_smooth()` using formula = 'y ~ x'</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/README_substImpactPredict-1.png" alt="plot of chunk substImpactPredict"><div class="figcaption">plot of chunk substImpactPredict</div>
-</div>
+<p><img src="reference/figures/README_substImpactPredict-1.png"><!-- --></p>
 </div>
 <div class="section level2">
 <h2 id="cross-version-numeric-regression-checks-for-contributors">Cross-version numeric regression checks (for contributors)<a class="anchor" aria-label="anchor" href="#cross-version-numeric-regression-checks-for-contributors"></a>
 </h2>
 <p><code><a href="reference/predictInterval.html">predictInterval()</a></code> is stochastic, so the usual unit-test tolerances are not a reliable way to confirm that a refactor of the simulation internals has preserved numeric behavior for users who rely on a fixed seed. To address this, the package ships a standalone regression harness that pins a canonical set of inputs (LMM and GLMM models, various <code>which</code>, <code>level</code>, <code>stat</code>, <code>ignore.fixed.terms</code>, <code>fix.intercept.variance</code>, and single-row-newdata cases) and dumps <code><a href="reference/predictInterval.html">predictInterval()</a></code> output to an RDS bundle for two package versions so they can be diffed bit-for-bit.</p>
 <p>The script lives at <code>tests/comparisons/predictInterval-regression.R</code> and is NOT part of <code>R CMD check</code>. It has two modes:</p>
-<pre><code># Generate an output bundle for one package version
-Rscript tests/comparisons/predictInterval-regression.R harness \
-        &lt;pkg_path&gt; &lt;output.rds&gt;
-
-# Diff two bundles
-Rscript tests/comparisons/predictInterval-regression.R diff \
-        &lt;a.rds&gt; &lt;b.rds&gt;</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Generate an output bundle for one package version</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>Rscript tests<span class="sc">/</span>comparisons<span class="sc">/</span>predictInterval<span class="sc">-</span>regression.R harness \</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>        <span class="sc">&lt;</span>pkg_path<span class="sc">&gt;</span> <span class="er">&lt;</span>output.rds<span class="sc">&gt;</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co"># Diff two bundles</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>Rscript tests<span class="sc">/</span>comparisons<span class="sc">/</span>predictInterval<span class="sc">-</span>regression.R diff \</span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>        <span class="sc">&lt;</span>a.rds<span class="sc">&gt;</span> <span class="er">&lt;</span>b.rds<span class="sc">&gt;</span></span></code></pre></div>
 <p>Typical workflow — comparing the current checkout against <code>origin/master</code>:</p>
-<pre><code>git worktree add /tmp/mT-old origin/master
-Rscript tests/comparisons/predictInterval-regression.R harness /tmp/mT-old /tmp/old.rds
-Rscript tests/comparisons/predictInterval-regression.R harness .          /tmp/new.rds
-Rscript tests/comparisons/predictInterval-regression.R diff  /tmp/old.rds /tmp/new.rds
-git worktree remove /tmp/mT-old</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>git worktree add <span class="sc">/</span>tmp<span class="sc">/</span>mT<span class="sc">-</span>old origin<span class="sc">/</span>master</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>Rscript tests<span class="sc">/</span>comparisons<span class="sc">/</span>predictInterval<span class="sc">-</span>regression.R harness <span class="sc">/</span>tmp<span class="sc">/</span>mT<span class="sc">-</span>old <span class="sc">/</span>tmp<span class="sc">/</span>old.rds</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>Rscript tests<span class="sc">/</span>comparisons<span class="sc">/</span>predictInterval<span class="sc">-</span>regression.R harness .          <span class="sc">/</span>tmp<span class="sc">/</span>new.rds</span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>Rscript tests<span class="sc">/</span>comparisons<span class="sc">/</span>predictInterval<span class="sc">-</span>regression.R diff  <span class="sc">/</span>tmp<span class="sc">/</span>old.rds <span class="sc">/</span>tmp<span class="sc">/</span>new.rds</span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>git worktree remove <span class="sc">/</span>tmp<span class="sc">/</span>mT<span class="sc">-</span>old</span></code></pre></div>
 <p>The diff output categorizes every case as <code>IDENTICAL</code>, <code>numeric-equal</code> (&lt; 1e-6), or various drift tiers. Any LMM case showing more than <code>numeric-equal</code> indicates that the refactor changed behavior for a user-supplied seed and should be investigated before the change is merged. Known-intentional numeric differences (for example, the GLMM <code>include.resid.var = TRUE</code> binomial-residual simulation fix introduced in 0.9.0) will show up only in the two <code>glmm_bin_with_resid_*</code> cases.</p>
 <p>Run this whenever touching <code>R/merPredict.R</code>, <code>R/predictInterval_helpers.R</code>, or the simulation helpers they call.</p>
 </div>
@@ -476,9 +460,7 @@ git worktree remove /tmp/mT-old</code></pre>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Quartile of item random effect Intercept for term 'item'"</span>,</span>
 <span>       y <span class="op">=</span> <span class="st">"Predicted Probability"</span>,</span>
 <span>       title <span class="op">=</span> <span class="st">"Simulated Effect of Item Intercept on Predicted Probability for 10 Random Cases"</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="reference/figures/README_unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14"><div class="figcaption">plot of chunk unnamed-chunk-14</div>
-</div>
+<p><img src="reference/figures/README_unnamed-chunk-14-1.png"><!-- --></p>
 </div>
 </div>
 

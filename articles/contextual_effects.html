@@ -95,12 +95,12 @@ exactly the pair we need to separate within-school and contextual
 effects.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"schid"</span>, <span class="st">"mathach"</span>, <span class="st">"ses"</span>, <span class="st">"meanses"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 'data.frame':    7185 obs. of  4 variables:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"schid"</span>, <span class="st">"mathach"</span>, <span class="st">"ses"</span>, <span class="st">"meanses"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; 'data.frame':    7185 obs. of  4 variables:</span></span>
 <span><span class="co">#&gt;  $ schid  : chr  "1224" "1224" "1224" "1224" ...</span></span>
 <span><span class="co">#&gt;  $ mathach: num  5.88 19.71 20.35 8.78 17.9 ...</span></span>
 <span><span class="co">#&gt;  $ ses    : num  -1.528 -0.588 -0.528 -0.668 -0.158 ...</span></span>
-<span><span class="co">#&gt;  $ meanses: num  -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 ...</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ meanses: num  -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 ...</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="a-contextual-effects-model">A contextual-effects model<a class="anchor" aria-label="anchor" href="#a-contextual-effects-model"></a>
@@ -108,10 +108,10 @@ effects.</p>
 <p>We model math achievement as a function of a student’s own SES and
 the average SES of their school, allowing each school its own
 intercept:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">mathach</span> <span class="op">~</span> <span class="va">ses</span> <span class="op">+</span> <span class="va">meanses</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">schid</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">hsb</span><span class="op">)</span></span>
-<span><span class="fu">arm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display</a></span><span class="op">(</span><span class="va">cm</span><span class="op">)</span></span>
-<span><span class="co">#&gt; lmer(formula = mathach ~ ses + meanses + (1 | schid), data = hsb)</span></span>
+<span><span class="fu">arm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display</a></span><span class="op">(</span><span class="va">cm</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; lmer(formula = mathach ~ ses + meanses + (1 | schid), data = hsb)</span></span>
 <span><span class="co">#&gt;             coef.est coef.se</span></span>
 <span><span class="co">#&gt; (Intercept) 12.66     0.15  </span></span>
 <span><span class="co">#&gt; ses          2.19     0.11  </span></span>
@@ -124,20 +124,18 @@ intercept:</p>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; number of obs: 7185, groups: schid, 160</span></span>
 <span><span class="co">#&gt; AIC = 46578.6, DIC = 46559</span></span>
-<span><span class="co">#&gt; deviance = 46563.8</span></span></code></pre></div>
+<span><span class="co">#&gt; deviance = 46563.8</span></span></code></pre>
 <p>The coefficient on <code>ses</code> is the <em>within-school</em>
 slope; the coefficient on <code>meanses</code> is the
 <em>contextual</em> effect. <code><a href="../reference/FEsim.html">merTools::FEsim()</a></code> summarizes
 the uncertainty in both, and <code><a href="../reference/plotFEsim.html">plotFEsim()</a></code> highlights the
 terms whose interval excludes zero:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/FEsim.html">FEsim</a></span><span class="op">(</span><span class="va">cm</span>, n.sims <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotFEsim.html">plotFEsim</a></span><span class="op">(</span><span class="va">fe</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Within-school (ses) vs. contextual (meanses) effects"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="context-feplot-1.png" alt="plot of chunk feplot"><p class="caption">
-plot of chunk feplot
-</p>
+<p><img src="context-feplot-1.png" alt=""></p>
 </div>
 </div>
 <div class="section level2">
@@ -148,7 +146,7 @@ how the predicted math score changes as we move a student across schools
 of differing average SES while holding their own SES fixed.
 <code><a href="../reference/wiggle.html">wiggle()</a></code> builds the counterfactual data and
 <code><a href="../reference/predictInterval.html">predictInterval()</a></code> attaches prediction intervals:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># A median student in an average school</span></span>
 <span><span class="va">base_case</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/draw.html">draw</a></span><span class="op">(</span><span class="va">cm</span>, type <span class="op">=</span> <span class="st">"average"</span><span class="op">)</span></span>
 <span><span class="va">scenarios</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wiggle.html">wiggle</a></span><span class="op">(</span><span class="va">base_case</span>, varlist <span class="op">=</span> <span class="st">"meanses"</span>,</span>
@@ -164,9 +162,7 @@ of differing average SES while holding their own SES fixed.
 <span>       title <span class="op">=</span> <span class="st">"Contextual effect of school SES (own SES held at its mean)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="context-wiggle-1.png" alt="plot of chunk wiggle"><p class="caption">
-plot of chunk wiggle
-</p>
+<p><img src="context-wiggle-1.png" alt=""></p>
 </div>
 </div>
 <div class="section level2">
@@ -177,15 +173,13 @@ higher- versus lower-performing school shifts the predicted outcome,
 binning schools by their expected rank. <code><a href="../reference/plotREimpact.html">plotREimpact()</a></code> (new
 in this release) plots the result, and can overlay several cases for
 comparison:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">imp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/REimpact.html">REimpact</a></span><span class="op">(</span><span class="va">cm</span>, newdata <span class="op">=</span> <span class="va">hsb</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, groupFctr <span class="op">=</span> <span class="st">"schid"</span>,</span>
 <span>                breaks <span class="op">=</span> <span class="fl">4</span>, n.sims <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotREimpact.html">plotREimpact</a></span><span class="op">(</span><span class="va">imp</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Impact of school placement on predicted achievement"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="context-reimpact-1.png" alt="plot of chunk reimpact"><p class="caption">
-plot of chunk reimpact
-</p>
+<p><img src="context-reimpact-1.png" alt=""></p>
 </div>
 </div>
 <div class="section level2">

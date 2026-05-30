@@ -181,8 +181,8 @@ model:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">271828</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sleepstudy</span><span class="op">)</span></span>
 <span><span class="va">fm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">Reaction</span> <span class="op">~</span> <span class="va">Days</span> <span class="op">+</span> <span class="op">(</span><span class="va">Days</span><span class="op">|</span><span class="va">Subject</span><span class="op">)</span>, data<span class="op">=</span><span class="va">sleepstudy</span><span class="op">)</span></span>
-<span><span class="fu">arm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display</a></span><span class="op">(</span><span class="va">fm1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)</span></span>
+<span><span class="fu">arm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display</a></span><span class="op">(</span><span class="va">fm1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)</span></span>
 <span><span class="co">#&gt;             coef.est coef.se</span></span>
 <span><span class="co">#&gt; (Intercept) 251.41     6.82 </span></span>
 <span><span class="co">#&gt; Days         10.47     1.55 </span></span>
@@ -195,7 +195,7 @@ model:</p>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; number of obs: 180, groups: Subject, 18</span></span>
 <span><span class="co">#&gt; AIC = 1755.6, DIC = 1760.3</span></span>
-<span><span class="co">#&gt; deviance = 1751.9</span></span></code></pre></div>
+<span><span class="co">#&gt; deviance = 1751.9</span></span></code></pre>
 <p>Then, calculate prediction intervals using
 <code><a href="../reference/predictInterval.html">predictInterval()</a></code>. The <code>predictInterval</code>
 function has a number of user configurable options. In this example, we
@@ -210,7 +210,7 @@ have asked instead for our predictions on the probability scale instead.
 Finally, we indicate that we want the predictions to incorporate the
 residual variance from the model – an option only available for
 <code>lmerMod</code> objects.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">PI.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">PI</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predictInterval.html">predictInterval</a></span><span class="op">(</span>merMod <span class="op">=</span> <span class="va">fm1</span>, newdata <span class="op">=</span> <span class="va">sleepstudy</span>,</span>
 <span>                        level <span class="op">=</span> <span class="fl">0.95</span>, n.sims <span class="op">=</span> <span class="fl">1000</span>,</span>
@@ -261,16 +261,14 @@ residual variance from the model – an option only available for
 95% prediction interval (<code>upr</code> and <code>lwr</code>) because
 we set <code>level=0.95</code>. The following figure displays the output
 graphically for the first 30 observations.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>;</span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, y<span class="op">=</span><span class="va">fit</span>, ymin<span class="op">=</span><span class="va">lwr</span>, ymax<span class="op">=</span><span class="va">upr</span><span class="op">)</span>, data<span class="op">=</span><span class="va">PI</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>,<span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">geom_linerange</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Index"</span>, y<span class="op">=</span><span class="st">"Prediction w/ 95% PI"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="usage-Inspect_predInt_2-1.png" alt="plot of chunk Inspect_predInt_2"><p class="caption">
-plot of chunk Inspect_predInt_2
-</p>
+<p><img src="usage-Inspect_predInt_2-1.png" alt=""></p>
 </div>
 <div class="section level4">
 <h4 id="step-1a-adjusting-for-correlation-between-fixed-and-random-effects">Step 1a: Adjusting for correlation between fixed and random
@@ -289,10 +287,10 @@ of -3, 0, and 0. (The latter situation will never be the MLE, but it can
 occur in this package’s simulations.)</p>
 <p>To show this issue, we’ll use the sleep study model, predicting the
 reaction times of subjects after experiencing sleep deprivation:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">Reaction</span> <span class="op">~</span> <span class="va">Days</span> <span class="op">+</span> <span class="op">(</span><span class="va">Days</span><span class="op">|</span><span class="va">Subject</span><span class="op">)</span>, data<span class="op">=</span><span class="va">sleepstudy</span><span class="op">)</span></span>
-<span><span class="fu">arm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display</a></span><span class="op">(</span><span class="va">fm1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)</span></span>
+<span><span class="fu">arm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/display.html" class="external-link">display</a></span><span class="op">(</span><span class="va">fm1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)</span></span>
 <span><span class="co">#&gt;             coef.est coef.se</span></span>
 <span><span class="co">#&gt; (Intercept) 251.41     6.82 </span></span>
 <span><span class="co">#&gt; Days         10.47     1.55 </span></span>
@@ -305,36 +303,40 @@ reaction times of subjects after experiencing sleep deprivation:</p>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; number of obs: 180, groups: Subject, 18</span></span>
 <span><span class="co">#&gt; AIC = 1755.6, DIC = 1760.3</span></span>
-<span><span class="co">#&gt; deviance = 1751.9</span></span></code></pre></div>
+<span><span class="co">#&gt; deviance = 1751.9</span></span></code></pre>
 <p>Let’s use the model to give an interval for the true average body fat
 of a large group of students like the first one in the study — a 196cm
 female baseball player:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span></span>
-<span><span class="co">#&gt;   Reaction Days Subject</span></span>
-<span><span class="co">#&gt; 1   249.56    0     308</span></span>
-<span><span class="fu"><a href="../reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, include.resid.var<span class="op">=</span><span class="fl">0</span><span class="op">)</span> <span class="co">#predict the average body fat for a group of 196cm female baseball players</span></span>
-<span><span class="co">#&gt;        fit      upr      lwr</span></span>
-<span><span class="co">#&gt; 1 253.9977 270.7438 236.2829</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;   Reaction Days Subject</span></span>
+<span><span class="co">#&gt; 1   249.56    0     308</span></span></code></pre>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, include.resid.var<span class="op">=</span><span class="fl">0</span><span class="op">)</span> <span class="co">#predict the average body fat for a group of 196cm female baseball players</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;        fit      upr      lwr</span></span>
+<span><span class="co">#&gt; 1 253.9977 270.7438 236.2829</span></span></code></pre>
 <p>There are two ways to get predictInterval to create less-conservative
 intervals to deal with this. The first is just to tell it to consider
 certain fixed effects as fully-known (that is, with an effectively 0
 variance.) This is done using the <code>ignore.fixed.effects</code>
 argument.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, include.resid.var<span class="op">=</span><span class="fl">0</span>, ignore.fixed.terms <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        fit      upr      lwr</span></span>
-<span><span class="co">#&gt; 1 253.8537 268.5299 239.6275</span></span>
-<span><span class="co"># predict the average reaction time for a subject at day 0, taking the global intercept</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, include.resid.var<span class="op">=</span><span class="fl">0</span>, ignore.fixed.terms <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;        fit      upr      lwr</span></span>
+<span><span class="co">#&gt; 1 253.8537 268.5299 239.6275</span></span></code></pre>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># predict the average reaction time for a subject at day 0, taking the global intercept</span></span>
 <span><span class="co"># (mean reaction time) as fully known</span></span>
-<span><span class="fu"><a href="../reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, include.resid.var<span class="op">=</span><span class="fl">0</span>, ignore.fixed.terms <span class="op">=</span> <span class="st">"(Intercept)"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        fit      upr      lwr</span></span>
-<span><span class="co">#&gt; 1 254.2354 269.3875 239.3116</span></span>
-<span><span class="co">#Same as above</span></span>
-<span><span class="fu"><a href="../reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, include.resid.var<span class="op">=</span><span class="fl">0</span>, ignore.fixed.terms <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        fit      upr     lwr</span></span>
-<span><span class="co">#&gt; 1 253.6743 269.8776 237.984</span></span>
-<span><span class="co"># as above, taking the first two fixed effects (intercept and days effect) as fully known</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, include.resid.var<span class="op">=</span><span class="fl">0</span>, ignore.fixed.terms <span class="op">=</span> <span class="st">"(Intercept)"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;        fit      upr      lwr</span></span>
+<span><span class="co">#&gt; 1 254.2354 269.3875 239.3116</span></span></code></pre>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Same as above</span></span>
+<span><span class="fu"><a href="../reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, include.resid.var<span class="op">=</span><span class="fl">0</span>, ignore.fixed.terms <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;        fit      upr     lwr</span></span>
+<span><span class="co">#&gt; 1 253.6743 269.8776 237.984</span></span></code></pre>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># as above, taking the first two fixed effects (intercept and days effect) as fully known</span></span></code></pre></div>
 <p>The second way is to use an ad-hoc variance adjustment, with the
 <code>fix.intercept.variance</code> argument. This takes the model’s
 intercept variance
@@ -345,12 +347,13 @@ and adjusts it to:</p>
 spurious variance for each level, where each of the spurious variance
 terms has a precision equal to the of the precisions due to the
 individual groups at that level.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/predictInterval.html">predictInterval</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, include.resid.var<span class="op">=</span><span class="fl">0</span>,</span>
-<span>                fix.intercept.variance <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        fit      upr      lwr</span></span>
-<span><span class="co">#&gt; 1 253.5872 268.8683 236.6639</span></span>
-<span><span class="co"># predict the average reaction time for a subject at day 0,, using an ad-hoc</span></span>
+<span>                fix.intercept.variance <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;        fit      upr      lwr</span></span>
+<span><span class="co">#&gt; 1 253.5872 268.8683 236.6639</span></span></code></pre>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># predict the average reaction time for a subject at day 0,, using an ad-hoc</span></span>
 <span><span class="co"># correction for the covariance of the intercept with the random intercept effects.</span></span></code></pre></div>
 <p>A few notes about these two arguments:</p>
 <ul>
@@ -367,7 +370,7 @@ groups not present in the original data.</li>
 </h3>
 <p>How does the output above compare to what we could get from
 <code><a href="https://rdrr.io/pkg/arm/man/sim.html" class="external-link">arm::sim()</a></code>?</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">PI.arm.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">PI.arm.sims</span> <span class="op">&lt;-</span> <span class="fu">arm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/arm/man/sim.html" class="external-link">sim</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -389,9 +392,7 @@ groups not present in the original data.</li>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span>, palette <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="usage-arm.Sim-1.png" alt="plot of chunk arm.Sim"><p class="caption">
-plot of chunk arm.Sim
-</p>
+<p><img src="usage-arm.Sim-1.png" alt=""></p>
 </div>
 <p>The prediction intervals from <code>arm:sim()</code> are much smaller
 and the random slope for days vary more than they do for
@@ -425,7 +426,7 @@ each method, in turn.</p>
 <div class="section level4">
 <h4 id="step-3a-lme4bootmer-method-1">Step 3a: <code>lme4::bootMer()</code> method 1<a class="anchor" aria-label="anchor" href="#step-3a-lme4bootmer-method-1"></a>
 </h4>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">##Functions for bootMer() and objects</span></span>
 <span><span class="co">####Return predicted values from bootstrap</span></span>
 <span><span class="va">mySumm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op">{</span></span>
@@ -459,9 +460,7 @@ each method, in turn.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span>, palette <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="usage-bootMer.1-1.png" alt="plot of chunk bootMer.1"><p class="caption">
-plot of chunk bootMer.1
-</p>
+<p><img src="usage-bootMer.1-1.png" alt=""></p>
 </div>
 <p>Method 1 (<code>use.u = FALSE</code>) re-simulates the random effects
 on every bootstrap replicate instead of conditioning on the values
@@ -480,7 +479,7 @@ with <code><a href="../reference/predictInterval.html">predictInterval()</a></co
 <div class="section level4">
 <h4 id="step-3b-lme4bootmer-method-2">Step 3b: <code>lme4::bootMer()</code> method 2<a class="anchor" aria-label="anchor" href="#step-3b-lme4bootmer-method-2"></a>
 </h4>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">##lme4::bootMer() method 2</span></span>
 <span><span class="va">PI.boot2.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">boot2</span> <span class="op">&lt;-</span> <span class="fu">lme4</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lme4/man/bootMer.html" class="external-link">bootMer</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">mySumm</span>, nsim<span class="op">=</span><span class="fl">250</span>, use.u<span class="op">=</span><span class="cn">TRUE</span>, type<span class="op">=</span><span class="st">"parametric"</span><span class="op">)</span></span>
@@ -499,9 +498,7 @@ with <code><a href="../reference/predictInterval.html">predictInterval()</a></co
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span>, palette <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="usage-bootMer.2-1.png" alt="plot of chunk bootMer.2"><p class="caption">
-plot of chunk bootMer.2
-</p>
+<p><img src="usage-bootMer.2-1.png" alt=""></p>
 </div>
 <p>Here, the results for <code>predictInterval</code> in green again
 encompass the results from <code>bootMer</code>, but are much wider. The
@@ -513,7 +510,7 @@ the variance in the fixed effects – similar to the
 <div class="section level4">
 <h4 id="step-3c-lme4bootmer-method-3">Step 3c: <code>lme4::bootMer()</code> method 3<a class="anchor" aria-label="anchor" href="#step-3c-lme4bootmer-method-3"></a>
 </h4>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">##lme4::bootMer() method 3</span></span>
 <span><span class="va">PI.boot3.time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">boot3</span> <span class="op">&lt;-</span> <span class="fu">lme4</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lme4/man/bootMer.html" class="external-link">bootMer</a></span><span class="op">(</span><span class="va">fm1</span>, <span class="va">mySumm</span>, nsim<span class="op">=</span><span class="fl">250</span>, use.u<span class="op">=</span><span class="cn">TRUE</span>, type<span class="op">=</span><span class="st">"semiparametric"</span><span class="op">)</span></span>
@@ -532,24 +529,22 @@ the variance in the fixed effects – similar to the
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span>, palette <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="usage-bootMer.3-1.png" alt="plot of chunk bootMer.3"><p class="caption">
-plot of chunk bootMer.3
-</p>
+<p><img src="usage-bootMer.3-1.png" alt=""></p>
 </div>
 <p>These results are virtually identical to those above.</p>
 </div>
 <div class="section level4">
 <h4 id="step-3d-comparison-to-rstanarm">Step 3d: Comparison to rstanarm<a class="anchor" aria-label="anchor" href="#step-3d-comparison-to-rstanarm"></a>
 </h4>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">PI.time.stan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>  <span class="va">fm_stan</span> <span class="op">&lt;-</span> <span class="fu">stan_lmer</span><span class="op">(</span><span class="va">Reaction</span> <span class="op">~</span> <span class="va">Days</span> <span class="op">+</span> <span class="op">(</span><span class="va">Days</span><span class="op">|</span><span class="va">Subject</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">sleepstudy</span>,</span>
 <span>                       verbose <span class="op">=</span> <span class="cn">FALSE</span>, open_progress <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span>
 <span>                       show_messages<span class="op">=</span><span class="cn">FALSE</span>, chains <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span>  <span class="va">zed</span> <span class="op">&lt;-</span> <span class="fu">posterior_predict</span><span class="op">(</span><span class="va">fm_stan</span><span class="op">)</span></span>
 <span>  <span class="va">PI.stan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">zed</span>, <span class="fl">2</span>, <span class="va">median</span><span class="op">)</span>, <span class="fu">central_intervals</span><span class="op">(</span><span class="va">zed</span>, prob<span class="op">=</span><span class="fl">0.95</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Chain 1: </span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Chain 1: </span></span>
 <span><span class="co">#&gt; Chain 1: Gradient evaluation took 5.5e-05 seconds</span></span>
 <span><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.55 seconds.</span></span>
 <span><span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span></span>
@@ -559,11 +554,10 @@ plot of chunk bootMer.3
 <span><span class="co">#&gt; Chain 1:  Elapsed Time: 4.058 seconds (Warm-up)</span></span>
 <span><span class="co">#&gt; Chain 1:                1.222 seconds (Sampling)</span></span>
 <span><span class="co">#&gt; Chain 1:                5.28 seconds (Total)</span></span>
-<span><span class="co">#&gt; Chain 1:</span></span>
-<span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fm_stan</span><span class="op">)</span></span>
-<span><span class="co">#&gt; stan_lmer</span></span>
+<span><span class="co">#&gt; Chain 1:</span></span></code></pre>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fm_stan</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; stan_lmer</span></span>
 <span><span class="co">#&gt;  family:       gaussian [identity]</span></span>
 <span><span class="co">#&gt;  formula:      Reaction ~ Days + (Days | Subject)</span></span>
 <span><span class="co">#&gt;  observations: 180</span></span>
@@ -585,9 +579,9 @@ plot of chunk bootMer.3
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ------</span></span>
 <span><span class="co">#&gt; * For help interpreting the printed output see ?print.stanreg</span></span>
-<span><span class="co">#&gt; * For info on the priors used see ?prior_summary.stanreg</span></span>
-<span></span>
-<span><span class="va">PI.stan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">PI.stan</span><span class="op">)</span></span>
+<span><span class="co">#&gt; * For info on the priors used see ?prior_summary.stanreg</span></span></code></pre>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">PI.stan</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">PI.stan</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">PI.stan</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fit"</span>, <span class="st">"lwr"</span>, <span class="st">"upr"</span><span class="op">)</span></span>
 <span><span class="va">PI.stan</span> <span class="op">&lt;-</span> <span class="va">PI.stan</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fit"</span>, <span class="st">"upr"</span>, <span class="st">"lwr"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">comp.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Predict.Method<span class="op">=</span><span class="st">"predictInterval()"</span>, x<span class="op">=</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">PI</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fl">0.1</span>, <span class="va">PI</span><span class="op">)</span>,</span>
@@ -601,9 +595,7 @@ plot of chunk bootMer.3
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"qual"</span>, palette <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="usage-stancomp-1.png" alt="plot of chunk stancomp"><p class="caption">
-plot of chunk stancomp
-</p>
+<p><img src="usage-stancomp-1.png" alt=""></p>
 </div>
 </div>
 </div>

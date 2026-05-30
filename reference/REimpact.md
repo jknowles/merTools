@@ -97,8 +97,8 @@ recommended by Cochran (1977).
 
 Gatz, DF and Smith, L. The Standard Error of a Weighted Mean
 Concentration. I. Bootstrapping vs other methods. *Atmospheric
-Environment*. 1995;11(2)1185-1193. Available at
-<https://www.sciencedirect.com/science/article/pii/135223109400210C>
+Environment*. 1995;11(2)1185-1193.
+[doi:10.1016/1352-2310(94)00210-C](https://doi.org/10.1016/1352-2310%2894%2900210-C)
 
 Cochran, WG. 1977. Sampling Techniques (3rd Edition). Wiley, New York.
 

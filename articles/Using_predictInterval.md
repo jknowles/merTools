@@ -138,21 +138,22 @@ set.seed(271828)
 data(sleepstudy)
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
 arm::display(fm1)
-#> lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)
-#>             coef.est coef.se
-#> (Intercept) 251.41     6.82 
-#> Days         10.47     1.55 
-#> 
-#> Error terms:
-#>  Groups   Name        Std.Dev. Corr 
-#>  Subject  (Intercept) 24.74         
-#>           Days         5.92    0.07 
-#>  Residual             25.59         
-#> ---
-#> number of obs: 180, groups: Subject, 18
-#> AIC = 1755.6, DIC = 1760.3
-#> deviance = 1751.9
 ```
+
+    #> lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)
+    #>             coef.est coef.se
+    #> (Intercept) 251.41     6.82 
+    #> Days         10.47     1.55 
+    #> 
+    #> Error terms:
+    #>  Groups   Name        Std.Dev. Corr 
+    #>  Subject  (Intercept) 24.74         
+    #>           Days         5.92    0.07 
+    #>  Residual             25.59         
+    #> ---
+    #> number of obs: 180, groups: Subject, 18
+    #> AIC = 1755.6, DIC = 1760.3
+    #> deviance = 1751.9
 
 Then, calculate prediction intervals using
 [`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md).
@@ -204,9 +205,7 @@ ggplot(aes(x=1:30, y=fit, ymin=lwr, ymax=upr), data=PI[1:30,]) +
   labs(x="Index", y="Prediction w/ 95% PI") + theme_bw()
 ```
 
-![plot of chunk Inspect_predInt_2](usage-Inspect_predInt_2-1.png)
-
-plot of chunk Inspect_predInt_2
+![](usage-Inspect_predInt_2-1.png)
 
 #### Step 1a: Adjusting for correlation between fixed and random effects
 
@@ -229,21 +228,22 @@ reaction times of subjects after experiencing sleep deprivation:
 
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
 arm::display(fm1)
-#> lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)
-#>             coef.est coef.se
-#> (Intercept) 251.41     6.82 
-#> Days         10.47     1.55 
-#> 
-#> Error terms:
-#>  Groups   Name        Std.Dev. Corr 
-#>  Subject  (Intercept) 24.74         
-#>           Days         5.92    0.07 
-#>  Residual             25.59         
-#> ---
-#> number of obs: 180, groups: Subject, 18
-#> AIC = 1755.6, DIC = 1760.3
-#> deviance = 1751.9
 ```
+
+    #> lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)
+    #>             coef.est coef.se
+    #> (Intercept) 251.41     6.82 
+    #> Days         10.47     1.55 
+    #> 
+    #> Error terms:
+    #>  Groups   Name        Std.Dev. Corr 
+    #>  Subject  (Intercept) 24.74         
+    #>           Days         5.92    0.07 
+    #>  Residual             25.59         
+    #> ---
+    #> number of obs: 180, groups: Subject, 18
+    #> AIC = 1755.6, DIC = 1760.3
+    #> deviance = 1751.9
 
 Let’s use the model to give an interval for the true average body fat of
 a large group of students like the first one in the study — a 196cm
@@ -252,12 +252,18 @@ female baseball player:
 ``` r
 
 sleepstudy[1,]
-#>   Reaction Days Subject
-#> 1   249.56    0     308
-predictInterval(fm1, sleepstudy[1,], include.resid.var=0) #predict the average body fat for a group of 196cm female baseball players
-#>        fit      upr      lwr
-#> 1 253.9977 270.7438 236.2829
 ```
+
+    #>   Reaction Days Subject
+    #> 1   249.56    0     308
+
+``` r
+
+predictInterval(fm1, sleepstudy[1,], include.resid.var=0) #predict the average body fat for a group of 196cm female baseball players
+```
+
+    #>        fit      upr      lwr
+    #> 1 253.9977 270.7438 236.2829
 
 There are two ways to get predictInterval to create less-conservative
 intervals to deal with this. The first is just to tell it to consider
@@ -267,17 +273,32 @@ variance.) This is done using the `ignore.fixed.effects` argument.
 ``` r
 
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1)
-#>        fit      upr      lwr
-#> 1 253.8537 268.5299 239.6275
+```
+
+    #>        fit      upr      lwr
+    #> 1 253.8537 268.5299 239.6275
+
+``` r
+
 # predict the average reaction time for a subject at day 0, taking the global intercept
 # (mean reaction time) as fully known
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = "(Intercept)")
-#>        fit      upr      lwr
-#> 1 254.2354 269.3875 239.3116
+```
+
+    #>        fit      upr      lwr
+    #> 1 254.2354 269.3875 239.3116
+
+``` r
+
 #Same as above
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1:2)
-#>        fit      upr     lwr
-#> 1 253.6743 269.8776 237.984
+```
+
+    #>        fit      upr     lwr
+    #> 1 253.6743 269.8776 237.984
+
+``` r
+
 # as above, taking the first two fixed effects (intercept and days effect) as fully known
 ```
 
@@ -298,8 +319,13 @@ individual groups at that level.
 
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0,
                 fix.intercept.variance = TRUE)
-#>        fit      upr      lwr
-#> 1 253.5872 268.8683 236.6639
+```
+
+    #>        fit      upr      lwr
+    #> 1 253.5872 268.8683 236.6639
+
+``` r
+
 # predict the average reaction time for a subject at day 0,, using an ad-hoc
 # correction for the covariance of the intercept with the random intercept effects.
 ```
@@ -340,9 +366,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-![plot of chunk arm.Sim](usage-arm.Sim-1.png)
-
-plot of chunk arm.Sim
+![](usage-arm.Sim-1.png)
 
 The prediction intervals from `arm:sim()` are much smaller and the
 random slope for days vary more than they do for `predictInterval`. Both
@@ -410,9 +434,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-![plot of chunk bootMer.1](usage-bootMer.1-1.png)
-
-plot of chunk bootMer.1
+![](usage-bootMer.1-1.png)
 
 Method 1 (`use.u = FALSE`) re-simulates the random effects on every
 bootstrap replicate instead of conditioning on the values estimated from
@@ -451,9 +473,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-![plot of chunk bootMer.2](usage-bootMer.2-1.png)
-
-plot of chunk bootMer.2
+![](usage-bootMer.2-1.png)
 
 Here, the results for `predictInterval` in green again encompass the
 results from `bootMer`, but are much wider. The `bootMer` estimates are
@@ -485,9 +505,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-![plot of chunk bootMer.3](usage-bootMer.3-1.png)
-
-plot of chunk bootMer.3
+![](usage-bootMer.3-1.png)
 
 These results are virtually identical to those above.
 
@@ -502,43 +520,50 @@ PI.time.stan <- system.time({
   zed <- posterior_predict(fm_stan)
   PI.stan <- cbind(apply(zed, 2, median), central_intervals(zed, prob=0.95))
 })
-#> Chain 1: 
-#> Chain 1: Gradient evaluation took 5.5e-05 seconds
-#> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.55 seconds.
-#> Chain 1: Adjust your expectations accordingly!
-#> Chain 1: 
-#> Chain 1: 
-#> Chain 1: 
-#> Chain 1:  Elapsed Time: 4.058 seconds (Warm-up)
-#> Chain 1:                1.222 seconds (Sampling)
-#> Chain 1:                5.28 seconds (Total)
-#> Chain 1:
+```
 
+    #> Chain 1: 
+    #> Chain 1: Gradient evaluation took 5.5e-05 seconds
+    #> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.55 seconds.
+    #> Chain 1: Adjust your expectations accordingly!
+    #> Chain 1: 
+    #> Chain 1: 
+    #> Chain 1: 
+    #> Chain 1:  Elapsed Time: 4.058 seconds (Warm-up)
+    #> Chain 1:                1.222 seconds (Sampling)
+    #> Chain 1:                5.28 seconds (Total)
+    #> Chain 1:
+
+``` r
 
 print(fm_stan)
-#> stan_lmer
-#>  family:       gaussian [identity]
-#>  formula:      Reaction ~ Days + (Days | Subject)
-#>  observations: 180
-#> ------
-#>             Median MAD_SD
-#> (Intercept) 251.6    6.7 
-#> Days         10.6    1.6 
-#> 
-#> Auxiliary parameter(s):
-#>       Median MAD_SD
-#> sigma 25.9    1.6  
-#> 
-#> Error terms:
-#>  Groups   Name        Std.Dev. Corr 
-#>  Subject  (Intercept) 24.3          
-#>           Days         6.8     0.06 
-#>  Residual             26.0          
-#> Num. levels: Subject 18 
-#> 
-#> ------
-#> * For help interpreting the printed output see ?print.stanreg
-#> * For info on the priors used see ?prior_summary.stanreg
+```
+
+    #> stan_lmer
+    #>  family:       gaussian [identity]
+    #>  formula:      Reaction ~ Days + (Days | Subject)
+    #>  observations: 180
+    #> ------
+    #>             Median MAD_SD
+    #> (Intercept) 251.6    6.7 
+    #> Days         10.6    1.6 
+    #> 
+    #> Auxiliary parameter(s):
+    #>       Median MAD_SD
+    #> sigma 25.9    1.6  
+    #> 
+    #> Error terms:
+    #>  Groups   Name        Std.Dev. Corr 
+    #>  Subject  (Intercept) 24.3          
+    #>           Days         6.8     0.06 
+    #>  Residual             26.0          
+    #> Num. levels: Subject 18 
+    #> 
+    #> ------
+    #> * For help interpreting the printed output see ?print.stanreg
+    #> * For info on the priors used see ?prior_summary.stanreg
+
+``` r
 
 PI.stan <- as.data.frame(PI.stan)
 names(PI.stan) <- c("fit", "lwr", "upr")
@@ -555,9 +580,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
   scale_color_brewer(type = "qual", palette = 2)
 ```
 
-![plot of chunk stancomp](usage-stancomp-1.png)
-
-plot of chunk stancomp
+![](usage-stancomp-1.png)
 
 ### Computation time
 

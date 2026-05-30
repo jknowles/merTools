@@ -110,40 +110,40 @@ data.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">hsb</span><span class="op">$</span><span class="va">minority</span> <span class="op">&lt;-</span> <span class="fu">add_NA</span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">minority</span>, prob <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">minority</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">minority</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;  6832   353</span></span>
-<span></span>
-<span><span class="va">hsb</span><span class="op">$</span><span class="va">female</span> <span class="op">&lt;-</span> <span class="fu">add_NA</span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">female</span>, prob <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">female</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  6832   353</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hsb</span><span class="op">$</span><span class="va">female</span> <span class="op">&lt;-</span> <span class="fu">add_NA</span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">female</span>, prob <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">female</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;  6852   333</span></span>
-<span></span>
-<span><span class="va">hsb</span><span class="op">$</span><span class="va">ses</span> <span class="op">&lt;-</span> <span class="fu">add_NA</span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">ses</span>, prob <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">ses</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  6852   333</span></span></code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hsb</span><span class="op">$</span><span class="va">ses</span> <span class="op">&lt;-</span> <span class="fu">add_NA</span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">ses</span>, prob <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">ses</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;  6825   360</span></span>
-<span></span>
-<span><span class="va">hsb</span><span class="op">$</span><span class="va">size</span> <span class="op">&lt;-</span> <span class="fu">add_NA</span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">size</span>, prob <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">size</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  6825   360</span></span></code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hsb</span><span class="op">$</span><span class="va">size</span> <span class="op">&lt;-</span> <span class="fu">add_NA</span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">size</span>, prob <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">$</span><span class="va">size</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;  6815   370</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt;  6815   370</span></span></code></pre>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load imputation library</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gking.harvard.edu/amelia" class="external-link">Amelia</a></span><span class="op">)</span></span>
 <span><span class="co"># Declare the variables to include in the imputation data</span></span>
 <span><span class="va">varIndex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">)</span></span>
 <span><span class="co"># Declare ID variables to be excluded from imputation</span></span>
 <span><span class="va">IDS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"schid"</span>, <span class="st">"meanses"</span><span class="op">)</span></span>
-<span><span class="co"># Imputate</span></span>
+<span><span class="co"># Impute</span></span>
 <span><span class="va">impute.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Amelia/man/amelia.html" class="external-link">amelia</a></span><span class="op">(</span><span class="va">hsb</span><span class="op">[</span>, <span class="va">varIndex</span><span class="op">]</span>, idvars <span class="op">=</span> <span class="va">IDS</span>,</span>
 <span>                         noms <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"minority"</span>, <span class="st">"female"</span><span class="op">)</span>,</span>
-<span>                         m <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; -- Imputation 1 --</span></span>
+<span>                         m <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; -- Imputation 1 --</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   1  2  3  4</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -161,9 +161,10 @@ data.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; -- Imputation 5 --</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   1  2  3</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">impute.out</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   1  2  3</span></span></code></pre>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">impute.out</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Amelia output with 5 imputed datasets.</span></span>
 <span><span class="co">#&gt; Return code:  1 </span></span>
 <span><span class="co">#&gt; Message:  Normal EM convergence. </span></span>
@@ -191,9 +192,9 @@ data.</p>
 <span><span class="co">#&gt; mathach        0.00000000</span></span>
 <span><span class="co">#&gt; size           0.05149617</span></span>
 <span><span class="co">#&gt; schtype        0.00000000</span></span>
-<span><span class="co">#&gt; meanses        0.00000000</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Amelia is not available so let's just boostrap resample our data</span></span>
+<span><span class="co">#&gt; meanses        0.00000000</span></span></code></pre>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Amelia is not available so let's just bootstrap resample our data</span></span>
 <span><span class="va">impute.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"list"</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span> <span class="op">{</span></span>
@@ -207,7 +208,7 @@ data.</p>
 <h2 id="fitting-and-summarizing-a-model-list">Fitting and Summarizing a Model List<a class="anchor" aria-label="anchor" href="#fitting-and-summarizing-a-model-list"></a>
 </h2>
 <p>Fitting a model is very similar</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fmla</span> <span class="op">&lt;-</span> <span class="st">"mathach ~ minority + female + ses + meanses + (1 + ses|schid)"</span></span>
 <span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">fmla</span>, data <span class="op">=</span> <span class="va">hsb</span><span class="op">)</span></span>
 <span><span class="kw">if</span><span class="op">(</span><span class="va">amelia_eval</span><span class="op">)</span> <span class="op">{</span></span>
@@ -223,21 +224,23 @@ and <code>merTools</code> provides some convenience functions for
 reporting the results of this object.</p>
 <p>Using this, we can directly compare the model fit with missing data
 excluded to the aggregate from the imputed models:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span> <span class="co"># model with dropped missing</span></span>
-<span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.115316   -2.926850   -1.295694    1.927404    3.111054</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.010651   -2.703166   -1.151025    1.907475    3.129565</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span> <span class="co"># model with dropped missing</span></span>
-<span><span class="co">#&gt;  Groups   Name        Std.Dev. Corr   </span></span>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span> <span class="co"># model with dropped missing</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
+<span><span class="co">#&gt;   14.115316   -2.926850   -1.295694    1.927404    3.111054</span></span></code></pre>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
+<span><span class="co">#&gt;   14.010651   -2.703166   -1.151025    1.907475    3.129565</span></span></code></pre>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span> <span class="co"># model with dropped missing</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;  Groups   Name        Std.Dev. Corr   </span></span>
 <span><span class="co">#&gt;  schid    (Intercept) 1.51731         </span></span>
 <span><span class="co">#&gt;           ses         0.47516  -0.823 </span></span>
-<span><span class="co">#&gt;  Residual             5.97123</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span> <span class="co"># aggregate of imputed models</span></span>
-<span><span class="co">#&gt; $stddev</span></span>
+<span><span class="co">#&gt;  Residual             5.97123</span></span></code></pre>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span> <span class="co"># aggregate of imputed models</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; $stddev</span></span>
 <span><span class="co">#&gt; $stddev$schid</span></span>
 <span><span class="co">#&gt; (Intercept)         ses </span></span>
 <span><span class="co">#&gt;   1.5146901   0.4775618 </span></span>
@@ -247,13 +250,13 @@ excluded to the aggregate from the imputed models:</p>
 <span><span class="co">#&gt; $correlation$schid</span></span>
 <span><span class="co">#&gt;             (Intercept)        ses</span></span>
 <span><span class="co">#&gt; (Intercept)   1.0000000 -0.8056484</span></span>
-<span><span class="co">#&gt; ses          -0.8056484  1.0000000</span></span></code></pre></div>
+<span><span class="co">#&gt; ses          -0.8056484  1.0000000</span></span></code></pre>
 <p>If you want to inspect the individual models, or you do not like
 taking the mean across the imputation replications, you can take the
 <code>merModList</code> apart easily:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">modList</span>, <span class="va">fixef</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $imp1</span></span>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">modList</span>, <span class="va">fixef</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; $imp1</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
 <span><span class="co">#&gt;   13.998828   -2.706329   -1.131058    1.919838    3.145374 </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -271,22 +274,23 @@ taking the mean across the imputation replications, you can take the
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp5</span></span>
 <span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.024244   -2.739249   -1.170593    1.899499    3.129619</span></span></code></pre></div>
+<span><span class="co">#&gt;   14.024244   -2.739249   -1.170593    1.899499    3.129619</span></span></code></pre>
 <p>And, you can always operate on any single element of the list:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   13.998828   -2.706329   -1.131058    1.919838    3.145374</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
-<span><span class="co">#&gt;   14.021477   -2.725340   -1.163246    1.873299    3.164971</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
+<span><span class="co">#&gt;   13.998828   -2.706329   -1.131058    1.919838    3.145374</span></span></code></pre>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/fixed.effects.html" class="external-link">fixef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; (Intercept)    minority      female         ses     meanses </span></span>
+<span><span class="co">#&gt;   14.021477   -2.725340   -1.163246    1.873299    3.164971</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="output-of-a-model-list">Output of a Model List<a class="anchor" aria-label="anchor" href="#output-of-a-model-list"></a>
 </h2>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $imp1</span></span>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; $imp1</span></span>
 <span><span class="co">#&gt; Linear mixed model fit by REML ['lmerMod']</span></span>
 <span><span class="co">#&gt; Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)</span></span>
 <span><span class="co">#&gt;    Data: d</span></span>
@@ -449,10 +453,10 @@ taking the mean across the imputation replications, you can take the
 <span><span class="co">#&gt; minority -0.320                     </span></span>
 <span><span class="co">#&gt; female   -0.479  0.003              </span></span>
 <span><span class="co">#&gt; ses      -0.257  0.143  0.042       </span></span>
-<span><span class="co">#&gt; meanses  -0.106  0.122  0.023 -0.243</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Linear mixed model fit by REML"</span></span>
+<span><span class="co">#&gt; meanses  -0.106  0.122  0.023 -0.243</span></span></code></pre>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; [1] "Linear mixed model fit by REML"</span></span>
 <span><span class="co">#&gt; Model family: </span></span>
 <span><span class="co">#&gt; lmer(formula = mathach ~ minority + female + ses + meanses + </span></span>
 <span><span class="co">#&gt;     (1 + ses | schid), data = d)</span></span>
@@ -489,10 +493,10 @@ taking the mean across the imputation replications, you can take the
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Model Fit Stats</span></span>
 <span><span class="co">#&gt; AIC = 46355.7</span></span>
-<span><span class="co">#&gt; Residual standard deviation = 5.989</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/fastdisp.html">fastdisp</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt; lmer(formula = mathach ~ minority + female + ses + meanses + </span></span>
+<span><span class="co">#&gt; Residual standard deviation = 5.989</span></span></code></pre>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fastdisp.html">fastdisp</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; lmer(formula = mathach ~ minority + female + ses + meanses + </span></span>
 <span><span class="co">#&gt;     (1 + ses | schid), data = d)</span></span>
 <span><span class="co">#&gt;             estimate std.error</span></span>
 <span><span class="co">#&gt; (Intercept)    14.01      0.17</span></span>
@@ -508,7 +512,7 @@ taking the mean across the imputation replications, you can take the
 <span><span class="co">#&gt;  Residual             5.99           </span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; number of obs: 7185, groups: schid, 160</span></span>
-<span><span class="co">#&gt; AIC = 46355.7---</span></span></code></pre></div>
+<span><span class="co">#&gt; AIC = 46355.7---</span></span></code></pre>
 <p>The standard errors reported for the model list include a correction,
 Rubin’s correction (see documentation), which adjusts for the within and
 between imputation set variance as well.</p>
@@ -516,22 +520,24 @@ between imputation set variance as well.</p>
 <div class="section level2">
 <h2 id="specific-model-information-summaries">Specific Model Information Summaries<a class="anchor" aria-label="anchor" href="#specific-model-information-summaries"></a>
 </h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/modelRandEffStats.html">modelRandEffStats</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                   term    group   estimate   std.error</span></span>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/modelRandEffStats.html">modelRandEffStats</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;                   term    group   estimate   std.error</span></span>
 <span><span class="co">#&gt; 1 cor__(Intercept).ses    schid -0.8056484 0.141646398</span></span>
 <span><span class="co">#&gt; 2      sd__(Intercept)    schid  1.5146901 0.011792677</span></span>
 <span><span class="co">#&gt; 3      sd__Observation Residual  5.9887748 0.006394734</span></span>
-<span><span class="co">#&gt; 4              sd__ses    schid  0.4775618 0.036568245</span></span>
-<span><span class="fu"><a href="../reference/modelFixedEff.html">modelFixedEff</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          term  estimate std.error  statistic           df</span></span>
+<span><span class="co">#&gt; 4              sd__ses    schid  0.4775618 0.036568245</span></span></code></pre>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/modelFixedEff.html">modelFixedEff</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;          term  estimate std.error  statistic           df</span></span>
 <span><span class="co">#&gt; 1 (Intercept) 14.010651 0.1736290  80.693025  113115.7037</span></span>
 <span><span class="co">#&gt; 2      female -1.151025 0.1581831  -7.276536 1080751.9364</span></span>
 <span><span class="co">#&gt; 3     meanses  3.129565 0.3531353   8.862227  209086.2872</span></span>
 <span><span class="co">#&gt; 4    minority -2.703166 0.2111383 -12.802819     950.7301</span></span>
-<span><span class="co">#&gt; 5         ses  1.907475 0.1150281  16.582694  257649.8518</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $stddev</span></span>
+<span><span class="co">#&gt; 5         ses  1.907475 0.1150281  16.582694  257649.8518</span></span></code></pre>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; $stddev</span></span>
 <span><span class="co">#&gt; $stddev$schid</span></span>
 <span><span class="co">#&gt; (Intercept)         ses </span></span>
 <span><span class="co">#&gt;   1.5146901   0.4775618 </span></span>
@@ -541,18 +547,18 @@ between imputation set variance as well.</p>
 <span><span class="co">#&gt; $correlation$schid</span></span>
 <span><span class="co">#&gt;             (Intercept)        ses</span></span>
 <span><span class="co">#&gt; (Intercept)   1.0000000 -0.8056484</span></span>
-<span><span class="co">#&gt; ses          -0.8056484  1.0000000</span></span></code></pre></div>
+<span><span class="co">#&gt; ses          -0.8056484  1.0000000</span></span></code></pre>
 <div class="section level3">
 <h3 id="diagnostics-of-list-components">Diagnostics of List Components<a class="anchor" aria-label="anchor" href="#diagnostics-of-list-components"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/modelInfo.html">modelInfo</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   n.obs n.lvls      AIC    sigma</span></span>
-<span><span class="co">#&gt; 1  6177      1 39832.18 5.971227</span></span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/modelInfo.html">modelInfo</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;   n.obs n.lvls      AIC    sigma</span></span>
+<span><span class="co">#&gt; 1  6177      1 39832.18 5.971227</span></span></code></pre>
 <p>Let’s apply this to our model list.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">modList</span>, <span class="va">modelInfo</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $imp1</span></span>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">modList</span>, <span class="va">modelInfo</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; $imp1</span></span>
 <span><span class="co">#&gt;   n.obs n.lvls      AIC    sigma</span></span>
 <span><span class="co">#&gt; 1  7185      1 46353.21 5.988695</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -570,14 +576,14 @@ between imputation set variance as well.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $imp5</span></span>
 <span><span class="co">#&gt;   n.obs n.lvls      AIC    sigma</span></span>
-<span><span class="co">#&gt; 1  7185      1 46350.26 5.986183</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  7185      1 46350.26 5.986183</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="model-list-generics">Model List Generics<a class="anchor" aria-label="anchor" href="#model-list-generics"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Linear mixed model fit by REML"</span></span>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; [1] "Linear mixed model fit by REML"</span></span>
 <span><span class="co">#&gt; Model family: </span></span>
 <span><span class="co">#&gt; lmer(formula = mathach ~ minority + female + ses + meanses + </span></span>
 <span><span class="co">#&gt;     (1 + ses | schid), data = d)</span></span>
@@ -614,18 +620,18 @@ between imputation set variance as well.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Model Fit Stats</span></span>
 <span><span class="co">#&gt; AIC = 46355.7</span></span>
-<span><span class="co">#&gt; Residual standard deviation = 5.989</span></span></code></pre></div>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/modelFixedEff.html">modelFixedEff</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          term  estimate std.error  statistic           df</span></span>
+<span><span class="co">#&gt; Residual standard deviation = 5.989</span></span></code></pre>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/modelFixedEff.html">modelFixedEff</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;          term  estimate std.error  statistic           df</span></span>
 <span><span class="co">#&gt; 1 (Intercept) 14.010651 0.1736290  80.693025  113115.7037</span></span>
 <span><span class="co">#&gt; 2      female -1.151025 0.1581831  -7.276536 1080751.9364</span></span>
 <span><span class="co">#&gt; 3     meanses  3.129565 0.3531353   8.862227  209086.2872</span></span>
 <span><span class="co">#&gt; 4    minority -2.703166 0.2111383 -12.802819     950.7301</span></span>
-<span><span class="co">#&gt; 5         ses  1.907475 0.1150281  16.582694  257649.8518</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/random.effects.html" class="external-link">ranef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $schid</span></span>
+<span><span class="co">#&gt; 5         ses  1.907475 0.1150281  16.582694  257649.8518</span></span></code></pre>
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/random.effects.html" class="external-link">ranef</a></span><span class="op">(</span><span class="va">modList</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; $schid</span></span>
 <span><span class="co">#&gt;       (Intercept)           ses</span></span>
 <span><span class="co">#&gt; 1224 -0.169934903  0.0484630054</span></span>
 <span><span class="co">#&gt; 1288 -0.007840719  0.0020184342</span></span>
@@ -786,7 +792,7 @@ between imputation set variance as well.</p>
 <span><span class="co">#&gt; 9397 -0.520016492  0.1450591625</span></span>
 <span><span class="co">#&gt; 9508  0.085206319 -0.0193617510</span></span>
 <span><span class="co">#&gt; 9550 -0.267133581  0.0801879186</span></span>
-<span><span class="co">#&gt; 9586 -0.153549872  0.0419366968</span></span></code></pre></div>
+<span><span class="co">#&gt; 9586 -0.153549872  0.0419366968</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">

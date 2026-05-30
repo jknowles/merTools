@@ -68,8 +68,12 @@ brm_mean <- colMeans(posterior_epred(m_brm, newdata = test_seen, allow_new_level
 c(correlation = cor(lme_mean, brm_mean),
   mean_abs_diff = mean(abs(lme_mean - brm_mean)),
   response_sd = sd(test_seen$mathach))
-#>   correlation mean_abs_diff   response_sd 
-#>    0.99984045    0.03670134    6.71745425
+```
+
+    #>   correlation mean_abs_diff   response_sd 
+    #>    0.99984045    0.03670134    6.71745425
+
+``` r
 
 ggplot(data.frame(merTools = lme_mean, brms = brm_mean), aes(merTools, brms)) +
   geom_abline(slope = 1, intercept = 0, linetype = 2, color = "grey50") +
@@ -78,9 +82,7 @@ ggplot(data.frame(merTools = lme_mean, brms = brm_mean), aes(merTools, brms)) +
   theme_minimal(base_size = 12)
 ```
 
-![plot of chunk point](brms-point-1.png)
-
-plot of chunk point
+![](brms-point-1.png)
 
 ### The prediction intervals agree
 
@@ -91,8 +93,12 @@ c(width_merTools = median(b_mt$upr - b_mt$lwr),
   width_brms = median(b_brm$upr - b_brm$lwr),
   cor_lower = cor(b_mt$lwr, b_brm$lwr),
   cor_upper = cor(b_mt$upr, b_brm$upr))
-#> width_merTools     width_brms      cor_lower      cor_upper 
-#>     20.1789145     20.2344075      0.9901934      0.9899334
+```
+
+    #> width_merTools     width_brms      cor_lower      cor_upper 
+    #>     20.1789145     20.2344075      0.9901934      0.9899334
+
+``` r
 
 endpts <- rbind(data.frame(bound = "lower", merTools = b_mt$lwr, brms = b_brm$lwr),
                 data.frame(bound = "upper", merTools = b_mt$upr, brms = b_brm$upr))
@@ -103,9 +109,7 @@ ggplot(endpts, aes(merTools, brms, color = bound)) +
   theme_minimal(base_size = 12)
 ```
 
-![plot of chunk intervals](brms-intervals-1.png)
-
-plot of chunk intervals
+![](brms-intervals-1.png)
 
 ### And they are equally well calibrated
 
@@ -118,12 +122,13 @@ other.
 data.frame(nominal = NOMINAL,
            merTools = coverage(mt_seen, test_seen$mathach, NOMINAL),
            brms     = coverage(pp_seen, test_seen$mathach, NOMINAL))
-#>   nominal  merTools      brms
-#> 1    0.50 0.4569776 0.4598698
-#> 2    0.80 0.7895879 0.7932032
-#> 3    0.90 0.9168474 0.9168474
-#> 4    0.95 0.9660159 0.9703543
 ```
+
+    #>   nominal  merTools      brms
+    #> 1    0.50 0.4569776 0.4598698
+    #> 2    0.80 0.7895879 0.7932032
+    #> 3    0.90 0.9168474 0.9168474
+    #> 4    0.95 0.9660159 0.9703543
 
 ### At a fraction of the cost
 
@@ -136,12 +141,13 @@ t_pp  <- system.time(posterior_predict(m_brm, newdata = test_seen,
 data.frame(  # brms_fit_seconds was captured when the model was fit, above
   step = c("lme4 fit", "predictInterval", "brms fit (compile+sample)", "posterior_predict"),
   seconds = round(c(t_lme, t_mt, brms_fit_seconds, t_pp), 2))
-#>                        step seconds
-#> 1                  lme4 fit    0.05
-#> 2           predictInterval    0.53
-#> 3 brms fit (compile+sample)  398.97
-#> 4         posterior_predict    1.52
 ```
+
+    #>                        step seconds
+    #> 1                  lme4 fit    0.05
+    #> 2           predictInterval    0.53
+    #> 3 brms fit (compile+sample)  398.97
+    #> 4         posterior_predict    1.52
 
 For this model, the entire lme4 +
 [`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
@@ -181,10 +187,11 @@ data.frame(
   brms_width     = c(w(pp_pop),  w(pp_draw)),
   merTools_cov90 = c(coverage(mt_zero, nd$mathach, 0.90), coverage(mt_draw, nd$mathach, 0.90)),
   brms_cov90     = c(coverage(pp_pop,  nd$mathach, 0.90), coverage(pp_draw, nd$mathach, 0.90)))
-#>    unseen_group merTools_width brms_width merTools_cov90 brms_cov90
-#> 1   drop effect       19.96801   20.02855      0.8708487  0.8745387
-#> 2 sample effect       20.67910   20.76924      0.8892989  0.8856089
 ```
+
+    #>    unseen_group merTools_width brms_width merTools_cov90 brms_cov90
+    #> 1   drop effect       19.96801   20.02855      0.8708487  0.8745387
+    #> 2 sample effect       20.67910   20.76924      0.8892989  0.8856089
 
 So the interval width for an unseen group is set by the *choice*, not
 the method. Earlier I compared
@@ -210,10 +217,11 @@ data.frame(
                  w(mt_draws(m0,    nd, new.levels = "zero"))),
   width_draw = c(w(mt_draws(m_lme, nd, new.levels = "draw")),
                  w(mt_draws(m0,    nd, new.levels = "draw"))))
-#>             model school_SD width_zero width_draw
-#> 1    with meanses  1.598503   19.96801   20.67910
-#> 2 without meanses  2.125770   19.94993   21.22576
 ```
+
+    #>             model school_SD width_zero width_draw
+    #> 1    with meanses  1.598503   19.96801   20.67910
+    #> 2 without meanses  2.125770   19.94993   21.22576
 
 The practical guidance:
 [`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)’s
@@ -251,8 +259,12 @@ if (max(mt_pr) > 1 || min(mt_pr) < 0) mt_pr <- plogis(mt_pr)
 brm_pr <- posterior_epred(g_brm, newdata = gk_te, allow_new_levels = TRUE)
 mt_p <- apply(mt_pr, 2, median); brm_p <- apply(brm_pr, 2, median)
 c(correlation = cor(mt_p, brm_p), mean_abs_diff = mean(abs(mt_p - brm_p)))
-#>   correlation mean_abs_diff 
-#>    0.99488587    0.02704796
+```
+
+    #>   correlation mean_abs_diff 
+    #>    0.99488587    0.02704796
+
+``` r
 
 ggplot(data.frame(merTools = mt_p, brms = brm_p), aes(merTools, brms)) +
   geom_abline(slope = 1, intercept = 0, linetype = 2, color = "grey50") +
@@ -262,9 +274,7 @@ ggplot(data.frame(merTools = mt_p, brms = brm_p), aes(merTools, brms)) +
   theme_minimal(base_size = 12)
 ```
 
-![plot of chunk glmm](brms-glmm-1.png)
-
-plot of chunk glmm
+![](brms-glmm-1.png)
 
 ## Takeaways
 

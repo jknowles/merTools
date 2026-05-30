@@ -87,8 +87,8 @@ the effect distribution for each term.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">Reaction</span> <span class="op">~</span> <span class="va">Days</span> <span class="op">+</span> <span class="op">(</span><span class="va">Days</span> <span class="op">|</span> <span class="va">Subject</span><span class="op">)</span>, <span class="va">sleepstudy</span><span class="op">)</span></span>
 <span><span class="va">mfx</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/REmargins.html">REmargins</a></span><span class="op">(</span>merMod <span class="op">=</span> <span class="va">fm1</span>, newdata <span class="op">=</span> <span class="va">sleepstudy</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mfx</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Reaction Days Subject case grouping_var      term breaks original_group_level</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mfx</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;   Reaction Days Subject case grouping_var      term breaks original_group_level</span></span>
 <span><span class="co">#&gt; 1   249.56    0     309    1      Subject Intercept      1                  308</span></span>
 <span><span class="co">#&gt; 2   249.56    0     334    1      Subject      Days      1                  308</span></span>
 <span><span class="co">#&gt; 3   249.56    0     350    1      Subject Intercept      2                  308</span></span>
@@ -108,7 +108,7 @@ the effect distribution for each term.</p>
 <span><span class="co">#&gt; 3  252.2250  290.5297  217.9524</span></span>
 <span><span class="co">#&gt; 4  253.0412  287.3219  217.2943</span></span>
 <span><span class="co">#&gt; 5  250.6383  284.8410  216.6404</span></span>
-<span><span class="co">#&gt; 6  252.7486  286.7932  218.2970</span></span></code></pre></div>
+<span><span class="co">#&gt; 6  252.7486  286.7932  218.2970</span></span></code></pre>
 <p>The new data frame output from <code>REmargins</code> contains a lot
 of information. The first few columns contain the original data passed
 to <code>newdata</code>. Each observation in <code>newdata</code> is
@@ -126,13 +126,11 @@ breaks to simulate each term over. Then the
 </h2>
 <p>Finally - you can plot the results marginalization to evaluate the
 effect of the random effect terms graphically.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">mfx</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">breaks</span>, y <span class="op">=</span> <span class="va">fit_Subject</span>, group <span class="op">=</span> <span class="va">case</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">term</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="mfx-mfxplot1-1.png" alt="plot of chunk mfxplot1"><div class="figcaption">plot of chunk mfxplot1</div>
-</div>
+<p><img src="mfx-mfxplot1-1.png"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

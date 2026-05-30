@@ -29,12 +29,13 @@ effects.
 
 data(hsb)
 str(hsb[, c("schid", "mathach", "ses", "meanses")])
-#> 'data.frame':    7185 obs. of  4 variables:
-#>  $ schid  : chr  "1224" "1224" "1224" "1224" ...
-#>  $ mathach: num  5.88 19.71 20.35 8.78 17.9 ...
-#>  $ ses    : num  -1.528 -0.588 -0.528 -0.668 -0.158 ...
-#>  $ meanses: num  -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 ...
 ```
+
+    #> 'data.frame':    7185 obs. of  4 variables:
+    #>  $ schid  : chr  "1224" "1224" "1224" "1224" ...
+    #>  $ mathach: num  5.88 19.71 20.35 8.78 17.9 ...
+    #>  $ ses    : num  -1.528 -0.588 -0.528 -0.668 -0.158 ...
+    #>  $ meanses: num  -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 -0.428 ...
 
 ## A contextual-effects model
 
@@ -45,21 +46,22 @@ average SES of their school, allowing each school its own intercept:
 
 cm <- lmer(mathach ~ ses + meanses + (1 | schid), data = hsb)
 arm::display(cm)
-#> lmer(formula = mathach ~ ses + meanses + (1 | schid), data = hsb)
-#>             coef.est coef.se
-#> (Intercept) 12.66     0.15  
-#> ses          2.19     0.11  
-#> meanses      3.68     0.38  
-#> 
-#> Error terms:
-#>  Groups   Name        Std.Dev.
-#>  schid    (Intercept) 1.64    
-#>  Residual             6.08    
-#> ---
-#> number of obs: 7185, groups: schid, 160
-#> AIC = 46578.6, DIC = 46559
-#> deviance = 46563.8
 ```
+
+    #> lmer(formula = mathach ~ ses + meanses + (1 | schid), data = hsb)
+    #>             coef.est coef.se
+    #> (Intercept) 12.66     0.15  
+    #> ses          2.19     0.11  
+    #> meanses      3.68     0.38  
+    #> 
+    #> Error terms:
+    #>  Groups   Name        Std.Dev.
+    #>  schid    (Intercept) 1.64    
+    #>  Residual             6.08    
+    #> ---
+    #> number of obs: 7185, groups: schid, 160
+    #> AIC = 46578.6, DIC = 46559
+    #> deviance = 46563.8
 
 The coefficient on `ses` is the *within-school* slope; the coefficient
 on `meanses` is the *contextual* effect.
@@ -75,9 +77,7 @@ plotFEsim(fe) +
   labs(title = "Within-school (ses) vs. contextual (meanses) effects")
 ```
 
-![plot of chunk feplot](context-feplot-1.png)
-
-plot of chunk feplot
+![](context-feplot-1.png)
 
 ## Predictions that separate the two effects
 
@@ -107,9 +107,7 @@ ggplot(scenarios, aes(x = meanses, y = fit, ymin = lwr, ymax = upr)) +
   theme_minimal(base_size = 12)
 ```
 
-![plot of chunk wiggle](context-wiggle-1.png)
-
-plot of chunk wiggle
+![](context-wiggle-1.png)
 
 ## How much do schools matter across the rank distribution?
 
@@ -129,9 +127,7 @@ plotREimpact(imp) +
   labs(title = "Impact of school placement on predicted achievement")
 ```
 
-![plot of chunk reimpact](context-reimpact-1.png)
-
-plot of chunk reimpact
+![](context-reimpact-1.png)
 
 ## References
 

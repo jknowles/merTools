@@ -25,28 +25,29 @@ vignette) of the effect distribution for each term.
 fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
 head(mfx)
-#>   Reaction Days Subject case grouping_var      term breaks original_group_level
-#> 1   249.56    0     309    1      Subject Intercept      1                  308
-#> 2   249.56    0     334    1      Subject      Days      1                  308
-#> 3   249.56    0     350    1      Subject Intercept      2                  308
-#> 4   249.56    0     330    1      Subject      Days      2                  308
-#> 5   249.56    0     308    1      Subject Intercept      3                  308
-#> 6   249.56    0     332    1      Subject      Days      3                  308
-#>   fit_combined upr_combined lwr_combined fit_Subject upr_Subject lwr_Subject
-#> 1     211.9200     250.8137     173.6175  -37.958384   -2.680876   -76.85914
-#> 2     245.6775     283.3831     207.7996   -6.238617   25.164606   -46.69958
-#> 3     236.9896     275.3616     201.5464  -14.117588   21.020768   -51.19104
-#> 4     273.9680     311.3997     236.0823   23.409186   59.360085   -13.18793
-#> 5     254.5492     290.2708     218.4986    2.253723   35.755512   -32.79586
-#> 6     263.1717     296.7733     225.2313    8.055660   43.478246   -27.57725
-#>   fit_fixed upr_fixed lwr_fixed
-#> 1  252.4671  288.5500  219.3783
-#> 2  250.5605  287.2176  215.9889
-#> 3  252.2250  290.5297  217.9524
-#> 4  253.0412  287.3219  217.2943
-#> 5  250.6383  284.8410  216.6404
-#> 6  252.7486  286.7932  218.2970
 ```
+
+    #>   Reaction Days Subject case grouping_var      term breaks original_group_level
+    #> 1   249.56    0     309    1      Subject Intercept      1                  308
+    #> 2   249.56    0     334    1      Subject      Days      1                  308
+    #> 3   249.56    0     350    1      Subject Intercept      2                  308
+    #> 4   249.56    0     330    1      Subject      Days      2                  308
+    #> 5   249.56    0     308    1      Subject Intercept      3                  308
+    #> 6   249.56    0     332    1      Subject      Days      3                  308
+    #>   fit_combined upr_combined lwr_combined fit_Subject upr_Subject lwr_Subject
+    #> 1     211.9200     250.8137     173.6175  -37.958384   -2.680876   -76.85914
+    #> 2     245.6775     283.3831     207.7996   -6.238617   25.164606   -46.69958
+    #> 3     236.9896     275.3616     201.5464  -14.117588   21.020768   -51.19104
+    #> 4     273.9680     311.3997     236.0823   23.409186   59.360085   -13.18793
+    #> 5     254.5492     290.2708     218.4986    2.253723   35.755512   -32.79586
+    #> 6     263.1717     296.7733     225.2313    8.055660   43.478246   -27.57725
+    #>   fit_fixed upr_fixed lwr_fixed
+    #> 1  252.4671  288.5500  219.3783
+    #> 2  250.5605  287.2176  215.9889
+    #> 3  252.2250  290.5297  217.9524
+    #> 4  253.0412  287.3219  217.2943
+    #> 5  250.6383  284.8410  216.6404
+    #> 6  252.7486  286.7932  218.2970
 
 The new data frame output from `REmargins` contains a lot of
 information. The first few columns contain the original data passed to
@@ -69,6 +70,4 @@ ggplot(mfx) + aes(x = breaks, y = fit_Subject, group = case) +
   facet_wrap(~term)
 ```
 
-![plot of chunk mfxplot1](mfx-mfxplot1-1.png)
-
-plot of chunk mfxplot1
+![](mfx-mfxplot1-1.png)
