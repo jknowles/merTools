@@ -58,24 +58,42 @@ add_NA <- function(x, prob){
 
 hsb$minority <- add_NA(hsb$minority, prob = 0.05)
 table(is.na(hsb$minority))
+```
+
+```
 #> 
 #> FALSE  TRUE 
 #>  6832   353
+```
 
+``` r
 hsb$female <- add_NA(hsb$female, prob = 0.05)
 table(is.na(hsb$female))
+```
+
+```
 #> 
 #> FALSE  TRUE 
 #>  6852   333
+```
 
+``` r
 hsb$ses <- add_NA(hsb$ses, prob = 0.05)
 table(is.na(hsb$ses))
+```
+
+```
 #> 
 #> FALSE  TRUE 
 #>  6825   360
+```
 
+``` r
 hsb$size <- add_NA(hsb$size, prob = 0.05)
 table(is.na(hsb$size))
+```
+
+```
 #> 
 #> FALSE  TRUE 
 #>  6815   370
@@ -89,10 +107,13 @@ library(Amelia)
 varIndex <- names(hsb)
 # Declare ID variables to be excluded from imputation
 IDS <- c("schid", "meanses")
-# Imputate
+# Impute
 impute.out <- amelia(hsb[, varIndex], idvars = IDS,
                          noms = c("minority", "female"),
                          m = 5)
+```
+
+```
 #> -- Imputation 1 --
 #> 
 #>   1  2  3  4
@@ -112,7 +133,13 @@ impute.out <- amelia(hsb[, varIndex], idvars = IDS,
 #> -- Imputation 5 --
 #> 
 #>   1  2  3
+```
+
+``` r
 summary(impute.out)
+```
+
+```
 #> 
 #> Amelia output with 5 imputed datasets.
 #> Return code:  1 
@@ -146,7 +173,7 @@ summary(impute.out)
 
 
 ``` r
-# Amelia is not available so let's just boostrap resample our data
+# Amelia is not available so let's just bootstrap resample our data
 impute.out <- vector(mode = "list", 5)
 
 for (i in 1:5) {
@@ -187,9 +214,18 @@ the aggregate from the imputed models:
 
 ``` r
 fixef(mod) # model with dropped missing
+```
+
+```
 #> (Intercept)    minority      female         ses     meanses 
 #>   14.115316   -2.926850   -1.295694    1.927404    3.111054
+```
+
+``` r
 fixef(modList)
+```
+
+```
 #> (Intercept)    minority      female         ses     meanses 
 #>   14.010651   -2.703166   -1.151025    1.907475    3.129565
 ```
@@ -197,11 +233,20 @@ fixef(modList)
 
 ``` r
 VarCorr(mod) # model with dropped missing
+```
+
+```
 #>  Groups   Name        Std.Dev. Corr   
 #>  schid    (Intercept) 1.51731         
 #>           ses         0.47516  -0.823 
 #>  Residual             5.97123
+```
+
+``` r
 VarCorr(modList) # aggregate of imputed models
+```
+
+```
 #> $stddev
 #> $stddev$schid
 #> (Intercept)         ses 
@@ -222,6 +267,9 @@ easily:
 
 ``` r
 lapply(modList, fixef)
+```
+
+```
 #> $imp1
 #> (Intercept)    minority      female         ses     meanses 
 #>   13.998828   -2.706329   -1.131058    1.919838    3.145374 
@@ -248,9 +296,18 @@ And, you can always operate on any single element of the list:
 
 ``` r
 fixef(modList[[1]])
+```
+
+```
 #> (Intercept)    minority      female         ses     meanses 
 #>   13.998828   -2.706329   -1.131058    1.919838    3.145374
+```
+
+``` r
 fixef(modList[[2]])
+```
+
+```
 #> (Intercept)    minority      female         ses     meanses 
 #>   14.021477   -2.725340   -1.163246    1.873299    3.164971
 ```
@@ -260,6 +317,9 @@ fixef(modList[[2]])
 
 ``` r
 print(modList)
+```
+
+```
 #> $imp1
 #> Linear mixed model fit by REML ['lmerMod']
 #> Formula: mathach ~ minority + female + ses + meanses + (1 + ses | schid)
@@ -429,6 +489,9 @@ print(modList)
 
 ``` r
 summary(modList)
+```
+
+```
 #> [1] "Linear mixed model fit by REML"
 #> Model family: 
 #> lmer(formula = mathach ~ minority + female + ses + meanses + 
@@ -472,6 +535,9 @@ summary(modList)
 
 ``` r
 fastdisp(modList)
+```
+
+```
 #> lmer(formula = mathach ~ minority + female + ses + meanses + 
 #>     (1 + ses | schid), data = d)
 #>             estimate std.error
@@ -500,19 +566,34 @@ set variance as well.
 
 ``` r
 modelRandEffStats(modList)
+```
+
+```
 #>                   term    group   estimate   std.error
 #> 1 cor__(Intercept).ses    schid -0.8056484 0.141646398
 #> 2      sd__(Intercept)    schid  1.5146901 0.011792677
 #> 3      sd__Observation Residual  5.9887748 0.006394734
 #> 4              sd__ses    schid  0.4775618 0.036568245
+```
+
+``` r
 modelFixedEff(modList)
+```
+
+```
 #>          term  estimate std.error  statistic           df
 #> 1 (Intercept) 14.010651 0.1736290  80.693025  113115.7037
 #> 2      female -1.151025 0.1581831  -7.276536 1080751.9364
 #> 3     meanses  3.129565 0.3531353   8.862227  209086.2872
 #> 4    minority -2.703166 0.2111383 -12.802819     950.7301
 #> 5         ses  1.907475 0.1150281  16.582694  257649.8518
+```
+
+``` r
 VarCorr(modList)
+```
+
+```
 #> $stddev
 #> $stddev$schid
 #> (Intercept)         ses 
@@ -531,6 +612,9 @@ VarCorr(modList)
 
 ``` r
 modelInfo(mod)
+```
+
+```
 #>   n.obs n.lvls      AIC    sigma
 #> 1  6177      1 39832.18 5.971227
 ```
@@ -541,6 +625,9 @@ Let's apply this to our model list.
 
 ``` r
 lapply(modList, modelInfo)
+```
+
+```
 #> $imp1
 #>   n.obs n.lvls      AIC    sigma
 #> 1  7185      1 46353.21 5.988695
@@ -567,6 +654,9 @@ lapply(modList, modelInfo)
 
 ``` r
 summary(modList)
+```
+
+```
 #> [1] "Linear mixed model fit by REML"
 #> Model family: 
 #> lmer(formula = mathach ~ minority + female + ses + meanses + 
@@ -610,6 +700,9 @@ summary(modList)
 
 ``` r
 modelFixedEff(modList)
+```
+
+```
 #>          term  estimate std.error  statistic           df
 #> 1 (Intercept) 14.010651 0.1736290  80.693025  113115.7037
 #> 2      female -1.151025 0.1581831  -7.276536 1080751.9364
@@ -621,6 +714,9 @@ modelFixedEff(modList)
 
 ``` r
 ranef(modList)
+```
+
+```
 #> $schid
 #>       (Intercept)           ses
 #> 1224 -0.169934903  0.0484630054

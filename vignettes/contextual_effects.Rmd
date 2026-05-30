@@ -43,6 +43,9 @@ and contextual effects.
 ``` r
 data(hsb)
 str(hsb[, c("schid", "mathach", "ses", "meanses")])
+```
+
+```
 #> 'data.frame':	7185 obs. of  4 variables:
 #>  $ schid  : chr  "1224" "1224" "1224" "1224" ...
 #>  $ mathach: num  5.88 19.71 20.35 8.78 17.9 ...
@@ -59,6 +62,9 @@ SES of their school, allowing each school its own intercept:
 ``` r
 cm <- lmer(mathach ~ ses + meanses + (1 | schid), data = hsb)
 arm::display(cm)
+```
+
+```
 #> lmer(formula = mathach ~ ses + meanses + (1 | schid), data = hsb)
 #>             coef.est coef.se
 #> (Intercept) 12.66     0.15  
@@ -88,8 +94,7 @@ plotFEsim(fe) +
 ```
 
 <div class="figure" style="text-align: center">
-<img src="context-feplot-1.png" alt="plot of chunk feplot"  />
-<p class="caption">plot of chunk feplot</p>
+<img src="context-feplot-1.png" alt=""  />
 </div>
 
 ## Predictions that separate the two effects
@@ -118,8 +123,7 @@ ggplot(scenarios, aes(x = meanses, y = fit, ymin = lwr, ymax = upr)) +
 ```
 
 <div class="figure" style="text-align: center">
-<img src="context-wiggle-1.png" alt="plot of chunk wiggle"  />
-<p class="caption">plot of chunk wiggle</p>
+<img src="context-wiggle-1.png" alt=""  />
 </div>
 
 ## How much do schools matter across the rank distribution?
@@ -138,8 +142,7 @@ plotREimpact(imp) +
 ```
 
 <div class="figure" style="text-align: center">
-<img src="context-reimpact-1.png" alt="plot of chunk reimpact"  />
-<p class="caption">plot of chunk reimpact</p>
+<img src="context-reimpact-1.png" alt=""  />
 </div>
 
 ## References

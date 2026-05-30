@@ -13,9 +13,9 @@ vignette: >
 
 ```{r setup, echo = FALSE, message = FALSE, warning = FALSE, results = "hide"}
 library(merTools); library(lme4); library(brms); library(ggplot2); library(knitr)
-knitr::opts_chunk$set(cache = FALSE, comment = "#>", fig.path = "brms-",
+knitr::opts_chunk$set(fig.cap = "", cache = FALSE, comment = "#>", fig.path = "brms-",
                       fig.width = 7, fig.height = 4, fig.align = "center",
-                      collapse = TRUE, echo = TRUE, warning = FALSE, message = FALSE)
+                      collapse = FALSE, echo = TRUE, warning = FALSE, message = FALSE)
 options(width = 90)
 set.seed(11213)
 

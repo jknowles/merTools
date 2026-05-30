@@ -13,10 +13,10 @@ vignette: >
 
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide'}
-knitr::opts_chunk$set(
+knitr::opts_chunk$set(fig.cap = "", 
   cache=FALSE,
   comment="#>",
-  collapse=TRUE,
+  collapse=FALSE,
   echo=TRUE,
   fig.width = 7
 )
@@ -87,7 +87,7 @@ library(Amelia)
 varIndex <- names(hsb)
 # Declare ID variables to be excluded from imputation
 IDS <- c("schid", "meanses")
-# Imputate
+# Impute
 impute.out <- amelia(hsb[, varIndex], idvars = IDS,
                          noms = c("minority", "female"),
                          m = 5)
@@ -95,7 +95,7 @@ summary(impute.out)
 ```
 
 ```{r boot, message=FALSE, eval = amelia_uneval}
-# Amelia is not available so let's just boostrap resample our data
+# Amelia is not available so let's just bootstrap resample our data
 impute.out <- vector(mode = "list", 5)
 
 for (i in 1:5) {

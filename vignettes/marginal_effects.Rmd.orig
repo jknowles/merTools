@@ -13,11 +13,11 @@ vignette: >
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE, results='hide', cache=FALSE}
 library(ggplot2); library(knitr); library(merTools)
-knitr::opts_chunk$set(
+knitr::opts_chunk$set(fig.cap = "", 
   cache=FALSE,
   comment="#>",
   fig.path = "mfx-",
-  collapse=TRUE,
+  collapse=FALSE,
   echo = TRUE
 )
 ```

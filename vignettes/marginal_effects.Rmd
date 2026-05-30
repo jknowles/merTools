@@ -33,6 +33,9 @@ rank vignette) of the effect distribution for each term.
 fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
 head(mfx)
+```
+
+```
 #>   Reaction Days Subject case grouping_var      term breaks original_group_level
 #> 1   249.56    0     309    1      Subject Intercept      1                  308
 #> 2   249.56    0     334    1      Subject      Days      1                  308
@@ -79,5 +82,5 @@ ggplot(mfx) + aes(x = breaks, y = fit_Subject, group = case) +
   facet_wrap(~term)
 ```
 
-![plot of chunk mfxplot1](mfx-mfxplot1-1.png)
+![](mfx-mfxplot1-1.png)
 

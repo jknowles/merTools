@@ -119,6 +119,9 @@ set.seed(271828)
 data(sleepstudy)
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
 arm::display(fm1)
+```
+
+```
 #> lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)
 #>             coef.est coef.se
 #> (Intercept) 251.41     6.82 
@@ -186,8 +189,7 @@ ggplot(aes(x=1:30, y=fit, ymin=lwr, ymax=upr), data=PI[1:30,]) +
 ```
 
 <div class="figure" style="text-align: center">
-<img src="usage-Inspect_predInt_2-1.png" alt="plot of chunk Inspect_predInt_2"  />
-<p class="caption">plot of chunk Inspect_predInt_2</p>
+<img src="usage-Inspect_predInt_2-1.png" alt=""  />
 </div>
 
 #### Step 1a: Adjusting for correlation between fixed and random effects
@@ -210,6 +212,9 @@ of subjects after experiencing sleep deprivation:
 ``` r
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), data=sleepstudy)
 arm::display(fm1)
+```
+
+```
 #> lmer(formula = Reaction ~ Days + (Days | Subject), data = sleepstudy)
 #>             coef.est coef.se
 #> (Intercept) 251.41     6.82 
@@ -233,9 +238,18 @@ baseball player:
 
 ``` r
 sleepstudy[1,]
+```
+
+```
 #>   Reaction Days Subject
 #> 1   249.56    0     308
+```
+
+``` r
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0) #predict the average body fat for a group of 196cm female baseball players
+```
+
+```
 #>        fit      upr      lwr
 #> 1 253.9977 270.7438 236.2829
 ```
@@ -248,17 +262,35 @@ using the `ignore.fixed.effects` argument.
 
 ``` r
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1)
+```
+
+```
 #>        fit      upr      lwr
 #> 1 253.8537 268.5299 239.6275
+```
+
+``` r
 # predict the average reaction time for a subject at day 0, taking the global intercept
 # (mean reaction time) as fully known
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = "(Intercept)")
+```
+
+```
 #>        fit      upr      lwr
 #> 1 254.2354 269.3875 239.3116
+```
+
+``` r
 #Same as above
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0, ignore.fixed.terms = 1:2)
+```
+
+```
 #>        fit      upr     lwr
 #> 1 253.6743 269.8776 237.984
+```
+
+``` r
 # as above, taking the first two fixed effects (intercept and days effect) as fully known
 ```
 
@@ -277,8 +309,14 @@ level.
 ``` r
 predictInterval(fm1, sleepstudy[1,], include.resid.var=0,
                 fix.intercept.variance = TRUE)
+```
+
+```
 #>        fit      upr      lwr
 #> 1 253.5872 268.8683 236.6639
+```
+
+``` r
 # predict the average reaction time for a subject at day 0,, using an ad-hoc
 # correction for the covariance of the intercept with the random intercept effects.
 ```
@@ -319,8 +357,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
 ```
 
 <div class="figure" style="text-align: center">
-<img src="usage-arm.Sim-1.png" alt="plot of chunk arm.Sim"  />
-<p class="caption">plot of chunk arm.Sim</p>
+<img src="usage-arm.Sim-1.png" alt=""  />
 </div>
 
 The prediction intervals from `arm:sim()` are much smaller and the random slope
@@ -385,8 +422,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
 ```
 
 <div class="figure" style="text-align: center">
-<img src="usage-bootMer.1-1.png" alt="plot of chunk bootMer.1"  />
-<p class="caption">plot of chunk bootMer.1</p>
+<img src="usage-bootMer.1-1.png" alt=""  />
 </div>
 
 Method 1 (`use.u = FALSE`) re-simulates the random effects on every
@@ -425,8 +461,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
 ```
 
 <div class="figure" style="text-align: center">
-<img src="usage-bootMer.2-1.png" alt="plot of chunk bootMer.2"  />
-<p class="caption">plot of chunk bootMer.2</p>
+<img src="usage-bootMer.2-1.png" alt=""  />
 </div>
 
 Here, the results for `predictInterval` in green again encompass the results from
@@ -458,8 +493,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
 ```
 
 <div class="figure" style="text-align: center">
-<img src="usage-bootMer.3-1.png" alt="plot of chunk bootMer.3"  />
-<p class="caption">plot of chunk bootMer.3</p>
+<img src="usage-bootMer.3-1.png" alt=""  />
 </div>
 
 These results are virtually identical to those above.
@@ -478,6 +512,9 @@ PI.time.stan <- system.time({
   zed <- posterior_predict(fm_stan)
   PI.stan <- cbind(apply(zed, 2, median), central_intervals(zed, prob=0.95))
 })
+```
+
+```
 #> Chain 1: 
 #> Chain 1: Gradient evaluation took 5.5e-05 seconds
 #> Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.55 seconds.
@@ -489,9 +526,13 @@ PI.time.stan <- system.time({
 #> Chain 1:                1.222 seconds (Sampling)
 #> Chain 1:                5.28 seconds (Total)
 #> Chain 1:
+```
 
-
+``` r
 print(fm_stan)
+```
+
+```
 #> stan_lmer
 #>  family:       gaussian [identity]
 #>  formula:      Reaction ~ Days + (Days | Subject)
@@ -515,7 +556,9 @@ print(fm_stan)
 #> ------
 #> * For help interpreting the printed output see ?print.stanreg
 #> * For info on the priors used see ?prior_summary.stanreg
+```
 
+``` r
 PI.stan <- as.data.frame(PI.stan)
 names(PI.stan) <- c("fit", "lwr", "upr")
 PI.stan <- PI.stan[, c("fit", "upr", "lwr")]
@@ -532,8 +575,7 @@ ggplot(aes(x=x, y=fit, ymin=lwr, ymax=upr, color=Predict.Method), data=comp.data
 ```
 
 <div class="figure" style="text-align: center">
-<img src="usage-stancomp-1.png" alt="plot of chunk stancomp"  />
-<p class="caption">plot of chunk stancomp</p>
+<img src="usage-stancomp-1.png" alt=""  />
 </div>
 
 
