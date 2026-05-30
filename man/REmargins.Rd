@@ -101,8 +101,7 @@ mfx <- REmargins(merMod = fm1, newdata = sleepstudy[1:10,])
 \references{
 Gatz, DF and Smith, L. The Standard Error of a Weighted Mean Concentration.
 I. Bootstrapping vs other methods. \emph{Atmospheric Environment}.
-1995;11(2)1185-1193. Available at
-\url{https://www.sciencedirect.com/science/article/pii/135223109400210C}
+1995;11(2)1185-1193. \doi{10.1016/1352-2310(94)00210-C}
 
 Cochran, WG. 1977. Sampling Techniques (3rd Edition). Wiley, New York.
 }
