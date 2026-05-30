@@ -53,8 +53,8 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Validating predictInterval() against brms</h1>
-                        <h4 data-toc-skip class="author">Jared Knowles
-and Carl Frederick</h4>
+                        <h4 data-toc-skip class="author">Jared
+Knowles</h4>
             
             <h4 data-toc-skip class="date">Written 2026-05-29 (last
 updated 2026-05-29)</h4>
@@ -193,10 +193,10 @@ other.</p>
 <span>  step <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lme4 fit"</span>, <span class="st">"predictInterval"</span>, <span class="st">"brms fit (compile+sample)"</span>, <span class="st">"posterior_predict"</span><span class="op">)</span>,</span>
 <span>  seconds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">t_lme</span>, <span class="va">t_mt</span>, <span class="va">brms_fit_seconds</span>, <span class="va">t_pp</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                        step seconds</span></span>
-<span><span class="co">#&gt; 1                  lme4 fit    0.06</span></span>
-<span><span class="co">#&gt; 2           predictInterval    0.62</span></span>
-<span><span class="co">#&gt; 3 brms fit (compile+sample)  406.37</span></span>
-<span><span class="co">#&gt; 4         posterior_predict    1.69</span></span></code></pre></div>
+<span><span class="co">#&gt; 1                  lme4 fit    0.05</span></span>
+<span><span class="co">#&gt; 2           predictInterval    0.53</span></span>
+<span><span class="co">#&gt; 3 brms fit (compile+sample)  398.97</span></span>
+<span><span class="co">#&gt; 4         posterior_predict    1.52</span></span></code></pre></div>
 <p>For this model, the entire lme4 + <code><a href="../reference/predictInterval.html">predictInterval()</a></code> path
 runs in about a second, while a single brms fit takes several minutes –
 a couple of orders of magnitude difference, before the (much larger)
@@ -206,36 +206,87 @@ models <code><a href="../reference/predictInterval.html">predictInterval()</a></
 <div class="section level2">
 <h2 id="what-about-an-entirely-new-group">What about an entirely new group?<a class="anchor" aria-label="anchor" href="#what-about-an-entirely-new-group"></a>
 </h2>
-<p>For a school that was never seen during fitting,
-<code><a href="../reference/predictInterval.html">predictInterval()</a></code> falls back to the fixed effects plus
-residual variation (it has no random effect to use), while brms with
-<code>allow_new_levels = TRUE</code> draws a fresh school effect from
-the estimated (co)variance. Whether that matters depends on how much
-variance is left in the grouping factor – which in turn depends on the
-fixed effects.</p>
-<p>Here, <code>meanses</code> (a school-level fixed effect) already
-absorbs most of the between-school variation, so the school random
-intercept is small and the two methods stay close. Drop
-<code>meanses</code>, and the school variance – and the gap – grows:</p>
+<p>For a school that was never seen during fitting there is a genuine
+modeling choice: do you <em>drop</em> the school’s effect and predict
+from the fixed effects only, or <em>sample</em> a plausible effect for
+it from the estimated school-level distribution? Both packages support
+either, and the comparison is only fair when the choices match:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>treatment of an unseen group</th>
+<th><code><a href="../reference/predictInterval.html">predictInterval()</a></code></th>
+<th>brms</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>drop the effect (population prediction)</td>
+<td>
+<code>new.levels = "zero"</code> <em>(default)</em>
+</td>
+<td><code>re_formula = NA</code></td>
+</tr>
+<tr class="even">
+<td>sample a new effect</td>
+<td><code>new.levels = "draw"</code></td>
+<td>
+<code>allow_new_levels = TRUE</code> <em>(default)</em>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Matched up, the two tools agree on both the width and the coverage of
+the new-school intervals:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">new_group_gap</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">form</span>, <span class="va">cache</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">ml</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">form</span>, data <span class="op">=</span> <span class="va">train</span><span class="op">)</span></span>
-<span>  <span class="va">mb</span> <span class="op">&lt;-</span> <span class="fu">fit_brm</span><span class="op">(</span><span class="va">form</span>, <span class="va">train</span>, <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">gaussian</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">cache</span><span class="op">)</span></span>
-<span>  <span class="va">cov_mt</span>  <span class="op">&lt;-</span> <span class="fu">coverage</span><span class="op">(</span><span class="fu">mt_draws</span><span class="op">(</span><span class="va">ml</span>, <span class="va">test_new</span><span class="op">)</span>, <span class="va">test_new</span><span class="op">$</span><span class="va">mathach</span>, <span class="fl">0.90</span><span class="op">)</span></span>
-<span>  <span class="va">cov_brm</span> <span class="op">&lt;-</span> <span class="fu">coverage</span><span class="op">(</span><span class="fu">posterior_predict</span><span class="op">(</span><span class="va">mb</span>, newdata <span class="op">=</span> <span class="va">test_new</span>, allow_new_levels <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>                      <span class="va">test_new</span><span class="op">$</span><span class="va">mathach</span>, <span class="fl">0.90</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>school_SD <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">ml</span><span class="op">)</span><span class="op">$</span><span class="va">schid</span>, <span class="st">"stddev"</span><span class="op">)</span><span class="op">[[</span><span class="st">"(Intercept)"</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>             merTools_90 <span class="op">=</span> <span class="va">cov_mt</span>, brms_90 <span class="op">=</span> <span class="va">cov_brm</span>, gap <span class="op">=</span> <span class="va">cov_brm</span> <span class="op">-</span> <span class="va">cov_mt</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span>`with meanses`    <span class="op">=</span> <span class="fu">new_group_gap</span><span class="op">(</span><span class="va">mathach</span> <span class="op">~</span> <span class="va">ses</span> <span class="op">+</span> <span class="va">meanses</span> <span class="op">+</span> <span class="op">(</span><span class="va">ses</span> <span class="op">|</span> <span class="va">schid</span><span class="op">)</span>, <span class="st">"brms_hsb_meanses"</span><span class="op">)</span>,</span>
-<span>      `without meanses` <span class="op">=</span> <span class="fu">new_group_gap</span><span class="op">(</span><span class="va">mathach</span> <span class="op">~</span> <span class="va">ses</span> <span class="op">+</span> <span class="op">(</span><span class="va">ses</span> <span class="op">|</span> <span class="va">schid</span><span class="op">)</span>, <span class="st">"brms_hsb_nomeanses"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                 school_SD merTools_90   brms_90        gap</span></span>
-<span><span class="co">#&gt; with meanses     1.598503   0.8708487 0.8892989 0.01845018</span></span>
-<span><span class="co">#&gt; without meanses  2.125770   0.8560886 0.8929889 0.03690037</span></span></code></pre></div>
-<p>The lesson is practical: <code><a href="../reference/predictInterval.html">predictInterval()</a></code>’s new-group
-intervals are trustworthy when the model’s fixed effects explain most of
-the between-group variation, and optimistic (too narrow) when they do
-not.</p>
+<code class="sourceCode R"><span><span class="va">nd</span> <span class="op">&lt;-</span> <span class="va">test_new</span></span>
+<span><span class="va">pp_pop</span>  <span class="op">&lt;-</span> <span class="fu">posterior_predict</span><span class="op">(</span><span class="va">m_brm</span>, newdata <span class="op">=</span> <span class="va">nd</span>, re_formula <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
+<span><span class="va">pp_draw</span> <span class="op">&lt;-</span> <span class="fu">posterior_predict</span><span class="op">(</span><span class="va">m_brm</span>, newdata <span class="op">=</span> <span class="va">nd</span>, allow_new_levels <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">mt_zero</span> <span class="op">&lt;-</span> <span class="fu">mt_draws</span><span class="op">(</span><span class="va">m_lme</span>, <span class="va">nd</span>, new.levels <span class="op">=</span> <span class="st">"zero"</span><span class="op">)</span></span>
+<span><span class="va">mt_draw</span> <span class="op">&lt;-</span> <span class="fu">mt_draws</span><span class="op">(</span><span class="va">m_lme</span>, <span class="va">nd</span>, new.levels <span class="op">=</span> <span class="st">"draw"</span><span class="op">)</span></span>
+<span><span class="va">w</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="fu">qband</span><span class="op">(</span><span class="va">d</span>, <span class="fl">0.90</span><span class="op">)</span><span class="op">$</span><span class="va">upr</span> <span class="op">-</span> <span class="fu">qband</span><span class="op">(</span><span class="va">d</span>, <span class="fl">0.90</span><span class="op">)</span><span class="op">$</span><span class="va">lwr</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  unseen_group   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drop effect"</span>, <span class="st">"sample effect"</span><span class="op">)</span>,</span>
+<span>  merTools_width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">w</span><span class="op">(</span><span class="va">mt_zero</span><span class="op">)</span>, <span class="fu">w</span><span class="op">(</span><span class="va">mt_draw</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  brms_width     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">w</span><span class="op">(</span><span class="va">pp_pop</span><span class="op">)</span>,  <span class="fu">w</span><span class="op">(</span><span class="va">pp_draw</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  merTools_cov90 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">coverage</span><span class="op">(</span><span class="va">mt_zero</span>, <span class="va">nd</span><span class="op">$</span><span class="va">mathach</span>, <span class="fl">0.90</span><span class="op">)</span>, <span class="fu">coverage</span><span class="op">(</span><span class="va">mt_draw</span>, <span class="va">nd</span><span class="op">$</span><span class="va">mathach</span>, <span class="fl">0.90</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  brms_cov90     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">coverage</span><span class="op">(</span><span class="va">pp_pop</span>,  <span class="va">nd</span><span class="op">$</span><span class="va">mathach</span>, <span class="fl">0.90</span><span class="op">)</span>, <span class="fu">coverage</span><span class="op">(</span><span class="va">pp_draw</span>, <span class="va">nd</span><span class="op">$</span><span class="va">mathach</span>, <span class="fl">0.90</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    unseen_group merTools_width brms_width merTools_cov90 brms_cov90</span></span>
+<span><span class="co">#&gt; 1   drop effect       19.96801   20.02855      0.8708487  0.8745387</span></span>
+<span><span class="co">#&gt; 2 sample effect       20.67910   20.76924      0.8892989  0.8856089</span></span></code></pre></div>
+<p>So the interval width for an unseen group is set by the
+<em>choice</em>, not the method. Earlier I compared
+<code><a href="../reference/predictInterval.html">predictInterval()</a></code>’s default against brms’s default, which
+is an apples-to-oranges pairing – the apparent “gap” was the two
+packages making different default assumptions, not a deficiency in
+either.</p>
+<p>How much the choice matters depends on how much group variance is
+left after the fixed effects. Here <code>meanses</code> already absorbs
+most of the between-school variation, so dropping vs. sampling the
+school effect barely changes the width. Remove <code>meanses</code> and
+the school SD roughly doubles, so the two options diverge:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">m0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span><span class="va">mathach</span> <span class="op">~</span> <span class="va">ses</span> <span class="op">+</span> <span class="op">(</span><span class="va">ses</span> <span class="op">|</span> <span class="va">schid</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">train</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"with meanses"</span>, <span class="st">"without meanses"</span><span class="op">)</span>,</span>
+<span>  school_SD <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">m_lme</span><span class="op">)</span><span class="op">$</span><span class="va">schid</span>, <span class="st">"stddev"</span><span class="op">)</span><span class="op">[[</span><span class="st">"(Intercept)"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>                <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/nlme/man/VarCorr.html" class="external-link">VarCorr</a></span><span class="op">(</span><span class="va">m0</span><span class="op">)</span><span class="op">$</span><span class="va">schid</span>,    <span class="st">"stddev"</span><span class="op">)</span><span class="op">[[</span><span class="st">"(Intercept)"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  width_zero <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">w</span><span class="op">(</span><span class="fu">mt_draws</span><span class="op">(</span><span class="va">m_lme</span>, <span class="va">nd</span>, new.levels <span class="op">=</span> <span class="st">"zero"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                 <span class="fu">w</span><span class="op">(</span><span class="fu">mt_draws</span><span class="op">(</span><span class="va">m0</span>,    <span class="va">nd</span>, new.levels <span class="op">=</span> <span class="st">"zero"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  width_draw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">w</span><span class="op">(</span><span class="fu">mt_draws</span><span class="op">(</span><span class="va">m_lme</span>, <span class="va">nd</span>, new.levels <span class="op">=</span> <span class="st">"draw"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                 <span class="fu">w</span><span class="op">(</span><span class="fu">mt_draws</span><span class="op">(</span><span class="va">m0</span>,    <span class="va">nd</span>, new.levels <span class="op">=</span> <span class="st">"draw"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;             model school_SD width_zero width_draw</span></span>
+<span><span class="co">#&gt; 1    with meanses  1.598503   19.96801   20.67910</span></span>
+<span><span class="co">#&gt; 2 without meanses  2.125770   19.94993   21.22576</span></span></code></pre></div>
+<p>The practical guidance: <code><a href="../reference/predictInterval.html">predictInterval()</a></code>’s default
+(<code>new.levels = "zero"</code>) answers “what is the expected outcome
+for a typical member of an unseen group,” while
+<code>new.levels = "draw"</code> answers “what is the outcome for an
+unseen group drawn from the population” – the same quantity brms returns
+by default. Pick the one that matches your question.</p>
 </div>
 <div class="section level2">
 <h2 id="a-generalized-linear-mixed-model">A generalized linear mixed model<a class="anchor" aria-label="anchor" href="#a-generalized-linear-mixed-model"></a>
@@ -244,7 +295,7 @@ not.</p>
 grouse had ticks and compare predicted probabilities –
 <code>predictInterval(type = "probability")</code> against
 <code>brms::posterior_epred()</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">grouseticks</span><span class="op">)</span></span>
 <span><span class="va">grouseticks</span><span class="op">$</span><span class="va">TICKS_BIN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">grouseticks</span><span class="op">$</span><span class="va">TICKS</span> <span class="op">&gt;=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">grouseticks</span><span class="op">$</span><span class="va">cHEIGHT</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a></span><span class="op">(</span><span class="va">grouseticks</span><span class="op">$</span><span class="va">HEIGHT</span><span class="op">)</span><span class="op">)</span></span>
@@ -265,7 +316,7 @@ grouse had ticks and compare predicted probabilities –
 <span><span class="va">mt_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">mt_pr</span>, <span class="fl">2</span>, <span class="va">median</span><span class="op">)</span>; <span class="va">brm_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">brm_pr</span>, <span class="fl">2</span>, <span class="va">median</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>correlation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">mt_p</span>, <span class="va">brm_p</span><span class="op">)</span>, mean_abs_diff <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">mt_p</span> <span class="op">-</span> <span class="va">brm_p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   correlation mean_abs_diff </span></span>
-<span><span class="co">#&gt;    0.99607592    0.02315096</span></span>
+<span><span class="co">#&gt;    0.99488587    0.02704796</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>merTools <span class="op">=</span> <span class="va">mt_p</span>, brms <span class="op">=</span> <span class="va">brm_p</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">merTools</span>, <span class="va">brms</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span>slope <span class="op">=</span> <span class="fl">1</span>, intercept <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -287,12 +338,13 @@ plot of chunk glmm
 reproduces brms’s point estimates and prediction intervals almost
 exactly, with the same out-of-sample coverage, at a tiny fraction of the
 computational cost.</li>
-<li>For <strong>new groups</strong>, <code><a href="../reference/predictInterval.html">predictInterval()</a></code>
-omits the group effect; this is fine when fixed effects absorb most of
-the group variance and too narrow when they do not. Treat new-group
-intervals accordingly (see the <code><a href="../reference/wiggle.html">wiggle()</a></code> and
-<code><a href="../reference/predictInterval.html">?predictInterval</a></code> documentation for ways to reason about
-unobserved levels).</li>
+<li>For <strong>new groups</strong>, you choose how to treat the unseen
+effect: <code>new.levels = "zero"</code> (the default) drops it and
+predicts from the fixed effects, while <code>new.levels = "draw"</code>
+samples it from the estimated covariance – matching brms’s
+<code>re_formula = NA</code> and <code>allow_new_levels = TRUE</code>
+respectively. Either way the two packages agree; pick the convention
+that fits your question.</li>
 <li>The same agreement holds for <strong>GLMMs</strong> on the
 probability scale.</li>
 </ul>

@@ -77,6 +77,10 @@ Software*, 67(1), 1-48.
 
 Useful links:
 
+- <https://jknowles.github.io/merTools/>
+
+- <https://github.com/jknowles/merTools>
+
 - Report bugs at <https://github.com/jknowles/merTools/issues>
 
 ## Author

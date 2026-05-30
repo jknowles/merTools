@@ -25,7 +25,8 @@ predictInterval(
   seed = NULL,
   .parallel = FALSE,
   fix.intercept.variance = FALSE,
-  ignore.fixed.terms = NULL
+  ignore.fixed.terms = NULL,
+  new.levels = c("zero", "draw")
 )
 ```
 
@@ -88,6 +89,18 @@ predictInterval(
 
   a numeric or string vector of indexes or names of fixed effects which
   should be considered as fully known (zero variance).
+
+- new.levels:
+
+  character, how to treat grouping levels in `newdata` that were not
+  present when the model was fit. `"zero"` (the default and the
+  historical behavior) drops the random effect for such levels, so the
+  prediction rests on the fixed effects plus residual variation.
+  `"draw"` instead samples each unobserved group's effect from the
+  estimated random-effect covariance (`VarCorr`), so the interval
+  reflects between-group uncertainty – the analogue of
+  `brms::posterior_predict(allow_new_levels = TRUE)`. Observations that
+  share an unobserved level share the same sampled effect.
 
 ## Value
 

@@ -72,7 +72,8 @@ bootstrapping for models fit to medium to large datasets.</p>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  fix.intercept.variance <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  ignore.fixed.terms <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  ignore.fixed.terms <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  new.levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"draw"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -137,6 +138,18 @@ random effects, as if all the random effects are intercept effects?</p></dd>
 <dt id="arg-ignore-fixed-terms">ignore.fixed.terms<a class="anchor" aria-label="anchor" href="#arg-ignore-fixed-terms"></a></dt>
 <dd><p>a numeric or string vector of indexes or names of
 fixed effects which should be considered as fully known (zero variance).</p></dd>
+
+
+<dt id="arg-new-levels">new.levels<a class="anchor" aria-label="anchor" href="#arg-new-levels"></a></dt>
+<dd><p>character, how to treat grouping levels in <code>newdata</code>
+that were not present when the model was fit. <code>"zero"</code> (the default and
+the historical behavior) drops the random effect for such levels, so the
+prediction rests on the fixed effects plus residual variation. <code>"draw"</code>
+instead samples each unobserved group's effect from the estimated
+random-effect covariance (<code>VarCorr</code>), so the interval reflects
+between-group uncertainty – the analogue of
+<code>brms::posterior_predict(allow_new_levels = TRUE)</code>. Observations that
+share an unobserved level share the same sampled effect.</p></dd>
 
 </dl></div>
     <div class="section level2">

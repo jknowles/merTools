@@ -55,7 +55,8 @@ named list where each element is an array of dimensions `nrow(newdata)` ×
 <span>  <span class="va">newdata</span>,</span>
 <span>  <span class="va">n.sims</span>,</span>
 <span>  .parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  seed <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  new.levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zero"</span>, <span class="st">"draw"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -81,6 +82,13 @@ named list where each element is an array of dimensions `nrow(newdata)` ×
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Optional random seed for reproducibility.</p></dd>
+
+
+<dt id="arg-new-levels">new.levels<a class="anchor" aria-label="anchor" href="#arg-new-levels"></a></dt>
+<dd><p>Character; how to treat grouping levels present in
+`newdata` but absent from the fitted model. `"zero"` drops the random
+effect for such levels; `"draw"` samples each unobserved level's effect
+from the estimated random-effect covariance (`VarCorr`).</p></dd>
 
 </dl></div>
     <div class="section level2">
