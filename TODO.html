@@ -36,74 +36,98 @@
 
 <div id="mertools-10-release-todo" class="section level1">
 
-<p><em>Created: 2026-05-23. Tracks remaining work from <code>plans/1.0-release-readiness.md</code>.</em> <em>Current version: 0.9.0. Target: 1.0.0 on CRAN.</em></p>
+<p><em>Updated: 2026-05-29. Version: <strong>1.0.0</strong> (in DESCRIPTION). Target: 1.0.0 on CRAN.</em></p>
+<p>The 1.0 readiness work (Phases 1–4 below) is <strong>complete</strong>. What remains is the CRAN submission itself and the release announcement — see the next section.</p>
 <hr><div class="section level2">
-<h2 id="phase-1--housekeeping-sprint-2026-05-23">Phase 1 — Housekeeping sprint (2026-05-23)<a class="anchor" aria-label="anchor" href="#phase-1--housekeeping-sprint-2026-05-23"></a></h2>
-<ul class="task-list"><li><label><input type="checkbox" checked>Close GitHub issues already fixed in code: #118, #121 (closed); #83, #101, #134 (already closed)</label></li>
-<li><label><input type="checkbox" checked>Run <code>urlchecker::url_check()</code> — fixed JSTOR URL in <code>expectedRank</code> (→ <code>\doi{10.2307/1164724}</code>)</label></li>
-<li><label><input type="checkbox" checked>Run <code>spelling::spell_check_package()</code> — fixed 5 typos (accommodate, identifiable, substantive, programmatically, co-occurrences); added <code>inst/WORDLIST</code> for technical terms</label></li>
-<li><label><input type="checkbox" checked>Run <code>covr::package_coverage()</code> — <strong>baseline: 46.85%</strong> (below 80% target). 8 files at 0% — likely test-skipping issue, needs investigation</label></li>
-<li><label><input type="checkbox" checked>Decide <code>residDF.merMod</code> scale-parameter — <strong>keep current behavior</strong> (scale param counted). Matches Gelman &amp; Hill (2007). TODO removed, rationale documented in code.</label></li>
-<li><label><input type="checkbox" checked>Decide roxygen markdown mode — <strong>stay LaTeX for 1.0</strong>. ~83 <code>\code{}</code> instances; conversion deferred to 1.1</label></li>
-<li><label><input type="checkbox" checked>Fix test hygiene: removed <code>rm(list = ls())</code> (3 occurrences), replaced <code>skip_on_travis()</code> → <code>skip_on_ci()</code> (2), replaced <code>sink("NUL")</code> → <code>sink(nullfile())</code> (1), deleted NUL artifact</label></li>
-<li><label><input type="checkbox" checked>Triage #136, #137 — docs/citation improvements, folded into Phase 4</label></li>
-<li><label><input type="checkbox" checked>Regenerate Rd files (expectedRank.Rd, REmargins.Rd, combine_postvar_blocks.Rd)</label></li>
-</ul><div class="section level3">
-<h3 id="coverage-investigation-needed">Coverage investigation needed<a class="anchor" aria-label="anchor" href="#coverage-investigation-needed"></a></h3>
-<p>The 46.85% baseline has 8 source files at 0% despite tests existing for several (merFastDisplay, merList, merPlots, merSubstEff, REmargins). Possible causes: - Split test runners (<code>filter = "^[a-m]"</code> / <code>"^[m-z]"</code>) may miss files - Tests may fail silently in covr’s environment - This should be investigated before Phase 3 test additions</p>
+<h2 id="rocket-tomorrow--cran-submission-day-2026-05-30">🚀 Tomorrow — CRAN Submission Day (2026-05-30)<a class="anchor" aria-label="anchor" href="#rocket-tomorrow--cran-submission-day-2026-05-30"></a></h2>
+<div class="section level3">
+<h3 id="a-pre-flight-make-the-source-release-final">A. Pre-flight (make the source release final)<a class="anchor" aria-label="anchor" href="#a-pre-flight-make-the-source-release-final"></a></h3>
+<ul class="task-list"><li><label><input type="checkbox">Confirm <code>DESCRIPTION</code> <code>Version: 1.0.0</code> and <code>Date</code> (add/refresh <code>Date:</code> if used).</label></li>
+<li><label><input type="checkbox"><strong>Rebuild <code>README.md</code> with <code>devtools::build_readme()</code></strong> (NOT bare <code>knit()</code> — that reintroduces the YAML front matter we just stripped) so badges, results, and figures are clean and current.</label></li>
+<li><label><input type="checkbox">Final <code>devtools::document()</code>; confirm <code>RoxygenNote: 7.3.3</code> unchanged.</label></li>
+<li><label><input type="checkbox">Re-read <code>NEWS.md</code> 1.0.0 section top-to-bottom; confirm every bullet is accurate and the LTS / maintenance-mode framing reads well.</label></li>
+<li><label><input type="checkbox">Verify <code>inst/CITATION</code> renders with version 1.0.0 (<code><a href="https://rdrr.io/r/utils/citation.html" class="external-link">utils::readCitationFile</a></code>).</label></li>
+<li><label><input type="checkbox"><code>git status</code> clean; everything committed and pushed to <code>main</code>.</label></li>
+</ul></div>
+<div class="section level3">
+<h3 id="b-checks-all-should-be-clean-before-submitting">B. Checks (all should be clean before submitting)<a class="anchor" aria-label="anchor" href="#b-checks-all-should-be-clean-before-submitting"></a></h3>
+<ul class="task-list"><li><label><input type="checkbox"><code>devtools::check()</code> locally → <strong>0 errors / 0 warnings / 0 notes</strong>.</label></li>
+<li><label><input type="checkbox"><code>R CMD check --as-cran</code> on the built tarball <strong>with vignettes built</strong> (confirms the precompiled brms vignette renders without brms installed).</label></li>
+<li><label><input type="checkbox"><code>devtools::spell_check()</code> (WORDLIST exists — add any new technical terms, e.g. brms, posterior, GLMM, predictInterval).</label></li>
+<li><label><input type="checkbox"><code>urlchecker::url_check()</code> (we added a <code>URL:</code> field — confirm it resolves; the pkgdown site is live at <a href="https://jknowles.github.io/merTools/" class="uri">https://jknowles.github.io/merTools/</a>).</label></li>
+<li><label><input type="checkbox">win-builder: <code>devtools::check_win_devel()</code>, <code>check_win_release()</code>, <code>check_win_oldrelease()</code> — wait for the 3 email results.</label></li>
+<li><label><input type="checkbox">R-hub: <code>rhub::rhub_check()</code> (or <code>rhub::check_for_cran()</code>) across the standard CRAN platforms.</label></li>
+<li><label><input type="checkbox">Reverse dependencies: <code>install.packages("revdepcheck")</code> then <code>revdepcheck::revdep_check(num_workers = 4)</code>. There are <strong>3 revdeps</strong> (last submission saw 0 new problems) — expect 0 new problems.</label></li>
+</ul></div>
+<div class="section level3">
+<h3 id="c-cran-commentsmd">C. cran-comments.md<a class="anchor" aria-label="anchor" href="#c-cran-commentsmd"></a></h3>
+<ul class="task-list"><li><label><input type="checkbox">Update <code>cran-comments.md</code> for 1.0.0: - Test environments (local + GitHub Actions matrix + win-builder/R-hub). - One line: “This is the 1.0 long-term-support release.” - R CMD check results: 0 errors / 0 warnings / 0 notes. - Reverse dependency results: “Checked 3 reverse dependencies; 0 new problems.”</label></li>
+</ul></div>
+<div class="section level3">
+<h3 id="d-submit">D. Submit<a class="anchor" aria-label="anchor" href="#d-submit"></a></h3>
+<ul class="task-list"><li><label><input type="checkbox"><code>devtools::submit_cran()</code> (writes <code>CRAN-SUBMISSION</code>) <strong>or</strong> upload the tarball at <a href="https://cran.r-project.org/submit.html" class="external-link uri">https://cran.r-project.org/submit.html</a>.</label></li>
+<li><label><input type="checkbox">Confirm the submission via the auto-generated email.</label></li>
+<li><label><input type="checkbox">Watch for CRAN’s automated check results / any maintainer feedback; address promptly and resubmit if needed.</label></li>
+</ul></div>
+<div class="section level3">
+<h3 id="e-after-acceptance">E. After acceptance<a class="anchor" aria-label="anchor" href="#e-after-acceptance"></a></h3>
+<ul class="task-list"><li><label><input type="checkbox">Tag <code>v1.0.0</code> and create a GitHub release with the NEWS highlights.</label></li>
+<li><label><input type="checkbox">Confirm the CRAN version badge and pkgdown site reflect 1.0.0.</label></li>
+<li><label><input type="checkbox">Publish the blog post (section below) and cross-post.</label></li>
+</ul><hr></div>
 </div>
-</div>
 <div class="section level2">
-<h2 id="phase-2--issue-124-investigation">Phase 2 — Issue #124 investigation<a class="anchor" aria-label="anchor" href="#phase-2--issue-124-investigation"></a></h2>
-<ul class="task-list"><li><label><input type="checkbox">Reproduce #124: non-reproducible <code>predictInterval</code> with mixed observed/unobserved levels</label></li>
-<li><label><input type="checkbox">Determine root cause (mkNewReTrms, reMatrix path, or FE simulation)</label></li>
-<li><label><input type="checkbox">Fix or document as expected behavior in <code><a href="reference/predictInterval.html">?predictInterval</a></code></label></li>
-<li><label><input type="checkbox">Add regression test for the chosen behavior</label></li>
+<h2 id="mega-blog-post--mertools-10-announcement">📣 Blog post — “merTools 1.0” announcement<a class="anchor" aria-label="anchor" href="#mega-blog-post--mertools-10-announcement"></a></h2>
+<ul class="task-list"><li><label><input type="checkbox">Draft, review, and publish on the Civilytics / jaredknowles.com blog.</label></li>
+<li><label><input type="checkbox">Cross-post: R-bloggers (via the blog’s R feed/tag), Mastodon/Bluesky, rOpenSci/Rweekly if appropriate.</label></li>
+</ul><p><strong>Starter outline (talking points):</strong></p>
+<ol style="list-style-type: decimal"><li>
+<strong>Hook</strong> — merTools has been on CRAN since 2015 (~457K downloads, ~8K/month). 1.0 marks it <em>feature complete</em> and the start of a long-term-support phase.</li>
+<li>
+<strong>What it does</strong> — fast, simulation-based prediction intervals for <code>lme4</code> mixed models (<code><a href="reference/predictInterval.html">predictInterval()</a></code>), when <code>bootMer()</code> / full MCMC is impractical; plus tools to extract, simulate, and visualize effects.</li>
+<li>
+<strong>What’s new in 1.0</strong> (keep tight, link to NEWS):
+<ul><li>Correctness fix: reproducible <code><a href="reference/predictInterval.html">predictInterval()</a></code> for nested/interaction random effects (#124).</li>
+<li>New <code>new.levels = "draw"</code> — sample unobserved groups’ effects from the RE covariance (matches brms <code>allow_new_levels</code>).</li>
+<li>New <code><a href="reference/plotREimpact.html">plotREimpact()</a></code>; <code><a href="reference/plotFEsim.html">plotFEsim()</a></code> highlights significant terms.</li>
+<li>
+<code><a href="reference/shinyMer.html">shinyMer()</a></code> revived and extended (model-summary tab, subset draws).</li>
+<li>Refreshed docs: a new <em>Contextual Effects</em> vignette and proper citation.</li>
+</ul></li>
+<li>
+<strong>The headline</strong> — <em>validated against brms.</em> predictInterval reproduces the full-Bayesian posterior prediction intervals almost exactly (point estimates <code>cor 0.9998</code>, matching 90% intervals and coverage) at ~1/400th the cost. Link/screenshot the new “Validating predictInterval() against brms” vignette and the calibration figure.</li>
+<li>
+<strong>Why LTS / maintenance mode</strong> — stable API, a decade of use; future work is bug fixes, CRAN/dependency compatibility, and docs, not churn.</li>
+<li>
+<strong>Call to action</strong> — <code>install.packages("merTools")</code>, read the site (<a href="https://jknowles.github.io/merTools/" class="uri">https://jknowles.github.io/merTools/</a>), cite it (<code>citation("merTools")</code>), file issues. Thank contributors (Carl Frederick, Alex Whitworth, bbolker, DavisVaughan, and reporters like dotPiano for #124).</li>
+</ol><hr></div>
+<div class="section level2">
+<h2 id="optional-before-10-defer-to-10x-if-time-constrained--none-are-cran-blockers">Optional before 1.0 (defer to 1.0.x if time-constrained — none are CRAN blockers)<a class="anchor" aria-label="anchor" href="#optional-before-10-defer-to-10x-if-time-constrained--none-are-cran-blockers"></a></h2>
+<p>These are Phase 3 polish items; the package passes <code>--as-cran</code> without them.</p>
+<ul class="task-list"><li><label><input type="checkbox">Import hygiene: <code>import(pkg)</code> → specific <code>importFrom</code> (dplyr, ggplot2, lme4, arm).</label></li>
+<li><label><input type="checkbox">Add <code>lifecycle</code> and badge the ~40 exports (stable/experimental).</label></li>
+<li><label><input type="checkbox">Add basic tests for currently-untested exports (modelInfo, modelFixedEff, modelRandEffStats, REsdExtract, REcorrExtract, randomObs, merModList generics).</label></li>
+<li><label><input type="checkbox">Investigate the coverage gap (46.85% baseline; 8 files reported 0% — likely a covr/test-runner artifact, not missing tests).</label></li>
+</ul><hr></div>
+<div class="section level2">
+<h2 id="completed-in-the-10-readiness-work-for-the-record">Completed in the 1.0 readiness work (for the record)<a class="anchor" aria-label="anchor" href="#completed-in-the-10-readiness-work-for-the-record"></a></h2>
+<ul><li>
+<strong>Phase 1 — Housekeeping</strong> (2026-05-23): urlchecker, spell check + WORDLIST, test hygiene, residDF/roxygen decisions, Rd regeneration.</li>
+<li>
+<strong>Phase 2 — #124</strong>: fixed non-reproducible <code><a href="reference/predictInterval.html">predictInterval()</a></code> for nested / interaction random effects; regression tests added.</li>
+<li>
+<strong>Phase 4 — Documentation</strong>: vignettes refreshed and re-knit; bootMer graphic fixed (#116); README updated (Recent Updates + plotREimpact section); NEWS 1.0 section with LTS framing; citation + influences (#137); contextual-effects vignette (#136); shinyMer model-summary tab (#78).</li>
+<li>
+<strong>Pulled forward from “deferred”</strong>: <code><a href="reference/plotREimpact.html">plotREimpact()</a></code> and <code><a href="reference/plotFEsim.html">plotFEsim()</a></code> polish (#84, #85); shinyMer subset/case selection (#32); pkgdown site verified and live; brms validation vignette + <code>new.levels = "draw"</code> feature.</li>
 </ul></div>
 <div class="section level2">
-<h2 id="phase-3--api-cleanup">Phase 3 — API cleanup<a class="anchor" aria-label="anchor" href="#phase-3--api-cleanup"></a></h2>
-<ul class="task-list"><li><label><input type="checkbox">Import hygiene: convert <code>import(dplyr)</code> to specific <code>importFrom</code> calls</label></li>
-<li><label><input type="checkbox">Import hygiene: convert <code>import(ggplot2)</code> to specific <code>importFrom</code> calls</label></li>
-<li><label><input type="checkbox">Import hygiene: convert <code>import(lme4)</code> to specific <code>importFrom</code> calls</label></li>
-<li><label><input type="checkbox">Import hygiene: convert <code>import(arm)</code> to specific <code>importFrom</code> calls (already partially done)</label></li>
-<li><label><input type="checkbox">Add <code>lifecycle</code> to Imports</label></li>
-<li><label><input type="checkbox">Annotate all 40 exports with lifecycle badges (stable/experimental/deprecated)</label></li>
-<li><label><input type="checkbox">Add basic tests for untested exports: modelInfo, modelFixedEff, modelRandEffStats</label></li>
-<li><label><input type="checkbox">Add basic tests for untested exports: REsdExtract, REcorrExtract, randomObs</label></li>
-<li><label><input type="checkbox">Add basic tests for untested exports: bglmerModList, fixef.merModList, ranef.merModList</label></li>
-<li><label><input type="checkbox">Document <code><a href="reference/REmargins.html">REmargins()</a></code> tie-breaking behavior; add performance bounds note</label></li>
-<li><label><input type="checkbox">Investigate and fix test coverage gaps (8 files at 0%)</label></li>
-</ul></div>
-<div class="section level2">
-<h2 id="phase-4--documentation-pass">Phase 4 — Documentation pass<a class="anchor" aria-label="anchor" href="#phase-4--documentation-pass"></a></h2>
-<ul class="task-list"><li><label><input type="checkbox">Refresh vignettes: update dates, verify code runs, re-knit via .Rmd.orig</label></li>
-<li><label><input type="checkbox">Fix bootMer graphic alignment in Using_predictInterval vignette (#116)</label></li>
-<li><label><input type="checkbox">Update README.Rmd: add 0.9.0 and 1.0 entries to “Recent Updates”</label></li>
-<li><label><input type="checkbox">Re-knit README.md from README.Rmd</label></li>
-<li><label><input type="checkbox">Write NEWS.md 1.0 section: version jump rationale, API stability pledge, breaking changes</label></li>
-<li><label><input type="checkbox">Decide on shinyMer landing tab (#78) — add Model Summary tab or defer to post-1.0</label></li>
-<li><label><input type="checkbox">Address #136 (fresh examples from easystats/modelbased) and #137 (citation improvements)</label></li>
-</ul></div>
-<div class="section level2">
-<h2 id="phase-5--final-release-checks">Phase 5 — Final release checks<a class="anchor" aria-label="anchor" href="#phase-5--final-release-checks"></a></h2>
-<ul class="task-list"><li><label><input type="checkbox">Run <code>revdepcheck::revdep_check()</code></label></li>
-<li><label><input type="checkbox">Run <code>devtools::check(remote = TRUE, manual = TRUE)</code></label></li>
-<li><label><input type="checkbox">Run <code>R CMD check --as-cran</code> on the built tarball</label></li>
-<li><label><input type="checkbox">Bump version to 1.0.0 in DESCRIPTION</label></li>
-<li><label><input type="checkbox">Update cran-comments.md for 1.0 submission</label></li>
-<li><label><input type="checkbox">Tag v1.0.0 and create GitHub release</label></li>
-<li><label><input type="checkbox">Submit to CRAN</label></li>
-</ul></div>
-<div class="section level2">
-<h2 id="deferred-to-post-10">Deferred to post-1.0<a class="anchor" aria-label="anchor" href="#deferred-to-post-10"></a></h2>
-<ul><li>#84, #85 — REimpact plot improvements</li>
-<li>#32 — shinyMer user-controlled case selection</li>
-<li>Cross-platform Layer 2 snapshots (macOS-ARM64, Windows)</li>
-<li>foreach → future.apply migration</li>
-<li>cli/rlang error modernization</li>
-<li>pkgdown site verification</li>
-<li>roxygen markdown mode conversion</li>
-<li>REmargins performance benchmarking and future backend</li>
+<h2 id="still-deferred-to-post-10">Still deferred to post-1.0<a class="anchor" aria-label="anchor" href="#still-deferred-to-post-10"></a></h2>
+<ul><li>foreach → future.apply migration; cli/rlang error modernization.</li>
+<li>roxygen markdown-mode conversion (~83 <code>\code{}</code> instances).</li>
+<li>Cross-platform Layer-2 snapshots (macOS-ARM64, Windows).</li>
+<li>
+<code>REmargins</code> performance benchmarking / future backend.</li>
+<li>A bayesplot/ggridges density display for FE/RE plots (noted in #85).</li>
 </ul></div>
 </div>
 
