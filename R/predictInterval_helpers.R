@@ -280,17 +280,26 @@ combine_postvar_blocks <- function(pv_list, reMeans) {
 #' @param n.sims Number of simulations.
 #' @param .parallel Logical flag to enable parallel execution via foreach.
 #' @param seed Optional random seed for reproducibility.
+#' @param new.levels Character; how to treat grouping levels present in
+#'   `newdata` but absent from the fitted model. `"zero"` drops the random
+#'   effect for such levels; `"draw"` samples each unobserved level's effect
+#'   from the estimated random-effect covariance (`VarCorr`).
 #' @return List of matrices (rows = observations, cols = simulations).
 simulate_random_effects <- function(
   merMod,
   newdata,
   n.sims,
   .parallel = FALSE,
-  seed = NULL
+  seed = NULL,
+  new.levels = c("zero", "draw")
 ) {
+  new.levels <- match.arg(new.levels, c("zero", "draw"), several.ok = FALSE)
   if (!is.null(seed)) set.seed(seed)
   else if (!exists('.Random.seed', envir = .GlobalEnv)) runif(1)
   rr <- ranef(merMod, condVar = TRUE)
+  # Marginal random-effect (co)variance per grouping factor, used to sample
+  # effects for unobserved levels when new.levels = "draw".
+  reVarCov <- if (identical(new.levels, "draw")) lme4::VarCorr(merMod) else NULL
   re.xb <- vector(getME(merMod, 'n_rfacs'), mode = 'list')
   names(re.xb) <- names(ngrps(merMod))
   newdata.modelMatrix <- buildModelMatrix(model = merMod, newdata = newdata)
@@ -342,6 +351,29 @@ simulate_random_effects <- function(
     dimnames(REcoefs) <- list(1:n.sims,
                                attr(reMeans, 'dimnames')[[2]],
                                attr(reMeans, 'dimnames')[[1]])
+
+    # new.levels = "draw": for grouping levels in newdata that were not in the
+    # fitted model, sample an effect for each from the estimated random-effect
+    # covariance (one draw per unobserved level, shared by its observations) and
+    # append it to REcoefs. Downstream code then treats these levels as known,
+    # so the prediction carries the between-group uncertainty rather than
+    # dropping the effect. The default ("zero") skips this and lets such levels
+    # fall back to the fixed effects plus residual variation in tmp.pred().
+    if (identical(new.levels, "draw") && j %in% names(newdata)) {
+      new_lv <- setdiff(unique(as.character(newdata[, j])), alllvl)
+      terms_o <- dimnames(REcoefs)[[2]]
+      Sigma <- as.matrix(reVarCov[[j]])
+      if (length(new_lv) > 0 && all(terms_o %in% rownames(Sigma))) {
+        Sigma <- Sigma[terms_o, terms_o, drop = FALSE]
+        add <- array(NA_real_, dim = c(n.sims, length(terms_o), length(new_lv)),
+                     dimnames = list(1:n.sims, terms_o, new_lv))
+        for (k in seq_along(new_lv)) {
+          add[, , k] <- mvtnorm::rmvnorm(n.sims, mean = rep(0, length(terms_o)),
+                                         sigma = Sigma, method = 'chol')
+        }
+        REcoefs <- abind::abind(REcoefs, add, along = 3)
+      }
+    }
 
     # Build temporary data frame for prediction as in original code
     if (j %in% names(newdata)) {

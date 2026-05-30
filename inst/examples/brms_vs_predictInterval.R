@@ -64,10 +64,11 @@ fit_brm <- function(form, data, family, cache) {
 # (N_SIMS x nrow(newdata)) matrix of predictive draws from predictInterval(),
 # oriented like brms::posterior_predict() (draws x obs).
 mt_draws <- function(fit, newdata, type = "linear.prediction",
-                     include.resid.var = TRUE) {
+                     include.resid.var = TRUE, new.levels = "zero") {
   pi <- suppressWarnings(predictInterval(
     fit, newdata = newdata, level = 0.95, n.sims = N_SIMS, seed = SEED,
-    type = type, include.resid.var = include.resid.var, returnSims = TRUE))
+    type = type, include.resid.var = include.resid.var,
+    new.levels = new.levels, returnSims = TRUE))
   sims <- attr(pi, "sim.results")
   if (nrow(sims) == nrow(newdata)) sims <- t(sims)
   sims
@@ -120,15 +121,30 @@ report_gaussian <- function(label, m_lme, m_brm, test_seen, test_new) {
   cov_seen <- data.frame(nominal = NOMINAL,
                          merTools = coverage(mt_seen, y_seen, NOMINAL),
                          brms     = coverage(pp_seen, y_seen, NOMINAL))
-  cov_new  <- data.frame(nominal = NOMINAL,
-                         merTools = coverage(mt_new, y_new, NOMINAL),
-                         brms     = coverage(pp_new, y_new, NOMINAL))
   cat("[3] Coverage, held-out students in SEEN schools:\n")
   print(cov_seen, row.names = FALSE, digits = 3)
+
+  # 4. New groups. The two packages each offer two conventions for an unseen
+  #    level; the comparison is fair only when they match:
+  #      predictInterval new.levels="zero" ~ brms re_formula=NA       (drop effect)
+  #      predictInterval new.levels="draw" ~ brms allow_new_levels    (sample one)
   sd_school <- attr(lme4::VarCorr(m_lme)[[1]], "stddev")[["(Intercept)"]]
-  cat(sprintf("[4] New schools: school-intercept SD=%.2f vs residual SD=%.2f\n",
+  mt_drawn <- mt_draws(m_lme, test_new, new.levels = "draw")
+  pp_pop   <- posterior_predict(m_brm, newdata = test_new, re_formula = NA)
+  w90 <- function(d) median(qband(d, 0.90)$upr - qband(d, 0.90)$lwr)
+  cat(sprintf("[4] New groups (90%% interval): group SD=%.2f, residual SD=%.2f\n",
               sd_school, sigma(m_lme)))
-  print(cov_new, row.names = FALSE, digits = 3)
+  print(data.frame(
+    unseen_group   = c("drop effect", "sample effect"),
+    merTools_width = c(w90(mt_new),  w90(mt_drawn)),
+    brms_width     = c(w90(pp_pop),  w90(pp_new)),
+    merTools_cov90 = c(coverage(mt_new, y_new, 0.90),  coverage(mt_drawn, y_new, 0.90)),
+    brms_cov90     = c(coverage(pp_pop, y_new, 0.90),  coverage(pp_new, y_new, 0.90))),
+    row.names = FALSE, digits = 3)
+  # coverage curves use the matched "sample" pairing (both draw a new effect)
+  cov_new <- data.frame(nominal = NOMINAL,
+                        merTools = coverage(mt_drawn, y_new, NOMINAL),
+                        brms     = coverage(pp_new,   y_new, NOMINAL))
 
   invisible(list(point = data.frame(merTools = lme_mean, brms = brm_mean),
                  b_mt = b_mt, b_brm = b_brm,
@@ -187,19 +203,23 @@ m_brm2 <- fit_brm(f2, train, gaussian(), "brms_hsb_nomeanses")
 res2 <- report_gaussian("STUDY 2: ses + (ses|schid)  [no meanses]",
                         m_lme2, m_brm2, test_seen, test_new)
 
-cat("\n=== New-group coverage: contextual effect present vs absent ===\n")
+cat("\n=== Unseen-group width: drop vs sample the group effect ===\n")
+w90 <- function(d) median(qband(d, 0.90)$upr - qband(d, 0.90)$lwr)
 contrast <- data.frame(
   model = c("with meanses", "without meanses"),
-  school_SD = c(res1$sd_school, res2$sd_school),
-  merTools_90 = c(res1$cov_new$merTools[NOMINAL == 0.90],
-                  res2$cov_new$merTools[NOMINAL == 0.90]),
-  brms_90 = c(res1$cov_new$brms[NOMINAL == 0.90],
-              res2$cov_new$brms[NOMINAL == 0.90]))
-contrast$gap_90 <- contrast$brms_90 - contrast$merTools_90
+  school_SD  = c(res1$sd_school, res2$sd_school),
+  width_zero = c(w90(mt_draws(m_lme1, test_new, new.levels = "zero")),
+                 w90(mt_draws(m_lme2, test_new, new.levels = "zero"))),
+  width_draw = c(w90(mt_draws(m_lme1, test_new, new.levels = "draw")),
+                 w90(mt_draws(m_lme2, test_new, new.levels = "draw"))))
+contrast$diff <- contrast$width_draw - contrast$width_zero
 print(contrast, row.names = FALSE, digits = 3)
-cat("Dropping meanses raises the school SD; predictInterval (which omits the\n",
-    "school effect for unseen schools) then under-covers more, widening the gap\n",
-    "to brms (which samples a new school effect).\n", sep = "")
+cat("Under matched conventions merTools and brms agree for unseen groups (see\n",
+    "each study's [4] table). What meanses changes is how far the two\n",
+    "conventions sit apart: when the contextual fixed effect absorbs the\n",
+    "between-school variance, dropping vs sampling the school effect barely\n",
+    "matters; without it the school SD roughly doubles and the choice moves the\n",
+    "interval noticeably.\n", sep = "")
 
 ## ===========================================================================
 ## STUDY 3 -- Binomial GLMM (grouseticks), compared on the probability scale

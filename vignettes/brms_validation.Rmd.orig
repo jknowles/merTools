@@ -1,6 +1,6 @@
 ---
 title: "Validating predictInterval() against brms"
-author: "Jared Knowles and Carl Frederick"
+author: "Jared Knowles"
 date: "Written 2026-05-29 (last updated `r Sys.Date()`)"
 output: rmarkdown::html_vignette
 vignette: >
@@ -23,9 +23,10 @@ SEED <- 11213; N_SIMS <- 1000; NOMINAL <- c(0.50, 0.80, 0.90, 0.95)
 outdir <- Sys.getenv("MERTOOLS_BENCH_DIR", unset = file.path(tempdir(), "brms_vignette"))
 dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 
-mt_draws <- function(fit, newdata, type = "linear.prediction", include.resid.var = TRUE) {
+mt_draws <- function(fit, newdata, type = "linear.prediction",
+                     include.resid.var = TRUE, new.levels = "zero") {
   pi <- suppressWarnings(predictInterval(fit, newdata = newdata, level = 0.95,
-        n.sims = N_SIMS, seed = SEED, type = type,
+        n.sims = N_SIMS, seed = SEED, type = type, new.levels = new.levels,
         include.resid.var = include.resid.var, returnSims = TRUE))
   sims <- attr(pi, "sim.results"); if (nrow(sims) == nrow(newdata)) sims <- t(sims); sims
 }
@@ -157,34 +158,62 @@ really built for.
 
 ## What about an entirely new group?
 
-For a school that was never seen during fitting, `predictInterval()` falls back
-to the fixed effects plus residual variation (it has no random effect to use),
-while brms with `allow_new_levels = TRUE` draws a fresh school effect from the
-estimated (co)variance. Whether that matters depends on how much variance is
-left in the grouping factor -- which in turn depends on the fixed effects.
+For a school that was never seen during fitting there is a genuine modeling
+choice: do you *drop* the school's effect and predict from the fixed effects
+only, or *sample* a plausible effect for it from the estimated school-level
+distribution? Both packages support either, and the comparison is only fair when
+the choices match:
 
-Here, `meanses` (a school-level fixed effect) already absorbs most of the
-between-school variation, so the school random intercept is small and the two
-methods stay close. Drop `meanses`, and the school variance -- and the gap --
-grows:
+| treatment of an unseen group | `predictInterval()` | brms |
+|---|---|---|
+| drop the effect (population prediction) | `new.levels = "zero"` *(default)* | `re_formula = NA` |
+| sample a new effect | `new.levels = "draw"` | `allow_new_levels = TRUE` *(default)* |
+
+Matched up, the two tools agree on both the width and the coverage of the
+new-school intervals:
 
 ```{r newgroup}
-new_group_gap <- function(form, cache) {
-  ml <- lmer(form, data = train)
-  mb <- fit_brm(form, train, gaussian(), cache)
-  cov_mt  <- coverage(mt_draws(ml, test_new), test_new$mathach, 0.90)
-  cov_brm <- coverage(posterior_predict(mb, newdata = test_new, allow_new_levels = TRUE),
-                      test_new$mathach, 0.90)
-  data.frame(school_SD = attr(VarCorr(ml)$schid, "stddev")[["(Intercept)"]],
-             merTools_90 = cov_mt, brms_90 = cov_brm, gap = cov_brm - cov_mt)
-}
-rbind(`with meanses`    = new_group_gap(mathach ~ ses + meanses + (ses | schid), "brms_hsb_meanses"),
-      `without meanses` = new_group_gap(mathach ~ ses + (ses | schid), "brms_hsb_nomeanses"))
+nd <- test_new
+pp_pop  <- posterior_predict(m_brm, newdata = nd, re_formula = NA)
+pp_draw <- posterior_predict(m_brm, newdata = nd, allow_new_levels = TRUE)
+mt_zero <- mt_draws(m_lme, nd, new.levels = "zero")
+mt_draw <- mt_draws(m_lme, nd, new.levels = "draw")
+w <- function(d) median(qband(d, 0.90)$upr - qband(d, 0.90)$lwr)
+data.frame(
+  unseen_group   = c("drop effect", "sample effect"),
+  merTools_width = c(w(mt_zero), w(mt_draw)),
+  brms_width     = c(w(pp_pop),  w(pp_draw)),
+  merTools_cov90 = c(coverage(mt_zero, nd$mathach, 0.90), coverage(mt_draw, nd$mathach, 0.90)),
+  brms_cov90     = c(coverage(pp_pop,  nd$mathach, 0.90), coverage(pp_draw, nd$mathach, 0.90)))
 ```
 
-The lesson is practical: `predictInterval()`'s new-group intervals are trustworthy
-when the model's fixed effects explain most of the between-group variation, and
-optimistic (too narrow) when they do not.
+So the interval width for an unseen group is set by the *choice*, not the method.
+Earlier I compared `predictInterval()`'s default against brms's default, which is
+an apples-to-oranges pairing -- the apparent "gap" was the two packages making
+different default assumptions, not a deficiency in either.
+
+How much the choice matters depends on how much group variance is left after the
+fixed effects. Here `meanses` already absorbs most of the between-school
+variation, so dropping vs. sampling the school effect barely changes the width.
+Remove `meanses` and the school SD roughly doubles, so the two options diverge:
+
+```{r newgroup2}
+m0 <- lmer(mathach ~ ses + (ses | schid), data = train)
+data.frame(
+  model = c("with meanses", "without meanses"),
+  school_SD = c(attr(VarCorr(m_lme)$schid, "stddev")[["(Intercept)"]],
+                attr(VarCorr(m0)$schid,    "stddev")[["(Intercept)"]]),
+  width_zero = c(w(mt_draws(m_lme, nd, new.levels = "zero")),
+                 w(mt_draws(m0,    nd, new.levels = "zero"))),
+  width_draw = c(w(mt_draws(m_lme, nd, new.levels = "draw")),
+                 w(mt_draws(m0,    nd, new.levels = "draw"))))
+```
+
+The practical guidance: `predictInterval()`'s default (`new.levels = "zero"`)
+answers "what is the expected outcome for a typical member of an unseen group,"
+while `new.levels = "draw"` answers "what is the outcome for an unseen group
+drawn from the population" -- the same quantity brms returns by default. Pick the
+one that matches your question.
 
 ## A generalized linear mixed model
 
@@ -226,10 +255,12 @@ ggplot(data.frame(merTools = mt_p, brms = brm_p), aes(merTools, brms)) +
 - For **observed groups**, `predictInterval()` reproduces brms's point estimates
   and prediction intervals almost exactly, with the same out-of-sample coverage,
   at a tiny fraction of the computational cost.
-- For **new groups**, `predictInterval()` omits the group effect; this is fine
-  when fixed effects absorb most of the group variance and too narrow when they
-  do not. Treat new-group intervals accordingly (see the `wiggle()` and
-  `?predictInterval` documentation for ways to reason about unobserved levels).
+- For **new groups**, you choose how to treat the unseen effect:
+  `new.levels = "zero"` (the default) drops it and predicts from the fixed
+  effects, while `new.levels = "draw"` samples it from the estimated covariance
+  -- matching brms's `re_formula = NA` and `allow_new_levels = TRUE`
+  respectively. Either way the two packages agree; pick the convention that fits
+  your question.
 - The same agreement holds for **GLMMs** on the probability scale.
 
 In short, when bootstrapping or full MCMC is impractical, `predictInterval()` is

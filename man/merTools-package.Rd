@@ -72,6 +72,8 @@ Mixed-Effects Models Using lme4. \emph{Journal of Statistical Software},
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://jknowles.github.io/merTools/}
+  \item \url{https://github.com/jknowles/merTools}
   \item Report bugs at \url{https://github.com/jknowles/merTools/issues}
 }
 

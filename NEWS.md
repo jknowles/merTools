@@ -8,6 +8,16 @@ test suite for low-maintenance, long-term use.
 
 ## New Features
 
+- **`predictInterval()` gained a `new.levels` argument for unobserved groups.**
+  When `newdata` contains a grouping level that was not in the fitted model, the
+  default `new.levels = "zero"` keeps the historical behavior (the random effect
+  is dropped, so the prediction rests on the fixed effects plus residual
+  variation). The new `new.levels = "draw"` instead samples each unobserved
+  group's effect from the estimated random-effect covariance (`VarCorr`), so the
+  interval reflects between-group uncertainty — the analogue of
+  `brms::posterior_predict(allow_new_levels = TRUE)`. Observations sharing an
+  unobserved level share the sampled effect. The default is unchanged, so
+  existing results are identical.
 - **New `plotREimpact()` function for visualizing `REimpact()` output (#84,
   #85).** Plots the weighted-average fitted value for each expected-rank bin of
   a grouping factor, with confidence intervals, faceted by case. Passing a

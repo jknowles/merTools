@@ -17,7 +17,8 @@ predictInterval(
   seed = NULL,
   .parallel = FALSE,
   fix.intercept.variance = FALSE,
-  ignore.fixed.terms = NULL
+  ignore.fixed.terms = NULL,
+  new.levels = c("zero", "draw")
 )
 }
 \arguments{
@@ -53,6 +54,16 @@ random effects, as if all the random effects are intercept effects?}
 
 \item{ignore.fixed.terms}{a numeric or string vector of indexes or names of
 fixed effects which should be considered as fully known (zero variance).}
+
+\item{new.levels}{character, how to treat grouping levels in \code{newdata}
+that were not present when the model was fit. \code{"zero"} (the default and
+the historical behavior) drops the random effect for such levels, so the
+prediction rests on the fixed effects plus residual variation. \code{"draw"}
+instead samples each unobserved group's effect from the estimated
+random-effect covariance (\code{VarCorr}), so the interval reflects
+between-group uncertainty -- the analogue of
+\code{brms::posterior_predict(allow_new_levels = TRUE)}. Observations that
+share an unobserved level share the same sampled effect.}
 }
 \value{
 a data.frame with three columns: fit, lwr and upr. If `returnSims`

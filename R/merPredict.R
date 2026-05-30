@@ -28,6 +28,15 @@
 #'   random effects, as if all the random effects are intercept effects?
 #' @param ignore.fixed.terms a numeric or string vector of indexes or names of
 #'   fixed effects which should be considered as fully known (zero variance).
+#' @param new.levels character, how to treat grouping levels in \code{newdata}
+#'   that were not present when the model was fit. \code{"zero"} (the default and
+#'   the historical behavior) drops the random effect for such levels, so the
+#'   prediction rests on the fixed effects plus residual variation. \code{"draw"}
+#'   instead samples each unobserved group's effect from the estimated
+#'   random-effect covariance (\code{VarCorr}), so the interval reflects
+#'   between-group uncertainty -- the analogue of
+#'   \code{brms::posterior_predict(allow_new_levels = TRUE)}. Observations that
+#'   share an unobserved level share the same sampled effect.
 #'
 #' @return a data.frame with three columns: fit, lwr and upr. If `returnSims`
 #'   is TRUE the attribute `sim.results` contains the full simulation array.
@@ -49,9 +58,11 @@ predictInterval <- function(
   seed = NULL,
   .parallel = FALSE,
   fix.intercept.variance = FALSE,
-  ignore.fixed.terms = NULL
+  ignore.fixed.terms = NULL,
+  new.levels = c("zero", "draw")
 ) {
   #--- Argument handling -------------------------------------------------------
+  new.levels <- match.arg(new.levels, c("zero", "draw"), several.ok = FALSE)
   if (inherits(merMod, "nlmerMod")) {
     stop("predictInterval() does not support nlmer models.", call. = FALSE)
   }
@@ -156,7 +167,8 @@ predictInterval <- function(
     newdata,
     n.sims,
     .parallel = .parallel,
-    seed = NULL
+    seed = NULL,
+    new.levels = new.levels
   )
   fixed_mat <- simulate_fixed_effects(
     merMod,
