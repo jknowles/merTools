@@ -19,3 +19,4 @@ NUL
 *.tar.gz
 .claude/
 Rplots.pdf
+.compass-cache/
