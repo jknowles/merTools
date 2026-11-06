@@ -151,6 +151,9 @@ test_that("LMM: single-row newdata and variance-adjustment options are stable", 
 
 test_that("GLMM binomial: predictInterval output is stable", {
   snapshot_platform_ok()
+  # lme4 2.1-0 refreshes the PIRLS weights before the Laplace approximation, which moves
+  # this fit slightly (deviance 73.4743 to 73.4715), so the snapshot needs at least that.
+  skip_if(packageVersion("lme4") < "2.1.0", "snapshot taken with lme4 2.1-0")
 
   data(cbpp, package = "lme4")
   m <- suppressMessages(
