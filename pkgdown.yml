@@ -1,5 +1,5 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   brms_validation: brms_validation.html
@@ -8,7 +8,7 @@ articles:
   marginal_effects: marginal_effects.html
   merToolsIntro: merToolsIntro.html
   Using_predictInterval: Using_predictInterval.html
-last_built: 2026-05-30T20:06Z
+last_built: 2026-11-06T19:58Z
 urls:
   reference: https://jknowles.github.io/merTools/reference
   article: https://jknowles.github.io/merTools/articles

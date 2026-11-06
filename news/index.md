@@ -2,6 +2,8 @@
 
 ## merTools 1.0.0
 
+CRAN release: 2026-05-31
+
 This is the 1.0 long-term-support release. It resolves the remaining
 open issues, fixes a correctness bug in
 [`predictInterval()`](https://jknowles.github.io/merTools/reference/predictInterval.md)
