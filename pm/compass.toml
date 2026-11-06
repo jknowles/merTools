@@ -1,0 +1,24 @@
+[project]
+name  = "merTools"
+forge = "jknowles/merTools"
+
+[[workstream]]
+id    = "package"
+title = "Package code"
+paths = ["R/*", "src/*", "DESCRIPTION", "NAMESPACE"]
+docs  = ["man/*", "NEWS.md"]
+
+[[workstream]]
+id    = "docs"
+title = "Vignettes and site"
+paths = ["vignettes/*", "README.Rmd", "_pkgdown.yml"]
+docs  = ["README.md"]
+
+[[workstream]]
+id    = "quality"
+title = "Tests and checks"
+paths = ["tests/**", ".github/workflows/*"]
+docs  = []
+
+[roborev]
+enabled = false

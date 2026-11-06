@@ -30,3 +30,5 @@ readmeplot
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^pm$
+^\.roborev\.toml$
